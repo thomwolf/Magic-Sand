@@ -22,6 +22,7 @@ int main( ){
     
     shared_ptr<ofApp> mainApp(new ofApp);
     ofAddListener(secondWindow->events().draw, mainApp.get(), &ofApp::drawProjWindow);
+    mainApp->projWindow = secondWindow;
     
     ofRunApp(mainWindow, mainApp);
     ofRunMainLoop();

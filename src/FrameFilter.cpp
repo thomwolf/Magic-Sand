@@ -8,20 +8,17 @@
 #include "FrameFilter.h"
 #include "ofConstants.h"
 
-#include <Geometry/HVector.h>
-#include <Geometry/Plane.h>
-#include <Geometry/Matrix.h>
-#include <Geometry/ProjectiveTransformation.h>
-
 /****************************
  Methods of class FrameFilter:
  ****************************/
+
+using namespace ofxCSG;
 
 FrameFilter::FrameFilter(): newFrame(true), bufferInitiated(false)
 {
 }
 
-bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sNumAveragingSlots, int sgradFieldresolution, float snearclip, float sfarclip, const FrameFilter::PTransform& depthProjection,const FrameFilter::Plane& basePlane)
+bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sNumAveragingSlots, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation)
 {
 	/* Settings variables : */
 	width = swidth;
@@ -32,7 +29,7 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
 	inputFrameVersion=0;
 	
 	/* Initialize the valid depth range: */
-	setValidDepthInterval(0U,2046U);
+//	setValidDepthInterval(0U,2046U);
     
 	/* Initialize the averaging buffer: */
 	numAveragingSlots=sNumAveragingSlots;
@@ -58,10 +55,13 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     spatialFilter=true;
     
 	/* Convert the base plane equation from camera space to depth-image space: */
-	PTransform::HVector basePlaneCc(basePlane.getNormal());
-	basePlaneCc[3]=-basePlane.getOffset();
-	PTransform::HVector basePlaneDic(depthProjection.getMatrix().transposeMultiply(basePlaneCc));
-	basePlaneDic/=Geometry::mag(basePlaneDic.toVector());
+//	PTransform::HVector basePlaneCc(basePlane.getNormal());
+//	basePlaneCc[3]=-basePlane.getOffset();
+//	PTransform::HVector basePlaneDic(depthProjection.getMatrix().transposeMultiply(basePlaneCc));
+//	basePlaneDic/=Geometry::mag(basePlaneDic.toVector());
+    basePlaneNormal =sbasePlaneNormal;
+    minPlane = newMinElevation;
+    maxPlane = newMaxElevation;
 	
 	/* Initialize the gradient field vector*/
     gradFieldresolution = sgradFieldresolution;
@@ -281,7 +281,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
     float* ofPtr=validBuffer; // static_cast<const float*>(outputFrame.getBuffer());
     float* nofPtr=static_cast<float*>(newOutputFrame.getData());
     float z;
-    
+    ofVec3f point;
     for(unsigned int y=0;y<height;++y)
     {
         float py=float(y)+0.5f;
@@ -295,8 +295,11 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
             float newCVal=newVal; //pdcPtr->correct(newVal); No per pîxel correction
             
             /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
-            float minD=minPlane[0]*px+minPlane[1]*py+minPlane[2]*newCVal+minPlane[3];
-            float maxD=maxPlane[0]*px+maxPlane[1]*py+maxPlane[2]*newCVal+maxPlane[3];
+            point[0] = px;
+            point[1] = py;
+            point[2] = newCVal;
+            bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
+            bool underMax = classifyPointWithPlane(point, basePlaneNormal, minPlane) == BACK;
             if(kinectROI.inside(x, y))//minD>=0.0f&&maxD<=0.0f)
                 //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
             {
@@ -491,36 +494,40 @@ void FrameFilter::updateGradientField()
 }
 
 
-void FrameFilter::setValidDepthInterval(unsigned int newMinDepth,unsigned int newMaxDepth)
-{
-	/* Set the equations for the minimum and maximum plane in depth image space: */
-	minPlane[0]=0.0f;
-	minPlane[1]=0.0f;
-	minPlane[2]=1.0f;
-	minPlane[3]=-float(newMinDepth)+0.5f;
-	maxPlane[0]=0.0f;
-	maxPlane[1]=0.0f;
-	maxPlane[2]=1.0f;
-	maxPlane[3]=-float(newMaxDepth)-0.5f;
-}
+//void FrameFilter::setValidDepthInterval(unsigned int newMinDepth,unsigned int newMaxDepth)
+//{
+//	/* Set the equations for the minimum and maximum plane in depth image space: */
+////	minPlane[0]=0.0f;
+////	minPlane[1]=0.0f;
+////	minPlane[2]=1.0f;
+////	minPlane[3]=-float(newMinDepth)+0.5f;
+////	maxPlane[0]=0.0f;
+////	maxPlane[1]=0.0f;
+////	maxPlane[2]=1.0f;
+////	maxPlane[3]=-float(newMaxDepth)-0.5f;
+//}
 
-void FrameFilter::setValidElevationInterval(const FrameFilter::PTransform& depthProjection,const FrameFilter::Plane& basePlane,double newMinElevation,double newMaxElevation)
+void FrameFilter::setValidElevationInterval(const ofVec3f sbasePlaneNormal,double newMinElevation,double newMaxElevation)
 {
 	/* Calculate the equations of the minimum and maximum elevation planes in camera space: */
-	PTransform::HVector minPlaneCc(basePlane.getNormal());
-	minPlaneCc[3]=-(basePlane.getOffset()+newMinElevation*basePlane.getNormal().mag());
-	PTransform::HVector maxPlaneCc(basePlane.getNormal());
-	maxPlaneCc[3]=-(basePlane.getOffset()+newMaxElevation*basePlane.getNormal().mag());
-	
-	/* Transform the plane equations to depth image space and flip and swap the min and max planes because elevation increases opposite to raw depth: */
-	PTransform::HVector minPlaneDic(depthProjection.getMatrix().transposeMultiply(minPlaneCc));
-	double minPlaneScale=-1.0/Geometry::mag(minPlaneDic.toVector());
-	for(int i=0;i<4;++i)
-		maxPlane[i]=float(minPlaneDic[i]*minPlaneScale);
-	PTransform::HVector maxPlaneDic(depthProjection.getMatrix().transposeMultiply(maxPlaneCc));
-	double maxPlaneScale=-1.0/Geometry::mag(maxPlaneDic.toVector());
-	for(int i=0;i<4;++i)
-		minPlane[i]=float(maxPlaneDic[i]*maxPlaneScale);
+    basePlaneNormal = sbasePlaneNormal;
+    minPlane=newMinElevation;
+    maxPlane=newMaxElevation;
+    
+//	PTransform::HVector minPlaneCc(basePlane.getNormal());
+//	minPlaneCc[3]=-(basePlane.getOffset()+newMinElevation*basePlane.getNormal().mag());
+//	PTransform::HVector maxPlaneCc(basePlane.getNormal());
+//	maxPlaneCc[3]=-(basePlane.getOffset()+newMaxElevation*basePlane.getNormal().mag());
+//	
+//	/* Transform the plane equations to depth image space and flip and swap the min and max planes because elevation increases opposite to raw depth: */
+//	PTransform::HVector minPlaneDic(depthProjection.getMatrix().transposeMultiply(minPlaneCc));
+//	double minPlaneScale=-1.0/Geometry::mag(minPlaneDic.toVector());
+//	for(int i=0;i<4;++i)
+//		maxPlane[i]=float(minPlaneDic[i]*minPlaneScale);
+//	PTransform::HVector maxPlaneDic(depthProjection.getMatrix().transposeMultiply(maxPlaneCc));
+//	double maxPlaneScale=-1.0/Geometry::mag(maxPlaneDic.toVector());
+//	for(int i=0;i<4;++i)
+//		minPlane[i]=float(maxPlaneDic[i]*maxPlaneScale);
 }
 
 void FrameFilter::setStableParameters(unsigned int newMinNumSamples,unsigned int newMaxVariance)

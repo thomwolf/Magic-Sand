@@ -9,7 +9,8 @@
 #include "ofMain.h"
 #include "ofxCv.h"
 #include "ofxKinect.h"
-#include <vector>
+#include "Utils.h"
+//#include <vector>
 
 using namespace ofxCv;
 using namespace cv;
@@ -19,19 +20,19 @@ namespace Misc {
     template <class ParameterParam>
     class FunctionCall;
 }
-namespace Geometry {
-    template <class ScalarParam,int dimensionParam>
-    class Plane;
-    template <class ScalarParam,int dimensionParam>
-    class ProjectiveTransformation;
-}
+//namespace Geometry {
+//    template <class ScalarParam,int dimensionParam>
+//    class Plane;
+//    template <class ScalarParam,int dimensionParam>
+//    class ProjectiveTransformation;
+//}
 
 class FrameFilter /*: public ofThread */{
 public:
 	typedef unsigned short RawDepth; // Data type for raw depth values
 	typedef float FilteredDepth; // Data type for filtered depth values
-	typedef Geometry::Plane<double,3> Plane;
-	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
+//	typedef Geometry::Plane<double,3> Plane;
+//	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
 
 //    ofThreadChannel<ofPixels> toAnalyze;
 //    ofThreadChannel<ofPixels> analyzed;
@@ -39,7 +40,7 @@ public:
     FrameFilter();
     ~FrameFilter();
     
-    bool setup(const unsigned int swidth,const unsigned int sheight,int sNumAveragingSlots, int sgradFieldresolution, float snearclip, float sfarclip, const FrameFilter::PTransform& depthProjection,const FrameFilter::Plane& basePlane);
+    bool setup(const unsigned int swidth,const unsigned int sheight,int sNumAveragingSlots, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
    void setDepthRange(float nearclip, float farclip);
@@ -50,8 +51,8 @@ public:
     Point3f* getWrldcoordbuffer();
 //    void draw(float x, float y);
 //    void draw(float x, float y, float w, float h);
-	void setValidDepthInterval(unsigned int newMinDepth,unsigned int newMaxDepth); // Sets the interval of depth values considered by the depth image filter
-	void setValidElevationInterval(const PTransform& depthProjection,const Plane& basePlane,double newMinElevation,double newMaxElevation); // Sets the interval of elevations relative to the given base plane considered by the depth image filter
+//	void setValidDepthInterval(unsigned int newMinDepth,unsigned int newMaxDepth); // Sets the interval of depth values considered by the depth image filter
+	void setValidElevationInterval(const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation); // Sets the interval of elevations relative to the given base plane considered by the depth image filter
 	void setStableParameters(unsigned int newMinNumSamples,unsigned int newMaxVariance); // Sets the statistical properties to consider a pixel stable
 	void setHysteresis(float newHysteresis); // Sets the stable value hysteresis envelope
 	void setRetainValids(bool newRetainValids); // Sets whether the filter retains previous stable values for instable pixels
@@ -82,10 +83,12 @@ private:
     unsigned int width, height; // Width and height of processed frames
     unsigned int inputFrameVersion; // Version number of input frame
 	volatile bool runFilterThread; // Flag to keep the background filtering thread running
-	float min; // lower bound of valid depth values in depth image space
-	float max; // upper bound of valid depth values in depth image space
-	float minPlane[4]; // Plane equation of the lower bound of valid depth values in depth image space
-	float maxPlane[4]; // Plane equation of the upper bound of valid depth values in depth image space
+//	float min; // lower bound of valid depth values in depth image space
+//	float max; // upper bound of valid depth values in depth image space
+    
+	ofVec4f basePlaneNormal; // Base plane normal
+	float minPlane, maxPlane; //  lower bound & upper bound of valid depth values in depth image space
+    
 	int numAveragingSlots; // Number of slots in each pixel's averaging buffer
 	RawDepth* averagingBuffer; // Buffer to calculate running averages of each pixel's depth value
 	int averagingSlotIndex; // Index of averaging slot in which to store the next frame's depth values

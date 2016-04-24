@@ -6,16 +6,12 @@
 
 #include "SurfaceRenderer.h"
 
-#include <string>
-#include <vector>
 #include <iostream>
 
-#define DEPTH_X_RES 640
-#define DEPTH_Y_RES 480
+using namespace ofxCSG;
 
-SurfaceRenderer::SurfaceRenderer(const unsigned int swidth,const unsigned int sheight, const PTransform& sDepthProjection, const Plane& sBasePlane)
-:basePlane(sBasePlane),
-usePreboundDepthTexture(false),
+SurfaceRenderer::SurfaceRenderer(const unsigned int swidth,const unsigned int sheight, const ofVec3f sbasePlanePos, const ofVec3f sbasePlaneNormal)
+:usePreboundDepthTexture(false),
 drawContourLines(true),contourLineFactor(1.0f),
 useHeightMap(true),heightMapScale(1.0f),heightMapOffset(0.0f),
 surfaceSettingsVersion(1),
@@ -28,24 +24,23 @@ animationTime(0.0)
     height = sheight;
     
     
-    /* Check if the depth projection matrix retains right-handedness: */
-    PTransform::Point p1=depthProjection.transform(PTransform::Point(0,0,0));
-    PTransform::Point p2=depthProjection.transform(PTransform::Point(1,0,0));
-    PTransform::Point p3=depthProjection.transform(PTransform::Point(0,1,0));
-    PTransform::Point p4=depthProjection.transform(PTransform::Point(0,0,1));
-    bool depthProjectionInverts=Geometry::cross(p2-p1,p3-p1)*(p4-p1)<Scalar(0);
-    
-    /* Convert the depth projection matrix to column-major OpenGL format: */
-    GLfloat* dpmPtr=depthProjectionMatrix;
-    for(int j=0;j<4;++j)
-        for(int i=0;i<4;++i,++dpmPtr)
-            *dpmPtr=depthProjection.getMatrix()(i,j);
-    
+//    /* Check if the depth projection matrix retains right-handedness: */
+//    PTransform::Point p1=depthProjection.transform(PTransform::Point(0,0,0));
+//    PTransform::Point p2=depthProjection.transform(PTransform::Point(1,0,0));
+//    PTransform::Point p3=depthProjection.transform(PTransform::Point(0,1,0));
+//    PTransform::Point p4=depthProjection.transform(PTransform::Point(0,0,1));
+//    bool depthProjectionInverts=Geometry::cross(p2-p1,p3-p1)*(p4-p1)<Scalar(0);
+//    
+//    /* Convert the depth projection matrix to column-major OpenGL format: */
+//    GLfloat* dpmPtr=depthProjectionMatrix;
+//    for(int j=0;j<4;++j)
+//        for(int i=0;i<4;++i,++dpmPtr)
+//            *dpmPtr=depthProjection.getMatrix()(i,j);
+    basePlanePos =  sbasePlanePos;
+    basePlaneNormal = sbasePlaneNormal;
     
 	/* Convert the base plane to a homogeneous plane equation: */
-	for(int i=0;i<3;++i)
-		basePlaneEq[i]=GLfloat(basePlane.getNormal()[i]);
-	basePlaneEq[3]=GLfloat(-basePlane.getOffset());
+    basePlaneEq=getPlaneEquation(basePlaneNormal,basePlanePos);
 	
 	/* Initialize the depth image: */
     depthImage.allocate(width, height, 1);
@@ -200,7 +195,7 @@ void SurfaceRenderer::glPrepareContourLines()
     }
 	
     elevationShader.setUniformTexture( "depthSampler", depthTexture, 1 ); //"1" means that it is texture 1
-    elevationShader.setUniformMatrix4f("depthProjection",depthProjectionMatrix);
+//    elevationShader.setUniformMatrix4f("depthProjection",depthProjectionMatrix);
     elevationShader.setUniform4f("basePlane",basePlaneEq);
 	
 	/* Draw the surface: */
@@ -264,7 +259,7 @@ void SurfaceRenderer::glRenderSinglePass(ofTexture heightColorMapTexture)
 //    varying float heightColorMapTexCoord; // Texture coordinate for the height color map
 
     heightMapShader.setUniformTexture( "depthSampler", depthTexture, 1 ); //"1" means that it is texture 1
-    heightMapShader.setUniformMatrix4f("depthProjection",depthProjectionMatrix);
+//    heightMapShader.setUniformMatrix4f("depthProjection",depthProjectionMatrix);
     heightMapShader.setUniform4f("basePlane",basePlaneEq);
     heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
 //    heightMapShader.setUniformTexture("pixelCornerElevationSampler", contourLineFramebufferObject.getTexture(), 2);

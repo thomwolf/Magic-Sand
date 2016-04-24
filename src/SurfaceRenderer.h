@@ -23,9 +23,10 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #pragma once
 
 #include <IO/FileMonitor.h>
-#include <Geometry/Plane.h>
-#include <Geometry/ProjectiveTransformation.h>
+//#include <Geometry/Plane.h>
+//#include <Geometry/ProjectiveTransformation.h>
 #include "ofMain.h"
+#include "Utils.h"
 
 /* Forward declarations: */
 
@@ -34,8 +35,8 @@ class SurfaceRenderer //:public GLObject
 	/* Embedded classes: */
 	public:
 	typedef double Scalar;
-	typedef Geometry::Plane<Scalar,3> Plane; // Type for planes in camera space
-	typedef Geometry::ProjectiveTransformation<Scalar,3> PTransform; // Type for projective transformations
+//	typedef Geometry::Plane<Scalar,3> Plane; // Type for planes in camera space
+//	typedef Geometry::ProjectiveTransformation<Scalar,3> PTransform; // Type for projective transformations
 	
 	private:
 		ofTexture depthTexture; // ID of texture object holding surface's vertex elevations in depth image space
@@ -51,9 +52,10 @@ class SurfaceRenderer //:public GLObject
 	/* Elements: */
 //	IO::FileMonitor fileMonitor; // Monitor to watch the renderer's external shader source files
     unsigned int width, height; // Width and height of the depth image
-	Plane basePlane; // Base plane to calculate surface elevation
+        ofVec3f basePlanePos;
+        ofVec3f basePlaneNormal; // Base plane to calculate surface elevation
 	ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
-    PTransform depthProjection; // The transformation from depth image space to camera space
+//    PTransform depthProjection; // The transformation from depth image space to camera space
     GLfloat depthProjectionMatrix[16]; // Same, in GLSL-compatible format
 	bool usePreboundDepthTexture; // Flag if the renderer should use the depth texture already bound to texture unit 0
 	bool drawContourLines; // Flag if topographic contour lines are enabled
@@ -67,7 +69,7 @@ class SurfaceRenderer //:public GLObject
 
 	/* Constructors and destructors: */
 	public:
-	SurfaceRenderer(const unsigned int swidth,const unsigned int sheight,const PTransform& sDepthProjection,const Plane& sBasePlane); // Creates a renderer for the given image size, depth projection, and base plane
+        SurfaceRenderer(const unsigned int swidth,const unsigned int sheight,const ofVec3f sbasePlanePos, const ofVec3f sbasePlaneNormal); // Creates a renderer for the given image size, depth projection, and base plane
 	
 	/* Methods from GLObject: */
 	virtual void initContext();

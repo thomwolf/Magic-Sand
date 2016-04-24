@@ -3,18 +3,14 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
-
-#include <Geometry/HVector.h>
-#include <Geometry/Plane.h>
-#include <Geometry/Point.h>
-#include <Geometry/Matrix.h>
-#include <Geometry/ProjectiveTransformation.h>
+#include "ofxKinectProjectorToolkit.h"
 
 #include "ColorMap.h"
 #include "FrameFilter.h"
 #include "KinectGrabber.h"
 #include "vehicle.h"
 #include "SurfaceRenderer.h"
+#include "Utils.h"
 
 using namespace cv;
 
@@ -22,15 +18,26 @@ using namespace cv;
 class ofApp : public ofBaseApp{
 
 	public:
-	typedef Geometry::Point<double,3> Point;
-	typedef Geometry::Vector<double,3> Vector;
-	typedef Geometry::Plane<double,3> Plane;
-	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
+
+        enum General_state
+        {
+            GENERAL_STATE_CALIBRATION = 0,
+            GENERAL_STATE_SANDBOX = 1
+        };
+        enum Calibration_state
+        {
+            CALIBRATION_STATE_ROI_DETERMINATION = 0,
+            CALIBRATION_STATE_PROJ_KINECT_CALIBRATION = 1
+        };
 
         void setup();
 		void update();
 		void draw();
         void drawProjWindow(ofEventArgs& args);
+        void drawChessboard(int x, int y, int chessboardSize);
+        void drawTestingPoint(ofVec2f projectedPoint);
+        void addPointPair();
+        
 
 		void keyPressed(int key);
 		void keyReleased(int key);
@@ -44,17 +51,52 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-        int generalState, calibrationState;
+        shared_ptr<ofAppBaseWindow> projWindow;
 
-private:
-    ofShader                    shader;            //Shader
-    ofFbo                       fbo;			//Buffer for intermediate drawing
-    ColorMap                    heightMap;
-    KinectGrabber               kinectgrabber;
-    SurfaceRenderer*             surfaceRenderer;
+        General_state generalState;
+        Calibration_state calibrationState;
+
+    private:
+        ColorMap                    heightMap;
+        KinectGrabber               kinectgrabber;
+        SurfaceRenderer*            surfaceRenderer;
+        ofRectangle                 kinectROI;
+        ofShader                    shader;            //Shader
+        ofFbo                       fbo;			//Buffer for intermediate drawing
+        ofFbo                       fboChessboard;
+        ofxKinectProjectorToolkit   kpt;
     
-    ofMesh mesh;
-    int meshwidth;          //Mesh size
-    int meshheight;
+        ofxCvColorImage             rgbImage;
+        cv::Mat                     cvRgbImage;
+        ofxCvFloatImage             FilteredDepthImage;
+        ofxCvColorImage             kinectColorImage;
+    
+        vector<ofVec2f>             currentProjectorPoints;
+        vector<cv::Point2f>         cvPoints;
+        vector<ofVec3f>             pairsKinect;
+        vector<ofVec2f>             pairsProjector;
+        
+        string                      resultMessage;
+        ofColor                     resultMessageColor;
+        ofVec2f                     testPoint;
+        bool saved;
+        bool loaded;
 
+        ofMesh mesh;
+        int meshwidth;          //Mesh size
+        int meshheight;
+        ofVec3f basePlaneNormal; // Base plane coord
+        ofVec3f basePlaneNOffset;
+
+        double gradFieldresolution;
+        
+        float farclip, nearclip;
+        float elevationMin, elevationMax;
+        int                         chessboardSize;
+        int                         chessboardX;
+        int                         chessboardY;
+        int projResX;
+        int projResY;
+        int kinectResX;
+        int kinectResY;
 };

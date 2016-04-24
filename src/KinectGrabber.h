@@ -7,35 +7,36 @@
 
 #include "FrameFilter.h"
 
-#include <Geometry/HVector.h>
-#include <Geometry/Plane.h>
-#include <Geometry/Matrix.h>
-#include <Geometry/ProjectiveTransformation.h>
+//#include <Geometry/HVector.h>
+//#include <Geometry/Plane.h>
+//#include <Geometry/Matrix.h>
+//#include <Geometry/ProjectiveTransformation.h>
 
 class KinectGrabber: public ofThread {
 public:
 	/* Embedded classes: */
-	typedef Geometry::Plane<double,3> Plane;
-	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
+//	typedef Geometry::Plane<double,3> Plane;
+//	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
 
 	/* Elements: */
 	KinectGrabber();
 	~KinectGrabber();
     void setup();
     void setupClip(float nearclip, float farclip);
-    void setupFramefilter(int sNumAveragingSlots, int gradFieldresolution, float snearclip, float sfarclip,const FrameFilter::PTransform& depthProjection,const FrameFilter::Plane& basePlane, double elevationMin, double elevationMax);
+    void setupFramefilter(int sNumAveragingSlots, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation);
     void setupCalibration(int projectorWidth, int projectorHeight, float schessboardSize, float schessboardColor, float sStabilityTimeInMs, float smaxReprojError);
     void setCalibrationmode();
     void setTestmode();
     void setKinectROI(ofRectangle skinectROI);
     //void update();
 //    ofPixels convertProjSpace(ofPixels sinputframe);
+    ofVec2f getKinectSize();
 	bool isFrameNew();
     int storedframes;//, storedcoloredframes;
 	ofPixels & getPixels();
 	ofTexture & getTexture();
-    PTransform getProjMatrix(void); // Get unprojection matrix of the kinect
-    ofVec3f getProjVector(void); // Kinect unprojection factors: (shift x, shift y, scale factor)
+//    PTransform getProjMatrix(void); // Get unprojection matrix of the kinect
+//    ofVec3f getProjVector(void); // Kinect unprojection factors: (shift x, shift y, scale factor)
     
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
