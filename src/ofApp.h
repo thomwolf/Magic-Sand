@@ -13,22 +13,12 @@
 #include "Utils.h"
 
 using namespace cv;
+using namespace states;
 
 
 class ofApp : public ofBaseApp{
 
 	public:
-
-        enum General_state
-        {
-            GENERAL_STATE_CALIBRATION = 0,
-            GENERAL_STATE_SANDBOX = 1
-        };
-        enum Calibration_state
-        {
-            CALIBRATION_STATE_ROI_DETERMINATION = 0,
-            CALIBRATION_STATE_PROJ_KINECT_CALIBRATION = 1
-        };
 
         void setup();
 		void update();
@@ -53,23 +43,18 @@ class ofApp : public ofBaseApp{
 
         shared_ptr<ofAppBaseWindow> projWindow;
 
-        General_state generalState;
-        Calibration_state calibrationState;
-
     private:
         ColorMap                    heightMap;
         KinectGrabber               kinectgrabber;
         SurfaceRenderer*            surfaceRenderer;
-        ofRectangle                 kinectROI;
         ofShader                    shader;            //Shader
         ofFbo                       fbo;			//Buffer for intermediate drawing
         ofFbo                       fboChessboard;
         ofxKinectProjectorToolkit   kpt;
     
-        ofxCvColorImage             rgbImage;
-        cv::Mat                     cvRgbImage;
         ofxCvFloatImage             FilteredDepthImage;
         ofxCvColorImage             kinectColorImage;
+        cv::Mat                     cvRgbImage;
     
         vector<ofVec2f>             currentProjectorPoints;
         vector<cv::Point2f>         cvPoints;
@@ -81,7 +66,19 @@ class ofApp : public ofBaseApp{
         ofVec2f                     testPoint;
         bool saved;
         bool loaded;
-
+    
+        // States variables
+        General_state generalState;
+        Calibration_state calibrationState;
+        ROI_calibration_state ROICalibrationState;
+    
+        // ROI calibration variables
+        ofxCvGrayscaleImage thresholdedImage;
+        ofxCvContourFinder        contourFinder;
+        float threshold;
+        ofPolyline large;
+        ofRectangle                 kinectROI;
+    
         ofMesh mesh;
         int meshwidth;          //Mesh size
         int meshheight;

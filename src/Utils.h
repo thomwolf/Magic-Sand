@@ -8,6 +8,26 @@
 
 #include "ofMain.h"
 
+namespace states
+{
+    enum General_state
+    {
+        GENERAL_STATE_CALIBRATION = 0,
+        GENERAL_STATE_SANDBOX = 1
+    };
+    enum Calibration_state
+    {
+        CALIBRATION_STATE_ROI_DETERMINATION = 0,
+        CALIBRATION_STATE_PROJ_KINECT_CALIBRATION = 1,
+        CALIBRATION_STATE_CALIBRATION_TEST = 2
+    };
+    enum ROI_calibration_state
+    {
+        ROI_CALIBRATION_STATE_INIT = 0,
+        ROI_CALIBRATION_STATE_MOVE_UP = 1,
+        ROI_CALIBRATION_STATE_DONE = 2
+    };
+}
 namespace ofxCSG
 {
 	

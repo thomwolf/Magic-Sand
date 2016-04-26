@@ -6,11 +6,14 @@
 #include "ofxKinect.h"
 
 #include "FrameFilter.h"
+#include "Utils.h"
 
 //#include <Geometry/HVector.h>
 //#include <Geometry/Plane.h>
 //#include <Geometry/Matrix.h>
 //#include <Geometry/ProjectiveTransformation.h>
+
+using namespace states;
 
 class KinectGrabber: public ofThread {
 public:
@@ -25,8 +28,7 @@ public:
     void setupClip(float nearclip, float farclip);
     void setupFramefilter(int sNumAveragingSlots, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation);
     void setupCalibration(int projectorWidth, int projectorHeight, float schessboardSize, float schessboardColor, float sStabilityTimeInMs, float smaxReprojError);
-    void setCalibrationmode();
-    void setTestmode();
+    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
     void setKinectROI(ofRectangle skinectROI);
     //void update();
 //    ofPixels convertProjSpace(ofPixels sinputframe);
@@ -57,7 +59,6 @@ private:
 	ofPixels pixels;
 	ofTexture texture;
 	bool newFrame;
-	bool enableCalibration, enableTestmode;
     
     // kinect & the wrapper
     float                   nearclip, farclip;
@@ -70,4 +71,6 @@ private:
     ofRectangle                 kinectROI;
     // calibration
     // output
+    General_state generalState;
+    Calibration_state calibrationState;
 };

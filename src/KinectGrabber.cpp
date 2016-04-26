@@ -32,8 +32,6 @@ void KinectGrabber::setup(){
     //    // previous frames
     
 	// settings and defaults
-	enableCalibration = false;
-	enableTestmode	  = true;
 	storedframes = 0;
     //    storedcoloredframes = 0;
     
@@ -64,16 +62,10 @@ void KinectGrabber::setupClip(float snearclip, float sfarclip){
     kinect.setDepthClipping(snearclip, sfarclip);
 }
 
-void KinectGrabber::setTestmode(){
-    enableTestmode = true;
-    enableCalibration = false;
+void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
+    generalState = sgeneralState;
+    calibrationState = scalibrationState;
     framefilter.resetBuffers();
-}
-
-void KinectGrabber::setCalibrationmode(){
-    enableCalibration = true;
-    enableTestmode = false;
-    //    kinectProjectorOutput.load("kinectProjector.yml");
 }
 
 bool KinectGrabber::isFrameNew(){
@@ -114,7 +106,7 @@ void KinectGrabber::threadedFunction(){
             
             if(kinect.isFrameNew()){
                 newFrame = true;
-                if (enableCalibration) {
+                if (generalState == GENERAL_STATE_CALIBRATION) {
                     kinectDepthImage = kinect.getDepthPixels();
                     kinectColorImage.setFromPixels(kinect.getPixels());
                     // If new filtered image => send back to main thread
@@ -131,7 +123,7 @@ void KinectGrabber::threadedFunction(){
                     
                 }
                 // if the test mode is activated, the settings are loaded automatically (see gui function)
-                if (enableTestmode) {
+                if (generalState == GENERAL_STATE_SANDBOX) {
                     kinectDepthImage = kinect.getRawDepthPixels();
                     ofFloatPixels filteredframe;//, kinectProjImage;
                     filteredframe = framefilter.filter(kinectDepthImage, kinectROI);
@@ -140,7 +132,7 @@ void KinectGrabber::threadedFunction(){
 //                    kinectProjImage = convertProjSpace(filteredframe);
 //                    kinectProjImage.setImageType(OF_IMAGE_GRAYSCALE);
                     
-                    // If new filtered image => send back to main thread
+                    // If new filtered = => send back to main thread
 #if __cplusplus>=201103
                     filtered.send(std::move(filteredframe));
                     gradient.send(std::move(framefilter.getGradField()));

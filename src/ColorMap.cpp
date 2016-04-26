@@ -36,8 +36,8 @@ bool ColorMap::load(string filename, bool absolute) {
     // iterate through a sequence using FileNodeIterator
     for( ; it != it_end; ++it, idx++ )
     {
-        cout << "color #" << idx << ": ";
-        cout << "z=" << (double)(*it)["z"] << ", color=" << (int)(*it)["color"] << endl;
+//        cout << "color #" << idx << ": ";
+//        cout << "z=" << (double)(*it)["z"] << ", color=" << (int)(*it)["color"] << endl;
         heightMapKeys.push_back((double)(*it)["z"]);
         heightMapColors.push_back(ofColor::fromHex((int)(*it)["color"]));
     }
