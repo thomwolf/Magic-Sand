@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #extension GL_ARB_texture_rectangle : enable
 
 uniform sampler2DRect depthSampler; // Sampler for the depth image-space elevation texture
-//uniform mat4 depthProjection; // Transformation from depth image space to camera space
+uniform mat4 kinectWorldMatrix; // Transformation from depth image space to camera space
 uniform vec4 basePlane; // Plane equation of the base plane
 
 varying float elevation; // Elevation relative to base plane
@@ -35,7 +35,7 @@ void main()
 	vertexDic.z=texture2DRect(depthSampler,vertexDic.xy).r;
 	
 	/* Transform the vertex from depth image space to camera space: */
-        vec4 vertexCc=/*depthProjection**/vertexDic;
+        vec4 vertexCc=depthProjection*vertexDic;
 	
 	/* Plug camera-space vertex into the base plane equation: */
 	elevation=dot(basePlane,vertexCc)/vertexCc.w;

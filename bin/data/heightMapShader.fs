@@ -51,11 +51,11 @@ varying float heightColorMapTexCoord; // Texture coordinate for the height color
 void main()
 {
     /* Get the fragment's color from the height color map: */
-    vec4 baseColor=texture1D(heightColorMapSampler,vec4(color1, 0.0, 0.0, 1.0));//heightColorMapTexCoord);
+    vec4 baseColor=texture1D(heightColorMapSampler,vec4(color1, 0.0, 0.0, heightColorMapTexCoord);
     
     /* Modulate the base color by contour line color: */
    // addContourLines(gl_FragCoord.xy,baseColor);
     
     /* Assign the final color to the fragment: */
-    gl_FragColor=vec4(1.0, 0.0, 0.0, 1.0);//baseColor;
+    gl_FragColor = baseColor; // vec4(1.0, 0.0, 0.0, 1.0);//
 }

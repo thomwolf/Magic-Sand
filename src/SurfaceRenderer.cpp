@@ -23,19 +23,6 @@ animationTime(0.0)
     width = swidth;
     height = sheight;
     
-    
-//    /* Check if the depth projection matrix retains right-handedness: */
-//    PTransform::Point p1=depthProjection.transform(PTransform::Point(0,0,0));
-//    PTransform::Point p2=depthProjection.transform(PTransform::Point(1,0,0));
-//    PTransform::Point p3=depthProjection.transform(PTransform::Point(0,1,0));
-//    PTransform::Point p4=depthProjection.transform(PTransform::Point(0,0,1));
-//    bool depthProjectionInverts=Geometry::cross(p2-p1,p3-p1)*(p4-p1)<Scalar(0);
-//    
-//    /* Convert the depth projection matrix to column-major OpenGL format: */
-//    GLfloat* dpmPtr=depthProjectionMatrix;
-//    for(int j=0;j<4;++j)
-//        for(int i=0;i<4;++i,++dpmPtr)
-//            *dpmPtr=depthProjection.getMatrix()(i,j);
     basePlanePos =  sbasePlanePos;
     basePlaneNormal = sbasePlaneNormal;
     
@@ -49,8 +36,7 @@ animationTime(0.0)
 }
 
 void SurfaceRenderer::initContext()
-{
-	
+{	
     // Initialise mesh
     mesh.clear();
  	for(unsigned int y=0;y<height;++y)

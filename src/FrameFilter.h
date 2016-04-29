@@ -58,10 +58,12 @@ public:
 	void setRetainValids(bool newRetainValids); // Sets whether the filter retains previous stable values for instable pixels
 	void setInstableValue(float newInstableValue); // Sets the depth value to assign to instable pixels
 	void setSpatialFilter(bool newSpatialFilter); // Sets the spatial filtering flag
+	void setROI(ofRectangle ROI); // Sets the ROI
+    bool isInsideROI(int x, int y); // test is x, y is inside ROI
     void displayFlowField();
     void drawArrow(ofVec2f);
     void updateGradientField();
-    ofFloatPixels filter(ofShortPixels inputframe, ofRectangle kinectROI);
+    ofFloatPixels filter(ofShortPixels inputframe);
     
 private:
     ofxKinect * backend;
@@ -85,6 +87,9 @@ private:
 	volatile bool runFilterThread; // Flag to keep the background filtering thread running
 //	float min; // lower bound of valid depth values in depth image space
 //	float max; // upper bound of valid depth values in depth image space
+    
+    int minX, maxX, ROIwidth; // ROI definition
+    int minY, maxY, ROIheight;
     
 	ofVec4f basePlaneNormal; // Base plane normal
 	float minPlane, maxPlane; //  lower bound & upper bound of valid depth values in depth image space

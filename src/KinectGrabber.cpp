@@ -47,11 +47,12 @@ void KinectGrabber::setup(){
     kinectColorImage.setUseTexture(false);
 }
 
-void KinectGrabber::setupFramefilter(int sNumAveragingSlots, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation) {
+void KinectGrabber::setupFramefilter(int sNumAveragingSlots, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI) {
     nearclip =snearclip;
     farclip =sfarclip;
     kinect.setDepthClipping(snearclip, sfarclip);
     framefilter.setup(kinectWidth,kinectHeight,sNumAveragingSlots, gradFieldresolution, snearclip, sfarclip, basePlaneNormal, MinElevation, MaxElevation);
+    framefilter.setROI(ROI);
 //    framefilter.setValidElevationInterval(basePlaneNormal,elevationMin,elevationMax);
     // framefilter.startThread();
 }
@@ -76,8 +77,18 @@ ofVec2f KinectGrabber::getKinectSize(){
 	return ofVec2f(kinectWidth, kinectHeight);
 }
 
+ofMatrix4x4 KinectGrabber::getWorldMatrix(){
+    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1); // Little to access kinect internal parameters without having to modify ofxKinect
+    ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
+    cout << "Computing kinect world matrix" << endl;
+    return ofMatrix4x4(b.x-a.x, 0, a.x, 0,
+                       0,b.y-a.y,a.y, 0,
+                       0, 0, 0, 1,
+                       0, 0, 0, 0);
+}
+
 void KinectGrabber::setKinectROI(ofRectangle skinectROI){
-    kinectROI = skinectROI;
+    framefilter.setROI(skinectROI);
 }
 
 void KinectGrabber::threadedFunction(){
@@ -126,7 +137,7 @@ void KinectGrabber::threadedFunction(){
                 if (generalState == GENERAL_STATE_SANDBOX) {
                     kinectDepthImage = kinect.getRawDepthPixels();
                     ofFloatPixels filteredframe;//, kinectProjImage;
-                    filteredframe = framefilter.filter(kinectDepthImage, kinectROI);
+                    filteredframe = framefilter.filter(kinectDepthImage);
                     filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
 //                    wrldcoord = framefilter.getWrldcoordbuffer();
 //                    kinectProjImage = convertProjSpace(filteredframe);

@@ -195,6 +195,22 @@ Point3f* FrameFilter::getWrldcoordbuffer(){
     return wrldcoordbuffer;
 }
 
+void FrameFilter::setROI(ofRectangle ROI){
+    minX = (int) ROI.getMinX();
+    maxX = (int) ROI.getMaxX();
+    minY = (int) ROI.getMinY();
+    maxY = (int) ROI.getMaxY();
+    ROIwidth = maxX-minX;
+    ROIheight = maxY-minY;
+}
+
+bool FrameFilter::isInsideROI(int x, int y){
+    bool result = true;
+    if (x<minX||x>maxX||y<minY||y>maxY)
+        result = false;
+    return result;
+}
+
 void FrameFilter::displayFlowField()
 {
     
@@ -236,43 +252,13 @@ void FrameFilter::drawArrow(ofVec2f v1)
     //ofDrawLine(-length/2 + length*0.8, length*-0.1, length/2, 0);
 }
 
-ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectROI)
+ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
 {
-    // wait until there's a new frame
-    // this blocks the thread, so it doesn't use
-    // the CPU at all, until a frame arrives.
-    // also receive doesn't allocate or make any copies
-    //    ofPixels inputframe;
-    //    inputframe.setImageType(OF_IMAGE_GRAYSCALE);
-    //    while(toAnalyze.receive(inputframe)){
-    //        // we have a new frame, process it, the analysis
-    //        // here is just a thresholding for the sake of
-    //        // simplicity
-    //        unsigned int lastInputFrameVersion=0;
-    //        lastInputFrameVersion=inputFrameVersion;
-    //
-    //   return inputframe; ///////////////////////////////////////////////////////////////////
-    
-    // Convert in proj space
-    //    ofPixels inputframe = convertProjSpace(sinputframe);
-    
     // Create a new output frame: */
     ofFloatPixels newOutputFrame;
     newOutputFrame.allocate(width, height, 1);
     
     float maxval = 0.0;
-    
-    /* Initialize a new gradient field buffer and number of valid gradient measures */
-    //    ofVec2f* valgradField = new ofVec2f[gradFieldcols*gradFieldrows];
-    //    ofVec2f* newgradField = new ofVec2f[gradFieldcols*gradFieldrows];
-    //        ofVec2f* vlfPtr=valgradField;
-    //        ofVec2f* ngfPtr=newgradField;
-    //        for(unsigned int y=0;y<gradFieldrows;++y)
-    //            for(unsigned int x=0;x<gradFieldcols;++x,++ngfPtr,++vlfPtr) {
-    //                *ngfPtr=ofVec2f(0);
-    //                *vlfPtr=ofVec2f(0);
-    //            }
-    
     
     // Enter the new frame into the averaging buffer and calculate the output frame's pixel values: */
     const RawDepth* ifPtr=static_cast<const RawDepth*>(inputframe.getData());
@@ -288,81 +274,84 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
         for(unsigned int x=0;x<width;++x,++ifPtr,++abPtr,sPtr+=3,++ofPtr,++nofPtr)
         {
             float px=float(x)+0.5f;
-            unsigned int oldVal=*abPtr;
-            unsigned int newVal=*ifPtr;
-            
-            /* Depth-correct the new value: */
-            float newCVal=newVal; //pdcPtr->correct(newVal); No per pîxel correction
-            
-            /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
-            point[0] = px;
-            point[1] = py;
-            point[2] = newCVal;
-            bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
-            bool underMax = classifyPointWithPlane(point, basePlaneNormal, minPlane) == BACK;
-            if(kinectROI.inside(x, y))//minD>=0.0f&&maxD<=0.0f)
-                //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
+            if(isInsideROI(x, y)) // Check if pixel is inside ROI
             {
-                /* Store the new input value: */
-                *abPtr=newVal;
+                unsigned int oldVal=*abPtr;
+                unsigned int newVal=*ifPtr;
                 
-                /* Update the pixel's statistics: */
-                ++sPtr[0]; // Number of valid samples
-                sPtr[1]+=newVal; // Sum of valid samples
-                sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
+                /* Depth-correct the new value: */
+                float newCVal=newVal; //pdcPtr->correct(newVal); No per pîxel correction
                 
-                /* Check if the previous value in the averaging buffer was valid: */
-                if(oldVal!=2048U)
+                /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
+                point[0] = px;
+                point[1] = py;
+                point[2] = newCVal;
+                bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
+                bool underMax = classifyPointWithPlane(point, basePlaneNormal, minPlane) == BACK;
+                if(true)//TODO: add vertical planes limitation
+                    //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
                 {
-                    --sPtr[0]; // Number of valid samples
-                    sPtr[1]-=oldVal; // Sum of valid samples
-                    sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
+                    /* Store the new input value: */
+                    *abPtr=newVal;
+                    
+                    /* Update the pixel's statistics: */
+                    ++sPtr[0]; // Number of valid samples
+                    sPtr[1]+=newVal; // Sum of valid samples
+                    sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
+                    
+                    /* Check if the previous value in the averaging buffer was valid: */
+                    if(oldVal!=2048U)
+                    {
+                        --sPtr[0]; // Number of valid samples
+                        sPtr[1]-=oldVal; // Sum of valid samples
+                        sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
+                    }
                 }
-            }
-            else if(!retainValids)
-            {
-                /* Store an invalid input value: */
-                *abPtr=2048U;
+                else if(!retainValids)
+                {
+                    /* Store an invalid input value: */
+                    *abPtr=2048U;
+                    
+                    /* Check if the previous value in the averaging buffer was valid: */
+                    if(oldVal!=2048U)
+                    {
+                        --sPtr[0]; // Number of valid samples
+                        sPtr[1]-=oldVal; // Sum of valid samples
+                        sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
+                    }
+                }
                 
-                /* Check if the previous value in the averaging buffer was valid: */
-                if(oldVal!=2048U)
+                // Check if the pixel is considered "stable": */
+                if(sPtr[0]>=minNumSamples&&sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
                 {
-                    --sPtr[0]; // Number of valid samples
-                    sPtr[1]-=oldVal; // Sum of valid samples
-                    sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
+                    /* Check if the new depth-corrected running mean is outside the previous value's envelope: */
+                    float newFiltered=float(sPtr[1])/float(sPtr[0]);
+                    if(abs(newFiltered-*ofPtr)>=hysteresis)
+                    {
+                        /* Set the output pixel value to the depth-corrected running mean: */
+                        *nofPtr=*ofPtr=newFiltered;
+                        if (newFiltered > maxval)
+                            maxval = newFiltered;
+                        // Update world coordonate of point
+                        //                    z = (255.0-newFiltered)/255.0*(farclip-nearclip)+nearclip;
+                        //                    wrldcoordbuffer[y*width+x]=toCv(backend->getWorldCoordinateAt(x, y, z));
+                    }
+                    else
+                    {
+                        /* Leave the pixel at its previous value: */
+                        *nofPtr=*ofPtr;
+                    }
                 }
-            }
-            
-            // Check if the pixel is considered "stable": */
-            if(sPtr[0]>=minNumSamples&&sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
-            {
-                /* Check if the new depth-corrected running mean is outside the previous value's envelope: */
-                float newFiltered=float(sPtr[1])/float(sPtr[0]);
-                if(abs(newFiltered-*ofPtr)>=hysteresis)
-                {
-                    /* Set the output pixel value to the depth-corrected running mean: */
-                    *nofPtr=*ofPtr=newFiltered;
-                    if (newFiltered > maxval)
-                        maxval = newFiltered;
-                    // Update world coordonate of point
-                    //                    z = (255.0-newFiltered)/255.0*(farclip-nearclip)+nearclip;
-                    //                    wrldcoordbuffer[y*width+x]=toCv(backend->getWorldCoordinateAt(x, y, z));
-                }
-                else
+                else if(retainValids)
                 {
                     /* Leave the pixel at its previous value: */
                     *nofPtr=*ofPtr;
                 }
-            }
-            else if(retainValids)
-            {
-                /* Leave the pixel at its previous value: */
-                *nofPtr=*ofPtr;
-            }
-            else
-            {
-                /* Assign default value to instable pixels: */
-                *nofPtr=instableValue;
+                else
+                {
+                    /* Assign default value to instable pixels: */
+                    *nofPtr=instableValue;
+                }
             }
         }
     }
@@ -377,7 +366,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
         for(int filterPass=0;filterPass<2;++filterPass)
         {
             /* Low-pass filter the entire output frame in-place: */
-            for(unsigned int x=0;x<width;++x)
+            for(unsigned int x=minX;x<maxX;++x)
             {
                 /* Get a pointer to the current column: */
                 float* colPtr=static_cast<float*>(newOutputFrame.getData())+x;
@@ -388,7 +377,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
                 colPtr+=width;
                 
                 /* Filter the interior pixels in the column: */
-                for(unsigned int y=1;y<height-1;++y,colPtr+=width)
+                for(unsigned int y=minY+1;y<maxY-1;++y,colPtr+=width)
                 {
                     /* Filter the pixel: */
                     float nextLastVal=*colPtr;
@@ -400,7 +389,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
                 *colPtr=(lastVal+colPtr[0]*2.0f)/3.0f;
             }
             float* rowPtr=static_cast<float*>(newOutputFrame.getData());
-            for(unsigned int y=0;y<height;++y)
+            for(unsigned int y=minY;y<maxY;++y)
             {
                 /* Filter the first pixel in the row: */
                 float lastVal=*rowPtr;
@@ -408,7 +397,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe, ofRectangle kinectRO
                 ++rowPtr;
                 
                 /* Filter the interior pixels in the row: */
-                for(unsigned int x=1;x<width-1;++x,++rowPtr)
+                for(unsigned int x=minX+1;x<maxX-1;++x,++rowPtr)
                 {
                     /* Filter the pixel: */
                     float nextLastVal=*rowPtr;
