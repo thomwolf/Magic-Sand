@@ -158,10 +158,8 @@ namespace ofxCSG
 	}
     
     static ofVec4f getPlaneEquation(ofVec3f basePlanePos, ofVec3f basePlaneNormal){
-        ofVec4f basePlaneEq;
-        for(int i=0;i<3;++i)
-            basePlaneEq[i]=basePlaneNormal[i];
-        basePlaneEq[3]=-basePlaneNormal.dot(basePlanePos);
+        ofVec4f basePlaneEq = basePlaneNormal/basePlaneNormal.length(); // Vecteur normal au plan normalisé
+        basePlaneEq.w=-basePlaneNormal.dot(basePlanePos);
         return basePlaneEq;
     }
 	

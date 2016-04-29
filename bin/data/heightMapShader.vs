@@ -14,10 +14,10 @@
 
 
 uniform sampler2DRect depthSampler; // Sampler for the depth image-space elevation texture
-uniform mat4 kinectWorldProjection; // Transformation from kinect image space to kinect world space
-uniform mat4 kinectProjProjection; // Transformation from kinect world space to proj image space
+uniform mat4 kinectWorldMatrix; // Transformation from kinect image space to kinect world space
+uniform mat4 kinectProjMatrix; // Transformation from kinect world space to proj image space
 uniform vec4 basePlane; // Plane equation of the base plane
-uniform vec2 heightColorMapTransformation; // Transformation from elevation to height color map texture coordinate
+uniform vec2 heightColorMapTransformation; // Transformation from elevation to height color map texture coordinate factor and offset
 
 varying float heightColorMapTexCoord; // Texture coordinate for the height color map
 //varying float col1; // Texture coordinate for the height color map
@@ -30,25 +30,18 @@ void main()
     vertexDic.z=texture2DRect(depthSampler,vertexDic.xy).r;
     
     /* Transform the vertex from depth image space to world space: */
-    vec4 vertexCc=kinectWorldProjection*vertexDic*vertexDic.z;
-    vertexCc.w = 1;
+    vec4 vertexCc=kinectWorldMatrix*vertexDic*vertexDic.z;
+    vertexCc.w = 1.0;
     
     /* Plug camera-space vertex into the base plane equation: */
-    float elevation=dot(basePlane,vertexCc)*vertexCc.z;///vertexCc.w;
+    float elevation=dot(basePlane,vertexCc);
     
     /* Transform elevation to height color map texture coordinate: */
-//    col1 = 0.0;
-//    if (vertexDic.x > 640)
-//        col1 = 1.0;
-    
-//    color2 = 0.0;
-//    if (vertexDic.y > 480)
-//        color2 = 1.0;
-//    
     heightColorMapTexCoord=elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
     
     /* Transform vertex to clip coordinates: */
-    gl_Position=kinectProjProjection*vertexCc;
+    vec4 screenVertex=kinectProjMatrix*vertexCc;
+    gl_Position=screenVertex/screenVertex.z;
 }
 
 

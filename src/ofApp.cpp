@@ -52,8 +52,8 @@ void ofApp::setup(){
 //	verticalMirror = false;//true;
 	
     // Setup sandbox boundaries, base plane and kinect clip planes
-	basePlaneNormal = ofVec3f(0,0,-1);
-	basePlaneOffset= ofVec3f(0,0,-870);
+	basePlaneNormal = ofVec3f(0,0,1);
+	basePlaneOffset= ofVec3f(0,0,870);
 	nearclip = 750;
 	farclip = 950;
     basePlaneEq=getPlaneEquation(basePlaneNormal,basePlaneOffset); //homogeneous base plane equation
@@ -114,21 +114,6 @@ void ofApp::update(){
 		kinectgrabber.storedframes -= 1;
 		kinectgrabber.unlock();
 
-		//Check values for debug
-//        float maxval, maxval2 = 0.0;
-//        float minval, minval2 = 100000000.0;
-//		for (int i = 0; i<640*480; i ++){
-//			if (filteredframe.getData()[i] > maxval)
-// 				maxval = filteredframe.getData()[i];
-//            if (FilteredDepthImage.getFloatPixelsRef().getData()[i] > maxval2)
-//                maxval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-//			if (filteredframe.getData()[i] < minval)
-// 				minval = filteredframe.getData()[i];
-//            if (FilteredDepthImage.getFloatPixelsRef().getData()[i] < minval2)
-//                minval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-//        }
-//        cout << "maxval : "<< maxval << " maxval2 : " << maxval2 << " minval : "<< minval << " minval2 : " << minval2 << endl;
-        
         if (generalState == GENERAL_STATE_CALIBRATION) {
             // Get color image from kinect grabber
             ofPixels coloredframe;
@@ -157,82 +142,28 @@ void ofApp::update(){
                     }
                 }
                 else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION){
-                    // Find kinect ROI of the sandbox
-                    if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT) { // set kinect to max depth range
-                        if (cvPoints.size() == 0) {
-                            cout << "Error: No points !!" << endl;
-                        }
-                        cout << "Initiating kinect clip planes" << endl;
-                        kinectgrabber.nearclipchannel.send(500);
-                        kinectgrabber.farclipchannel.send(4000);
-                        ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
-                        
-                        large = ofPolyline();
-                        threshold = 220;
-                    } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
-                        while (threshold < 255){
-                            cout << "Increasing threshold : " << threshold << endl;
-                            thresholdedImage.setFromPixels(FilteredDepthImage.getPixels());
-//                            thresholdedImage.mirror(verticalMirror, horizontalMirror);
-                            //cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), highThresh+10, 255, CV_THRESH_TOZERO_INV);
-                            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_TOZERO);
-                            
-                            contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true);
-                            //contourFinder.findContours(thresholdedImage);
-                            //ofPoint cent = ofPoint(projectorWidth/2, projectorHeight/2);
-                            
-                            ofPolyline small = ofPolyline();
-                            for (int i = 0; i < contourFinder.nBlobs; i++) {
-                                ofxCvBlob blobContour = contourFinder.blobs[i];
-                                if (blobContour.hole) {
-                                    //								if(!blobContour.isClosed())
-                                    //									blobContour.close();
-                                    bool ok = true;
-                                    ofPolyline poly = ofPolyline(blobContour.pts);//.getResampledByCount(50);
-                                    for (int j = 0; j < cvPoints.size(); j++){ // We only take the 12 first point to speed up process
-                                        if (!poly.inside(cvPoints[j].x, cvPoints[j].y)) {
-                                            ok = false;
-                                            break;
-                                        }
-                                    }
-                                    if (ok) {
-                                        cout << "We found a contour lines surroundings the chessboard" << endl;
-                                        if (small.size() == 0 || poly.getArea() < small.getArea())
-                                            cout << "We take the smallest contour line surroundings the chessboard at a given threshold level" << endl;
-                                            small = poly;
-                                    }
-                                }
-                            }
-                            if (large.getArea() < small.getArea())
-                                cout << "We take the largest contour line surroundings the chessboard at all threshold level" << endl;
-                                large = small;
-                            threshold+=1;
-                        } //else {
-                        kinectROI = large.getBoundingBox();
-//                        if (horizontalMirror) {
-//                            kinectROI.x = 640 -kinectROI.x;
-//                            kinectROI.width = -kinectROI.width;
-//                        }
-//                        if (verticalMirror) {
-//                            kinectROI.y = 480 -kinectROI.y;
-//                            kinectROI.height = -kinectROI.height;
-//                        }
-                        kinectROI.standardize();
-                        cout << kinectROI << endl;
-                        // We are finished, set back kinect depth range and update ROI
-                        ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
-                        kinectgrabber.setKinectROI(kinectROI);
-                        kinectgrabber.nearclipchannel.send(nearclip);
-                        kinectgrabber.farclipchannel.send(farclip);
-                        //}
-                    } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
-                        generalState = GENERAL_STATE_CALIBRATION;
-                        calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
-                    }
+                    updateROI();
                 }
             }
         }
         else if (generalState == GENERAL_STATE_SANDBOX){
+            //Check values for debug
+            float maxval, maxval2 = 0.0;
+            float minval, minval2 = 100000000.0;
+            for (int i = 0; i<640*480; i ++){
+                if (filteredframe.getData()[i] > maxval)
+                    maxval = filteredframe.getData()[i];
+                if (filteredframe.getData()[i] < minval)
+                    minval = filteredframe.getData()[i];
+
+                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] > maxval2)
+                    maxval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] < minval2)
+                    minval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+            }
+            cout << "filtredframe maxval : " << maxval << " filtredframe minval : "<< minval << endl;
+            cout << "FilteredDepthImage maxval2 : " << maxval2 << " FilteredDepthImage minval2 : " << minval2 << endl;
+            
             drawSandbox();
         }
     }
@@ -297,10 +228,13 @@ void ofApp::drawChessboard(int x, int y, int chessboardSize) { // Prepare proj w
             int x0 = ofMap(i, 0, chessboardX, 0, chessboardSize);
             int y0 = ofMap(j, 0, chessboardY, 0, chessboardSize);
             if (j>0 && i>0) {
-                currentProjectorPoints.push_back(ofVec2f(
-                                                         ofMap(x+x0, 0, fboProjWindow.getWidth(), 0, 1),
-                                                         ofMap(y+y0, 0, fboProjWindow.getHeight(), 0, 1)
-                                                         ));
+// Not-normalized (on proj screen)
+                currentProjectorPoints.push_back(ofVec2f(x+x0, y+y0));
+// Normalized coordinates (between 0 and 1)
+//                currentProjectorPoints.push_back(ofVec2f(
+//                                                         ofMap(x+x0, 0, fboProjWindow.getWidth(), 0, 1),
+//                                                         ofMap(y+y0, 0, fboProjWindow.getHeight(), 0, 1)
+//                                                         ));
             }
             if ((i+j)%2==0) ofDrawRectangle(x0, y0, w, h);
         }
@@ -315,16 +249,22 @@ void ofApp::drawTestingPoint(ofVec2f projectedPoint) { // Prepare proj window fb
     fboProjWindow.begin();
     ofBackground(255);
     ofSetColor(0, 255, 0);
-    ofDrawCircle(
-             ofMap(projectedPoint.x, 0, 1, 0, fboProjWindow.getWidth()),
-             ofMap(projectedPoint.y, 0, 1, 0, fboProjWindow.getHeight()),
-             ptSize);
+// Not-normalized (on proj screen)
+    ofDrawCircle(projectedPoint.x, projectedPoint.y, ptSize);
+// Normalized coordinates (between 0 and 1)
+//    ofDrawCircle(
+//             ofMap(projectedPoint.x, 0, 1, 0, fboProjWindow.getWidth()),
+//             ofMap(projectedPoint.y, 0, 1, 0, fboProjWindow.getHeight()),
+//             ptSize);
     ofSetColor(255);
     fboProjWindow.end();
 }
 
 //--------------------------------------------------------------
 void ofApp::drawSandbox() { // Prepare proj window fbo
+    
+//    ofPoint result = computeTransform(kinectROI.getCenter());
+    
 	/* Check if contour line rendering is enabled: */
 	if(drawContourLines)
     {
@@ -339,9 +279,9 @@ void ofApp::drawSandbox() { // Prepare proj window fbo
 
     heightMapShader.begin();
 	
-    heightMapShader.setUniformTexture( "depthSampler", FilteredDepthImage, 1 ); //"1" means that it is texture 1
-    heightMapShader.setUniformMatrix4f("kinectProjProjection",kinectProjMatrix);
-    heightMapShader.setUniformMatrix4f("kinectWorldProjection",kinectWorldMatrix);
+    heightMapShader.setUniformTexture( "depthSampler", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
+    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix);
+    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix);
     heightMapShader.setUniform4f("basePlane",basePlaneEq);
     heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
     //    heightMapShader.setUniformTexture("pixelCornerElevationSampler", contourLineFramebufferObject.getTexture(), 2);
@@ -467,6 +407,108 @@ void ofApp::setHeightMapRange(GLsizei newHeightMapSize,GLfloat newMinElevation,G
 	
 	heightMapScale=GLfloat(hms);
 	heightMapOffset=GLfloat(hmo);
+}
+
+//--------------------------------------------------------------
+ofVec2f ofApp::computeTransform(ofPoint vin)
+{
+    /* Get the vertex' depth image-space z coordinate from the texture: */
+    ofVec4f vertexDic=vin;
+    vertexDic.z=FilteredDepthImage.getPixelsAsFloats()[((int)vin.x + (int)vin.y*kinectResX)];
+    vertexDic.w = 1;
+    
+    /* Transform the vertex from depth image space to world space: */
+    ofVec3f vertexCcxx = kinectgrabber.kinect.getWorldCoordinateAt(vertexDic.x, vertexDic.y, vertexDic.z);
+    ofVec4f vertexCc = kinectWorldMatrix*vertexDic*vertexDic.z;
+    vertexCc.w = 1;
+    
+    /* Plug camera-space vertex into the base plane equation: */
+    float elevation=basePlaneEq.dot(vertexCc);///vertexCc.w;
+    
+    /* Transform elevation to height color map texture coordinate: */
+//    heightColorMapTexCoord=elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
+    
+    /* Transform vertex to clip coordinates: */
+    ofVec4f screenPos = kinectProjMatrix*vertexCc;
+    ofVec2f projectedPoint(screenPos.x/screenPos.z, screenPos.y/screenPos.z);
+    return projectedPoint;
+}
+
+
+//--------------------------------------------------------------
+// Find kinect ROI of the sandbox
+void ofApp::updateROI(){
+    if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT) { // set kinect to max depth range
+        if (cvPoints.size() == 0) {
+            cout << "Error: No points !!" << endl;
+        }
+        cout << "Initiating kinect clip planes" << endl;
+        kinectgrabber.nearclipchannel.send(500);
+        kinectgrabber.farclipchannel.send(4000);
+        ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
+        
+        large = ofPolyline();
+        threshold = 220;
+    } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
+        while (threshold < 255){
+            cout << "Increasing threshold : " << threshold << endl;
+            thresholdedImage.setFromPixels(FilteredDepthImage.getPixels());
+            //                            thresholdedImage.mirror(verticalMirror, horizontalMirror);
+            //cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), highThresh+10, 255, CV_THRESH_TOZERO_INV);
+            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_TOZERO);
+            
+            contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true);
+            //contourFinder.findContours(thresholdedImage);
+            //ofPoint cent = ofPoint(projectorWidth/2, projectorHeight/2);
+            
+            ofPolyline small = ofPolyline();
+            for (int i = 0; i < contourFinder.nBlobs; i++) {
+                ofxCvBlob blobContour = contourFinder.blobs[i];
+                if (blobContour.hole) {
+                    //								if(!blobContour.isClosed())
+                    //									blobContour.close();
+                    bool ok = true;
+                    ofPolyline poly = ofPolyline(blobContour.pts);//.getResampledByCount(50);
+                    for (int j = 0; j < cvPoints.size(); j++){ // We only take the 12 first point to speed up process
+                        if (!poly.inside(cvPoints[j].x, cvPoints[j].y)) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (ok) {
+                        cout << "We found a contour lines surroundings the chessboard" << endl;
+                        if (small.size() == 0 || poly.getArea() < small.getArea())
+                            cout << "We take the smallest contour line surroundings the chessboard at a given threshold level" << endl;
+                        small = poly;
+                    }
+                }
+            }
+            if (large.getArea() < small.getArea())
+                cout << "We take the largest contour line surroundings the chessboard at all threshold level" << endl;
+            large = small;
+            threshold+=1;
+        } //else {
+        kinectROI = large.getBoundingBox();
+        //                        if (horizontalMirror) {
+        //                            kinectROI.x = 640 -kinectROI.x;
+        //                            kinectROI.width = -kinectROI.width;
+        //                        }
+        //                        if (verticalMirror) {
+        //                            kinectROI.y = 480 -kinectROI.y;
+        //                            kinectROI.height = -kinectROI.height;
+        //                        }
+        kinectROI.standardize();
+        cout << kinectROI << endl;
+        // We are finished, set back kinect depth range and update ROI
+        ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
+        kinectgrabber.setKinectROI(kinectROI);
+        kinectgrabber.nearclipchannel.send(nearclip);
+        kinectgrabber.farclipchannel.send(farclip);
+        //}
+    } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
+    }
 }
 
 //--------------------------------------------------------------
