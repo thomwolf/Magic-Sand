@@ -2,25 +2,25 @@
 
 out vec4 outputColor;
 
-uniform sampler2DRect tex1;
+in float bug;
+//in vec2 varyingtexcoord;
 
-in vec2 varyingtexcoord;
-
+//uniform sampler2DRect tex0; // Sampler for the depth image-space elevation texture
 //uniform sampler1D heightColorMapSampler;
 //
 //in vec4 heightColorMapTexCoord; // Texture coordinate for the height color map
 
 void main()
 {
-    vec4 texel0 = texture(tex1, varyingtexcoord);
-    if (texel0.r>1.0 || texel0.g>1.0 || texel0.b>1.0)
-    {
-        outputColor=vec4(0.0, 1.0, 0.0, 1.0);//texture(heightColorMapSampler,heightColorMapTexCoord);
-    } else if (texel0.r>0.0 || texel0.g>0.0 || texel0.b>0.0) {
-        outputColor=vec4(texel0.r, 1.0, 1.0, 1.0);
-    } else {
-        outputColor=vec4(0.0, 0.0, 1.0, 1.0);
-    }
+    outputColor = vec4(bug, 0.0, 0.0, 1.0);
+//    if (texel0.r>1.0 || texel0.g>1.0 || texel0.b>1.0)
+//    {
+//        outputColor=vec4(0.0, 1.0, 0.0, 1.0);//texture(heightColorMapSampler,heightColorMapTexCoord);
+//    } else if (texel0.r>0.0 || texel0.g>0.0 || texel0.b>0.0) {
+//        outputColor=vec4(texel0.r, 1.0, 1.0, 1.0);
+//    } else {
+//        outputColor=vec4(0.0, 0.0, 1.0, 1.0);
+//    }
     
 //    if (heightColorMapTexCoord.r>0.0 || heightColorMapTexCoord.g>0.0 || heightColorMapTexCoord.b>0.0)
 //    {

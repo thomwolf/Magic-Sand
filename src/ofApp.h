@@ -91,6 +91,7 @@ private:
     ofMesh mesh;
     int meshwidth;          //Mesh size
     int meshheight;
+    ofPlanePrimitive plane;
 
     // Shaders
     ofShader elevationShader;
@@ -112,6 +113,7 @@ private:
     double gradFieldresolution;
     
     float farclip, nearclip;
+    float depthNorm;
     float elevationMin, elevationMax;
     int   chessboardSize;
     int   chessboardX;

@@ -34,9 +34,10 @@ void ofApp::setup(){
     calibrated = false;
     
 	// Setup framefilter variables
-    elevationMin=950;
-	elevationMax=750;
-	int numAveragingSlots=30;
+    depthNorm = 2000; // Kinect raw depth values normalization coef (to bring it in 0..1 range
+    elevationMin=950/depthNorm;
+	elevationMax=750/depthNorm;
+//	int numAveragingSlots=30;
 //	unsigned int minNumSamples=10;
 //	unsigned int maxVariance=2/(4000*4000);
 //	float hysteresis=0.1f/4000;
@@ -50,7 +51,7 @@ void ofApp::setup(){
 	
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormal = ofVec3f(0,0,1);
-	basePlaneOffset= ofVec3f(0,0,870);
+	basePlaneOffset= ofVec3f(0,0,870/depthNorm);
 	nearclip = 750;
 	farclip = 950;
     basePlaneEq=getPlaneEquation(basePlaneNormal,basePlaneOffset); //homogeneous base plane equation
@@ -64,22 +65,6 @@ void ofApp::setup(){
 	elevationMax=heightMap.getScalarRangeMax();
 	setHeightMapRange(heightMap.getNumEntries(),heightMap.getScalarRangeMin(),heightMap.getScalarRangeMax());
     
-    // Initialise mesh
-//	meshwidth = 2; // 640 should be dividable by meshwidth-1
-//	meshheight = 2; // idem with 480
-    mesh.clear();
- 	for(unsigned int y=0;y<kinectResY;++y)
-		for(unsigned int x=0;x<kinectResX;++x)
-        {
-            mesh.addVertex(ofPoint(float(x)+0.5f,float(y)+0.5f,0.0f)); // make a new vertex
-        }
-    for(unsigned int y=1;y<kinectResY;++y)
-		for(unsigned int x=0;x<kinectResX;++x)
-        {
-            mesh.addIndex(y*kinectResX+x);
-            mesh.addIndex((y-1)*kinectResX+x);
-        }
-	
 	// Load shaders
     bool loaded = true;
 #ifdef TARGET_OPENGLES
@@ -100,7 +85,10 @@ void ofApp::setup(){
 	}
 #endif
     if (!loaded)
+    {
+        cout << "shader not loaded" << endl;
         exit();
+    }
     
 	// Initialize the fbos
     fboProjWindow.allocate(projResX, projResY, GL_RGBA);
@@ -112,8 +100,32 @@ void ofApp::setup(){
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineFactor = 0.1f; // Inverse elevation distance between adjacent topographic contour lines
     
+    // Initialise mesh
+    //	meshwidth = 2; // 640 should be dividable by meshwidth-1
+    //	meshheight = 2; // idem with 480
+    //    mesh.clear();
+    // 	for(unsigned int y=0;y<kinectResY;++y)
+    //		for(unsigned int x=0;x<kinectResX;++x)
+    //        {
+    //            mesh.addVertex(ofPoint(float(x)+0.5f,float(y)+0.5f,0.0f)); // make a new vertex
+    //        }
+    //    for(unsigned int y=1;y<kinectResY;++y)
+    //		for(unsigned int x=0;x<kinectResX;++x)
+    //        {
+    //            mesh.addIndex(y*kinectResX+x);
+    //            mesh.addIndex((y-1)*kinectResX+x);
+    //        }
+    //    float planeScale = 0.75;
+    int planeWidth = kinectROI.getWidth();//  ofGetWidth() * planeScale;
+    int planeHeight = kinectROI.getHeight();//ofGetHeight() * planeScale;
+    int planeColumns = planeWidth / 1;
+    int planeRows = planeHeight / 1;
+    plane.set(planeWidth, planeHeight, planeColumns, planeRows, OF_PRIMITIVE_TRIANGLES);
+    plane.setPosition(kinectResX/2, kinectResY/2, 0); /// position in x y z
+    plane.mapTexCoordsFromTexture(FilteredDepthImage.getTexture());
+
 	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(numAveragingSlots, gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
+    kinectgrabber.setupFramefilter(depthNorm, gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
     kinectgrabber.setMode(generalState, calibrationState);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     cout << "kinectWorldMatrix" << kinectWorldMatrix << endl;
@@ -147,7 +159,7 @@ void ofApp::update(){
         ofPixels coloredframe;
         if (kinectgrabber.colored.tryReceive(coloredframe)) {
             kinectColorImage.setFromPixels(coloredframe);
-            kinectColorImage.updateTexture();
+//            kinectColorImage.updateTexture();
         }
         
         // Update grabber stored frame number
@@ -159,6 +171,7 @@ void ofApp::update(){
                 if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
                     ofVec2f t = ofVec2f(min((float)kinectResX-1,testPoint.x), min((float)kinectResY-1,testPoint.y));
                     ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(t.x, t.y);
+                    worldPoint.z = worldPoint.z / depthNorm;
                     //ofVec3f worldPoint = ofVec3f(t.x, t.y, kinectgrabber.kinect.getDistanceAt(t.x, t.y));
                     ofVec2f projectedPoint = kpt.getProjectedPoint(worldPoint);
                     drawTestingPoint(projectedPoint);
@@ -175,6 +188,7 @@ void ofApp::update(){
                         cornerSubPix(gray, cvPoints, cv::Size(11, 11), cv::Size(-1, -1),
                                      cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
                         drawChessboardCorners(cvRgbImage, patternSize, cv::Mat(cvPoints), foundChessboard);
+ //                       cout << "draw chess" << endl;
                     }
                 }
                 else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION){
@@ -297,24 +311,27 @@ void ofApp::drawTestingPoint(ofVec2f projectedPoint) { // Prepare proj window fb
 
 //--------------------------------------------------------------
 void ofApp::drawSandbox() { // Prepare proj window fbo
-    
+//    ofPoint result = computeTransform(kinectROI.getCenter());
     fboProjWindow.begin();
     ofClear(0,0,0,255);
     ofSetColor(ofColor::red);
     
+    FilteredDepthImage.getTexture().bind();
     heightMapShader.begin();
     
     heightMapShader.setUniformTexture("tex1", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
+    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix);
+    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix);
 //    heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 2);
 //    heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
 
 //    kinectColorImage.getTexture().bind();
-    ofDrawRectangle(kinectROI);
+    plane.draw();
 //    FilteredDepthImage.draw(0,0);
     
     heightMapShader.end();
     
-//    kinectColorImage.getTexture().unbind();
+    FilteredDepthImage.getTexture().unbind();
     fboProjWindow.end();
 
 //    //    ofPoint result = computeTransform(kinectROI.getCenter());
@@ -387,7 +404,7 @@ void ofApp::prepareContourLines() // Prepare contour line fbo
     elevationShader.setUniform4f("basePlane",basePlaneEq);
 	
 	/* Draw the surface: */
-    mesh.draw();
+//    mesh.draw();
 	
     elevationShader.end();
     contourLineFramebufferObject.end();
@@ -418,6 +435,7 @@ void ofApp::addPointPair() {
     if (nDepthPoints == (chessboardX-1)*(chessboardY-1)) {
         for (int i=0; i<cvPoints.size(); i++) {
             ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(cvPoints[i].x, cvPoints[i].y);
+            worldPoint.z = worldPoint.z/depthNorm; // Normalize raw depth coordinate
             pairsKinect.push_back(worldPoint);
             pairsProjector.push_back(currentProjectorPoints[i]);
         }
@@ -470,6 +488,8 @@ ofVec2f ofApp::computeTransform(ofPoint vin)
     ofVec4f vertexDic=vin;
     vertexDic.z=FilteredDepthImage.getPixelsAsFloats()[((int)vin.x + (int)vin.y*kinectResX)];
     vertexDic.w = 1;
+    if (vertexDic.z != 0)
+        cout << "yipi" << endl;
     
     /* Transform the vertex from depth image space to world space: */
     ofVec3f vertexCcxx = kinectgrabber.kinect.getWorldCoordinateAt(vertexDic.x, vertexDic.y, vertexDic.z);

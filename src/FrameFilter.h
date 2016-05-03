@@ -40,7 +40,7 @@ public:
     FrameFilter();
     ~FrameFilter();
     
-    bool setup(const unsigned int swidth,const unsigned int sheight,int sNumAveragingSlots, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
+    bool setup(const unsigned int swidth,const unsigned int sheight,float sdepthNorm, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
    void setDepthRange(float nearclip, float farclip);
