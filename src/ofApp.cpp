@@ -37,19 +37,16 @@ void ofApp::setup(){
     elevationMin=950;
 	elevationMax=750;
 	int numAveragingSlots=30;
-	unsigned int minNumSamples=10;
-	unsigned int maxVariance=2;
-	float hysteresis=0.1f;
-	bool spatialFilter=false;
+//	unsigned int minNumSamples=10;
+//	unsigned int maxVariance=2/(4000*4000);
+//	float hysteresis=0.1f/4000;
+//	bool spatialFilter=false;
 	gradFieldresolution = 20;
     
     // calibration config
 	chessboardSize = 300;
 	chessboardX = 5;
     chessboardY = 4;
-	
-//    horizontalMirror = false;//true;
-//	verticalMirror = false;//true;
 	
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormal = ofVec3f(0,0,1);
@@ -84,12 +81,32 @@ void ofApp::setup(){
         }
 	
 	// Load shaders
-    elevationShader.load("SurfaceElevationShader.vs", "SurfaceElevationShader.fs" );
-    heightMapShader.load("heightMapShader.vs", "heightMapShader.fs");
+    bool loaded = true;
+#ifdef TARGET_OPENGLES
+    cout << "Loading shadersES2"<< endl;
+	loaded = loaded && elevationShader.load("shadersES2/elevationShader");
+	loaded = loaded && heightMapShader.load("shadersES2/heightMapShader");
+#else
+	if(ofIsGLProgrammableRenderer()){
+        cout << "Loading shadersGL3/elevationShader"<< endl;
+		loaded = loaded && elevationShader.load("shadersGL3/elevationShader");
+        cout << "Loading shadersGL3/heightMapShader"<< endl;
+		loaded = loaded && heightMapShader.load("shadersGL3/heightMapShader");
+	}else{
+        cout << "Loading shadersGL2/elevationShader"<< endl;
+		loaded = loaded && elevationShader.load("shadersGL2/elevationShader");
+        cout << "Loading shadersGL2/heightMapShader"<< endl;
+		loaded = loaded && heightMapShader.load("shadersGL2/heightMapShader");
+	}
+#endif
+    if (!loaded)
+        exit();
     
 	// Initialize the fbos
     fboProjWindow.allocate(projResX, projResY, GL_RGBA);
     contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
+    FilteredDepthImage.allocate(kinectResX, kinectResY);
+    kinectColorImage.allocate(kinectResX, kinectResY);
     
     // Sandbox drawing variables
     drawContourLines = true; // Flag if topographic contour lines are enabled
@@ -101,6 +118,21 @@ void ofApp::setup(){
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     cout << "kinectWorldMatrix" << kinectWorldMatrix << endl;
 	kinectgrabber.startThread();
+    
+    //Try to load calibration file if possible
+    if (kpt.loadCalibration("calibration.xml"))
+    {
+        cout << "Calibration loaded " << endl;
+        kinectProjMatrix = kpt.getProjectionMatrix();
+        loaded = true;
+        calibrated = true;
+        generalState = GENERAL_STATE_SANDBOX;
+        cout << "General state: " << generalState << endl;
+        kinectgrabber.setMode(generalState, calibrationState);
+    } else {
+        cout << "Calibration could not be loaded " << endl;
+    }
+
 }
 
 //--------------------------------------------------------------
@@ -110,16 +142,20 @@ void ofApp::update(){
 	if (kinectgrabber.filtered.tryReceive(filteredframe)) {
 		FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectResX, kinectResY);
 		FilteredDepthImage.updateTexture();
+
+        // Get color image from kinect grabber
+        ofPixels coloredframe;
+        if (kinectgrabber.colored.tryReceive(coloredframe)) {
+            kinectColorImage.setFromPixels(coloredframe);
+            kinectColorImage.updateTexture();
+        }
+        
+        // Update grabber stored frame number
 		kinectgrabber.lock();
 		kinectgrabber.storedframes -= 1;
 		kinectgrabber.unlock();
 
         if (generalState == GENERAL_STATE_CALIBRATION) {
-            // Get color image from kinect grabber
-            ofPixels coloredframe;
-            if (kinectgrabber.colored.tryReceive(coloredframe)) {
-                kinectColorImage.setFromPixels(coloredframe);
-
                 if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
                     ofVec2f t = ofVec2f(min((float)kinectResX-1,testPoint.x), min((float)kinectResY-1,testPoint.y));
                     ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(t.x, t.y);
@@ -144,7 +180,6 @@ void ofApp::update(){
                 else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION){
                     updateROI();
                 }
-            }
         }
         else if (generalState == GENERAL_STATE_SANDBOX){
             //Check values for debug
@@ -204,7 +239,7 @@ void ofApp::draw(){
         ofSetColor(255);
     }
     else if (generalState == GENERAL_STATE_SANDBOX){
-        
+        kinectColorImage.draw(0, 0, 640, 480);
     }
 }
 
@@ -263,35 +298,54 @@ void ofApp::drawTestingPoint(ofVec2f projectedPoint) { // Prepare proj window fb
 //--------------------------------------------------------------
 void ofApp::drawSandbox() { // Prepare proj window fbo
     
-//    ofPoint result = computeTransform(kinectROI.getCenter());
-    
-	/* Check if contour line rendering is enabled: */
-	if(drawContourLines)
-    {
-		/* Run the first rendering pass to create a half-pixel offset texture of surface elevations: */
-        //		prepareContourLines();
-        //        contourLineFramebufferObject.allocate(800, 600);
-    }
-    
-	/* Bind the single-pass surface shader: */
     fboProjWindow.begin();
-    ofClear(255,255,255, 0);
-
-    heightMapShader.begin();
-	
-    heightMapShader.setUniformTexture( "depthSampler", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
-    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix);
-    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix);
-    heightMapShader.setUniform4f("basePlane",basePlaneEq);
-    heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
-    //    heightMapShader.setUniformTexture("pixelCornerElevationSampler", contourLineFramebufferObject.getTexture(), 2);
-    heightMapShader.setUniform1f("contourLineFactor",contourLineFactor);
-    heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 3);
+    ofClear(0,0,0,255);
+    ofSetColor(ofColor::red);
     
-	/* Draw the surface: */
-    mesh.draw();
+    heightMapShader.begin();
+    
+    heightMapShader.setUniformTexture("tex1", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
+//    heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 2);
+//    heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
+
+//    kinectColorImage.getTexture().bind();
+    ofDrawRectangle(kinectROI);
+//    FilteredDepthImage.draw(0,0);
+    
     heightMapShader.end();
+    
+//    kinectColorImage.getTexture().unbind();
     fboProjWindow.end();
+
+//    //    ofPoint result = computeTransform(kinectROI.getCenter());
+//    
+//	/* Check if contour line rendering is enabled: */
+//	if(drawContourLines)
+//    {
+//		/* Run the first rendering pass to create a half-pixel offset texture of surface elevations: */
+//        //		prepareContourLines();
+//        //        contourLineFramebufferObject.allocate(800, 600);
+//    }
+//    
+//	/* Bind the single-pass surface shader: */
+//    fboProjWindow.begin();
+//    ofClear(255,255,255, 0);
+//
+//    heightMapShader.begin();
+//	
+//    heightMapShader.setUniformTexture( "depthSampler", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
+//    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix);
+//    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix);
+//    heightMapShader.setUniform4f("basePlane",basePlaneEq);
+//    heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
+//    //    heightMapShader.setUniformTexture("pixelCornerElevationSampler", contourLineFramebufferObject.getTexture(), 2);
+//    heightMapShader.setUniform1f("contourLineFactor",contourLineFactor);
+//    heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 3);
+//    
+//	/* Draw the surface: */
+//    mesh.draw();
+//    heightMapShader.end();
+//    fboProjWindow.end();
 }
 
 //--------------------------------------------------------------
@@ -561,15 +615,23 @@ void ofApp::keyPressed(int key){
         kinectgrabber.setMode(generalState, calibrationState);
         //        kpt.calibrate(pairsKinect, pairsProjector);
     } else if (key=='s') {
-        kpt.saveCalibration("calibration.xml");
-        cout << "Calibration saved " << endl;
-        saved = true;
+        if (kpt.saveCalibration("calibration.xml"))
+        {
+            cout << "Calibration saved " << endl;
+            saved = true;
+        } else {
+            cout << "Calibration could not be saved " << endl;
+        }
     } else if (key=='l') {
-        kpt.loadCalibration("calibration.xml");
-        cout << "Calibration loaded " << endl;
-        kinectProjMatrix = kpt.getProjectionMatrix();
-        loaded = true;
-        calibrated = true;
+        if (kpt.loadCalibration("calibration.xml"))
+        {
+            cout << "Calibration loaded " << endl;
+            kinectProjMatrix = kpt.getProjectionMatrix();
+            loaded = true;
+            calibrated = true;
+        } else {
+            cout << "Calibration could not be loaded " << endl;
+        }
     }
 }
 

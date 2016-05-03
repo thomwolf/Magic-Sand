@@ -36,11 +36,13 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     
 	/* Initialize the stability criterion: */
     minNumSamples=(numAveragingSlots+1)/2;
-    maxVariance=4;
-    hysteresis=0.1f;
+    depthNorm = 2000;
+    maxVariance = 4 / depthNorm/depthNorm;
+    hysteresis = 0.1f / depthNorm;
 	retainValids=true;
 	instableValue=0.0;
     maxgradfield = 1000;
+    unvalidValue = 10; // We never reach 10 since we divide the kinect raw values (0-4000) by depthNorm
     
     nearclip = snearclip;
     farclip = sfarclip;
@@ -108,21 +110,22 @@ void FrameFilter::initiateBuffers(void){
     //    /* Initialize the input frame slot: */
     //    inputFrameVersion=0;
     
-    averagingBuffer=new RawDepth[numAveragingSlots*height*width];
-    RawDepth* abPtr=averagingBuffer;
+    averagingBuffer=new float[numAveragingSlots*height*width];
+    float* abPtr=averagingBuffer;
     for(int i=0;i<numAveragingSlots;++i)
         for(unsigned int y=0;y<height;++y)
             for(unsigned int x=0;x<width;++x,++abPtr)
-                *abPtr=2048U; // Mark sample as invalid
+                *abPtr=unvalidValue; // Mark sample as invalid
+    
     averagingSlotIndex=0;
     
     /* Initialize the statistics buffer: */
-    statBuffer=new unsigned int[height*width*3];
-    unsigned int* sbPtr=statBuffer;
+    statBuffer=new float[height*width*3];
+    float* sbPtr=statBuffer;
     for(unsigned int y=0;y<height;++y)
         for(unsigned int x=0;x<width;++x)
             for(int i=0;i<3;++i,++sbPtr)
-                *sbPtr=0;
+                *sbPtr=0.0;
     
     /* Initialize the valid buffer: */
     validBuffer=new float[height*width];
@@ -262,8 +265,8 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
     
     // Enter the new frame into the averaging buffer and calculate the output frame's pixel values: */
     const RawDepth* ifPtr=static_cast<const RawDepth*>(inputframe.getData());
-    RawDepth* abPtr=averagingBuffer+averagingSlotIndex*height*width;
-    unsigned int* sPtr=statBuffer;
+    float* abPtr=averagingBuffer+averagingSlotIndex*height*width;
+    float* sPtr=statBuffer;
     float* ofPtr=validBuffer; // static_cast<const float*>(outputFrame.getBuffer());
     float* nofPtr=static_cast<float*>(newOutputFrame.getData());
     float z;
@@ -276,11 +279,12 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
             float px=float(x)+0.5f;
             if(isInsideROI(x, y)) // Check if pixel is inside ROI
             {
-                unsigned int oldVal=*abPtr;
-                unsigned int newVal=*ifPtr;
+                float oldVal=*abPtr;
+                RawDepth newValRD = *ifPtr;
+                float newVal = (float) newValRD/depthNorm;
                 
                 /* Depth-correct the new value: */
-                float newCVal=newVal; //pdcPtr->correct(newVal); No per pîxel correction
+                float newCVal=*ifPtr; //pdcPtr->correct(newVal); No per pîxel correction
                 
                 /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
                 point[0] = px;
@@ -300,7 +304,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                     sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
                     
                     /* Check if the previous value in the averaging buffer was valid: */
-                    if(oldVal!=2048U)
+                    if(oldVal!= unvalidValue)
                     {
                         --sPtr[0]; // Number of valid samples
                         sPtr[1]-=oldVal; // Sum of valid samples
@@ -310,19 +314,26 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                 else if(!retainValids)
                 {
                     /* Store an invalid input value: */
-                    *abPtr=2048U;
+                    *abPtr=unvalidValue;
                     
                     /* Check if the previous value in the averaging buffer was valid: */
-                    if(oldVal!=2048U)
+                    if(oldVal!=unvalidValue)
                     {
                         --sPtr[0]; // Number of valid samples
                         sPtr[1]-=oldVal; // Sum of valid samples
                         sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
                     }
                 }
-                
+                float s0 = sPtr[0];
+                float s1 = sPtr[1];
+                float s2 = sPtr[2];
+//                if (sPtr[0]>=minNumSamples) {
+//                    cout << "pout2" << endl;
+//                if (newValRD != 0)
+//                    cout << "pout" << endl;
+//                }
                 // Check if the pixel is considered "stable": */
-                if(sPtr[0]>=minNumSamples&&sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
+                if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
                 {
                     /* Check if the new depth-corrected running mean is outside the previous value's envelope: */
                     float newFiltered=float(sPtr[1])/float(sPtr[0]);
@@ -330,6 +341,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                     {
                         /* Set the output pixel value to the depth-corrected running mean: */
                         *nofPtr=*ofPtr=newFiltered;
+                        //cout << "yipii !!" << endl;
                         if (newFiltered > maxval)
                             maxval = newFiltered;
                         // Update world coordonate of point

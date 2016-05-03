@@ -95,11 +95,13 @@ private:
 	float minPlane, maxPlane; //  lower bound & upper bound of valid depth values in depth image space
     
 	int numAveragingSlots; // Number of slots in each pixel's averaging buffer
-	RawDepth* averagingBuffer; // Buffer to calculate running averages of each pixel's depth value
+	float* averagingBuffer; // Buffer to calculate running averages of each pixel's depth value
 	int averagingSlotIndex; // Index of averaging slot in which to store the next frame's depth values
-	unsigned int* statBuffer; // Buffer retaining the running means and variances of each pixel's depth value
+	float* statBuffer; // Buffer retaining the running means and variances of each pixel's depth value
 	unsigned int minNumSamples; // Minimum number of valid samples needed to consider a pixel stable
-	unsigned int maxVariance; // Maximum variance to consider a pixel stable
+	float maxVariance; // Maximum variance to consider a pixel stable
+    float depthNorm; // Normalization of depth
+    float unvalidValue;
 	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update
 	bool retainValids; // Flag whether to retain previous stable values if a new pixel in instable, or reset to a default value
 	float instableValue; // Value to assign to instable pixels if retainValids is false

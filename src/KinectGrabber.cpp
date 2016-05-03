@@ -136,6 +136,8 @@ void KinectGrabber::threadedFunction(){
                 // if the test mode is activated, the settings are loaded automatically (see gui function)
                 if (generalState == GENERAL_STATE_SANDBOX) {
                     kinectDepthImage = kinect.getRawDepthPixels();
+                    kinectColorImage.setFromPixels(kinect.getPixels());
+
                     ofFloatPixels filteredframe;//, kinectProjImage;
                     filteredframe = framefilter.filter(kinectDepthImage);
                     filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
@@ -145,9 +147,11 @@ void KinectGrabber::threadedFunction(){
                     
                     // If new filtered = => send back to main thread
 #if __cplusplus>=201103
+                    colored.send(std::move(kinectColorImage.getPixels()));
                     filtered.send(std::move(filteredframe));
                     gradient.send(std::move(framefilter.getGradField()));
 #else
+                    colored.send(kinectColorImage.getPixels());
                     filtered.send(filteredframe);
                     gradient.send(framefilter.getGradField());
 #endif

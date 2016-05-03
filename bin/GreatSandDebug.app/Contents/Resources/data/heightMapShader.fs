@@ -1,10 +1,30 @@
+#version 120
 #extension GL_ARB_texture_rectangle : enable
 
-//uniform sampler2DRect pixelCornerElevationSampler;
-uniform float contourLineFactor;
-uniform sampler1D heightColorMapSampler;
+//out vec4 outputColor;
 
-varying float heightColorMapTexCoord; // Texture coordinate for the height color map
+void main()
+{
+    // gl_FragCoord contains the window relative coordinate for the fragment.
+    // we use gl_FragCoord.x position to control the red color value.
+    // we use gl_FragCoord.y position to control the green color value.
+    // please note that all r, g, b, a values are between 0 and 1.
+    
+    float windowWidth = 800;
+    float windowHeight = 600;
+    
+    float r = gl_FragCoord.x / windowWidth;
+    float g = gl_FragCoord.y / windowHeight;
+    float b = 1.0;
+    float a = 1.0;
+    gl_FragColor = vec4(r, g, b, a);
+}
+
+//uniform sampler2DRect pixelCornerElevationSampler;
+//uniform float contourLineFactor;
+//uniform sampler1D heightColorMapSampler;
+//
+//varying float heightColorMapTexCoord; // Texture coordinate for the height color map
 //varying float col1; // Texture coordinate for the height color map
 //varying float color2; // Texture coordinate for the height color map
 
@@ -48,14 +68,14 @@ varying float heightColorMapTexCoord; // Texture coordinate for the height color
 //    }
 //}
 
-void main()
-{
-    /* Get the fragment's color from the height color map: */
-    vec4 baseColor=texture1D(heightColorMapSampler,heightColorMapTexCoord);
-    
-    /* Modulate the base color by contour line color: */
-   // addContourLines(gl_FragCoord.xy,baseColor);
-    
-    /* Assign the final color to the fragment: */
-    gl_FragColor = baseColor; // vec4(1.0, 0.0, 0.0, 1.0);//
-}
+//void main()
+//{
+//    /* Get the fragment's color from the height color map: */
+//    vec4 baseColor=texture1D(heightColorMapSampler,heightColorMapTexCoord);
+//    
+//    /* Modulate the base color by contour line color: */
+//   // addContourLines(gl_FragCoord.xy,baseColor);
+//    
+//    /* Assign the final color to the fragment: */
+//    gl_FragColor = baseColor; // vec4(1.0, 0.0, 0.0, 1.0);//
+//}

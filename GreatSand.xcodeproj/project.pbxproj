@@ -301,6 +301,7 @@
 		B353080168DCA97D7DF8732F /* ocl.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ocl.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/nonfree/ocl.hpp; sourceTree = SOURCE_ROOT; };
 		B4A0A006318C06E07DDF19D6 /* usb_libusb10.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = usb_libusb10.h; path = ../../../addons/ofxKinect/libs/libfreenect/src/usb_libusb10.h; sourceTree = SOURCE_ROOT; };
 		B5E6B871EEE8436AD0DF95DA /* matrix_conv_abstract.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix_conv_abstract.h; path = ../../../addons/ofxKinectProjectorToolkit/libs/dlib/matrix/matrix_conv_abstract.h; sourceTree = SOURCE_ROOT; };
+		B77122451CD5E66E00A8B7FB /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = bin/data; sourceTree = SOURCE_ROOT; };
 		B79AC3471CC7B5BE008AECFC /* vehicle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vehicle.cpp; sourceTree = "<group>"; };
 		B79AC3481CC7B5BE008AECFC /* vehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vehicle.h; sourceTree = "<group>"; };
 		B79AC3491CC7B5BE008AECFC /* KinectGrabber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectGrabber.cpp; sourceTree = "<group>"; };
@@ -313,10 +314,6 @@
 		B79AC3501CC7B5BE008AECFC /* ColorMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorMap.h; sourceTree = "<group>"; };
 		B7BF51E8E757FF8A162D3662 /* lsh_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/lsh_index.h; sourceTree = SOURCE_ROOT; };
 		B7D4601A1CCADAC1003E5DEC /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
-		B7D4601B1CCADE9E003E5DEC /* heightMapShader.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = heightMapShader.fs; path = bin/data/heightMapShader.fs; sourceTree = SOURCE_ROOT; };
-		B7D4601C1CCADE9E003E5DEC /* heightMapShader.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = heightMapShader.vs; path = bin/data/heightMapShader.vs; sourceTree = SOURCE_ROOT; };
-		B7D4601D1CCADE9E003E5DEC /* SurfaceElevationShader.fs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SurfaceElevationShader.fs; path = bin/data/SurfaceElevationShader.fs; sourceTree = SOURCE_ROOT; };
-		B7D4601E1CCADE9E003E5DEC /* SurfaceElevationShader.vs */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = SurfaceElevationShader.vs; path = bin/data/SurfaceElevationShader.vs; sourceTree = SOURCE_ROOT; };
 		B7FFF828FB3FC4CB1D215EE2 /* remover.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = remover.h; path = ../../../addons/ofxKinectProjectorToolkit/libs/dlib/interfaces/remover.h; sourceTree = SOURCE_ROOT; };
 		B8427966039B53A0FE69C1F0 /* cxcore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxcore.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cxcore.h; sourceTree = SOURCE_ROOT; };
 		B8A2CBF3E24E6E5026B13A90 /* ofxBase3DVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxBase3DVideo.h; path = ../../../addons/ofxKinect/src/ofxBase3DVideo.h; sourceTree = SOURCE_ROOT; };
@@ -1208,10 +1205,7 @@
 				B79AC3471CC7B5BE008AECFC /* vehicle.cpp */,
 				B79AC3481CC7B5BE008AECFC /* vehicle.h */,
 				B7D4601A1CCADAC1003E5DEC /* Utils.h */,
-				B7D4601B1CCADE9E003E5DEC /* heightMapShader.fs */,
-				B7D4601C1CCADE9E003E5DEC /* heightMapShader.vs */,
-				B7D4601D1CCADE9E003E5DEC /* SurfaceElevationShader.fs */,
-				B7D4601E1CCADE9E003E5DEC /* SurfaceElevationShader.vs */,
+				B77122451CD5E66E00A8B7FB /* data */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
