@@ -25,7 +25,7 @@ KinectGrabber::~KinectGrabber(){
 	waitForThread(true);
 }
 
-void KinectGrabber::setup(){
+void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
     //	// send the frame to the thread for analyzing
     //	// this makes a copy but we can't avoid it anyway if
     //	// we want to update the grabber while analyzing
@@ -33,7 +33,8 @@ void KinectGrabber::setup(){
     
 	// settings and defaults
 	storedframes = 0;
-    //    storedcoloredframes = 0;
+    generalState = sGS;
+    calibrationState = sCS;
     
     kinect.init();
     kinect.setRegistration(true); // So we have correspondance between RGB and depth images
@@ -93,21 +94,15 @@ void KinectGrabber::setKinectROI(ofRectangle skinectROI){
 }
 
 void KinectGrabber::threadedFunction(){
-    // wait until there's a new frame
-    // this blocks the thread, so it doesn't use
-    // the CPU at all, until a frame arrives.
-    // also receive doesn't allocate or make any copies
 	while(isThreadRunning()) {
         
-        //Update clipping planes of kinect if needed
-        float snearclip = nearclip;
-        float sfarclip = farclip;
-        if(nearclipchannel.tryReceive(snearclip) || farclipchannel.tryReceive(sfarclip)) {
-            while(nearclipchannel.tryReceive(snearclip) || farclipchannel.tryReceive(sfarclip)) {
+        //Update state of kinect if needed
+        General_state sGS;
+        Calibration_state sCS;
+        if(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
+            while(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
             } // clear queue
-            kinect.setDepthClipping(snearclip, sfarclip);
-            framefilter.setDepthRange(snearclip, sfarclip);
-            framefilter.resetBuffers();
+            setMode(sGS, sCS);
         }
 
         newFrame = false;
@@ -134,7 +129,7 @@ void KinectGrabber::threadedFunction(){
                     unlock();
                     
                 }
-                // if the test mode is activated, the settings are loaded automatically (see gui function)
+
                 if (generalState == GENERAL_STATE_SANDBOX) {
                     kinectDepthImage = kinect.getRawDepthPixels();
                     kinectColorImage.setFromPixels(kinect.getPixels());
@@ -142,11 +137,7 @@ void KinectGrabber::threadedFunction(){
                     ofFloatPixels filteredframe;//, kinectProjImage;
                     filteredframe = framefilter.filter(kinectDepthImage);
                     filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
-//                    wrldcoord = framefilter.getWrldcoordbuffer();
-//                    kinectProjImage = convertProjSpace(filteredframe);
-//                    kinectProjImage.setImageType(OF_IMAGE_GRAYSCALE);
-                    
-                    // If new filtered = => send back to main thread
+
 #if __cplusplus>=201103
                     colored.send(std::move(kinectColorImage.getPixels()));
                     filtered.send(std::move(filteredframe));

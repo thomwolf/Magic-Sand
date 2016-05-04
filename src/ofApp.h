@@ -32,6 +32,7 @@ public:
     void setHeightMapRange(GLsizei newHeightMapSize,GLfloat newMinElevation,GLfloat newMaxElevation);
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
+    void updateMode();
 
     void keyPressed(int key);
     void keyReleased(int key);

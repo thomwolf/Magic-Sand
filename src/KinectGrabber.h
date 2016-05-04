@@ -24,7 +24,7 @@ public:
 	/* Elements: */
 	KinectGrabber();
 	~KinectGrabber();
-    void setup();
+    void setup(General_state, Calibration_state);
     void setupClip(float nearclip, float farclip);
     void setupFramefilter(float sdepthNorm, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI);
     void setupCalibration(int projectorWidth, int projectorHeight, float schessboardSize, float schessboardColor, float sStabilityTimeInMs, float smaxReprojError);
@@ -44,8 +44,8 @@ public:
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
 	ofThreadChannel<ofVec2f*> gradient;
-	ofThreadChannel<float> nearclipchannel;
-	ofThreadChannel<float> farclipchannel;
+	ofThreadChannel<General_state> generalStateChannel;
+	ofThreadChannel<Calibration_state> calibrationStateChannel;
 
     ofxKinect               kinect;
 //    float                       lowThresh;

@@ -164,24 +164,6 @@ void FrameFilter::setDepthRange(float snearclip, float sfarclip){
     depthrange = sfarclip-snearclip;
 }
 
-void FrameFilter::update(){
-    // check if there's a new analyzed frame and upload
-    // it to the texture. we use a while loop to drop any
-    // extra frame in case the main thread is slower than
-    // the analysis
-    // tryReceive doesn't reallocate or make any copies
-    //	newFrame = false;
-    //	while(analyzed.tryReceive(inputframe)){
-    //		newFrame = true;
-    //	}
-    //	if(newFrame){
-    //        if(!texture.isAllocated()){
-    //            texture.allocate(inputframe);
-    //        }
-    //		texture.loadData(inputframe);
-    //	}
-}
-
 bool FrameFilter::isFrameNew(){
     return newFrame;
 }
@@ -263,8 +245,6 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
     ofFloatPixels newOutputFrame;
     newOutputFrame.allocate(width, height, 1);
     
-    float maxval = 0.0;
-    
     if (bufferInitiated)
     {
         // Enter the new frame into the averaging buffer and calculate the output frame's pixel values: */
@@ -287,15 +267,13 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                     RawDepth newValRD = *ifPtr;
                     float newVal = (float) newValRD/depthNorm;
                     
-                    /* Depth-correct the new value: */
-                    float newCVal=*ifPtr; //pdcPtr->correct(newVal); No per pîxel correction
-                    
                     /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
                     point[0] = px;
                     point[1] = py;
-                    point[2] = newCVal;
+                    point[2] = newVal;
                     bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
-                    bool underMax = classifyPointWithPlane(point, basePlaneNormal, minPlane) == BACK;
+                    bool underMax = classifyPointWithPlane(point, basePlaneNormal, maxPlane) == BACK;
+                    
                     if(true)//TODO: add vertical planes limitation
                         //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
                     {
@@ -331,11 +309,6 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                     float s0 = sPtr[0];
                     float s1 = sPtr[1];
                     float s2 = sPtr[2];
-                    //                if (sPtr[0]>=minNumSamples) {
-                    //                    cout << "pout2" << endl;
-                    //                if (newValRD != 0)
-                    //                    cout << "pout" << endl;
-                    //                }
                     // Check if the pixel is considered "stable": */
                     if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
                     {
@@ -345,12 +318,6 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                         {
                             /* Set the output pixel value to the depth-corrected running mean: */
                             *nofPtr=*ofPtr=newFiltered;
-                            //cout << "yipii !!" << endl;
-                            if (newFiltered > maxval)
-                                maxval = newFiltered;
-                            // Update world coordonate of point
-                            //                    z = (255.0-newFiltered)/255.0*(farclip-nearclip)+nearclip;
-                            //                    wrldcoordbuffer[y*width+x]=toCv(backend->getWorldCoordinateAt(x, y, z));
                         }
                         else
                         {
@@ -428,35 +395,14 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
             }
         }
         
-        /* Pass the new output frame to the registered receiver: */
-        //            if(outputFrameFunction!=0)
-        //                (*outputFrameFunction)(newOutputFrame);
-        
-        /* Retain the new output frame: */
-        //        float maxx = 0;
-        //        float minn = 1000;
-        //        for(unsigned int y=0;y<height*height;++y)
-        //        {
-        //            if (newOutputFrame.getData()[y]>maxx)
-        //                maxx =newOutputFrame.getData()[y];
-        //            if (newOutputFrame.getData()[y]<minn && newOutputFrame.getData()[y]!=0)
-        //                minn =newOutputFrame.getData()[y];
-        //        }
-    }
-    cout << "maxval 1: "<< maxval << endl;
+   }
     
     outputframe=newOutputFrame;
+    
+    // Update gradient field
     updateGradientField();
-    // once processed send the result back to the
-    // main thread. in c++11 we can move it to
-    // avoid a copy
+
     return newOutputFrame;
-    //#if __cplusplus>=201103
-    //        analyzed.send(std::move(newOutputFrame));
-    //#else
-    //        analyzed.send(newOutputFrame);
-    //#endif
-    //    }
 }
 
 void FrameFilter::updateGradientField()
@@ -470,8 +416,6 @@ void FrameFilter::updateGradientField()
     float* nofPtr=outputframe.getData();
     for(unsigned int y=0;y<gradFieldrows;++y) {
         for(unsigned int x=0;x<gradFieldcols;++x) {
-            //            if (x==7 && y ==7)
-            //                cout << "hop" << endl;
             gx = 0;
             gvx = 0;
             gy = 0;
@@ -496,7 +440,6 @@ void FrameFilter::updateGradientField()
             }
         }
     }
-    //    cout << "Max gradient: " << lgth << endl;
 }
 
 
@@ -561,21 +504,3 @@ void FrameFilter::setSpatialFilter(bool newSpatialFilter)
 {
     spatialFilter=newSpatialFilter;
 }
-
-//void FrameFilter::setOutputFrameFunction(FrameFilter::OutputFrameFunction* newOutputFrameFunction)
-//	{
-//	delete outputFrameFunction;
-//	outputFrameFunction=newOutputFrameFunction;
-//	}
-
-//void FrameFilter::receiveRawFrame(const Kinect::FrameBuffer& newFrame)
-//	{
-//	Threads::MutexCond::Lock inputLock(inputCond);
-//
-//	/* Store the new buffer in the input buffer: */
-//	inputFrame=newFrame;
-//	++inputFrameVersion;
-//
-//	/* Signal the background thread: */
-//	inputCond.signal();
-//	}

@@ -31,11 +31,6 @@ class FrameFilter /*: public ofThread */{
 public:
 	typedef unsigned short RawDepth; // Data type for raw depth values
 	typedef float FilteredDepth; // Data type for filtered depth values
-//	typedef Geometry::Plane<double,3> Plane;
-//	typedef Geometry::ProjectiveTransformation<double,3> PTransform;
-
-//    ofThreadChannel<ofPixels> toAnalyze;
-//    ofThreadChannel<ofPixels> analyzed;
 
     FrameFilter();
     ~FrameFilter();
@@ -43,15 +38,11 @@ public:
     bool setup(const unsigned int swidth,const unsigned int sheight,float sdepthNorm, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
-   void setDepthRange(float nearclip, float farclip);
-    void update();
+    void setDepthRange(float nearclip, float farclip);
     bool isFrameNew();
     ofVec2f getGradFieldXY(int x, int y); // gradient field at pos x, y
     ofVec2f* getGradField(); // gradient field
     Point3f* getWrldcoordbuffer();
-//    void draw(float x, float y);
-//    void draw(float x, float y, float w, float h);
-//	void setValidDepthInterval(unsigned int newMinDepth,unsigned int newMaxDepth); // Sets the interval of depth values considered by the depth image filter
 	void setValidElevationInterval(const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation); // Sets the interval of elevations relative to the given base plane considered by the depth image filter
 	void setStableParameters(unsigned int newMinNumSamples,unsigned int newMaxVariance); // Sets the statistical properties to consider a pixel stable
 	void setHysteresis(float newHysteresis); // Sets the stable value hysteresis envelope

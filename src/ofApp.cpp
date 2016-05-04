@@ -14,8 +14,16 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetLogLevel("ofThread", OF_LOG_WARNING);
     
+	// settings and defaults
+	generalState = GENERAL_STATE_CALIBRATION;
+	calibrationState  = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
+    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+    saved = false;
+    loaded = false;
+    calibrated = false;
+    
     // kinectgrabber: start
-	kinectgrabber.setup();
+	kinectgrabber.setup(generalState, calibrationState);
 
     // Get projector and kinect width & height
     ofVec2f kinSize = kinectgrabber.getKinectSize();
@@ -25,14 +33,6 @@ void ofApp::setup(){
 	projResY =projWindow->getHeight();
 	kinectROI = ofRectangle(0, 0, kinectResX, kinectResY);
 	
-	// settings and defaults
-	generalState = GENERAL_STATE_CALIBRATION;
-	calibrationState  = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
-    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    saved = false;
-    loaded = false;
-    calibrated = false;
-    
 	// Setup framefilter variables
     depthNorm = 2000; // Kinect raw depth values normalization coef (to bring it in 0..1 range
     elevationMin=950/depthNorm;
@@ -52,8 +52,8 @@ void ofApp::setup(){
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormal = ofVec3f(0,0,1);
 	basePlaneOffset= ofVec3f(0,0,870/depthNorm);
-	nearclip = 750;
-	farclip = 950;
+	nearclip = 500;
+	farclip = 4000;
     basePlaneEq=getPlaneEquation(basePlaneNormal,basePlaneOffset); //homogeneous base plane equation
 		
 	// Load colormap and set heightmap
@@ -108,7 +108,7 @@ void ofApp::setup(){
  	for(unsigned int y=0;y<meshheight;y++)
 		for(unsigned int x=0;x<meshwidth;x++)
         {
-            ofPoint pt = ofPoint(x*kinectResX*planeScale/(meshwidth-1),y*kinectResY*planeScale/(meshheight-1),0.0f)-kinectROI.getCenter()*planeScale+kinectROI.getCenter();
+            ofPoint pt = ofPoint(x*kinectResX*planeScale/(meshwidth-1),y*kinectResY*planeScale/(meshheight-1),0.0f)-kinectROI.getCenter()*planeScale+kinectROI.getCenter()-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
             mesh.addVertex(pt); // make a new vertex
             mesh.addTexCoord(pt);
         }
@@ -134,10 +134,8 @@ void ofApp::setup(){
 
 	// finish kinectgrabber setup and start the grabber
     kinectgrabber.setupFramefilter(depthNorm, gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
-    kinectgrabber.setMode(generalState, calibrationState);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     cout << "kinectWorldMatrix: " << kinectWorldMatrix << endl;
-	kinectgrabber.startThread(true);
     
     //Try to load calibration file if possible
     if (kpt.loadCalibration("calibration.xml"))
@@ -148,12 +146,12 @@ void ofApp::setup(){
         loaded = true;
         calibrated = true;
         generalState = GENERAL_STATE_SANDBOX;
-        cout << "General state: " << generalState << endl;
-        kinectgrabber.setMode(generalState, calibrationState);
+        updateMode();
     } else {
         cout << "Calibration could not be loaded " << endl;
     }
 
+	kinectgrabber.startThread(true);
 }
 
 //--------------------------------------------------------------
@@ -243,12 +241,12 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-//    if (generalState == GENERAL_STATE_CALIBRATION) {
+    if (generalState == GENERAL_STATE_CALIBRATION) {
         kinectColorImage.draw(0, 0, 640, 480);
         FilteredDepthImage.draw(650, 0, 320, 240);
         
         ofSetColor(0);
-        if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST || generalState == GENERAL_STATE_SANDBOX){
+        if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
             ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
             ofDrawBitmapStringHighlight("The projector should place a green dot on the corresponding point.", 340, 530);
             ofDrawBitmapStringHighlight("Press the 's' key to save the calibration.", 340, 550);
@@ -277,10 +275,9 @@ void ofApp::draw(){
             ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", 340, 670);
         }
         ofSetColor(255);
-//    }
-//    else if (generalState == GENERAL_STATE_SANDBOX){
-//        kinectColorImage.draw(0, 0, 640, 480);
-//    }
+    } else if (generalState == GENERAL_STATE_SANDBOX){
+        kinectColorImage.draw(0, 0, 640, 480);
+    }
 }
 
 //--------------------------------------------------------------
@@ -531,14 +528,15 @@ void ofApp::updateROI(){
     if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT) { // set kinect to max depth range
         if (cvPoints.size() == 0) {
             cout << "Error: No points !!" << endl;
-        }
+        } else {
         cout << "Initiating kinect clip planes" << endl;
-        kinectgrabber.nearclipchannel.send(500);
-        kinectgrabber.farclipchannel.send(4000);
+//        kinectgrabber.nearclipchannel.send(500);
+//        kinectgrabber.farclipchannel.send(4000);
         ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
         
         large = ofPolyline();
         threshold = 220;
+        }
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
         while (threshold < 255){
             cout << "Increasing threshold : " << threshold << endl;
@@ -567,15 +565,17 @@ void ofApp::updateROI(){
                     }
                     if (ok) {
                         cout << "We found a contour lines surroundings the chessboard" << endl;
-                        if (small.size() == 0 || poly.getArea() < small.getArea())
+                        if (small.size() == 0 || poly.getArea() < small.getArea()) {
                             cout << "We take the smallest contour line surroundings the chessboard at a given threshold level" << endl;
-                        small = poly;
+                            small = poly;
+                        }
                     }
                 }
             }
-            if (large.getArea() < small.getArea())
+            if (large.getArea() < small.getArea()) {
                 cout << "We take the largest contour line surroundings the chessboard at all threshold level" << endl;
-            large = small;
+                large = small;
+            }
             threshold+=1;
         } //else {
         kinectROI = large.getBoundingBox();
@@ -592,13 +592,26 @@ void ofApp::updateROI(){
         // We are finished, set back kinect depth range and update ROI
         ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
         kinectgrabber.setKinectROI(kinectROI);
-        kinectgrabber.nearclipchannel.send(nearclip);
-        kinectgrabber.farclipchannel.send(farclip);
+//        kinectgrabber.nearclipchannel.send(nearclip);
+//        kinectgrabber.farclipchannel.send(farclip);
         //}
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
         generalState = GENERAL_STATE_CALIBRATION;
         calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
     }
+}
+
+//--------------------------------------------------------------
+void ofApp::updateMode(){
+    cout << "General state: " << generalState << endl;
+    cout << "Calibration state: " << calibrationState << endl;
+#if __cplusplus>=201103
+    kinectgrabber.generalStateChannel.send(std::move(generalState));
+    kinectgrabber.calibrationStateChannel.send(std::move(calibrationState));
+#else
+    kinectgrabber.generalStateChannel.send(generalState);
+    kinectgrabber.calibrationStateChannel.send(calibrationState);
+#endif
 }
 
 //--------------------------------------------------------------
@@ -628,9 +641,6 @@ void ofApp::keyPressed(int key){
             generalState = GENERAL_STATE_CALIBRATION;
             calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
             ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-            kinectgrabber.lock();
-            kinectgrabber.setMode(generalState, calibrationState);
-            kinectgrabber.unlock();
         }
     } else if (key=='t') {
         generalState = GENERAL_STATE_CALIBRATION;
@@ -639,20 +649,13 @@ void ofApp::keyPressed(int key){
         }    else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION){
                 calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
         }
-        cout << "Calibration state: " << calibrationState << endl;
-        kinectgrabber.setMode(generalState, calibrationState);
-//        kpt.calibrate(pairsKinect, pairsProjector);
-    }else if (key=='b') {
+    } else if (key=='b') {
         if (generalState == GENERAL_STATE_CALIBRATION) {
             generalState = GENERAL_STATE_SANDBOX;
         }
         else if (generalState == GENERAL_STATE_SANDBOX){
             generalState = GENERAL_STATE_CALIBRATION;
         }
-        cout << "General state: " << generalState << endl;
-        kinectgrabber.lock();
-        kinectgrabber.setMode(generalState, calibrationState);
-        kinectgrabber.unlock();
     } else if (key=='s') {
         if (kpt.saveCalibration("calibration.xml"))
         {
@@ -671,6 +674,10 @@ void ofApp::keyPressed(int key){
         } else {
             cout << "Calibration could not be loaded " << endl;
         }
+    }
+
+    if (key=='r' || key=='b' || key=='t') {
+        updateMode();
     }
 }
 
