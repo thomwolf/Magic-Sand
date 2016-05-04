@@ -60,10 +60,10 @@ void ofApp::setup(){
     heightMap.load("HeightColorMap.yml");
     /* Limit the valid elevation range to the extent of the height color map: */
 	//if(elevationMin<heightMap.getScalarRangeMin())
-	elevationMin=heightMap.getScalarRangeMin();
+	elevationMin=basePlaneOffset.z-(heightMap.getScalarRangeMin()/depthNorm);
 	//if(elevationMax>heightMap.getScalarRangeMax())
-	elevationMax=heightMap.getScalarRangeMax();
-	setHeightMapRange(heightMap.getNumEntries(),heightMap.getScalarRangeMin(),heightMap.getScalarRangeMax());
+	elevationMax=basePlaneOffset.z-(heightMap.getScalarRangeMax()/depthNorm);
+	setHeightMapRange(heightMap.getNumEntries(),elevationMin,elevationMax);
     
 	// Load shaders
     bool loaded = true;
@@ -100,42 +100,51 @@ void ofApp::setup(){
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineFactor = 0.1f; // Inverse elevation distance between adjacent topographic contour lines
     
-    // Initialise mesh
-    //	meshwidth = 2; // 640 should be dividable by meshwidth-1
-    //	meshheight = 2; // idem with 480
-    //    mesh.clear();
-    // 	for(unsigned int y=0;y<kinectResY;++y)
-    //		for(unsigned int x=0;x<kinectResX;++x)
-    //        {
-    //            mesh.addVertex(ofPoint(float(x)+0.5f,float(y)+0.5f,0.0f)); // make a new vertex
-    //        }
-    //    for(unsigned int y=1;y<kinectResY;++y)
-    //		for(unsigned int x=0;x<kinectResX;++x)
-    //        {
-    //            mesh.addIndex(y*kinectResX+x);
-    //            mesh.addIndex((y-1)*kinectResX+x);
-    //        }
-    //    float planeScale = 0.75;
-    int planeWidth = kinectROI.getWidth();//  ofGetWidth() * planeScale;
-    int planeHeight = kinectROI.getHeight();//ofGetHeight() * planeScale;
-    int planeColumns = planeWidth / 1;
-    int planeRows = planeHeight / 1;
-    plane.set(planeWidth, planeHeight, planeColumns, planeRows, OF_PRIMITIVE_TRIANGLES);
-    plane.setPosition(kinectResX/2, kinectResY/2, 0); /// position in x y z
-    plane.mapTexCoordsFromTexture(FilteredDepthImage.getTexture());
+// Initialise mesh
+    float planeScale = 1;
+	meshwidth = kinectResX;
+	meshheight = kinectResY;
+    mesh.clear();
+ 	for(unsigned int y=0;y<meshheight;y++)
+		for(unsigned int x=0;x<meshwidth;x++)
+        {
+            ofPoint pt = ofPoint(x*kinectResX*planeScale/(meshwidth-1),y*kinectResY*planeScale/(meshheight-1),0.0f)-kinectROI.getCenter()*planeScale+kinectROI.getCenter();
+            mesh.addVertex(pt); // make a new vertex
+            mesh.addTexCoord(pt);
+        }
+    for(unsigned int y=0;y<meshheight-1;y++)
+		for(unsigned int x=0;x<meshwidth-1;x++)
+        {
+            mesh.addIndex(x+y*meshwidth);         // 0
+            mesh.addIndex((x+1)+y*meshwidth);     // 1
+            mesh.addIndex(x+(y+1)*meshwidth);     // 10
+            
+            mesh.addIndex((x+1)+y*meshwidth);     // 1
+            mesh.addIndex((x+1)+(y+1)*meshwidth); // 11
+            mesh.addIndex(x+(y+1)*meshwidth);     // 10
+        }
+//    float planeScale = 0.1;
+//    int planeWidth = kinectROI.getWidth() * planeScale;
+//    int planeHeight = kinectROI.getHeight() * planeScale;
+//    int planeColumns = 2;//planeWidth / 1;
+//    int planeRows = 2;//planeHeight / 1;
+//    plane.set(planeWidth, planeHeight, planeColumns, planeRows, OF_PRIMITIVE_TRIANGLES);
+//    plane.setPosition(kinectResX/2, kinectResY/2, 0); /// position in x y z
+//    plane.mapTexCoordsFromTexture(FilteredDepthImage.getTexture());
 
 	// finish kinectgrabber setup and start the grabber
     kinectgrabber.setupFramefilter(depthNorm, gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
     kinectgrabber.setMode(generalState, calibrationState);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
-    cout << "kinectWorldMatrix" << kinectWorldMatrix << endl;
-	kinectgrabber.startThread();
+    cout << "kinectWorldMatrix: " << kinectWorldMatrix << endl;
+	kinectgrabber.startThread(true);
     
     //Try to load calibration file if possible
     if (kpt.loadCalibration("calibration.xml"))
     {
         cout << "Calibration loaded " << endl;
         kinectProjMatrix = kpt.getProjectionMatrix();
+        cout << "kinectProjMatrix: " << kinectProjMatrix << endl;
         loaded = true;
         calibrated = true;
         generalState = GENERAL_STATE_SANDBOX;
@@ -169,11 +178,15 @@ void ofApp::update(){
 
         if (generalState == GENERAL_STATE_CALIBRATION) {
                 if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
+                    
+                    // Get kinect depth image coord
                     ofVec2f t = ofVec2f(min((float)kinectResX-1,testPoint.x), min((float)kinectResY-1,testPoint.y));
-                    ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(t.x, t.y);
-                    worldPoint.z = worldPoint.z / depthNorm;
-                    //ofVec3f worldPoint = ofVec3f(t.x, t.y, kinectgrabber.kinect.getDistanceAt(t.x, t.y));
-                    ofVec2f projectedPoint = kpt.getProjectedPoint(worldPoint);
+                    ofVec3f worldPoint = ofVec3f(t);
+                    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y) / depthNorm;
+                    ofVec4f wc = ofVec4f(worldPoint);
+                    wc.w = 1;
+                    
+                    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
                     drawTestingPoint(projectedPoint);
                 }
                 else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION) {
@@ -197,22 +210,32 @@ void ofApp::update(){
         }
         else if (generalState == GENERAL_STATE_SANDBOX){
             //Check values for debug
-            float maxval, maxval2 = 0.0;
-            float minval, minval2 = 100000000.0;
-            for (int i = 0; i<640*480; i ++){
-                if (filteredframe.getData()[i] > maxval)
-                    maxval = filteredframe.getData()[i];
-                if (filteredframe.getData()[i] < minval)
-                    minval = filteredframe.getData()[i];
-
-                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] > maxval2)
-                    maxval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] < minval2)
-                    minval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-            }
-            cout << "filtredframe maxval : " << maxval << " filtredframe minval : "<< minval << endl;
-            cout << "FilteredDepthImage maxval2 : " << maxval2 << " FilteredDepthImage minval2 : " << minval2 << endl;
+//            float maxval, maxval2 = 0.0;
+//            float minval, minval2 = 100000000.0;
+//            for (int i = 0; i<640*480; i ++){
+//                if (filteredframe.getData()[i] > maxval)
+//                    maxval = filteredframe.getData()[i];
+//                if (filteredframe.getData()[i] < minval)
+//                    minval = filteredframe.getData()[i];
+//
+//                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] > maxval2)
+//                    maxval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+//                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] < minval2)
+//                    minval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+//            }
+//            cout << "filtredframe maxval : " << maxval << " filtredframe minval : "<< minval << endl;
+//            cout << "FilteredDepthImage maxval2 : " << maxval2 << " FilteredDepthImage minval2 : " << minval2 << endl;
             
+            // Get kinect depth image coord
+            ofVec2f t = kinectROI.getCenter();
+            ofVec3f worldPoint = ofVec3f(t);
+            worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];
+            ofVec4f wc = ofVec4f(worldPoint);
+            wc.w = 1;
+            
+            ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+            drawTestingPoint(projectedPoint);
+
             drawSandbox();
         }
     }
@@ -220,12 +243,12 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    if (generalState == GENERAL_STATE_CALIBRATION) {
+//    if (generalState == GENERAL_STATE_CALIBRATION) {
         kinectColorImage.draw(0, 0, 640, 480);
         FilteredDepthImage.draw(650, 0, 320, 240);
         
         ofSetColor(0);
-        if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
+        if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST || generalState == GENERAL_STATE_SANDBOX){
             ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
             ofDrawBitmapStringHighlight("The projector should place a green dot on the corresponding point.", 340, 530);
             ofDrawBitmapStringHighlight("Press the 's' key to save the calibration.", 340, 550);
@@ -233,8 +256,11 @@ void ofApp::draw(){
                 ofDrawBitmapStringHighlight("Calibration saved.", 340, 590);
             }
             ofSetColor(255, 0, 0);
+            
+            //Draw testing point indicator
             float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 40);
             ofDrawCircle(testPoint.x, testPoint.y, ptSize);
+            
         } else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION || calibrationState == CALIBRATION_STATE_ROI_DETERMINATION) {
             ofNoFill();
             ofSetColor(255);
@@ -251,10 +277,10 @@ void ofApp::draw(){
             ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", 340, 670);
         }
         ofSetColor(255);
-    }
-    else if (generalState == GENERAL_STATE_SANDBOX){
-        kinectColorImage.draw(0, 0, 640, 480);
-    }
+//    }
+//    else if (generalState == GENERAL_STATE_SANDBOX){
+//        kinectColorImage.draw(0, 0, 640, 480);
+//    }
 }
 
 //--------------------------------------------------------------
@@ -313,20 +339,20 @@ void ofApp::drawTestingPoint(ofVec2f projectedPoint) { // Prepare proj window fb
 void ofApp::drawSandbox() { // Prepare proj window fbo
 //    ofPoint result = computeTransform(kinectROI.getCenter());
     fboProjWindow.begin();
-    ofClear(0,0,0,255);
+//    ofClear(0,0,0,255); // Don't clear the testing point that was previously drawn
     ofSetColor(ofColor::red);
     
     FilteredDepthImage.getTexture().bind();
     heightMapShader.begin();
     
-    heightMapShader.setUniformTexture("tex1", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
-    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix);
-    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix);
-//    heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 2);
-//    heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
+//    heightMapShader.setUniformTexture("tex1", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
+    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix.getTransposedOf(kinectProjMatrix));
+    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix.getTransposedOf(kinectWorldMatrix));
+    heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 2);
+    heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
 
 //    kinectColorImage.getTexture().bind();
-    plane.draw();
+    mesh.draw();
 //    FilteredDepthImage.draw(0,0);
     
     heightMapShader.end();
@@ -474,26 +500,16 @@ void ofApp::addPointPair() {
 void ofApp::setHeightMapRange(GLsizei newHeightMapSize,GLfloat newMinElevation,GLfloat newMaxElevation)
 {
 	/* Calculate the new height map elevation scaling and offset coefficients: */
-	GLdouble hms=GLdouble(newHeightMapSize-1)/((newMaxElevation-newMinElevation)*GLdouble(newHeightMapSize));
-	GLdouble hmo=0.5/GLdouble(newHeightMapSize)-hms*newMinElevation;
-	
-	heightMapScale=GLfloat(hms);
-	heightMapOffset=GLfloat(hmo);
+	heightMapScale =(newHeightMapSize-1)/((newMaxElevation-newMinElevation));
+	heightMapOffset =0.5/newHeightMapSize-heightMapScale*newMinElevation;
 }
 
 //--------------------------------------------------------------
-ofVec2f ofApp::computeTransform(ofPoint vin)
+ofVec2f ofApp::computeTransform(ofVec4f vin) // vin is in kinect image depth coordinate with normalized z
 {
-    /* Get the vertex' depth image-space z coordinate from the texture: */
-    ofVec4f vertexDic=vin;
-    vertexDic.z=FilteredDepthImage.getPixelsAsFloats()[((int)vin.x + (int)vin.y*kinectResX)];
-    vertexDic.w = 1;
-    if (vertexDic.z != 0)
-        cout << "yipi" << endl;
-    
     /* Transform the vertex from depth image space to world space: */
-    ofVec3f vertexCcxx = kinectgrabber.kinect.getWorldCoordinateAt(vertexDic.x, vertexDic.y, vertexDic.z);
-    ofVec4f vertexCc = kinectWorldMatrix*vertexDic*vertexDic.z;
+//    ofVec3f vertexCcxx = kinectgrabber.kinect.getWorldCoordinateAt(vertexDic.x, vertexDic.y, vertexDic.z);
+    ofVec4f vertexCc = kinectWorldMatrix*vin*vin.z;
     vertexCc.w = 1;
     
     /* Plug camera-space vertex into the base plane equation: */
@@ -612,7 +628,9 @@ void ofApp::keyPressed(int key){
             generalState = GENERAL_STATE_CALIBRATION;
             calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
             ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+            kinectgrabber.lock();
             kinectgrabber.setMode(generalState, calibrationState);
+            kinectgrabber.unlock();
         }
     } else if (key=='t') {
         generalState = GENERAL_STATE_CALIBRATION;
@@ -632,8 +650,9 @@ void ofApp::keyPressed(int key){
             generalState = GENERAL_STATE_CALIBRATION;
         }
         cout << "General state: " << generalState << endl;
+        kinectgrabber.lock();
         kinectgrabber.setMode(generalState, calibrationState);
-        //        kpt.calibrate(pairsKinect, pairsProjector);
+        kinectgrabber.unlock();
     } else if (key=='s') {
         if (kpt.saveCalibration("calibration.xml"))
         {

@@ -30,7 +30,7 @@ public:
     void prepareContourLines();
     void addPointPair();
     void setHeightMapRange(GLsizei newHeightMapSize,GLfloat newMinElevation,GLfloat newMaxElevation);
-    ofVec2f computeTransform(ofPoint vin);
+    ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
 
     void keyPressed(int key);
