@@ -36,20 +36,21 @@ private:
     ofPixels entries; // Array of RGBA entries
     ofImage tex;
     double min,max; // The scalar value range
-    double factor,offset; // The scaling factors to map data values to indices
+//    double factor,offset; // The scaling factors to map data values to indices
 
     /* Private methods: */
-    void setNumEntries(int newNumEntries); // Changes the color map's size
     void copyMap(int newNumEntries,const Color* newEntries,double newMin,double newMax); // Copies from another color map
 
     /* Constructors and destructors: */
 public:
+    ColorMap(void);
     ~ColorMap(void);
 
     /* Methods: */
     bool load(string path, bool absolute = false); // Loads colorkeys from a file
     bool setKeys(std::vector<ofColor> colorkeys, std::vector<double> heightkeys); // Set keys
     bool updateColormap(void);    // Update colormap based on stored colorkeys
+    void changeNumEntries(int amount, bool increase); // Changes the color map's size
 
     bool createFile(string filename, bool absolute); //create a sample colormap file
     
@@ -57,7 +58,7 @@ public:
     ofTexture getTexture(); // return color map texture
 
     // Utilities
-    bool setScalarRange(double newMin,double newMax);
+    bool scaleRange(float factor); // Rescale the range
     float getScalarRangeMin(void) const // Returns minimum of scalar value range
     {
         return min;

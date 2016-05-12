@@ -36,7 +36,6 @@
 		B79AC3511CC7B5BE008AECFC /* vehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B79AC3471CC7B5BE008AECFC /* vehicle.cpp */; };
 		B79AC3521CC7B5BE008AECFC /* KinectGrabber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B79AC3491CC7B5BE008AECFC /* KinectGrabber.cpp */; };
 		B79AC3531CC7B5BE008AECFC /* FrameFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B79AC34B1CC7B5BE008AECFC /* FrameFilter.cpp */; };
-		B79AC3541CC7B5BE008AECFC /* SurfaceRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B79AC34D1CC7B5BE008AECFC /* SurfaceRenderer.cpp */; };
 		B79AC3551CC7B5BE008AECFC /* ColorMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B79AC34F1CC7B5BE008AECFC /* ColorMap.cpp */; };
 		C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE75A3FBA2C2D87D14F06FE6 /* ObjectFinder.cpp */; };
 		D31F5C1B140C59B2AF1533A8 /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 71958293AC5292DE4B7C619D /* registration.c */; };
@@ -308,8 +307,6 @@
 		B79AC34A1CC7B5BE008AECFC /* KinectGrabber.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinectGrabber.h; sourceTree = "<group>"; };
 		B79AC34B1CC7B5BE008AECFC /* FrameFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameFilter.cpp; sourceTree = "<group>"; };
 		B79AC34C1CC7B5BE008AECFC /* FrameFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameFilter.h; sourceTree = "<group>"; };
-		B79AC34D1CC7B5BE008AECFC /* SurfaceRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SurfaceRenderer.cpp; sourceTree = "<group>"; };
-		B79AC34E1CC7B5BE008AECFC /* SurfaceRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SurfaceRenderer.h; sourceTree = "<group>"; };
 		B79AC34F1CC7B5BE008AECFC /* ColorMap.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ColorMap.cpp; sourceTree = "<group>"; };
 		B79AC3501CC7B5BE008AECFC /* ColorMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorMap.h; sourceTree = "<group>"; };
 		B7BF51E8E757FF8A162D3662 /* lsh_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/lsh_index.h; sourceTree = SOURCE_ROOT; };
@@ -1198,8 +1195,6 @@
 				B79AC34A1CC7B5BE008AECFC /* KinectGrabber.h */,
 				B79AC34B1CC7B5BE008AECFC /* FrameFilter.cpp */,
 				B79AC34C1CC7B5BE008AECFC /* FrameFilter.h */,
-				B79AC34D1CC7B5BE008AECFC /* SurfaceRenderer.cpp */,
-				B79AC34E1CC7B5BE008AECFC /* SurfaceRenderer.h */,
 				B79AC34F1CC7B5BE008AECFC /* ColorMap.cpp */,
 				B79AC3501CC7B5BE008AECFC /* ColorMap.h */,
 				B79AC3471CC7B5BE008AECFC /* vehicle.cpp */,
@@ -1434,7 +1429,6 @@
 				A81AF6FC4B1FD63D16781582 /* unicode.cpp in Sources */,
 				B79AC3511CC7B5BE008AECFC /* vehicle.cpp in Sources */,
 				250A95BA26587BE85DB0A353 /* ofxCvColorImage.cpp in Sources */,
-				B79AC3541CC7B5BE008AECFC /* SurfaceRenderer.cpp in Sources */,
 				1D5F3298C2FA073628012944 /* ofxCvContourFinder.cpp in Sources */,
 				169D3C72FDE6C5590A1616F5 /* ofxCvFloatImage.cpp in Sources */,
 				FB09C6B2A1DA0EA217240CB8 /* ofxCvGrayscaleImage.cpp in Sources */,

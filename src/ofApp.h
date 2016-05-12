@@ -21,6 +21,7 @@ class ofApp : public ofBaseApp{
 public:
 
     void setup();
+    void setRangesAndBasePlaneEquation();
     void update();
     void draw();
     void drawProjWindow(ofEventArgs& args);
@@ -45,7 +46,9 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-
+    bool loadSettings(string path);
+    bool saveSettings(string path);
+    
     shared_ptr<ofAppBaseWindow> projWindow;
 
 private:

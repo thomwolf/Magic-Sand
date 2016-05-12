@@ -20,11 +20,12 @@ out float bug;
 uniform sampler2DRect tex0; // Sampler for the depth image-space elevation texture
 //uniform sampler2DRect tex1; // Sampler for the depth image-space elevation texture
 uniform vec2 heightColorMapTransformation; // Transformation from elevation to height color map texture coordinate factor and offset
+//uniform float depthNorm; // Normalization factor for depth values
 
 uniform mat4 kinectWorldMatrix; // Transformation from kinect image space to kinect world space
 uniform mat4 kinectProjMatrix; // Transformation from kinect world space to proj image space
 //uniform sampler2DRect depthSampler;
-//out vec4 heightColorMapTexCoord; // Texture coordinate for the height color map
+uniform vec4 basePlaneEq; // Base plane equation
 
 void main()
 {
@@ -36,13 +37,6 @@ void main()
     vec4 texel0 = texture(tex0, varyingtexcoord);
     float depth = texel0.r;
 
-    /* Transform elevation to height color map texture coordinate: */
-    //    float elevation=dot(basePlaneEq,vertexCc);///vertexCc.w;
-    float elevation = depth*heightColorMapTransformation.x+heightColorMapTransformation.y;
-    bug = elevation;
-//    if (elevation > 150)
-//        bug = 1;
-
     pos.z = depth;
     pos.w = 1;
     
@@ -50,6 +44,14 @@ void main()
     vec4 vertexCc = kinectWorldMatrix * pos;  // Transposed multiplication (Row-major order VS col major order
     vec4 vertexCcx = vertexCc * depth;
     vertexCcx.w = 1;
+    
+    /* Transform elevation to height color map texture coordinate: */
+    float elevation = dot(basePlaneEq,vertexCcx);///vertexCc.w;
+    bug = elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
+    //bug = elevation;
+//    bug = 0;
+//        if (elevation > 150)
+//            bug = 1;
     
     /* Transform vertex to proj coordinates: */
     vec4 screenPos = kinectProjMatrix * vertexCcx;

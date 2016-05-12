@@ -54,16 +54,12 @@ void ofApp::setup(){
 	basePlaneOffset= ofVec3f(0,0,870/depthNorm);
 	nearclip = 500;
 	farclip = 4000;
-    basePlaneEq=getPlaneEquation(basePlaneNormal,basePlaneOffset); //homogeneous base plane equation
 		
 	// Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
-    /* Limit the valid elevation range to the extent of the height color map: */
-	//if(elevationMin<heightMap.getScalarRangeMin())
-	elevationMin=basePlaneOffset.z-(heightMap.getScalarRangeMin()/depthNorm);
-	//if(elevationMax>heightMap.getScalarRangeMax())
-	elevationMax=basePlaneOffset.z-(heightMap.getScalarRangeMax()/depthNorm);
-	setHeightMapRange(heightMap.getNumEntries(),elevationMin,elevationMax);
+    
+    // Setup elevation ranges and base plane equation
+    setRangesAndBasePlaneEquation();
     
 	// Load shaders
     bool loaded = true;
@@ -155,6 +151,16 @@ void ofApp::setup(){
 }
 
 //--------------------------------------------------------------
+void ofApp::setRangesAndBasePlaneEquation(){
+    //if(elevationMin<heightMap.getScalarRangeMin())
+    basePlaneEq=getPlaneEquation(basePlaneOffset,basePlaneNormal); //homogeneous base plane equation
+    elevationMin=-heightMap.getScalarRangeMin()/depthNorm;
+    //if(elevationMax>heightMap.getScalarRangeMax())
+    elevationMax=-heightMap.getScalarRangeMax()/depthNorm;
+    setHeightMapRange(heightMap.getNumEntries(),elevationMin,elevationMax);
+}
+
+//--------------------------------------------------------------
 void ofApp::update(){
 	// Get depth image from kinect grabber
     ofFloatPixels filteredframe;
@@ -207,22 +213,19 @@ void ofApp::update(){
                 }
         }
         else if (generalState == GENERAL_STATE_SANDBOX){
-            //Check values for debug
-//            float maxval, maxval2 = 0.0;
-//            float minval, minval2 = 100000000.0;
-//            for (int i = 0; i<640*480; i ++){
-//                if (filteredframe.getData()[i] > maxval)
-//                    maxval = filteredframe.getData()[i];
-//                if (filteredframe.getData()[i] < minval)
-//                    minval = filteredframe.getData()[i];
-//
-//                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] > maxval2)
-//                    maxval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-//                if (FilteredDepthImage.getFloatPixelsRef().getData()[i] < minval2)
-//                    minval2 = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-//            }
-//            cout << "filtredframe maxval : " << maxval << " filtredframe minval : "<< minval << endl;
-//            cout << "FilteredDepthImage maxval2 : " << maxval2 << " FilteredDepthImage minval2 : " << minval2 << endl;
+//Check values for debug
+            float maxval = -1000.0;
+            float minval = 1000.0;
+            float xf;
+            for (int i = 0; i<640*480; i ++){
+                xf = FilteredDepthImage.getFloatPixelsRef().getData()[i] - basePlaneOffset.z;
+
+                if (xf > maxval)
+                    maxval = xf;
+                if (xf < minval)
+                    minval = xf;
+            }
+            cout << "FilteredDepthImage - baseplane offset maxval : " << maxval << " FilteredDepthImage - baseplane offset minval : " << minval << endl;
             
             // Get kinect depth image coord
             ofVec2f t = kinectROI.getCenter();
@@ -347,6 +350,7 @@ void ofApp::drawSandbox() { // Prepare proj window fbo
     heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix.getTransposedOf(kinectWorldMatrix));
     heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 2);
     heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
+    heightMapShader.setUniform4f("basePlaneEq", basePlaneEq);
 
 //    kinectColorImage.getTexture().bind();
     mesh.draw();
@@ -494,7 +498,7 @@ void ofApp::addPointPair() {
 }
 
 //--------------------------------------------------------------
-void ofApp::setHeightMapRange(GLsizei newHeightMapSize,GLfloat newMinElevation,GLfloat newMaxElevation)
+void ofApp::setHeightMapRange(int newHeightMapSize,float newMinElevation,float newMaxElevation)
 {
 	/* Calculate the new height map elevation scaling and offset coefficients: */
 	heightMapScale =(newHeightMapSize-1)/((newMaxElevation-newMinElevation));
@@ -620,8 +624,28 @@ void ofApp::keyPressed(int key){
         addPointPair();
     } else if (key=='q') {
         chessboardSize -= 20;
-    } else if (key=='w') {
+    } else if (key=='s') {
         chessboardSize += 20;
+    } else if (key=='a') {
+        basePlaneOffset.z += 5/depthNorm;
+        cout << "basePlaneOffset" << basePlaneOffset.z*depthNorm << endl;
+        setRangesAndBasePlaneEquation();
+    } else if (key=='z') {
+        basePlaneOffset.z -= 5/depthNorm;
+        cout << "basePlaneOffset" << basePlaneOffset.z*depthNorm << endl;
+       setRangesAndBasePlaneEquation();
+    }else if (key=='w') {
+        heightMap.scaleRange(0.5);
+        setRangesAndBasePlaneEquation();
+    } else if (key=='x') {
+        heightMap.scaleRange(2);
+        setRangesAndBasePlaneEquation();
+    }else if (key=='d') {
+        heightMap.changeNumEntries(10, true); // Increase the color map's size
+        setRangesAndBasePlaneEquation();
+    } else if (key=='f') {
+        heightMap.changeNumEntries(10, false); // Decrease the color map's size
+        setRangesAndBasePlaneEquation();
     } else if (key=='c') {
         if (pairsKinect.size() == 0) {
             cout << "Error: No points acquired !!" << endl;
@@ -731,4 +755,31 @@ void ofApp::gotMessage(ofMessage msg){
 //--------------------------------------------------------------
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
+}
+
+//--------------------------------------------------------------
+bool ofApp::loadSettings(string path){
+    ofXml xml;
+    if (!xml.load(path))
+        return false;
+    xml.setTo("KINECTSETTINGS");
+    kinectROI = xml.getValue<ofRectangle>("kinectROI");
+    basePlaneNormal = xml.getValue<ofVec3f>("basePlaneNormal");
+    basePlaneOffset = xml.getValue<ofVec3f>("basePlaneOffset");
+    basePlaneEq = xml.getValue<ofVec4f>("basePlaneEq");
+
+    return true;
+}
+
+//--------------------------------------------------------------
+bool ofApp::saveSettings(string path){
+    ofXml xml;
+    xml.addChild("KINECTSETTINGS");
+    xml.setTo("KINECTSETTINGS");
+    xml.addValue("kinectROI", kinectROI);
+    xml.addValue("basePlaneNormal", basePlaneNormal);
+    xml.addValue("basePlaneOffset", basePlaneOffset);
+    xml.addValue("basePlaneEq", basePlaneEq);
+    xml.setToParent();
+    return xml.save(path);
 }

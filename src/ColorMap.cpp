@@ -8,22 +8,32 @@
 using namespace ofxCv;
 using namespace cv;
 
+ColorMap::ColorMap(void)
+:numEntries(512){
+	// start the thread as soon as the
+	// class is created, it won't use any CPU
+	// until we send a new frame to be analyzed
+    //	startThread();
+}
+
 ColorMap::~ColorMap(void)
 {
 }
 
-void ColorMap::setNumEntries(int newNumEntries)
+void ColorMap::changeNumEntries(int amount, bool increase)
 {
-    /* Check if number actually changed: */
-    if(numEntries!=newNumEntries)
-    {
-        /* Reallocate entry array: */
-        numEntries=newNumEntries;
-
-        /* Recalculate mapping factors: */
-        factor=double(numEntries-1)/(max-min);
-        offset=min*factor;
+    if (increase) {
+        numEntries += amount;
+    } else {
+        numEntries -= amount;
+        if (numEntries < 1)
+            numEntries = 1;
     }
+        updateColormap();
+//        /* Recalculate mapping factors: */
+//        factor=double(numEntries-1)/(max-min);
+//        offset=min*factor;
+//    }
 }
 
 bool ColorMap::load(string filename, bool absolute) {
@@ -42,22 +52,30 @@ bool ColorMap::load(string filename, bool absolute) {
         heightMapColors.push_back(ofColor::fromHex((int)(*it)["color"]));
     }
     fs.release();
+
+    /* Create entry array: */
+    numKeys = heightMapKeys.size();
+    
+    min = heightMapKeys[0];
+    max = heightMapKeys[numKeys-1];
+    
     return updateColormap();
 }
 
 bool ColorMap::setKeys(std::vector<ofColor> colorkeys, std::vector<double> heightkeys) {
     heightMapKeys = heightkeys;
     heightMapColors = colorkeys;
+
+    /* Create entry array: */
+    numKeys = heightMapKeys.size();
+    
+    min = heightMapKeys[0];
+    max = heightMapKeys[numKeys-1];
+    
     return updateColormap();
 }
 
 bool ColorMap::updateColormap() {
-    /* Create entry array: */
-    numKeys = heightMapKeys.size();
-    numEntries = 256;
-    
-    setScalarRange(heightMapKeys[0],heightMapKeys[numKeys-1]);
-
     if (entries.isAllocated())
         entries.clear();
     entries.allocate(numEntries, 1, 3);
@@ -99,12 +117,12 @@ bool ColorMap::updateColormap() {
     return true;
 }
 
-bool ColorMap::setScalarRange(double newMin,double newMax)
+bool ColorMap::scaleRange(float factor)
 {
-    min=newMin;
-    max=newMax;
-    factor=double(numEntries-1)/(max-min);
-    offset=min*factor;
+    min *= factor;
+    max *= factor;
+//    factor=double(numEntries-1)/(max-min);
+//    offset=min*factor;
 
     return true;
 }

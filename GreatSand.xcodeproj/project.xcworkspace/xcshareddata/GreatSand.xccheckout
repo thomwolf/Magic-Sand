@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>11D1BE65-D845-4D3B-9576-D1B607E86AF6</string>
+	<key>IDESourceControlProjectName</key>
+	<string>GreatSand</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8AAD279F-A544-4747-80AF-CF2E568D8693</key>
+		<string>https://github.com/thomwolf/ofxCv.git</string>
+		<key>BA497D70-7343-429E-9A53-58FB6A39475F</key>
+		<string>https://github.com/thomwolf/ofxKinectProjectorToolkit.git</string>
+		<key>E5676A48-4876-4A59-B79B-A5877DDE200F</key>
+		<string>https://github.com/thomwolf/GreatSand.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>GreatSand.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8AAD279F-A544-4747-80AF-CF2E568D8693</key>
+		<string>../../../../../addons/ofxCv</string>
+		<key>BA497D70-7343-429E-9A53-58FB6A39475F</key>
+		<string>../../../../../addons/ofxKinectProjectorToolkit</string>
+		<key>E5676A48-4876-4A59-B79B-A5877DDE200F</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/thomwolf/GreatSand.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>E5676A48-4876-4A59-B79B-A5877DDE200F</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>E5676A48-4876-4A59-B79B-A5877DDE200F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>GreatSand</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8AAD279F-A544-4747-80AF-CF2E568D8693</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxCv</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>BA497D70-7343-429E-9A53-58FB6A39475F</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxKinectProjectorToolkit</string>
+		</dict>
+	</array>
+</dict>
+</plist>

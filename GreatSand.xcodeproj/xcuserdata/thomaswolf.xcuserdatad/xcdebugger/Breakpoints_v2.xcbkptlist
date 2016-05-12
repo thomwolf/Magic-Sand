@@ -10,12 +10,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "624"
-            endingLineNumber = "624"
-            landmarkName = "ofApp::updateROI()"
+            startingLineNumber = "628"
+            endingLineNumber = "628"
+            landmarkName = "ofApp::keyPressed(int key)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -26,12 +26,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484532780.698294"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "238"
-            endingLineNumber = "238"
-            landmarkName = "ofApp::draw()"
+            startingLineNumber = "241"
+            endingLineNumber = "241"
+            landmarkName = "ofApp::update()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -42,12 +42,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "501"
-            endingLineNumber = "501"
-            landmarkName = "ofApp::updateBasePlane()"
+            startingLineNumber = "505"
+            endingLineNumber = "505"
+            landmarkName = "ofApp::setHeightMapRange(int newHeightMapSize,float newMinElevation,float newMaxElevation)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -58,12 +58,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "507"
-            endingLineNumber = "507"
-            landmarkName = "ofApp::updateBasePlane()"
+            startingLineNumber = "511"
+            endingLineNumber = "511"
+            landmarkName = "ofApp::computeTransform(ofVec4f vin)"
             landmarkType = "5">
             <Locations>
                <Location
@@ -104,13 +104,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "505"
-            endingLineNumber = "505"
-            landmarkName = "ofApp::updateBasePlane()"
-            landmarkType = "5">
+            startingLineNumber = "509"
+            endingLineNumber = "509">
             <Locations>
                <Location
                   shouldBeEnabled = "No"
@@ -150,13 +148,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "503"
-            endingLineNumber = "503"
-            landmarkName = "ofApp::updateBasePlane()"
-            landmarkType = "5">
+            startingLineNumber = "507"
+            endingLineNumber = "507">
             <Locations>
                <Location
                   shouldBeEnabled = "No"
@@ -196,12 +192,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "518"
-            endingLineNumber = "518"
-            landmarkName = "ofApp::updateBasePlane()"
+            startingLineNumber = "522"
+            endingLineNumber = "522"
+            landmarkName = "ofApp::computeTransform(ofVec4f vin)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -212,12 +208,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534107.022003"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "556"
-            endingLineNumber = "556"
-            landmarkName = "ofApp::updateBasePlane()"
+            startingLineNumber = "560"
+            endingLineNumber = "560"
+            landmarkName = "ofApp::updateROI()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -228,57 +224,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "484534398.390081"
+            timestampString = "484784772.951646"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
-            landmarkName = "ofApp::setup()"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ofApp::setup()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.2_osx_release/apps/myApps/GreatSand/src/ofApp.cpp"
-                  timestampString = "484533607.504771"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64"
-                  offsetFromSymbolStart = "1617">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ofApp::setup()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.2_osx_release/apps/myApps/GreatSand/src/ofApp.cpp"
-                  timestampString = "484533607.505233"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64"
-                  offsetFromSymbolStart = "1778">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/ofApp.cpp"
-            timestampString = "484534388.884313"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "70"
-            endingLineNumber = "70"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
             landmarkName = "ofApp::setup()"
             landmarkType = "5">
          </BreakpointContent>
@@ -328,6 +278,38 @@
             startingLineNumber = "297"
             endingLineNumber = "297"
             landmarkName = "FrameFilter::filter(ofShortPixels inputframe)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/ofApp.cpp"
+            timestampString = "484784772.951646"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "349"
+            endingLineNumber = "349"
+            landmarkName = "ofApp::drawSandbox()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/ofApp.cpp"
+            timestampString = "484784772.951646"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "343"
+            endingLineNumber = "343"
+            landmarkName = "ofApp::drawSandbox()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
