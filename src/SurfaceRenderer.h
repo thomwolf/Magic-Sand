@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #pragma once
 
-#include <IO/FileMonitor.h>
+//#include <IO/FileMonitor.h>
 //#include <Geometry/Plane.h>
 //#include <Geometry/ProjectiveTransformation.h>
 #include "ofMain.h"

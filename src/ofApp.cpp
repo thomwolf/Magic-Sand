@@ -158,6 +158,11 @@ void ofApp::setRangesAndBasePlaneEquation(){
     //if(elevationMax>heightMap.getScalarRangeMax())
     elevationMax=-heightMap.getScalarRangeMax()/depthNorm;
     setHeightMapRange(heightMap.getNumEntries(),elevationMin,elevationMax);
+    cout << "basePlaneOffset" << basePlaneOffset << endl;
+    cout << "basePlaneNormal" << basePlaneOffset << endl;
+    cout << "elevationMin" << basePlaneOffset << endl;
+    cout << "elevationMax" << basePlaneOffset << endl;
+    cout << "heightMap.getNumEntries()" << heightMap.getNumEntries() << endl;
 }
 
 //--------------------------------------------------------------
@@ -214,18 +219,18 @@ void ofApp::update(){
         }
         else if (generalState == GENERAL_STATE_SANDBOX){
 //Check values for debug
-            float maxval = -1000.0;
-            float minval = 1000.0;
-            float xf;
-            for (int i = 0; i<640*480; i ++){
-                xf = FilteredDepthImage.getFloatPixelsRef().getData()[i] - basePlaneOffset.z;
-
-                if (xf > maxval)
-                    maxval = xf;
-                if (xf < minval)
-                    minval = xf;
-            }
-            cout << "FilteredDepthImage - baseplane offset maxval : " << maxval << " FilteredDepthImage - baseplane offset minval : " << minval << endl;
+//            float maxval = -1000.0;
+//            float minval = 1000.0;
+//            float xf;
+//            for (int i = 0; i<640*480; i ++){
+//                xf = FilteredDepthImage.getFloatPixelsRef().getData()[i] - basePlaneOffset.z;
+//
+//                if (xf > maxval)
+//                    maxval = xf;
+//                if (xf < minval)
+//                    minval = xf;
+//            }
+//            cout << "FilteredDepthImage - baseplane offset maxval : " << maxval << " FilteredDepthImage - baseplane offset minval : " << minval << endl;
             
             // Get kinect depth image coord
             ofVec2f t = kinectROI.getCenter();
@@ -622,29 +627,39 @@ void ofApp::updateMode(){
 void ofApp::keyPressed(int key){
     if (key==' '){
         addPointPair();
-    } else if (key=='q') {
-        chessboardSize -= 20;
-    } else if (key=='s') {
-        chessboardSize += 20;
     } else if (key=='a') {
-        basePlaneOffset.z += 5/depthNorm;
-        cout << "basePlaneOffset" << basePlaneOffset.z*depthNorm << endl;
-        setRangesAndBasePlaneEquation();
+        chessboardSize -= 20;
     } else if (key=='z') {
-        basePlaneOffset.z -= 5/depthNorm;
-        cout << "basePlaneOffset" << basePlaneOffset.z*depthNorm << endl;
-       setRangesAndBasePlaneEquation();
+        chessboardSize += 20;
+    } else if (key=='q') {
+        basePlaneOffset.z += 0.5/depthNorm;
+        setRangesAndBasePlaneEquation();
+    } else if (key=='s') {
+        basePlaneOffset.z -= 0.5/depthNorm;
+        setRangesAndBasePlaneEquation();
     }else if (key=='w') {
         heightMap.scaleRange(0.5);
         setRangesAndBasePlaneEquation();
     } else if (key=='x') {
         heightMap.scaleRange(2);
         setRangesAndBasePlaneEquation();
-    }else if (key=='d') {
-        heightMap.changeNumEntries(10, true); // Increase the color map's size
+    } else if (key=='d') {
+        heightMap.changeNumEntries(50, true); // Increase the color map's size
         setRangesAndBasePlaneEquation();
     } else if (key=='f') {
-        heightMap.changeNumEntries(10, false); // Decrease the color map's size
+        heightMap.changeNumEntries(50, false); // Decrease the color map's size
+        setRangesAndBasePlaneEquation();
+    } else if (key=='u') {
+        basePlaneNormal.rotate(-1, ofVec3f(1,0,0)); // Rotate the base plane normal
+        setRangesAndBasePlaneEquation();
+    } else if (key=='i') {
+        basePlaneNormal.rotate(1, ofVec3f(1,0,0)); // Rotate the base plane normal
+        setRangesAndBasePlaneEquation();
+    } else if (key=='o') {
+        basePlaneNormal.rotate(-1, ofVec3f(0,1,0)); // Rotate the base plane normal
+        setRangesAndBasePlaneEquation();
+    } else if (key=='p') {
+        basePlaneNormal.rotate(1, ofVec3f(0,1,0)); // Rotate the base plane normal
         setRangesAndBasePlaneEquation();
     } else if (key=='c') {
         if (pairsKinect.size() == 0) {
@@ -680,7 +695,7 @@ void ofApp::keyPressed(int key){
         else if (generalState == GENERAL_STATE_SANDBOX){
             generalState = GENERAL_STATE_CALIBRATION;
         }
-    } else if (key=='s') {
+    } else if (key=='v') {
         if (kpt.saveCalibration("calibration.xml"))
         {
             cout << "Calibration saved " << endl;
