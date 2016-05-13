@@ -60,6 +60,7 @@ private:
     ofxCvFloatImage             FilteredDepthImage;
     ofxCvColorImage             kinectColorImage;
     cv::Mat                     cvRgbImage;
+    ofxCvFloatImage Dptimg;
 
     // Calibration variables
     vector<ofVec2f>             currentProjectorPoints;
@@ -78,6 +79,7 @@ private:
     bool saved;
     bool loaded;
     bool calibrated;
+    bool firstImageReady;
 
     // States variables
     General_state generalState;

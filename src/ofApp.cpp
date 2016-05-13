@@ -51,9 +51,9 @@ void ofApp::setup(){
 	
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormal = ofVec3f(0,0,1);
-	basePlaneOffset= ofVec3f(0,0,870/depthNorm);
+	basePlaneOffset= ofVec3f(0,0,870);
 	nearclip = 500;
-	farclip = 4000;
+	farclip = 1500;
 		
 	// Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
@@ -90,8 +90,11 @@ void ofApp::setup(){
     fboProjWindow.allocate(projResX, projResY, GL_RGBA);
     contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
     FilteredDepthImage.allocate(kinectResX, kinectResY);
+    FilteredDepthImage.setNativeScale(0, 1);//depthNorm);
     kinectColorImage.allocate(kinectResX, kinectResY);
-    
+
+    Dptimg.allocate(20, 20);
+
     // Sandbox drawing variables
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineFactor = 0.1f; // Inverse elevation distance between adjacent topographic contour lines
@@ -146,7 +149,7 @@ void ofApp::setup(){
     } else {
         cout << "Calibration could not be loaded " << endl;
     }
-
+    firstImageReady = false;
 	kinectgrabber.startThread(true);
 }
 
@@ -154,14 +157,18 @@ void ofApp::setup(){
 void ofApp::setRangesAndBasePlaneEquation(){
     //if(elevationMin<heightMap.getScalarRangeMin())
     basePlaneEq=getPlaneEquation(basePlaneOffset,basePlaneNormal); //homogeneous base plane equation
+    basePlaneEq /= ofVec4f(depthNorm, depthNorm, 1, depthNorm); // Normalized coordinates for the shader (except z since it is already normalized in the Depthframe)
+    
     elevationMin=-heightMap.getScalarRangeMin()/depthNorm;
     //if(elevationMax>heightMap.getScalarRangeMax())
     elevationMax=-heightMap.getScalarRangeMax()/depthNorm;
     setHeightMapRange(heightMap.getNumEntries(),elevationMin,elevationMax);
+    
     cout << "basePlaneOffset" << basePlaneOffset << endl;
-    cout << "basePlaneNormal" << basePlaneOffset << endl;
-    cout << "elevationMin" << basePlaneOffset << endl;
-    cout << "elevationMax" << basePlaneOffset << endl;
+    cout << "basePlaneNormal" << basePlaneNormal << endl;
+    cout << "basePlaneEq" << basePlaneEq << endl;
+    cout << "elevationMin" << elevationMin << endl;
+    cout << "elevationMax" << elevationMax << endl;
     cout << "heightMap.getNumEntries()" << heightMap.getNumEntries() << endl;
 }
 
@@ -172,6 +179,8 @@ void ofApp::update(){
 	if (kinectgrabber.filtered.tryReceive(filteredframe)) {
 		FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectResX, kinectResY);
 		FilteredDepthImage.updateTexture();
+        if (kinectgrabber.framefilter.firstImageReady)
+            firstImageReady = true;
 
         // Get color image from kinect grabber
         ofPixels coloredframe;
@@ -285,6 +294,26 @@ void ofApp::draw(){
         ofSetColor(255);
     } else if (generalState == GENERAL_STATE_SANDBOX){
         kinectColorImage.draw(0, 0, 640, 480);
+        //Draw testing point indicator
+        float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 10);
+        ofDrawCircle(testPoint.x, testPoint.y, ptSize);
+        
+        ofRectangle imgROI;
+        imgROI.setFromCenter(testPoint, 20, 20);
+        kinectColorImage.setROI(imgROI);
+        kinectColorImage.drawROI(650, 10, 100, 100);
+        ofDrawCircle(700, 60, ptSize);
+
+        if (firstImageReady) {
+//            FilteredDepthImage.setROI(imgROI);
+            float * roi_ptr = (float*)FilteredDepthImage.getFloatPixelsRef().getData() + ((int)(imgROI.y)*kinectResX) + (int)imgROI.x;
+            ofFloatPixels ROIDpt;
+            ROIDpt.setFromAlignedPixels(roi_ptr,imgROI.width,imgROI.height,1,kinectResX*4);
+            Dptimg.setFromPixels(ROIDpt);
+            Dptimg.contrastStretch();
+            Dptimg.draw(650, 120, 100, 100);
+            ofDrawCircle(700, 170, ptSize);
+        }
     }
 }
 
@@ -632,10 +661,10 @@ void ofApp::keyPressed(int key){
     } else if (key=='z') {
         chessboardSize += 20;
     } else if (key=='q') {
-        basePlaneOffset.z += 0.5/depthNorm;
+        basePlaneOffset.z += 0.5;
         setRangesAndBasePlaneEquation();
     } else if (key=='s') {
-        basePlaneOffset.z -= 0.5/depthNorm;
+        basePlaneOffset.z -= 0.5;
         setRangesAndBasePlaneEquation();
     }else if (key=='w') {
         heightMap.scaleRange(0.5);
@@ -737,9 +766,14 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_CALIBRATION_TEST) {
-        testPoint.set(min(x, kinectResX-1), min(y, kinectResY-1));
-    }
+    testPoint.set(min(x, kinectResX-1), min(y, kinectResY-1));
+    
+    int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
+    cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
+    float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
+    cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
+    cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
+    cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
 }
 
 //--------------------------------------------------------------

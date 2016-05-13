@@ -53,8 +53,11 @@ public:
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
     void displayFlowField();
     void drawArrow(ofVec2f);
+    void applySpaceFilter(ofFloatPixels& newOutputFrame);
     void updateGradientField();
     ofFloatPixels filter(ofShortPixels inputframe);
+	float* statBuffer; // Buffer retaining the running means and variances of each pixel's depth value
+    bool firstImageReady;
     
 private:
     ofxKinect * backend;
@@ -88,7 +91,6 @@ private:
 	int numAveragingSlots; // Number of slots in each pixel's averaging buffer
 	float* averagingBuffer; // Buffer to calculate running averages of each pixel's depth value
 	int averagingSlotIndex; // Index of averaging slot in which to store the next frame's depth values
-	float* statBuffer; // Buffer retaining the running means and variances of each pixel's depth value
 	unsigned int minNumSamples; // Minimum number of valid samples needed to consider a pixel stable
 	float maxVariance; // Maximum variance to consider a pixel stable
     float depthNorm; // Normalization of depth

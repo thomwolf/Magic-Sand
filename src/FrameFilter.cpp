@@ -55,7 +55,7 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,flo
 	
 	/* Enable spatial filtering: */
     //	spatialFilter=true;
-    spatialFilter=true;
+    spatialFilter = false;
     
 	/* Convert the base plane equation from camera space to depth-image space: */
     //	PTransform::HVector basePlaneCc(basePlane.getNormal());
@@ -151,6 +151,7 @@ void FrameFilter::initiateBuffers(void){
             *wcPtr=Point3f(0, 0, 0);
     
     bufferInitiated = true;
+    firstImageReady = false;
 }
 void FrameFilter::setDepthRange(float snearclip, float sfarclip){
     // send the frame to the thread for analyzing
@@ -318,6 +319,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                         {
                             /* Set the output pixel value to the depth-corrected running mean: */
                             *nofPtr=*ofPtr=newFiltered;
+                            firstImageReady = true;
                         }
                         else
                         {
@@ -346,53 +348,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
         /* Apply a spatial filter if requested: */
         if(spatialFilter)
         {
-            for(int filterPass=0;filterPass<2;++filterPass)
-            {
-                /* Low-pass filter the entire output frame in-place: */
-                for(unsigned int x=minX;x<maxX;++x)
-                {
-                    /* Get a pointer to the current column: */
-                    float* colPtr=static_cast<float*>(newOutputFrame.getData())+x;
-                    
-                    /* Filter the first pixel in the column: */
-                    float lastVal=*colPtr;
-                    *colPtr=(colPtr[0]*2.0f+colPtr[width])/3.0f;
-                    colPtr+=width;
-                    
-                    /* Filter the interior pixels in the column: */
-                    for(unsigned int y=minY+1;y<maxY-1;++y,colPtr+=width)
-                    {
-                        /* Filter the pixel: */
-                        float nextLastVal=*colPtr;
-                        *colPtr=(lastVal+colPtr[0]*2.0f+colPtr[width])*0.25f;
-                        lastVal=nextLastVal;
-                    }
-                    
-                    /* Filter the last pixel in the column: */
-                    *colPtr=(lastVal+colPtr[0]*2.0f)/3.0f;
-                }
-                float* rowPtr=static_cast<float*>(newOutputFrame.getData());
-                for(unsigned int y=minY;y<maxY;++y)
-                {
-                    /* Filter the first pixel in the row: */
-                    float lastVal=*rowPtr;
-                    *rowPtr=(rowPtr[0]*2.0f+rowPtr[1])/3.0f;
-                    ++rowPtr;
-                    
-                    /* Filter the interior pixels in the row: */
-                    for(unsigned int x=minX+1;x<maxX-1;++x,++rowPtr)
-                    {
-                        /* Filter the pixel: */
-                        float nextLastVal=*rowPtr;
-                        *rowPtr=(lastVal+rowPtr[0]*2.0f+rowPtr[1])*0.25f;
-                        lastVal=nextLastVal;
-                    }
-                    
-                    /* Filter the last pixel in the row: */
-                    *rowPtr=(lastVal+rowPtr[0]*2.0f)/3.0f;
-                    ++rowPtr;
-                }
-            }
+            applySpaceFilter(newOutputFrame);
         }
         
    }
@@ -403,6 +359,57 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
     updateGradientField();
 
     return newOutputFrame;
+}
+
+void FrameFilter::applySpaceFilter(ofFloatPixels& newOutputFrame)
+{
+    for(int filterPass=0;filterPass<2;++filterPass)
+    {
+        /* Low-pass filter the entire output frame in-place: */
+        for(unsigned int x=minX;x<maxX;++x)
+        {
+            /* Get a pointer to the current column: */
+            float* colPtr=static_cast<float*>(newOutputFrame.getData())+x;
+            
+            /* Filter the first pixel in the column: */
+            float lastVal=*colPtr;
+            *colPtr=(colPtr[0]*2.0f+colPtr[width])/3.0f;
+            colPtr+=width;
+            
+            /* Filter the interior pixels in the column: */
+            for(unsigned int y=minY+1;y<maxY-1;++y,colPtr+=width)
+            {
+                /* Filter the pixel: */
+                float nextLastVal=*colPtr;
+                *colPtr=(lastVal+colPtr[0]*2.0f+colPtr[width])*0.25f;
+                lastVal=nextLastVal;
+            }
+            
+            /* Filter the last pixel in the column: */
+            *colPtr=(lastVal+colPtr[0]*2.0f)/3.0f;
+        }
+        float* rowPtr=static_cast<float*>(newOutputFrame.getData());
+        for(unsigned int y=minY;y<maxY;++y)
+        {
+            /* Filter the first pixel in the row: */
+            float lastVal=*rowPtr;
+            *rowPtr=(rowPtr[0]*2.0f+rowPtr[1])/3.0f;
+            ++rowPtr;
+            
+            /* Filter the interior pixels in the row: */
+            for(unsigned int x=minX+1;x<maxX-1;++x,++rowPtr)
+            {
+                /* Filter the pixel: */
+                float nextLastVal=*rowPtr;
+                *rowPtr=(lastVal+rowPtr[0]*2.0f+rowPtr[1])*0.25f;
+                lastVal=nextLastVal;
+            }
+            
+            /* Filter the last pixel in the row: */
+            *rowPtr=(lastVal+rowPtr[0]*2.0f)/3.0f;
+            ++rowPtr;
+        }
+    }
 }
 
 void FrameFilter::updateGradientField()
