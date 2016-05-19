@@ -48,12 +48,12 @@ void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
     kinectColorImage.setUseTexture(false);
 }
 
-void KinectGrabber::setupFramefilter(float sdepthNorm, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI) {
+void KinectGrabber::setupFramefilter(int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI) {
     nearclip =snearclip;
     farclip =sfarclip;
-    depthNorm = sdepthNorm;
+//    depthNorm = sdepthNorm;
     kinect.setDepthClipping(snearclip, sfarclip);
-    framefilter.setup(kinectWidth,kinectHeight,sdepthNorm, gradFieldresolution, snearclip, sfarclip, basePlaneNormal, MinElevation, MaxElevation);
+    framefilter.setup(kinectWidth,kinectHeight, gradFieldresolution, snearclip, sfarclip, basePlaneNormal, MinElevation, MaxElevation);
     framefilter.setROI(ROI);
 //    framefilter.setValidElevationInterval(basePlaneNormal,elevationMin,elevationMax);
     // framefilter.startThread();
@@ -80,12 +80,12 @@ ofVec2f KinectGrabber::getKinectSize(){
 }
 
 ofMatrix4x4 KinectGrabber::getWorldMatrix(){
-    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1)*depthNorm; // Trick to access kinect internal parameters without having to modify ofxKinect
-    ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1)*depthNorm;
+    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);//*depthNorm; // Trick to access kinect internal parameters without having to modify ofxKinect
+    ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);//*depthNorm;
     cout << "Computing kinect world matrix" << endl;
     return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
                        0,       b.y-a.y,    0,  a.y,
-                       0,       0,          0,  depthNorm,
+                       0,       0,          0,  1/*depthNorm*/,
                        0,       0,          0,  1);
 }
 

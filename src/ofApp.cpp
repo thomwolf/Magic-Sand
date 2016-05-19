@@ -42,7 +42,7 @@ void ofApp::setup(){
     Dptimg.allocate(20, 20); // Small detailed ROI
 
 	// Setup framefilter variables
-    depthNorm = 1; // Kinect raw depth values normalization coef (to bring it in 0..1 range
+//    depthNorm = 1; // Kinect raw depth values normalization coef (to bring it in 0..1 range
 //    elevationMin=950/depthNorm;
 //	elevationMax=750/depthNorm;
 //	int numAveragingSlots=30;
@@ -131,7 +131,7 @@ void ofApp::setup(){
 //    plane.mapTexCoordsFromTexture(FilteredDepthImage.getTexture());
 
 	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(depthNorm, gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
+    kinectgrabber.setupFramefilter(gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     cout << "kinectWorldMatrix: " << kinectWorldMatrix << endl;
     
@@ -208,7 +208,7 @@ void ofApp::update(){
                     // Get kinect depth image coord
                     ofVec2f t = ofVec2f(min((float)kinectResX-1,testPoint.x), min((float)kinectResY-1,testPoint.y));
                     ofVec3f worldPoint = ofVec3f(t);
-                    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y) / depthNorm;
+                    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);// / depthNorm;
                     ofVec4f wc = ofVec4f(worldPoint);
                     wc.w = 1;
                     
@@ -316,6 +316,10 @@ void ofApp::draw(){
             i++;
             ofDrawBitmapStringHighlight("l: load calibration.", xbase, ybase+i*yinc);
             i++;
+            ofDrawBitmapStringHighlight("j: save settings.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("k: load setting.", xbase, ybase+i*yinc);
+            i++;
             ofDrawBitmapStringHighlight(resultMessage, xbase, ybase+i*yinc);
             i++;
             ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", xbase, ybase+i*yinc);
@@ -337,10 +341,12 @@ void ofApp::draw(){
 //            FilteredDepthImage.setROI(imgROI);
             float * roi_ptr = (float*)FilteredDepthImage.getFloatPixelsRef().getData() + ((int)(imgROI.y)*kinectResX) + (int)imgROI.x;
             ofFloatPixels ROIDpt;
+            ROIDpt.setNumChannels(1);
             ROIDpt.setFromAlignedPixels(roi_ptr,imgROI.width,imgROI.height,1,kinectResX*4);
             Dptimg.setFromPixels(ROIDpt);
-            Dptimg.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);//2000/depthNorm); // This scale is converted to 0..1 when send to the shader
-            Dptimg.convertToRange(0, 1);
+            
+            Dptimg.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);
+            Dptimg.contrastStretch();
             Dptimg.draw(650, 120, 100, 100);
             ofDrawCircle(700, 170, ptSize);
         }
@@ -378,6 +384,10 @@ void ofApp::draw(){
         ofDrawBitmapStringHighlight("v: save calibration.", xbase, ybase+i*yinc);
         i++;
         ofDrawBitmapStringHighlight("l: load calibration.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("j: save settings.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("k: load setting.", xbase, ybase+i*yinc);
         i++;
         ofDrawBitmapStringHighlight(resultMessage, xbase, ybase+i*yinc);
         i++;
@@ -803,8 +813,21 @@ void ofApp::keyPressed(int key){
         } else {
             cout << "Calibration could not be loaded " << endl;
         }
+    }else if (key=='j') {
+        if (saveSettings("settings.xml"))
+        {
+            cout << "Settings saved " << endl;
+        } else {
+            cout << "Settings could not be saved " << endl;
+        }
+    } else if (key=='k') {
+        if (loadSettings("settings.xml"))
+        {
+            cout << "Settings loaded " << endl;
+        } else {
+            cout << "Settings could not be loaded " << endl;
+        }
     }
-
     if (key=='r' || key=='b' || key=='t') {
         firstImageReady = false;
         updateMode();
@@ -892,6 +915,9 @@ bool ofApp::loadSettings(string path){
     basePlaneNormal = xml.getValue<ofVec3f>("basePlaneNormal");
     basePlaneOffset = xml.getValue<ofVec3f>("basePlaneOffset");
     basePlaneEq = xml.getValue<ofVec4f>("basePlaneEq");
+
+    setRangesAndBasePlaneEquation();
+    kinectgrabber.setKinectROI(kinectROI);
 
     return true;
 }

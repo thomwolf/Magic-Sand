@@ -18,7 +18,7 @@ FrameFilter::FrameFilter(): newFrame(true), bufferInitiated(false)
 {
 }
 
-bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,float sdepthNorm, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation)
+bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation)
 {
 	/* Settings variables : */
 	width = swidth;
@@ -31,15 +31,15 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,flo
 	/* Initialize the valid depth range: */
     //	setValidDepthInterval(0U,2046U);
     
-    //Save the depth normalization coef
-    depthNorm = sdepthNorm;
+//    //Save the depth normalization coef
+//    depthNorm = sdepthNorm;
     
 	/* Initialize the stability criterion and averaging buffer */
     numAveragingSlots = 30;
     minNumSamples=(numAveragingSlots+1)/2;
 //    depthNorm = 2000;
-    maxVariance = 4 / depthNorm/depthNorm;
-    hysteresis = 0.1f / depthNorm;
+    maxVariance = 4 ;/// depthNorm/depthNorm;
+    hysteresis = 0.1f ;/// depthNorm;
 	retainValids=true;
 	instableValue=0.0;
     maxgradfield = 1000;
@@ -54,8 +54,8 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,flo
     //    hysteresis=newHysteresis;
 	
 	/* Enable spatial filtering: */
-    //	spatialFilter=true;
-    spatialFilter = false;
+    	spatialFilter=true;
+    //spatialFilter = false;
     
 	/* Convert the base plane equation from camera space to depth-image space: */
     //	PTransform::HVector basePlaneCc(basePlane.getNormal());
@@ -266,7 +266,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                 {
                     float oldVal=*abPtr;
                     RawDepth newValRD = *ifPtr;
-                    float newVal = (float) newValRD/depthNorm;
+                    float newVal = (float) newValRD;///depthNorm;
                     
                     /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
                     point[0] = px;

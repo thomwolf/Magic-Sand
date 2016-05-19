@@ -26,7 +26,7 @@ public:
 	~KinectGrabber();
     void setup(General_state, Calibration_state);
     void setupClip(float nearclip, float farclip);
-    void setupFramefilter(float sdepthNorm, int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI);
+    void setupFramefilter(int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI);
     void setupCalibration(int projectorWidth, int projectorHeight, float schessboardSize, float schessboardColor, float sStabilityTimeInMs, float smaxReprojError);
     void setMode(General_state sgeneralState, Calibration_state scalibrationState);
     void setKinectROI(ofRectangle skinectROI);
@@ -63,7 +63,7 @@ private:
     
     // kinect & the wrapper
     float                   nearclip, farclip;
-    float depthNorm;
+//    float depthNorm;
     int kinectWidth, kinectHeight;//, projWidth, projHeight;
     ofxCvColorImage         kinectColorImage;
 //    ofxCvGrayscaleImage		kinectGreyscaledImage;

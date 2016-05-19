@@ -35,7 +35,7 @@ public:
     FrameFilter();
     ~FrameFilter();
     
-    bool setup(const unsigned int swidth,const unsigned int sheight,float sdepthNorm, int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
+    bool setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
     void setDepthRange(float nearclip, float farclip);
@@ -93,7 +93,7 @@ private:
 	int averagingSlotIndex; // Index of averaging slot in which to store the next frame's depth values
 	unsigned int minNumSamples; // Minimum number of valid samples needed to consider a pixel stable
 	float maxVariance; // Maximum variance to consider a pixel stable
-    float depthNorm; // Normalization of depth
+//    float depthNorm; // Normalization of depth
     float unvalidValue;
 	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update
 	bool retainValids; // Flag whether to retain previous stable values if a new pixel in instable, or reset to a default value
