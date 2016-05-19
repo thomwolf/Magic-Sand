@@ -32,11 +32,19 @@ void ofApp::setup(){
 	projResX =projWindow->getWidth();
 	projResY =projWindow->getHeight();
 	kinectROI = ofRectangle(0, 0, kinectResX, kinectResY);
-	
+    testPoint.set(kinectResX/2, kinectResY/2);
+
+    // Initialize the fbos and images
+    fboProjWindow.allocate(projResX, projResY, GL_RGBA);
+    contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
+    FilteredDepthImage.allocate(kinectResX, kinectResY);
+    kinectColorImage.allocate(kinectResX, kinectResY);
+    Dptimg.allocate(20, 20); // Small detailed ROI
+
 	// Setup framefilter variables
-    depthNorm = 2000; // Kinect raw depth values normalization coef (to bring it in 0..1 range
-    elevationMin=950/depthNorm;
-	elevationMax=750/depthNorm;
+    depthNorm = 1; // Kinect raw depth values normalization coef (to bring it in 0..1 range
+//    elevationMin=950/depthNorm;
+//	elevationMax=750/depthNorm;
 //	int numAveragingSlots=30;
 //	unsigned int minNumSamples=10;
 //	unsigned int maxVariance=2/(4000*4000);
@@ -86,15 +94,6 @@ void ofApp::setup(){
         exit();
     }
     
-	// Initialize the fbos
-    fboProjWindow.allocate(projResX, projResY, GL_RGBA);
-    contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
-    FilteredDepthImage.allocate(kinectResX, kinectResY);
-    FilteredDepthImage.setNativeScale(0, 1);//depthNorm);
-    kinectColorImage.allocate(kinectResX, kinectResY);
-
-    Dptimg.allocate(20, 20);
-
     // Sandbox drawing variables
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineFactor = 0.1f; // Inverse elevation distance between adjacent topographic contour lines
@@ -157,19 +156,28 @@ void ofApp::setup(){
 void ofApp::setRangesAndBasePlaneEquation(){
     //if(elevationMin<heightMap.getScalarRangeMin())
     basePlaneEq=getPlaneEquation(basePlaneOffset,basePlaneNormal); //homogeneous base plane equation
-    basePlaneEq /= ofVec4f(depthNorm, depthNorm, 1, depthNorm); // Normalized coordinates for the shader (except z since it is already normalized in the Depthframe)
+    //basePlaneEq /= ofVec4f(depthNorm, depthNorm, 1, depthNorm); // Normalized coordinates for the shader (except z since it is already normalized in the Depthframe)
     
-    elevationMin=-heightMap.getScalarRangeMin()/depthNorm;
+    elevationMin=-heightMap.getScalarRangeMin();///depthNorm;
     //if(elevationMax>heightMap.getScalarRangeMax())
-    elevationMax=-heightMap.getScalarRangeMax()/depthNorm;
-    setHeightMapRange(heightMap.getNumEntries(),elevationMin,elevationMax);
+    elevationMax=-heightMap.getScalarRangeMax();///depthNorm;
     
-    cout << "basePlaneOffset" << basePlaneOffset << endl;
-    cout << "basePlaneNormal" << basePlaneNormal << endl;
-    cout << "basePlaneEq" << basePlaneEq << endl;
-    cout << "elevationMin" << elevationMin << endl;
-    cout << "elevationMax" << elevationMax << endl;
-    cout << "heightMap.getNumEntries()" << heightMap.getNumEntries() << endl;
+    // Calculate the  height map elevation scaling and offset coefficients
+	heightMapScale =(heightMap.getNumEntries()-1)/((elevationMax-elevationMin));
+	heightMapOffset =0.5/heightMap.getNumEntries()-heightMapScale*elevationMin;
+
+    FilteredDepthImage.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);//2000/depthNorm); // This scale is converted to 0..1 when send to the shader
+    // Calculate the  FilteredDepthImage scaling and offset coefficients
+	FilteredDepthScale = elevationMin-elevationMax;
+	FilteredDepthOffset = basePlaneOffset.z+elevationMax;
+    
+    
+    cout << "basePlaneOffset: " << basePlaneOffset << endl;
+    cout << "basePlaneNormal: " << basePlaneNormal << endl;
+    cout << "basePlaneEq: " << basePlaneEq << endl;
+    cout << "elevationMin: " << elevationMin << endl;
+    cout << "elevationMax: " << elevationMax << endl;
+    cout << "heightMap.getNumEntries(): " << heightMap.getNumEntries() << endl;
 }
 
 //--------------------------------------------------------------
@@ -266,10 +274,6 @@ void ofApp::draw(){
         if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
             ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
             ofDrawBitmapStringHighlight("The projector should place a green dot on the corresponding point.", 340, 530);
-            ofDrawBitmapStringHighlight("Press the 's' key to save the calibration.", 340, 550);
-            if (saved) {
-                ofDrawBitmapStringHighlight("Calibration saved.", 340, 590);
-            }
             ofSetColor(255, 0, 0);
             
             //Draw testing point indicator
@@ -281,15 +285,40 @@ void ofApp::draw(){
             ofSetColor(255);
             ofDrawRectangle(kinectROI);
             ofFill();
-            ofDrawBitmapStringHighlight("Position the chessboard using the mouse.", 340, 510);
-            ofDrawBitmapStringHighlight("Adjust the size of the chessboard using the 'q' and 'w' keys.", 340, 530);
-            ofDrawBitmapStringHighlight("Press the spacebar to save a set of point pairs.", 340, 550);
-            ofDrawBitmapStringHighlight("Press the 'c' key to perform calibration.", 340, 570);
-            ofDrawBitmapStringHighlight("Press the 'r' key to find ROI.", 340, 590);
-            ofDrawBitmapStringHighlight("Press the 't' key to switch between performing calibrating and testing calibration.", 340, 610);
-            ofDrawBitmapStringHighlight("Press the 'b' key to switch between calibrating and using sandbox.", 340, 630);
-            ofDrawBitmapStringHighlight(resultMessage, 340, 650);
-            ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", 340, 670);
+            
+            int ybase = 300;
+            int yinc = 20;
+            int i = 0;
+            int xbase = 650;
+            ofDrawBitmapStringHighlight("Position the chessboard using the mouse.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("[SPACE]: add point pair.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("a & z: change chessboard size.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("q & s: change baseplane offset.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("w & x: change heightmapscale.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("d & f: change heightmap entry number.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("u, i, o & p: rotate baseplane normal.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("c: compute calibration matrix.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("r: find kinect ROI.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("t: go to point test mode.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("b: go to sandbox mode.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("v: save calibration.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight("l: load calibration.", xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight(resultMessage, xbase, ybase+i*yinc);
+            i++;
+            ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", xbase, ybase+i*yinc);
         }
         ofSetColor(255);
     } else if (generalState == GENERAL_STATE_SANDBOX){
@@ -310,10 +339,49 @@ void ofApp::draw(){
             ofFloatPixels ROIDpt;
             ROIDpt.setFromAlignedPixels(roi_ptr,imgROI.width,imgROI.height,1,kinectResX*4);
             Dptimg.setFromPixels(ROIDpt);
-            Dptimg.contrastStretch();
+            Dptimg.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);//2000/depthNorm); // This scale is converted to 0..1 when send to the shader
+            Dptimg.convertToRange(0, 1);
             Dptimg.draw(650, 120, 100, 100);
             ofDrawCircle(700, 170, ptSize);
         }
+        ofNoFill();
+        ofSetColor(255);
+        ofDrawRectangle(kinectROI);
+        ofFill();
+        
+        int ybase = 300;
+        int yinc = 20;
+        int i = 0;
+        int xbase = 650;
+        ofDrawBitmapStringHighlight("Position the chessboard using the mouse.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("[SPACE]: add point pair.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("a & z: change chessboard size.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("q & s: change baseplane offset.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("w & x: change heightmapscale.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("d & f: change heightmap entry number.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("u, i, o & p: rotate baseplane normal.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("c: compute calibration matrix.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("r: find kinect ROI.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("t: go to point test mode.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("b: go to sandbox mode.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("v: save calibration.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight("l: load calibration.", xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight(resultMessage, xbase, ybase+i*yinc);
+        i++;
+        ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", xbase, ybase+i*yinc);
     }
 }
 
@@ -380,10 +448,11 @@ void ofApp::drawSandbox() { // Prepare proj window fbo
     heightMapShader.begin();
     
 //    heightMapShader.setUniformTexture("tex1", FilteredDepthImage.getTexture(), 1 ); //"1" means that it is texture 1
-    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix.getTransposedOf(kinectProjMatrix));
+    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix.getTransposedOf(kinectProjMatrix)); // Transpose since OpenGL is row-major order
     heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix.getTransposedOf(kinectWorldMatrix));
     heightMapShader.setUniformTexture("heightColorMapSampler",heightMap.getTexture(), 2);
     heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
+    heightMapShader.setUniform2f("depthTransformation",ofVec2f(FilteredDepthScale,FilteredDepthOffset));
     heightMapShader.setUniform4f("basePlaneEq", basePlaneEq);
 
 //    kinectColorImage.getTexture().bind();
@@ -496,7 +565,7 @@ void ofApp::addPointPair() {
     if (nDepthPoints == (chessboardX-1)*(chessboardY-1)) {
         for (int i=0; i<cvPoints.size(); i++) {
             ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(cvPoints[i].x, cvPoints[i].y);
-            worldPoint.z = worldPoint.z/depthNorm; // Normalize raw depth coordinate
+            worldPoint.z = worldPoint.z;
             pairsKinect.push_back(worldPoint);
             pairsProjector.push_back(currentProjectorPoints[i]);
         }
@@ -529,14 +598,6 @@ void ofApp::addPointPair() {
 //    }
 //    cout << resultMessage << endl;
 //
-}
-
-//--------------------------------------------------------------
-void ofApp::setHeightMapRange(int newHeightMapSize,float newMinElevation,float newMaxElevation)
-{
-	/* Calculate the new height map elevation scaling and offset coefficients: */
-	heightMapScale =(newHeightMapSize-1)/((newMaxElevation-newMinElevation));
-	heightMapOffset =0.5/newHeightMapSize-heightMapScale*newMinElevation;
 }
 
 //--------------------------------------------------------------
@@ -667,10 +728,10 @@ void ofApp::keyPressed(int key){
         basePlaneOffset.z -= 0.5;
         setRangesAndBasePlaneEquation();
     }else if (key=='w') {
-        heightMap.scaleRange(0.5);
+        heightMap.scaleRange(0.8);
         setRangesAndBasePlaneEquation();
     } else if (key=='x') {
-        heightMap.scaleRange(2);
+        heightMap.scaleRange(1.25);
         setRangesAndBasePlaneEquation();
     } else if (key=='d') {
         heightMap.changeNumEntries(50, true); // Increase the color map's size
@@ -745,6 +806,7 @@ void ofApp::keyPressed(int key){
     }
 
     if (key=='r' || key=='b' || key=='t') {
+        firstImageReady = false;
         updateMode();
     }
 }
@@ -766,14 +828,28 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    testPoint.set(min(x, kinectResX-1), min(y, kinectResY-1));
-    
-    int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
-    cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
-    float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
-    cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
-    cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
-    cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
+    if (generalState == GENERAL_STATE_SANDBOX || (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_CALIBRATION_TEST)) {
+        if (x<kinectResX && y <kinectResY) {
+            testPoint.set(min(x, kinectResX-1), min(y, kinectResY-1));
+
+            int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
+            cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
+            float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
+            cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
+            cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
+            cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
+        } else if (x > 650 && x < 750 && y > 120 && y < 220) {
+            ofVec2f tmp = testPoint;
+            testPoint.set(tmp.x+(x-700)/5, tmp.y+(y-170)/5);
+
+            int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
+            cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
+            float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
+            cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
+            cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
+            cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
+        }
+    }
 }
 
 //--------------------------------------------------------------

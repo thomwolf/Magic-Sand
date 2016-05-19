@@ -80,12 +80,12 @@ ofVec2f KinectGrabber::getKinectSize(){
 }
 
 ofMatrix4x4 KinectGrabber::getWorldMatrix(){
-    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1)*depthNorm; // Little to access kinect internal parameters without having to modify ofxKinect
+    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1)*depthNorm; // Trick to access kinect internal parameters without having to modify ofxKinect
     ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1)*depthNorm;
     cout << "Computing kinect world matrix" << endl;
     return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
                        0,       b.y-a.y,    0,  a.y,
-                       0,       0,          0,  1,
+                       0,       0,          0,  depthNorm,
                        0,       0,          0,  1);
 }
 

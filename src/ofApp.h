@@ -30,7 +30,6 @@ public:
     void drawSandbox();
     void prepareContourLines();
     void addPointPair();
-    void setHeightMapRange(GLsizei newHeightMapSize,GLfloat newMinElevation,GLfloat newMaxElevation);
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
     void updateMode();
@@ -114,7 +113,8 @@ private:
 
     // Colormap and heightmap variables
     ColorMap    heightMap;
-	GLfloat heightMapScale,heightMapOffset; // Scale and offset values to convert from elevation to height color map texture coordinates
+	float heightMapScale,heightMapOffset; // Scale and offset values to convert from elevation to height color map texture coordinates
+	float FilteredDepthScale,FilteredDepthOffset; // Scale and offset values to convert depth from normalized shader values to real values
 
     double gradFieldresolution;
     

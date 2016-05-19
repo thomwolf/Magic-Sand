@@ -37,7 +37,7 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,flo
 	/* Initialize the stability criterion and averaging buffer */
     numAveragingSlots = 30;
     minNumSamples=(numAveragingSlots+1)/2;
-    depthNorm = 2000;
+//    depthNorm = 2000;
     maxVariance = 4 / depthNorm/depthNorm;
     hysteresis = 0.1f / depthNorm;
 	retainValids=true;
