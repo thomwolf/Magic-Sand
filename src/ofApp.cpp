@@ -21,6 +21,7 @@ void ofApp::setup(){
     saved = false;
     loaded = false;
     calibrated = false;
+    firstImageReady = false;
     
     // kinectgrabber: start
 	kinectgrabber.setup(generalState, calibrationState);
@@ -39,6 +40,7 @@ void ofApp::setup(){
     contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
     FilteredDepthImage.allocate(kinectResX, kinectResY);
     kinectColorImage.allocate(kinectResX, kinectResY);
+    thresholdedImage.allocate(kinectResX, kinectResY);
     Dptimg.allocate(20, 20); // Small detailed ROI
 
 	// Setup framefilter variables
@@ -140,7 +142,6 @@ void ofApp::setup(){
     } else {
         cout << "Calibration could not be loaded " << endl;
     }
-    firstImageReady = false;
 	kinectgrabber.startThread(true);
 }
 
@@ -182,19 +183,19 @@ void ofApp::update(){
         if (kinectgrabber.framefilter.firstImageReady)
             firstImageReady = true;
 
-        //Check values for debug
-        float maxval = -1000.0;
-        float minval = 1000.0;
-        float xf;
-        for (int i = 0; i<640*480; i ++){
-            xf = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-            
-            if (xf > maxval)
-                maxval = xf;
-            if (xf < minval)
-                minval = xf;
-        }
-        cout << "FilteredDepthImage maxval : " << maxval << " thresholdedImage minval : " << minval << endl;
+//        //Check values for debug
+//        float maxval = -1000.0;
+//        float minval = 1000.0;
+//        float xf;
+//        for (int i = 0; i<640*480; i ++){
+//            xf = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+//            
+//            if (xf > maxval)
+//                maxval = xf;
+//            if (xf < minval)
+//                minval = xf;
+//        }
+//        cout << "FilteredDepthImage maxval : " << maxval << " thresholdedImage minval : " << minval << endl;
         
         // Get color image from kinect grabber
         ofPixels coloredframe;
@@ -237,6 +238,9 @@ void ofApp::update(){
                     }
                 }
                 else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION){
+                    fboProjWindow.begin();
+                    ofBackground(255);
+                    fboProjWindow.end();
                     updateROI();
                 }
         }
@@ -275,11 +279,6 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofNoFill();
-    ofSetColor(255);
-    ofDrawRectangle(kinectROI);
-    ofFill();
-    
     int ybase = 300;
     int yinc = 20;
     int i = 0;
@@ -324,6 +323,11 @@ void ofApp::draw(){
         kinectColorImage.draw(0, 0, 640, 480);
         FilteredDepthImage.draw(650, 0, 320, 240);
         
+        ofNoFill();
+        ofSetColor(255);
+        ofDrawRectangle(kinectROI);
+        ofFill();
+        
         ofSetColor(0);
         if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
             ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
@@ -334,7 +338,14 @@ void ofApp::draw(){
             float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 40);
             ofDrawCircle(testPoint.x, testPoint.y, ptSize);
             
-        } else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION || calibrationState == CALIBRATION_STATE_ROI_DETERMINATION) {
+        } else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+        {
+            
+        } else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION)
+        {
+            ofSetColor(255);
+            thresholdedImage.draw(650, 0, 320, 240); // Overwrite depth image
+            contourFinder.draw(0, 0);//, 320, 240); // Draw contour finder results
         }
         ofSetColor(255);
     } else if (generalState == GENERAL_STATE_SANDBOX){
@@ -582,50 +593,78 @@ void ofApp::updateROI(){
             
             large = ofPolyline();
 
-            ofxCvFloatImage temp;
-            temp.setFromPixels(FilteredDepthImage.getFloatPixelsRef().getData(), kinectResX, kinectResY);
-            temp.setNativeScale(FilteredDepthImage.getNativeScaleMin(), FilteredDepthImage.getNativeScaleMax());
-            temp.convertToRange(0, 1);
+//            ofxCvFloatImage temp;
+//            temp.setFromPixels(FilteredDepthImage.getFloatPixelsRef().getData(), kinectResX, kinectResY);
+//            temp.setNativeScale(FilteredDepthImage.getNativeScaleMin(), FilteredDepthImage.getNativeScaleMax());
+//            temp.convertToRange(0, 1);
+//        
+//        //Check values for debug
+//        float maxval = -1000.0;
+//        float minval = 1000.0;
+//        float xf;
+//        for (int i = 0; i<640*480; i ++){
+//            xf = temp.getFloatPixelsRef().getData()[i];
+//            
+//            if (xf > maxval)
+//                maxval = xf;
+//            if (xf < minval)
+//                minval = xf;
+//        }
+//        cout << "temp maxval : " << maxval << " temp minval : " << minval << endl;
         
-        //Check values for debug
-        float maxval = -1000.0;
-        float minval = 1000.0;
-        float xf;
-        for (int i = 0; i<640*480; i ++){
-            xf = temp.getFloatPixelsRef().getData()[i];
-            
-            if (xf > maxval)
-                maxval = xf;
-            if (xf < minval)
-                minval = xf;
-        }
-        cout << "temp maxval : " << maxval << " temp minval : " << minval << endl;
-        
-            thresholdedImage.setFromPixels(temp.getFloatPixelsRef());//kinectColorImage.getPixels());
 
-        //Check values for debug
-         maxval = -1000.0;
-         minval = 1000.0;
-        for (int i = 0; i<640*480; i ++){
-            xf = thresholdedImage.getPixels().getData()[i];
-            
-            if (xf > maxval)
-                maxval = xf;
-            if (xf < minval)
-                minval = xf;
-        }
-        cout << "thresholdedImage maxval : " << maxval << " thresholdedImage minval : " << minval << endl;
+//        //Check values for debug
+//        float maxval = -1000.0;
+//        float minval = 1000.0;
+//        float xf;
+//        for (int i = 0; i<640*480; i ++){
+//            xf = thresholdedImage.getPixels().getData()[i];
+//            
+//            if (xf > maxval)
+//                maxval = xf;
+//            if (xf < minval)
+//                minval = xf;
+//        }
+//        cout << "thresholdedImage maxval : " << maxval << " thresholdedImage minval : " << minval << endl;
         
-        threshold = 0;
-           // );
+        threshold = 90;
+        
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
         while (threshold < 255){
-            cout << "Increasing threshold : " << threshold << endl;
+//            cout << "Increasing threshold : " << threshold << endl;
             //                            thresholdedImage.mirror(verticalMirror, horizontalMirror);
-            //cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), highThresh+10, 255, CV_THRESH_TOZERO_INV);
-            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_TOZERO);
+//        CV_THRESH_BINARY      =0,  /* value = value > threshold ? max_value : 0       */
+//        CV_THRESH_BINARY_INV  =1,  /* value = value > threshold ? 0 : max_value       */
+//        CV_THRESH_TRUNC       =2,  /* value = value > threshold ? threshold : value   */
+//        CV_THRESH_TOZERO      =3,  /* value = value > threshold ? value : 0           */
+//        CV_THRESH_TOZERO_INV  =4,  /* value = value > threshold ? 0 : value           */
+//        CV_THRESH_MASK        =7,
+//        CV_THRESH_OTSU        =8  /* use Otsu algorithm to choose the optimal threshold value;
+//                                   combine the flag with one of the above CV_THRESH_* values */
+        kinectColorImage.setROI(0, 0, kinectResX, kinectResY);
+        thresholdedImage = kinectColorImage;
+//        cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold+50, 255, CV_THRESH_TOZERO_INV);
+        cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_BINARY_INV);
+//        cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), 1, 255, CV_THRESH_BINARY);
+        
+//        //Check values for debug
+//        float maxval = -1000.0;
+//        float minval = 1000.0;
+//        float xf;
+//        for (int i = 0; i<640*480; i ++){
+//            xf = thresholdedImage.getPixels().getData()[i];
+//
+//            if (xf > maxval)
+//                maxval = xf;
+//            if (xf < minval)
+//                minval = xf;
+//        }
+//        cout << "thresholdedImage maxval : " << maxval << " thresholdedImage minval : " << minval << endl;
+        //setFromPixels(kinectColorImage.getPixels());//kinectColorImage.getPixels());
+//            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_TOZERO_INV);
+//            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_BINARY);
             
-            contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true, false);
+            contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true);
             //contourFinder.findContours(thresholdedImage);
             //ofPoint cent = ofPoint(projectorWidth/2, projectorHeight/2);
             
@@ -637,14 +676,16 @@ void ofApp::updateROI(){
 
                     if (poly.inside(kinectResX/2, kinectResY/2))
                     {
-                        cout << "We found a contour lines surroundings the center of the screen" << endl;
+//                        cout << "We found a contour lines surroundings the center of the screen" << endl;
                         if (small.size() == 0 || poly.getArea() < small.getArea()) {
-                            cout << "We take the smallest contour line surroundings the center of the screen at a given threshold level" << endl;
+//                            cout << "We take the smallest contour line surroundings the center of the screen at a given threshold level" << endl;
                             small = poly;
                         }
                     }
                 }
             }
+            cout << "small.getArea(): " << small.getArea() << endl;
+            cout << "large.getArea(): " << large.getArea() << endl;
             if (large.getArea() < small.getArea())
             {
                 cout << "We take the largest contour line surroundings the center of the screen at all threshold level" << endl;
@@ -652,12 +693,14 @@ void ofApp::updateROI(){
             }
             threshold+=1;
         }
-        kinectROI = large.getBoundingBox();
-        kinectROI.standardize();
-        cout << "kinectROI : " << kinectROI << endl;
-        // We are finished, set back kinect depth range and update ROI
-        ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
-        kinectgrabber.setKinectROI(kinectROI);
+//        if (threshold > 255) {
+            kinectROI = large.getBoundingBox();
+            kinectROI.standardize();
+            cout << "kinectROI : " << kinectROI << endl;
+            // We are finished, set back kinect depth range and update ROI
+            ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
+            kinectgrabber.setKinectROI(kinectROI);
+//        }
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
         generalState = GENERAL_STATE_CALIBRATION;
         calibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
@@ -680,7 +723,16 @@ void ofApp::updateMode(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if (key==' '){
-        addPointPair();
+        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+        {
+            cout << "Adding point pair" << endl;
+            addPointPair();
+        }
+        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_DETERMINATION)
+        {
+//            threshold+=5;
+//            cout << "Increasing threshold : " << threshold << endl;
+        }
     } else if (key=='a') {
         chessboardSize -= 20;
     } else if (key=='z') {
