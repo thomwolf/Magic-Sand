@@ -59,7 +59,7 @@ private:
     ofxCvFloatImage             FilteredDepthImage;
     ofxCvColorImage             kinectColorImage;
     cv::Mat                     cvRgbImage;
-    ofxCvFloatImage Dptimg;
+    ofxCvFloatImage             Dptimg;
 
     // Calibration variables
     vector<ofVec2f>             currentProjectorPoints;
@@ -86,8 +86,8 @@ private:
     ROI_calibration_state ROICalibrationState;
 
     // ROI calibration variables
-    ofxCvGrayscaleImage thresholdedImage;
-    ofxCvContourFinder        contourFinder;
+    ofxCvGrayscaleImage         thresholdedImage;
+    ofxCvContourFinder          contourFinder;
     float threshold;
     ofPolyline large;
     ofRectangle                 kinectROI;

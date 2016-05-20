@@ -1,0 +1,6 @@
+<KINECTSETTINGS>
+	<kinectROI>0, 0, 0, 640, 480</kinectROI>
+	<basePlaneNormal>0, 0, 1</basePlaneNormal>
+	<basePlaneOffset>0, 0, 870</basePlaneOffset>
+	<basePlaneEq>0, 0, 1, -870</basePlaneEq>
+</KINECTSETTINGS>

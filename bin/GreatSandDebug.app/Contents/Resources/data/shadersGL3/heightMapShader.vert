@@ -13,26 +13,26 @@ in vec4 normal;
 in vec2 texcoord;
 // this is the end of the default functionality
 
-// this is something we're creating for this shader
+// this is something send to the fragment shader
 //out vec2 varyingtexcoord; //vec4 texel0;
 out float bug;
 
-uniform sampler2DRect tex0; // Sampler for the depth image-space elevation texture
+uniform sampler2DRect tex0; // Sampler for the depth image-space elevation texture automatically set by binding
+
+uniform mat4 kinectProjMatrix; // Transformation from kinect world space to proj image space
+uniform mat4 kinectWorldMatrix; // Transformation from kinect image space to kinect world space
 uniform vec2 heightColorMapTransformation; // Transformation from elevation to height color map texture coordinate factor and offset
 uniform vec2 depthTransformation; // Normalisation factor and offset applied by openframeworks
-
-uniform mat4 kinectWorldMatrix; // Transformation from kinect image space to kinect world space
-uniform mat4 kinectProjMatrix; // Transformation from kinect world space to proj image space
 uniform vec4 basePlaneEq; // Base plane equation
 
 void main()
 {
     // copy position so we can work with it.
     vec4 pos = position;
-    vec2 varyingtexcoord = texcoord;//pos.xy;//texcoord;
+//    varyingtexcoord = pos.xy;//texcoord;
 
     /* Set the vertex' depth image-space z coordinate from the texture: */
-    vec4 texel0 = texture(tex0, varyingtexcoord);
+    vec4 texel0 = texture(tex0, texcoord);
     float depth1 = texel0.r;
     float depth = depth1 * depthTransformation.x + depthTransformation.y;
 

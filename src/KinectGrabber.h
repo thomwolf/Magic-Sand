@@ -63,15 +63,13 @@ private:
     
     // kinect & the wrapper
     float                   nearclip, farclip;
-//    float depthNorm;
+
     int kinectWidth, kinectHeight;//, projWidth, projHeight;
     ofxCvColorImage         kinectColorImage;
-//    ofxCvGrayscaleImage		kinectGreyscaledImage;
     ofShortPixels     kinectDepthImage;
-    //   ofImage                 kinectColoredDepth;
+    ofFloatPixels filteredframe;//, kinectProjImage;
     float maxReprojError;
-    // calibration
-    // output
+    
     General_state generalState;
     Calibration_state calibrationState;
 };

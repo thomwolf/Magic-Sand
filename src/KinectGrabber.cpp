@@ -43,6 +43,7 @@ void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
     kinectWidth = kinect.getWidth();
     kinectHeight = kinect.getHeight();
     kinectDepthImage.allocate(kinectWidth, kinectHeight, 1);
+    filteredframe.allocate(kinectWidth, kinectHeight, 1);
 //    kinectDepthImage.setUseTexture(false);
     kinectColorImage.allocate(kinectWidth, kinectHeight);
     kinectColorImage.setUseTexture(false);
@@ -105,54 +106,44 @@ void KinectGrabber::threadedFunction(){
             setMode(sGS, sCS);
         }
 
-        newFrame = false;
+        // If new image in kinect => send to filter thread
+        kinect.update();
+        
+        if(kinect.isFrameNew()){
+            kinectDepthImage = kinect.getRawDepthPixels();
+            kinectColorImage.setFromPixels(kinect.getPixels());
+            filteredframe = framefilter.filter(kinectDepthImage);
+            filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
+//            if (generalState == GENERAL_STATE_CALIBRATION) {
+//                filteredframe = kinect.getDepthPixels();
+//            kinectColorImage.setFromPixels(kinect.getPixels());
+////            } else if (generalState == GENERAL_STATE_SANDBOX) {
+//                kinectDepthImage = kinect.getRawDepthPixels();
+////                kinectColorImage.setFromPixels(kinect.getPixels());
+//                filteredframe = framefilter.filter(kinectDepthImage);
+//                filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
+//            }
+        }
         if (storedframes == 0)
         {
-            // If new image in kinect => send to filter thread
-            kinect.update();
-            
-            if(kinect.isFrameNew()){
-                newFrame = true;
-                if (generalState == GENERAL_STATE_CALIBRATION) {
-                    kinectDepthImage = kinect.getDepthPixels();
-                    kinectColorImage.setFromPixels(kinect.getPixels());
-                    // If new filtered image => send back to main thread
 #if __cplusplus>=201103
-                    colored.send(std::move(kinectColorImage.getPixels()));
-                    filtered.send(std::move(kinectDepthImage));
+            filtered.send(std::move(filteredframe));
+            if (generalState == GENERAL_STATE_SANDBOX)
+                gradient.send(std::move(framefilter.getGradField()));
+            if (generalState == GENERAL_STATE_CALIBRATION)
+                colored.send(std::move(kinectColorImage.getPixels()));
 #else
-                    colored.send(kinectColorImage.getPixels());
-                    filtered.send(kinectDepthImage);
+            filtered.send(filteredframe);
+            if (generalState == GENERAL_STATE_SANDBOX)
+                gradient.send(framefilter.getGradField());
+            if (generalState == GENERAL_STATE_CALIBRATION)
+                colored.send(kinectColorImage.getPixels());
 #endif
-                    lock();
-                    storedframes += 1;
-                    unlock();
-                    
-                }
-
-                if (generalState == GENERAL_STATE_SANDBOX) {
-                    kinectDepthImage = kinect.getRawDepthPixels();
-                    kinectColorImage.setFromPixels(kinect.getPixels());
-
-                    ofFloatPixels filteredframe;//, kinectProjImage;
-                    filteredframe = framefilter.filter(kinectDepthImage);
-                    filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
-
-#if __cplusplus>=201103
-                    colored.send(std::move(kinectColorImage.getPixels()));
-                    filtered.send(std::move(filteredframe));
-                    gradient.send(std::move(framefilter.getGradField()));
-#else
-                    colored.send(kinectColorImage.getPixels());
-                    filtered.send(filteredframe);
-                    gradient.send(framefilter.getGradField());
-#endif
-                    lock();
-                    storedframes += 1;
-                    unlock();
-                }
-            }
+            lock();
+            storedframes += 1;
+            unlock();
         }
+
     }
     kinect.close();
 }

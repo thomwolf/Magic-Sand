@@ -1,43 +1,75 @@
 #version 150
 
-// these are for the programmable pipeline system
+// these are for the programmable pipeline system and are passed in
+// by default from OpenFrameworks
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 textureMatrix;
 uniform mat4 modelViewProjectionMatrix;
-in vec4 position;
 
-//uniform float mouseRange;
-//uniform vec2 mousePos;
-//uniform vec4 mouseColor;
-//
+in vec4 position;
+in vec4 color;
+in vec4 normal;
+in vec2 texcoord;
+// this is the end of the default functionality
+
+// this is something we're creating for this shader
+out vec2 varyingtexcoord; //vec4 texel0;
+out float bug;
+
+uniform sampler2DRect tex0; // Sampler for the depth image-space elevation texture
+uniform vec2 depthTransformation; // Normalisation factor and offset applied by openframeworks
+
+uniform mat4 kinectWorldMatrix; // Transformation from kinect image space to kinect world space
+uniform mat4 kinectProjMatrix; // Transformation from kinect world space to proj image space
+uniform vec4 basePlaneEq; // Base plane equation
+
 void main()
 {
     // copy position so we can work with it.
     vec4 pos = position;
+    varyingtexcoord = pos.xy;//texcoord;
     
-//    // direction vector from mouse position to vertex position.
-//	vec2 dir = pos.xy - mousePos;
-//    
-//    // distance between the mouse position and vertex position.
-//	float dist =  sqrt(dir.x * dir.x + dir.y * dir.y);
-//    
-//    // check vertex is within mouse range.
-//	if(dist > 0.0 && dist < mouseRange) {
-//		
-//		// normalise distance between 0 and 1.
-//		float distNorm = dist / mouseRange;
-//        
-//		// flip it so the closer we are the greater the repulsion.
-//		distNorm = 1.0 - distNorm;
-//		
-//        // make the direction vector magnitude fade out the further it gets from mouse position.
-//        dir *= distNorm;
-//        
-//		// add the direction vector to the vertex position.
-//		pos.x += dir.x;
-//		pos.y += dir.y;
-//	}
+    /* Set the vertex' depth image-space z coordinate from the texture: */
+    vec4 texel0 = texture(tex0, varyingtexcoord);
+    float depth1 = texel0.r;
+    float depth = depth1 * depthTransformation.x + depthTransformation.y;
     
-	// finally set the pos to be that actual position rendered
-	gl_Position = modelViewProjectionMatrix * pos;
+    pos.z = depth;
+    pos.w = 1;
+    
+    /* Transform the vertex from depth image space to world space: */
+    vec4 vertexCc = kinectWorldMatrix * pos;  // Transposed multiplication (Row-major order VS col major order
+    vec4 vertexCcx = vertexCc * depth;
+    vertexCcx.w = 1;
+    
+    /* Take into account baseplane orientation and location: */
+    bug = dot(basePlaneEq,vertexCcx);///vertexCc.w;
+//    bug = elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
+    //bug = elevation;
+    //bug = depth-670;
+    //    if (depth > 0)
+    //        bug = 300;
+    //    if (depth > 800)
+    //        bug = 400;
+    //    if (depth > 900)
+    //        bug = 500;
+    
+    /* Transform vertex to proj coordinates: */
+    vec4 screenPos = kinectProjMatrix * vertexCcx;
+    vec4 projectedPoint = screenPos / screenPos.z;
+    
+    projectedPoint.z = 0;
+    projectedPoint.w = 1;
+    //    pos.xy = projectedPoint;
+    //    vec4 elevationcolor=texture(depthSampler,texCoordVarying);
+    //
+    //    heightColorMapTexCoord=elevationcolor;//*heightColorMapTransformation.x+heightColorMapTransformation.y;
+    //
+    //	// finally set the pos to be that actual position rendered
+    //texel0 = vec4(bug, 0.0, 1.0, 1.0);
+    
+	gl_Position = modelViewProjectionMatrix * projectedPoint;
 }
 
 //uniform sampler2DRect depthSampler; // Sampler for the depth image-space elevation texture
