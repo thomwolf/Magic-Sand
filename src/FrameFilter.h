@@ -35,10 +35,10 @@ public:
     FrameFilter();
     ~FrameFilter();
     
-    bool setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
+    bool setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
-    void setDepthRange(float nearclip, float farclip);
+//    void setDepthRange(float nearclip, float farclip);
     bool isFrameNew();
     ofVec2f getGradFieldXY(int x, int y); // gradient field at pos x, y
     ofVec2f* getGradField(); // gradient field

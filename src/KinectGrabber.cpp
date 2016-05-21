@@ -49,23 +49,23 @@ void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
     kinectColorImage.setUseTexture(false);
 }
 
-void KinectGrabber::setupFramefilter(int gradFieldresolution, float snearclip, float sfarclip,const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI) {
-    nearclip =snearclip;
-    farclip =sfarclip;
+void KinectGrabber::setupFramefilter(int gradFieldresolution, const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI) {
+//    nearclip =snearclip;
+//    farclip =sfarclip;
 //    depthNorm = sdepthNorm;
-    kinect.setDepthClipping(snearclip, sfarclip);
-    framefilter.setup(kinectWidth,kinectHeight, gradFieldresolution, snearclip, sfarclip, basePlaneNormal, MinElevation, MaxElevation);
+//    kinect.setDepthClipping(snearclip, sfarclip);
+    framefilter.setup(kinectWidth,kinectHeight, gradFieldresolution, basePlaneNormal, MinElevation, MaxElevation);
     framefilter.setROI(ROI);
 //    framefilter.setValidElevationInterval(basePlaneNormal,elevationMin,elevationMax);
     // framefilter.startThread();
 }
 
-void KinectGrabber::setupClip(float snearclip, float sfarclip){
-    nearclip =snearclip;
-    farclip =sfarclip;
-    kinect.setDepthClipping(snearclip, sfarclip);
-}
-
+//void KinectGrabber::setupClip(float snearclip, float sfarclip){
+//    nearclip =snearclip;
+//    farclip =sfarclip;
+//    kinect.setDepthClipping(snearclip, sfarclip);
+//}
+//
 void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
     generalState = sgeneralState;
     calibrationState = scalibrationState;

@@ -18,7 +18,7 @@ FrameFilter::FrameFilter(): newFrame(true), bufferInitiated(false)
 {
 }
 
-bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, float snearclip, float sfarclip, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation)
+bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation)
 {
 	/* Settings variables : */
 	width = swidth;
@@ -45,10 +45,10 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     maxgradfield = 1000;
     unvalidValue = 10; // We never reach 10 since we divide the kinect raw values (0-4000) by depthNorm
     
-    nearclip = snearclip;
-    farclip = sfarclip;
-    depthrange = sfarclip-snearclip;
-    
+//    nearclip = snearclip;
+//    farclip = sfarclip;
+//    depthrange = sfarclip-snearclip;
+//    
     //    minNumSamples=(numAveragingSlots+1)/2;
     //    maxVariance=newMaxVariance;
     //    hysteresis=newHysteresis;
@@ -153,18 +153,18 @@ void FrameFilter::initiateBuffers(void){
     bufferInitiated = true;
     firstImageReady = false;
 }
-void FrameFilter::setDepthRange(float snearclip, float sfarclip){
-    // send the frame to the thread for analyzing
-    // this makes a copy but we can't avoid it anyway if
-    // we want to update the grabber while analyzing
-    // previous frames
-    //    ++inputFrameVersion;
-    //    toAnalyze.send(inputframe);
-    nearclip = snearclip;
-    farclip = sfarclip;
-    depthrange = sfarclip-snearclip;
-}
-
+//void FrameFilter::setDepthRange(float snearclip, float sfarclip){
+//    // send the frame to the thread for analyzing
+//    // this makes a copy but we can't avoid it anyway if
+//    // we want to update the grabber while analyzing
+//    // previous frames
+//    //    ++inputFrameVersion;
+//    //    toAnalyze.send(inputframe);
+//    nearclip = snearclip;
+//    farclip = sfarclip;
+//    depthrange = sfarclip-snearclip;
+//}
+//
 bool FrameFilter::isFrameNew(){
     return newFrame;
 }

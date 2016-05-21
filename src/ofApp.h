@@ -128,8 +128,8 @@ private:
 
     double gradFieldresolution;
     
-    float farclip, nearclip;
-    float depthNorm;
+//    float farclip, nearclip;
+//    float depthNorm;
     float elevationMin, elevationMax;
     int   chessboardSize;
     int   chessboardX;

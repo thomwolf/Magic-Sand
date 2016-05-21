@@ -63,8 +63,8 @@ void ofApp::setup(){
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormal = ofVec3f(0,0,1);
 	basePlaneOffset= ofVec3f(0,0,870);
-	nearclip = 500;
-	farclip = 1500;
+//	nearclip = 500;
+//	farclip = 1500;
 		
 	// Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
@@ -97,7 +97,7 @@ void ofApp::setup(){
         exit();
     }
     
-    // Sandbox drawing variables
+    // Sandbox contourlines
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineFactor = 0.1f; // Inverse elevation distance between adjacent topographic contour lines
     
@@ -126,7 +126,7 @@ void ofApp::setup(){
         }
 
 	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(gradFieldresolution, nearclip, farclip, basePlaneNormal, elevationMin, elevationMax, kinectROI);
+    kinectgrabber.setupFramefilter(gradFieldresolution, basePlaneNormal, elevationMin, elevationMax, kinectROI);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     cout << "kinectWorldMatrix: " << kinectWorldMatrix << endl;
     
@@ -170,6 +170,7 @@ void ofApp::setRangesAndBasePlaneEquation(){
 	heightMapOffset =0.5/heightMap.getNumEntries()-heightMapScale*elevationMin;
 
     FilteredDepthImage.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);//2000/depthNorm); // This scale is converted to 0..1 when send to the shader
+//    contourLineFramebufferObject.setNativeScale(elevationMin, elevationMax);
     // Calculate the  FilteredDepthImage scaling and offset coefficients
 	FilteredDepthScale = elevationMin-elevationMax;
 	FilteredDepthOffset = basePlaneOffset.z+elevationMax;
@@ -483,19 +484,19 @@ void ofApp::prepareContourLines() // Prepare contour line fbo
      *********************************************************************/
 	
 	/* Adjust the projection matrix to render the corners of the final pixels: */
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	GLdouble proj[16];
-	glGetDoublev(GL_PROJECTION_MATRIX,proj);
-	double xs=double(projResX)/double(projResX+1);
-	double ys=double(projResY)/double(projResY+1);
-	for(int j=0;j<4;++j)
-    {
-		proj[j*4+0]*=xs;
-		proj[j*4+1]*=ys;
-    }
-	glLoadIdentity();
-	glMultMatrixd(proj);
+//	glMatrixMode(GL_PROJECTION);
+//	glPushMatrix();
+//	GLdouble proj[16];
+//	glGetDoublev(GL_PROJECTION_MATRIX,proj);
+//	double xs=double(projResX)/double(projResX+1);
+//	double ys=double(projResY)/double(projResY+1);
+//	for(int j=0;j<4;++j)
+//    {
+//		proj[j*4+0]*=xs;
+//		proj[j*4+1]*=ys;
+//    }
+//	glLoadIdentity();
+//	glMultMatrixd(proj);
 	
 	/*********************************************************************
      Render the surface's elevation into the half-pixel offset frame
@@ -527,8 +528,8 @@ void ofApp::prepareContourLines() // Prepare contour line fbo
      *********************************************************************/
 	
 	/* Restore the original viewport and projection matrix: */
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
+//	glPopMatrix();
+//	glMatrixMode(GL_MODELVIEW);
     //	glViewport(viewport[0],viewport[1],viewport[2],viewport[3]);
     //
     //	/* Restore the original clear color and frame buffer binding: */
