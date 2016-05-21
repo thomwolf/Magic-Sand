@@ -17,6 +17,7 @@ void ofApp::setup(){
 	// settings and defaults
 	generalState = GENERAL_STATE_CALIBRATION;
 	calibrationState  = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
+    previousCalibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
     ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
     saved = false;
     loaded = false;
@@ -142,6 +143,15 @@ void ofApp::setup(){
     } else {
         cout << "Calibration could not be loaded " << endl;
     }
+    
+    //Try to load settings file if possible
+    if (loadSettings("settings.xml"))
+    {
+        cout << "Settings loaded " << endl;
+    } else {
+        cout << "Settings could not be loaded " << endl;
+    }
+
 	kinectgrabber.startThread(true);
 }
 
@@ -300,9 +310,11 @@ void ofApp::draw(){
     i++;
     ofDrawBitmapStringHighlight("c: compute calibration matrix.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("r: find kinect ROI.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("r: go to find kinect ROI mode.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("t: go to point test mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("y: go to autocalib mode.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("b: go to sandbox mode.", xbase, ybase+i*yinc);
     i++;
@@ -593,9 +605,9 @@ ofVec2f ofApp::computeTransform(ofVec4f vin) // vin is in kinect image depth coo
 // Autoclibration of the sandbox
 void ofApp::autoCalib(){
     if (autoCalibState == AUTOCALIB_STATE_INIT_ROI){
-        fboProjWindow.begin();
-        ofBackground(255);
-        fboProjWindow.end();
+//        fboProjWindow.begin();
+//        ofBackground(255);
+//        fboProjWindow.end();
         updateROI();
         autoCalibState = AUTOCALIB_STATE_INIT_POINT;
     } else if (autoCalibState == AUTOCALIB_STATE_INIT_POINT){
@@ -605,39 +617,92 @@ void ofApp::autoCalib(){
                 cout << "Could not find kinect ROI, stopping autocalib" << endl;
                 autoCalibState = AUTOCALIB_STATE_DONE;
             } else {
-                autoCalibPts = new ofPoint[5];
-                autoCalibPts[0] = kinectROI.getTopLeft()+ofPoint(chessboardSize,chessboardSize);
-                autoCalibPts[1] =     kinectROI.getTopRight()+ofPoint(-chessboardSize,chessboardSize);
-                autoCalibPts[2] =     kinectROI.getBottomLeft()+ofPoint(chessboardSize,-chessboardSize);
-                autoCalibPts[3] =     kinectROI.getBottomRight()+ofPoint(-chessboardSize,-chessboardSize);
-                autoCalibPts[4] =     kinectROI.getCenter();
+                autoCalibPts = new ofPoint[10];
+                float cs = 2*chessboardSize/3;
+                float css = 3*chessboardSize/4;
+                ofPoint sc = ofPoint(projResX/2,projResY/2);
+                autoCalibPts[0] = ofPoint(cs,cs)-sc;
+                autoCalibPts[1] = ofPoint(projResX-cs,cs)-sc;
+                autoCalibPts[2] = ofPoint(projResX-cs,projResY-cs)-sc;
+                autoCalibPts[3] = ofPoint(cs,projResY-cs)-sc;
+                autoCalibPts[4] = ofPoint(projResX/2+cs,projResY/2)-sc;
+                autoCalibPts[5] = ofPoint(css,css)-sc;
+                autoCalibPts[6] = ofPoint(projResX-css,css)-sc;
+                autoCalibPts[7] = ofPoint(projResX-css,projResY-css)-sc;
+                autoCalibPts[8] = ofPoint(css,projResY-css)-sc;
+                autoCalibPts[9] = ofPoint(projResX/2-cs,projResY/2)-sc;
                 currentCalibPts = 0;
+                cleared = false;
+                upframe = false;
+                trials = 0;
                 autoCalibState = AUTOCALIB_STATE_NEXT_POINT;
             }
+        } else {
+            updateROI();
         }
     } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT){
-        if (currentCalibPts < 5) {
-            
-            drawChessboard(ofGetMouseX(), ofGetMouseY(), chessboardSize);
-            
+        if (currentCalibPts < 5 || (upframe && currentCalibPts < 10)) {
             cvRgbImage = ofxCv::toCv(kinectColorImage.getPixels());
             cv::Size patternSize = cv::Size(chessboardX-1, chessboardY-1);
             int chessFlags = cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_FAST_CHECK;
             bool foundChessboard = findChessboardCorners(cvRgbImage, patternSize, cvPoints, chessFlags);
             if(foundChessboard) {
-                cv::Mat gray;
-                cvtColor(cvRgbImage, gray, CV_RGB2GRAY);
-                cornerSubPix(gray, cvPoints, cv::Size(11, 11), cv::Size(-1, -1),
-                             cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
-                drawChessboardCorners(cvRgbImage, patternSize, cv::Mat(cvPoints), foundChessboard);
-                //                       cout << "draw chess" << endl;
+                if (cleared) { // We have previously detected a cleared screen <- Be sure that we don't acquire several times the same chessboard
+                    cv::Mat gray;
+                    cvtColor(cvRgbImage, gray, CV_RGB2GRAY);
+                    cornerSubPix(gray, cvPoints, cv::Size(11, 11), cv::Size(-1, -1),
+                                 cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1));
+                    drawChessboardCorners(cvRgbImage, patternSize, cv::Mat(cvPoints), foundChessboard);
+                    cout << "Chessboard found for point :" << currentCalibPts << endl;
+                    cout << "Adding point pair" << endl;
+                    addPointPair();
+                    
+                    fboProjWindow.begin(); // Clear projector
+                    ofBackground(255);
+                    fboProjWindow.end();
+                    cleared = false;
+                    trials = 0;
+                    currentCalibPts++;
+                }
+            } else {
+                if (cleared == false) {
+                    cout << "Clear screen found, drawing next chessboard" << endl;
+                    cleared = true; // The cleared fbo screen was seen by the kinect
+                    ofPoint dispPt = ofPoint(projResX/2,projResY/2)+autoCalibPts[currentCalibPts]; // Compute next chessboard position
+                    drawChessboard(dispPt.x, dispPt.y, chessboardSize); // We can now draw the next chess board
+                } else {
+                    trials++;
+                    cout << "Chessboard not found on trial : " << trials << endl;
+                    if (trials >10) {
+                        cout << "Chessboard could not be found moving chessboard closer to center " << endl;
+                        autoCalibPts[currentCalibPts] = 3*autoCalibPts[currentCalibPts]/4;
+                        
+                        fboProjWindow.begin(); // Clear projector
+                        ofBackground(255);
+                        fboProjWindow.end();
+                        cleared = false;
+                        trials = 0;
+                    }
+                }
             }
-            currentCalibPts++;
         } else {
-            autoCalibState = AUTOCALIB_STATE_DONE;
+            if (upframe) {
+                autoCalibState = AUTOCALIB_STATE_COMPUTE;
+            } else {
+                resultMessage = "Please put a board on the sandbox and press [SPACE]";
+            }
         }
+    } else if (autoCalibState == AUTOCALIB_STATE_COMPUTE){
+        if (pairsKinect.size() == 0) {
+            cout << "Error: No points acquired !!" << endl;
+        } else {
+            cout << "Calibrating" << endl;
+            kpt.calibrate(pairsKinect, pairsProjector);
+            kinectProjMatrix = kpt.getProjectionMatrix();
+            calibrated = true;
+        }
+        autoCalibState = AUTOCALIB_STATE_DONE;
     } else if (autoCalibState == AUTOCALIB_STATE_DONE){
-        
     }
 }
 
@@ -761,8 +826,8 @@ void ofApp::updateROI(){
             kinectgrabber.setKinectROI(kinectROI);
 //        }
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
-        generalState = GENERAL_STATE_CALIBRATION;
-        calibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
+//        generalState = GENERAL_STATE_CALIBRATION;
+//        calibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
     }
 }
 
@@ -787,10 +852,10 @@ void ofApp::keyPressed(int key){
             cout << "Adding point pair" << endl;
             addPointPair();
         }
-        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_DETERMINATION)
+        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB)
         {
-//            threshold+=5;
-//            cout << "Increasing threshold : " << threshold << endl;
+            if (!upframe)
+                upframe = true;
         }
     } else if (key=='a') {
         chessboardSize -= 20;
@@ -826,6 +891,12 @@ void ofApp::keyPressed(int key){
     } else if (key=='p') {
         basePlaneNormal.rotate(1, ofVec3f(0,1,0)); // Rotate the base plane normal
         setRangesAndBasePlaneEquation();
+    } else if (key=='g') {
+        float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
+        kinectgrabber.kinect.setCameraTiltAngle(tilt+2);
+    } else if (key=='h') {
+        float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
+        kinectgrabber.kinect.setCameraTiltAngle(tilt-2);
     } else if (key=='c') {
         if (pairsKinect.size() == 0) {
             cout << "Error: No points acquired !!" << endl;
@@ -838,16 +909,32 @@ void ofApp::keyPressed(int key){
             calibrated = true;
         }
     } else if (key=='r') {
-            cout << "Finding ROI" << endl;
-            generalState = GENERAL_STATE_CALIBRATION;
+        generalState = GENERAL_STATE_CALIBRATION;
+        if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION) {
+            calibrationState = previousCalibrationState;
+        } else {
+            previousCalibrationState = calibrationState;
             calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
             ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+            cout << "Finding ROI" << endl;
+        }
+    }else if (key=='y') {
+        generalState = GENERAL_STATE_CALIBRATION;
+        if (calibrationState == CALIBRATION_STATE_AUTOCALIB) {
+            calibrationState = previousCalibrationState;
+        } else {
+            previousCalibrationState = calibrationState;
+            calibrationState = CALIBRATION_STATE_AUTOCALIB;
+            autoCalibState = AUTOCALIB_STATE_INIT_ROI;
+            cout << "Starting autocalib" << endl;
+        }
     } else if (key=='t') {
         generalState = GENERAL_STATE_CALIBRATION;
         if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST) {
-                calibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
-        }    else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION){
-                calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
+            calibrationState = previousCalibrationState;
+        } else {
+            previousCalibrationState = calibrationState;
+            calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
         }
     } else if (key=='b') {
         if (generalState == GENERAL_STATE_CALIBRATION) {
@@ -888,14 +975,9 @@ void ofApp::keyPressed(int key){
         } else {
             cout << "Settings could not be loaded " << endl;
         }
-    } else if (key=='g') {
-        float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
-        kinectgrabber.kinect.setCameraTiltAngle(tilt+2);
-    } else if (key=='h') {
-        float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
-        kinectgrabber.kinect.setCameraTiltAngle(tilt-2);
     }
-        if (key=='r' || key=='b' || key=='t') {
+    
+    if (key=='r' || key=='b' || key=='t') {
         firstImageReady = false;
         updateMode();
     }

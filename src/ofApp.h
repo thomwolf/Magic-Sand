@@ -83,7 +83,7 @@ private:
 
     // States variables
     General_state generalState;
-    Calibration_state calibrationState;
+    Calibration_state calibrationState, previousCalibrationState;
     ROI_calibration_state ROICalibrationState;
     Autocalib_calibration_state autoCalibState;
 
@@ -116,6 +116,9 @@ private:
     // Autocalib points
     ofPoint* autoCalibPts; // Center of autocalib chess boards
     int currentCalibPts;
+    bool cleared;
+    int trials;
+    bool upframe;
 
     // Colormap and heightmap variables
     ColorMap    heightMap;

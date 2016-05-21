@@ -33,7 +33,8 @@ namespace states
         AUTOCALIB_STATE_INIT_ROI = 0,
         AUTOCALIB_STATE_INIT_POINT = 1,
         AUTOCALIB_STATE_NEXT_POINT = 2,
-        AUTOCALIB_STATE_DONE = 3
+        AUTOCALIB_STATE_COMPUTE = 3,
+        AUTOCALIB_STATE_DONE = 4
     };
 }
 namespace ofxCSG
