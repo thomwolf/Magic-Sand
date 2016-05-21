@@ -308,6 +308,8 @@ void ofApp::draw(){
     i++;
     ofDrawBitmapStringHighlight("g & h: change camera tilt angle.", xbase, ybase+i*yinc);
     i++;
+    ofDrawBitmapStringHighlight("n: Find and compute base plane in ROI.", xbase, ybase+i*yinc);
+    i++;
     ofDrawBitmapStringHighlight("c: compute calibration matrix.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("r: go to find kinect ROI mode.", xbase, ybase+i*yinc);
@@ -599,6 +601,50 @@ ofVec2f ofApp::computeTransform(ofVec4f vin) // vin is in kinect image depth coo
     ofVec4f screenPos = kinectProjMatrix*vertexCc;
     ofVec2f projectedPoint(screenPos.x/screenPos.z, screenPos.y/screenPos.z);
     return projectedPoint;
+}
+
+//--------------------------------------------------------------
+// Find normal of the plane inside the kinectROI
+void ofApp::computeBasePlane(){
+    ofRectangle smallROI = kinectROI;
+    smallROI.scaleFromCenter(0.75); // Reduce ROI to avoid problems with borders
+    
+    cout << "smallROI: " << smallROI << endl;
+    int sw = (int) smallROI.width;
+    int sh = (int) smallROI.height;
+    int sl = (int) smallROI.getLeft();
+    int st = (int) smallROI.getTop();
+    cout << "sw: " << sw << " sh : " << sh << " sl : " << sl << " st : " << st << " sw*sh : " << sw*sh << endl;
+    
+    if (sw*sh == 0) {
+        cout << "smallROI is null, cannot compute base plane normal" << endl;
+        return;
+    }
+        
+    ofVec4f pt;
+    
+    ofVec3f* points;
+    points = new ofVec3f[sw*sh];
+    cout << "Computing points in smallROI : " << sw*sh << endl;
+    for (int x = 0; x<sw; x++){
+        for (int y = 0; y<sh; y ++){
+            
+            // Get kinect depth image coord
+            pt = ofVec4f(x+sl, y+st, 0, 1);
+            pt.z = FilteredDepthImage.getFloatPixelsRef().getData()[x+sl + (y+st)*kinectResX];
+            
+            ofVec3f vertexCc = ofVec3f(kinectWorldMatrix*pt*pt.z); // Translate kinect coord in world coord
+            
+            points[x+y*sw] = vertexCc;
+        }
+    }
+    
+    cout << "Computing plane from points" << endl;
+    basePlaneEq = plane_from_points(points, sw*sh);
+    basePlaneNormal = ofVec3f(basePlaneEq);
+    basePlaneOffset = ofVec3f(0,0,-basePlaneEq.w);
+    
+    setRangesAndBasePlaneEquation();
 }
 
 //--------------------------------------------------------------
@@ -897,6 +943,8 @@ void ofApp::keyPressed(int key){
     } else if (key=='h') {
         float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
         kinectgrabber.kinect.setCameraTiltAngle(tilt-2);
+    } else if (key=='n') {
+        computeBasePlane();
     } else if (key=='c') {
         if (pairsKinect.size() == 0) {
             cout << "Error: No points acquired !!" << endl;

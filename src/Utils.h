@@ -376,4 +376,68 @@ namespace ofxCSG
 		//nada
 		return false;
 	}
+    
+    // Compute plane equation from point cloud
+    static ofVec4f plane_from_points(ofVec3f* points, int n) {
+        if (n < 3){
+            cout << "At least three points required" << endl;
+            return ofVec3f();
+        }
+        
+        ofVec3f sum = ofVec3f(0,0,0);
+        for (int i = 0; i < n; i++) {
+            sum = sum + points[i];
+        }
+        ofVec3f centroid = sum/n;
+        
+        cout << "Centroid coordinates : " << centroid << endl;
+
+        // Calc full 3x3 covariance matrix, excluding symmetries:
+        float xx = 0.0; float xy = 0.0; float xz = 0.0;
+        float yy = 0.0; float yz = 0.0; float zz = 0.0;
+        
+        for (int i = 0; i < n; i++) {
+            ofVec3f r = points[i] - centroid;
+            xx += r.x * r.x;
+            xy += r.x * r.y;
+            xz += r.x * r.z;
+            yy += r.y * r.y;
+            yz += r.y * r.z;
+            zz += r.z * r.z;
+        }
+        
+        float det_x = yy*zz - yz*yz;
+        float det_y = xx*zz - xz*xz;
+        float det_z = xx*yy - xy*xy;
+        
+        float det_max = max(det_x, max(det_y, det_z));
+        cout << "det_max : " << det_max << endl;
+        if(det_max == 0.0){
+            cout << "The points don't span a plane" << endl;
+            return ofVec3f();
+        }
+    
+        // Pick path with best conditioning:
+        ofVec3f dir;
+        if (det_max == det_x) {
+            cout << "Plane oriented toward x" << endl;
+            float a = (xz*yz - xy*zz) / det_x;
+            float b = (xy*yz - xz*yy) / det_x;
+            dir = ofVec3f(1.0, a, b);
+        } else if (det_max == det_y) {
+            cout << "Plane oriented toward y" << endl;
+            float a = (yz*xz - xy*zz) / det_y;
+            float b = (xy*xz - yz*xx) / det_y;
+            dir = ofVec3f(a, 1.0, b);
+        } else if (det_max == det_z){
+            cout << "Plane oriented toward z" << endl;
+            float a = (yz*xy - xz*yy) / det_z;
+            float b = (xz*xy - yz*xx) / det_z;
+            dir = ofVec3f(a, b, 1.0);
+        } else {
+            cout << "Error treating plane orientation" << endl;
+        }
+        
+        return getPlaneEquation(centroid,dir);
+    }
 }

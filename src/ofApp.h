@@ -30,6 +30,7 @@ public:
     void drawSandbox();
     void prepareContourLines();
     void addPointPair();
+    void computeBasePlane();
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
     void autoCalib();
