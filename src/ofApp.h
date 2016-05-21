@@ -32,6 +32,7 @@ public:
     void addPointPair();
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
+    void autoCalib();
     void updateMode();
 
     void keyPressed(int key);
@@ -84,6 +85,7 @@ private:
     General_state generalState;
     Calibration_state calibrationState;
     ROI_calibration_state ROICalibrationState;
+    Autocalib_calibration_state autoCalibState;
 
     // ROI calibration variables
     ofxCvGrayscaleImage         thresholdedImage;
@@ -96,7 +98,7 @@ private:
     ofMesh mesh;
     int meshwidth;          //Mesh size
     int meshheight;
-    ofPlanePrimitive plane;
+//    ofPlanePrimitive plane;
 
     // Shaders
     ofShader elevationShader;
@@ -110,6 +112,10 @@ private:
     ofVec3f basePlaneNormal;
     ofVec3f basePlaneOffset;
     ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
+    
+    // Autocalib points
+    ofPoint* autoCalibPts; // Center of autocalib chess boards
+    int currentCalibPts;
 
     // Colormap and heightmap variables
     ColorMap    heightMap;

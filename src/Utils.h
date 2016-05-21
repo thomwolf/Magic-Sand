@@ -19,13 +19,21 @@ namespace states
     {
         CALIBRATION_STATE_ROI_DETERMINATION = 0,
         CALIBRATION_STATE_PROJ_KINECT_CALIBRATION = 1,
-        CALIBRATION_STATE_CALIBRATION_TEST = 2
+        CALIBRATION_STATE_CALIBRATION_TEST = 2,
+        CALIBRATION_STATE_AUTOCALIB = 3
     };
     enum ROI_calibration_state
     {
         ROI_CALIBRATION_STATE_INIT = 0,
         ROI_CALIBRATION_STATE_MOVE_UP = 1,
         ROI_CALIBRATION_STATE_DONE = 2
+    };
+    enum Autocalib_calibration_state
+    {
+        AUTOCALIB_STATE_INIT_ROI = 0,
+        AUTOCALIB_STATE_INIT_POINT = 1,
+        AUTOCALIB_STATE_NEXT_POINT = 2,
+        AUTOCALIB_STATE_DONE = 3
     };
 }
 namespace ofxCSG
