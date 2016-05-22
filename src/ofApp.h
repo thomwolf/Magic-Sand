@@ -121,9 +121,10 @@ private:
     int trials;
     bool upframe;
 
-    // Colormap and heightmap variables
+    // Colormap, contourmap and heightmap variables
     ColorMap    heightMap;
 	float heightMapScale,heightMapOffset; // Scale and offset values to convert from elevation to height color map texture coordinates
+    float contourLineFboScale, contourLineFboOffset; // Scale and offset values to convert depth from contourline shader values to real values
 	float FilteredDepthScale,FilteredDepthOffset; // Scale and offset values to convert depth from normalized shader values to real values
 
     double gradFieldresolution;

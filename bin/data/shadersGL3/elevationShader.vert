@@ -19,6 +19,7 @@ out float bug;
 
 uniform sampler2DRect tex0; // Sampler for the depth image-space elevation texture
 uniform vec2 depthTransformation; // Normalisation factor and offset applied by openframeworks
+uniform vec2 contourLineFboTransformation; // Transformation from elevation to normalized contourline fbo unit factor and offset
 
 uniform mat4 kinectWorldMatrix; // Transformation from kinect image space to kinect world space
 uniform mat4 kinectProjMatrix; // Transformation from kinect world space to proj image space
@@ -44,8 +45,8 @@ void main()
     vertexCcx.w = 1;
     
     /* Take into account baseplane orientation and location: */
-    bug = dot(basePlaneEq,vertexCcx);///vertexCc.w;
-//    bug = elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
+    float elevation = dot(basePlaneEq,vertexCcx);///vertexCc.w;
+    bug = (elevation+contourLineFboTransformation.y)/heightColorMapTransformation.x;
     //bug = elevation;
     //bug = depth-670;
     //    if (depth > 0)

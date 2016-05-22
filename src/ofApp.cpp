@@ -169,12 +169,17 @@ void ofApp::setRangesAndBasePlaneEquation(){
 	heightMapScale =(heightMap.getNumEntries()-1)/((elevationMax-elevationMin));
 	heightMapOffset =0.5/heightMap.getNumEntries()-heightMapScale*elevationMin;
 
-    FilteredDepthImage.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);//2000/depthNorm); // This scale is converted to 0..1 when send to the shader
-//    contourLineFramebufferObject.setNativeScale(elevationMin, elevationMax);
+    // Set the FilteredDepthImage native scale - converted to 0..1 when send to the shader
+    FilteredDepthImage.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);//2000/depthNorm);
+    //    contourLineFramebufferObject.setNativeScale(elevationMin, elevationMax);
+
     // Calculate the  FilteredDepthImage scaling and offset coefficients
 	FilteredDepthScale = elevationMin-elevationMax;
 	FilteredDepthOffset = basePlaneOffset.z+elevationMax;
     
+    // Calculate the contourline fbo scaling and offset coefficients
+	contourLineFboScale = elevationMin-elevationMax;
+	contourLineFboOffset = elevationMax;
     
     cout << "basePlaneOffset: " << basePlaneOffset << endl;
     cout << "basePlaneNormal: " << basePlaneNormal << endl;
@@ -393,7 +398,8 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::drawProjWindow(ofEventArgs &args){ // Main draw call for proj window
     ofSetColor(ofColor::white);
-    fboProjWindow.draw(0, 0);
+//    fboProjWindow.draw(0, 0);
+    contourLineFramebufferObject.draw(0,0);
 }
 
 //--------------------------------------------------------------
@@ -523,6 +529,21 @@ void ofApp::prepareContourLines() // Prepare contour line fbo
     FilteredDepthImage.getTexture().unbind();
     contourLineFramebufferObject.end();
 	
+//    ofFloatPixels temp;
+//    contourLineFramebufferObject.readToPixels(temp);
+//        //Check values for debug
+//        float maxval = -1000.0;
+//        float minval = 1000.0;
+//        float xf;
+//        for (int i = 0; i<640*480; i ++){
+//            xf = temp.getData()[i];
+//
+//            if (xf > maxval)
+//                maxval = xf;
+//            if (xf < minval)
+//                minval = xf;
+//        }
+//        cout << "contourLineFramebufferObject temp maxval : " << maxval << " temp minval : " << minval << endl;
 	/*********************************************************************
      Restore previous OpenGL state.
      *********************************************************************/
