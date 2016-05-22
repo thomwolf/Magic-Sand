@@ -31,6 +31,7 @@ public:
     void prepareContourLines();
     void addPointPair();
     void computeBasePlane();
+    void computeMaxOffset();
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
     void autoCalib();
@@ -113,6 +114,7 @@ private:
     ofVec3f basePlaneNormal;
     ofVec3f basePlaneOffset;
     ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
+    float maxOffset;
     
     // Autocalib points
     ofPoint* autoCalibPts; // Center of autocalib chess boards

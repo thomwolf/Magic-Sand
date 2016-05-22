@@ -63,6 +63,7 @@ void ofApp::setup(){
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormal = ofVec3f(0,0,1);
 	basePlaneOffset= ofVec3f(0,0,870);
+    maxOffset = 0;
 //	nearclip = 500;
 //	farclip = 1500;
 		
@@ -398,8 +399,8 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::drawProjWindow(ofEventArgs &args){ // Main draw call for proj window
     ofSetColor(ofColor::white);
-//    fboProjWindow.draw(0, 0);
-    contourLineFramebufferObject.draw(0,0);
+    fboProjWindow.draw(0, 0);
+//    contourLineFramebufferObject.draw(0,0);
 }
 
 //--------------------------------------------------------------
@@ -668,6 +669,46 @@ void ofApp::computeBasePlane(){
     
     setRangesAndBasePlaneEquation();
 }
+//--------------------------------------------------------------
+// Find normal of the plane inside the kinectROI
+void ofApp::findMaxOffset(){
+    ofRectangle smallROI = kinectROI;
+    smallROI.scaleFromCenter(0.75); // Reduce ROI to avoid problems with borders
+    
+    cout << "smallROI: " << smallROI << endl;
+    int sw = (int) smallROI.width;
+    int sh = (int) smallROI.height;
+    int sl = (int) smallROI.getLeft();
+    int st = (int) smallROI.getTop();
+    cout << "sw: " << sw << " sh : " << sh << " sl : " << sl << " st : " << st << " sw*sh : " << sw*sh << endl;
+    
+    if (sw*sh == 0) {
+        cout << "smallROI is null, cannot compute base plane normal" << endl;
+        return;
+    }
+    
+    ofVec4f pt;
+    
+    ofVec3f* points;
+    points = new ofVec3f[sw*sh];
+    cout << "Computing points in smallROI : " << sw*sh << endl;
+    for (int x = 0; x<sw; x++){
+        for (int y = 0; y<sh; y ++){
+            
+            // Get kinect depth image coord
+            pt = ofVec4f(x+sl, y+st, 0, 1);
+            pt.z = FilteredDepthImage.getFloatPixelsRef().getData()[x+sl + (y+st)*kinectResX];
+            
+            ofVec3f vertexCc = ofVec3f(kinectWorldMatrix*pt*pt.z); // Translate kinect coord in world coord
+            
+            points[x+y*sw] = vertexCc;
+        }
+    }
+    
+    cout << "Computing plane from points" << endl;
+    ofVec4f eqoff = plane_from_points(points, sw*sh);
+    maxOffset = eqoff.w;
+}
 
 //--------------------------------------------------------------
 // Autoclibration of the sandbox
@@ -685,6 +726,7 @@ void ofApp::autoCalib(){
                 cout << "Could not find kinect ROI, stopping autocalib" << endl;
                 autoCalibState = AUTOCALIB_STATE_DONE;
             } else {
+                computeBasePlane(); // Find base plane
                 autoCalibPts = new ofPoint[10];
                 float cs = 2*chessboardSize/3;
                 float css = 3*chessboardSize/4;
@@ -755,6 +797,7 @@ void ofApp::autoCalib(){
             }
         } else {
             if (upframe) {
+                findMaxOffset(); // Find max offset
                 autoCalibState = AUTOCALIB_STATE_COMPUTE;
             } else {
                 resultMessage = "Please put a board on the sandbox and press [SPACE]";
