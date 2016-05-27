@@ -26,10 +26,11 @@ public:
 	~KinectGrabber();
     void setup(General_state, Calibration_state);
     void setupClip(float nearclip, float farclip);
-    void setupFramefilter(int gradFieldresolution, const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI);
-    void setupCalibration(int projectorWidth, int projectorHeight, float schessboardSize, float schessboardColor, float sStabilityTimeInMs, float smaxReprojError);
+    void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI);
+//    void setupCalibration(int projectorWidth, int projectorHeight, float schessboardSize, float schessboardColor, float sStabilityTimeInMs, float smaxReprojError);
     void setMode(General_state sgeneralState, Calibration_state scalibrationState);
     void setKinectROI(ofRectangle skinectROI);
+    void setMaxOffset(float newMaxOffset);
     //void update();
 //    ofPixels convertProjSpace(ofPixels sinputframe);
     ofVec2f getKinectSize();

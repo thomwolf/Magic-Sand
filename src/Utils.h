@@ -13,7 +13,8 @@ namespace states
     enum General_state
     {
         GENERAL_STATE_CALIBRATION = 0,
-        GENERAL_STATE_SANDBOX = 1
+        GENERAL_STATE_SANDBOX = 1,
+        GENERAL_STATE_GAME1 = 2
     };
     enum Calibration_state
     {

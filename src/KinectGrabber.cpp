@@ -49,12 +49,12 @@ void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
     kinectColorImage.setUseTexture(false);
 }
 
-void KinectGrabber::setupFramefilter(int gradFieldresolution, const ofVec3f basePlaneNormal, double MinElevation,double MaxElevation, ofRectangle ROI) {
+void KinectGrabber::setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI) {
 //    nearclip =snearclip;
 //    farclip =sfarclip;
 //    depthNorm = sdepthNorm;
 //    kinect.setDepthClipping(snearclip, sfarclip);
-    framefilter.setup(kinectWidth,kinectHeight, gradFieldresolution, basePlaneNormal, MinElevation, MaxElevation);
+    framefilter.setup(kinectWidth,kinectHeight, gradFieldresolution, newMaxOffset);
     framefilter.setROI(ROI);
 //    framefilter.setValidElevationInterval(basePlaneNormal,elevationMin,elevationMax);
     // framefilter.startThread();
@@ -92,6 +92,10 @@ ofMatrix4x4 KinectGrabber::getWorldMatrix(){
 
 void KinectGrabber::setKinectROI(ofRectangle skinectROI){
     framefilter.setROI(skinectROI);
+}
+
+void KinectGrabber::setMaxOffset(float newMaxOffset){
+    framefilter.setMaxOffset(newMaxOffset);
 }
 
 void KinectGrabber::threadedFunction(){

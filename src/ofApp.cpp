@@ -64,43 +64,16 @@ void ofApp::setup(){
 	basePlaneNormal = ofVec3f(0,0,1);
 	basePlaneOffset= ofVec3f(0,0,870);
     maxOffset = 0;
+    maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
 //	nearclip = 500;
 //	farclip = 1500;
 		
-	// Load colormap and set heightmap
-    heightMap.load("HeightColorMap.yml");
-    
-    // Setup elevation ranges and base plane equation
-    setRangesAndBasePlaneEquation();
-    
-	// Load shaders
-    bool loaded = true;
-#ifdef TARGET_OPENGLES
-    cout << "Loading shadersES2"<< endl;
-	loaded = loaded && elevationShader.load("shadersES2/elevationShader");
-	loaded = loaded && heightMapShader.load("shadersES2/heightMapShader");
-#else
-	if(ofIsGLProgrammableRenderer()){
-        cout << "Loading shadersGL3/elevationShader"<< endl;
-		loaded = loaded && elevationShader.load("shadersGL3/elevationShader");
-        cout << "Loading shadersGL3/heightMapShader"<< endl;
-		loaded = loaded && heightMapShader.load("shadersGL3/heightMapShader");
-	}else{
-        cout << "Loading shadersGL2/elevationShader"<< endl;
-		loaded = loaded && elevationShader.load("shadersGL2/elevationShader");
-        cout << "Loading shadersGL2/heightMapShader"<< endl;
-		loaded = loaded && heightMapShader.load("shadersGL2/heightMapShader");
-	}
-#endif
-    if (!loaded)
-    {
-        cout << "shader not loaded" << endl;
-        exit();
-    }
-    
     // Sandbox contourlines
     drawContourLines = true; // Flag if topographic contour lines are enabled
-	contourLineFactor = 0.1f; // Inverse elevation distance between adjacent topographic contour lines
+	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
+    
+	// Load colormap and set heightmap
+    heightMap.load("HeightColorMap.yml");
     
 // Initialise mesh
     float planeScale = 1;
@@ -126,10 +99,30 @@ void ofApp::setup(){
             mesh.addIndex(x+(y+1)*meshwidth);     // 10
         }
 
-	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(gradFieldresolution, basePlaneNormal, elevationMin, elevationMax, kinectROI);
-    kinectWorldMatrix = kinectgrabber.getWorldMatrix();
-    cout << "kinectWorldMatrix: " << kinectWorldMatrix << endl;
+	// Load shaders
+    bool loaded = true;
+#ifdef TARGET_OPENGLES
+    cout << "Loading shadersES2"<< endl;
+	loaded = loaded && elevationShader.load("shadersES2/elevationShader");
+	loaded = loaded && heightMapShader.load("shadersES2/heightMapShader");
+#else
+	if(ofIsGLProgrammableRenderer()){
+        cout << "Loading shadersGL3/elevationShader"<< endl;
+		loaded = loaded && elevationShader.load("shadersGL3/elevationShader");
+        cout << "Loading shadersGL3/heightMapShader"<< endl;
+		loaded = loaded && heightMapShader.load("shadersGL3/heightMapShader");
+	}else{
+        cout << "Loading shadersGL2/elevationShader"<< endl;
+		loaded = loaded && elevationShader.load("shadersGL2/elevationShader");
+        cout << "Loading shadersGL2/heightMapShader"<< endl;
+		loaded = loaded && heightMapShader.load("shadersGL2/heightMapShader");
+	}
+#endif
+    if (!loaded)
+    {
+        cout << "shader not loaded" << endl;
+        exit();
+    }
     
     //Try to load calibration file if possible
     if (kpt.loadCalibration("calibration.xml"))
@@ -153,6 +146,14 @@ void ofApp::setup(){
         cout << "Settings could not be loaded " << endl;
     }
 
+	// finish kinectgrabber setup and start the grabber
+    kinectgrabber.setupFramefilter(gradFieldresolution, maxOffset, kinectROI);
+    kinectWorldMatrix = kinectgrabber.getWorldMatrix();
+    cout << "kinectWorldMatrix: " << kinectWorldMatrix << endl;
+    
+    // Setup elevation ranges and base plane equation
+    setRangesAndBasePlaneEquation();
+    
 	kinectgrabber.startThread(true);
 }
 
@@ -181,6 +182,7 @@ void ofApp::setRangesAndBasePlaneEquation(){
     // Calculate the contourline fbo scaling and offset coefficients
 	contourLineFboScale = elevationMin-elevationMax;
 	contourLineFboOffset = elevationMax;
+    contourLineFactor = contourLineFboScale/(contourLineDistance);
     
     cout << "basePlaneOffset: " << basePlaneOffset << endl;
     cout << "basePlaneNormal: " << basePlaneNormal << endl;
@@ -188,6 +190,8 @@ void ofApp::setRangesAndBasePlaneEquation(){
     cout << "elevationMin: " << elevationMin << endl;
     cout << "elevationMax: " << elevationMax << endl;
     cout << "heightMap.getNumEntries(): " << heightMap.getNumEntries() << endl;
+    cout << "contourLineDistance: " << contourLineDistance << endl;
+    cout << "maxOffset: " << maxOffset << endl;
 }
 
 //--------------------------------------------------------------
@@ -303,17 +307,17 @@ void ofApp::draw(){
     i++;
     ofDrawBitmapStringHighlight("[SPACE]: add point pair.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("a & z: change chessboard size.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("a & z: inc/dec chessboard size.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("q & s: change baseplane offset.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("q & s: inc/dec baseplane offset.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("w & x: change heightmapscale.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("w & x: inc/dec maxOffset.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("d & f: change heightmap entry number.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("d & f: inc/dec heightmap entry number.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("g & h: inc/dec contour line distance.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("u, i, o & p: rotate baseplane normal.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("g & h: change camera tilt angle.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("n: Find and compute base plane in ROI.", xbase, ybase+i*yinc);
     i++;
@@ -521,6 +525,7 @@ void ofApp::prepareContourLines() // Prepare contour line fbo
 
     elevationShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix.getTransposedOf(kinectProjMatrix)); // Transpose since OpenGL is row-major order
     elevationShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix.getTransposedOf(kinectWorldMatrix));
+    elevationShader.setUniform2f("contourLineFboTransformation",ofVec2f(contourLineFboScale,contourLineFboOffset));
     elevationShader.setUniform2f("depthTransformation",ofVec2f(FilteredDepthScale,FilteredDepthOffset));
     elevationShader.setUniform4f("basePlaneEq", basePlaneEq);
     
@@ -707,7 +712,10 @@ void ofApp::findMaxOffset(){
     
     cout << "Computing plane from points" << endl;
     ofVec4f eqoff = plane_from_points(points, sw*sh);
-    maxOffset = eqoff.w;
+    maxOffset = -eqoff.w-maxOffsetSafeRange;
+
+    cout << "maxOffset" << maxOffset << endl;
+    kinectgrabber.setMaxOffset(maxOffset);
 }
 
 //--------------------------------------------------------------
@@ -727,6 +735,7 @@ void ofApp::autoCalib(){
                 autoCalibState = AUTOCALIB_STATE_DONE;
             } else {
                 computeBasePlane(); // Find base plane
+                
                 autoCalibPts = new ofPoint[10];
                 float cs = 2*chessboardSize/3;
                 float css = 3*chessboardSize/4;
@@ -796,10 +805,10 @@ void ofApp::autoCalib(){
                 }
             }
         } else {
-            if (upframe) {
+            if (upframe) { // We are done
                 findMaxOffset(); // Find max offset
                 autoCalibState = AUTOCALIB_STATE_COMPUTE;
-            } else {
+            } else { // We ask for higher points
                 resultMessage = "Please put a board on the sandbox and press [SPACE]";
             }
         }
@@ -978,12 +987,20 @@ void ofApp::keyPressed(int key){
     } else if (key=='s') {
         basePlaneOffset.z -= 0.5;
         setRangesAndBasePlaneEquation();
-    }else if (key=='w') {
-        heightMap.scaleRange(0.8);
+    } else if (key=='g') {
+        contourLineDistance += 1.0;
         setRangesAndBasePlaneEquation();
+    } else if (key=='h') {
+        contourLineDistance -= 1.0;
+        setRangesAndBasePlaneEquation();
+    } else if (key=='w') {
+        maxOffset += 0.5;
+        cout << "maxOffset" << maxOffset << endl;
+        kinectgrabber.setMaxOffset(maxOffset);
     } else if (key=='x') {
-        heightMap.scaleRange(1.25);
-        setRangesAndBasePlaneEquation();
+        maxOffset -= 0.5;
+        cout << "maxOffset" << maxOffset << endl;
+        kinectgrabber.setMaxOffset(maxOffset);
     } else if (key=='d') {
         heightMap.changeNumEntries(50, true); // Increase the color map's size
         setRangesAndBasePlaneEquation();
@@ -1002,12 +1019,6 @@ void ofApp::keyPressed(int key){
     } else if (key=='p') {
         basePlaneNormal.rotate(1, ofVec3f(0,1,0)); // Rotate the base plane normal
         setRangesAndBasePlaneEquation();
-    } else if (key=='g') {
-        float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
-        kinectgrabber.kinect.setCameraTiltAngle(tilt+2);
-    } else if (key=='h') {
-        float tilt = kinectgrabber.kinect.getCurrentCameraTiltAngle();
-        kinectgrabber.kinect.setCameraTiltAngle(tilt-2);
     } else if (key=='n') {
         computeBasePlane();
     } else if (key=='c') {
@@ -1177,6 +1188,7 @@ bool ofApp::loadSettings(string path){
     basePlaneNormal = xml.getValue<ofVec3f>("basePlaneNormal");
     basePlaneOffset = xml.getValue<ofVec3f>("basePlaneOffset");
     basePlaneEq = xml.getValue<ofVec4f>("basePlaneEq");
+    maxOffset = xml.getValue<float>("maxOffset");
 
     setRangesAndBasePlaneEquation();
     kinectgrabber.setKinectROI(kinectROI);
@@ -1193,6 +1205,7 @@ bool ofApp::saveSettings(string path){
     xml.addValue("basePlaneNormal", basePlaneNormal);
     xml.addValue("basePlaneOffset", basePlaneOffset);
     xml.addValue("basePlaneEq", basePlaneEq);
+    xml.addValue("maxOffset", maxOffset);
     xml.setToParent();
     return xml.save(path);
 }

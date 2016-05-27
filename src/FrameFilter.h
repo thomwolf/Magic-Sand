@@ -35,7 +35,7 @@ public:
     FrameFilter();
     ~FrameFilter();
     
-    bool setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation);
+    bool setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, float newMaxOffset);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
 //    void setDepthRange(float nearclip, float farclip);
@@ -50,6 +50,7 @@ public:
 	void setInstableValue(float newInstableValue); // Sets the depth value to assign to instable pixels
 	void setSpatialFilter(bool newSpatialFilter); // Sets the spatial filtering flag
 	void setROI(ofRectangle ROI); // Sets the ROI
+    void setMaxOffset(float newMaxOffset);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
     void displayFlowField();
     void drawArrow(ofVec2f);
@@ -85,8 +86,8 @@ private:
     int minX, maxX, ROIwidth; // ROI definition
     int minY, maxY, ROIheight;
     
-	ofVec4f basePlaneNormal; // Base plane normal
-	float minPlane, maxPlane; //  lower bound & upper bound of valid depth values in depth image space
+//	ofVec4f basePlaneNormal; // Base plane normal
+//	float minPlane, maxPlane; //  lower bound & upper bound of valid depth values in depth image space
     
 	int numAveragingSlots; // Number of slots in each pixel's averaging buffer
 	float* averagingBuffer; // Buffer to calculate running averages of each pixel's depth value
@@ -101,5 +102,6 @@ private:
 	bool spatialFilter; // Flag whether to apply a spatial filter to time-averaged depth values
 	float* validBuffer; // Buffer holding the most recent stable depth value for each pixel
 //	void* filterThreadMethod(void); // Method for the background filtering thread
+    float maxOffset;
 	
 };

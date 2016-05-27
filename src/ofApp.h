@@ -31,7 +31,7 @@ public:
     void prepareContourLines();
     void addPointPair();
     void computeBasePlane();
-    void computeMaxOffset();
+    void findMaxOffset();
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
     void autoCalib();
@@ -114,7 +114,7 @@ private:
     ofVec3f basePlaneNormal;
     ofVec3f basePlaneOffset;
     ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
-    float maxOffset;
+    float maxOffset, maxOffsetSafeRange;
     
     // Autocalib points
     ofPoint* autoCalibPts; // Center of autocalib chess boards
@@ -130,6 +130,8 @@ private:
 	float FilteredDepthScale,FilteredDepthOffset; // Scale and offset values to convert depth from normalized shader values to real values
 
     double gradFieldresolution;
+    float contourLineDistance, contourLineFactor;
+    bool drawContourLines; // Flag if topographic contour lines are enabled
     
 //    float farclip, nearclip;
 //    float depthNorm;
@@ -141,7 +143,4 @@ private:
     int projResY;
     int kinectResX;
     int kinectResY;
-    bool drawContourLines; // Flag if topographic contour lines are enabled
-	float contourLineFactor; // Inverse elevation distance between adjacent topographic contour lines
-
 };

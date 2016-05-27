@@ -46,7 +46,7 @@ void main()
     
     /* Take into account baseplane orientation and location: */
     float elevation = dot(basePlaneEq,vertexCcx);///vertexCc.w;
-    bug = (elevation+contourLineFboTransformation.y)/heightColorMapTransformation.x;
+    bug = (elevation-contourLineFboTransformation.y)/contourLineFboTransformation.x;
     //bug = elevation;
     //bug = depth-670;
     //    if (depth > 0)

@@ -18,7 +18,7 @@ FrameFilter::FrameFilter(): newFrame(true), bufferInitiated(false)
 {
 }
 
-bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation)
+bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int sgradFieldresolution, float newMaxOffset)
 {
 	/* Settings variables : */
 	width = swidth;
@@ -62,9 +62,7 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     //	basePlaneCc[3]=-basePlane.getOffset();
     //	PTransform::HVector basePlaneDic(depthProjection.getMatrix().transposeMultiply(basePlaneCc));
     //	basePlaneDic/=Geometry::mag(basePlaneDic.toVector());
-    basePlaneNormal =sbasePlaneNormal;
-    minPlane = newMinElevation;
-    maxPlane = newMaxElevation;
+    maxOffset =newMaxOffset;
 	
 	/* Initialize the gradient field vector*/
     gradFieldresolution = sgradFieldresolution;
@@ -272,10 +270,10 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                     point[0] = px;
                     point[1] = py;
                     point[2] = newVal;
-                    bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
-                    bool underMax = classifyPointWithPlane(point, basePlaneNormal, maxPlane) == BACK;
+//                    bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
+//                    bool underMax = classifyPointWithPlane(point, basePlaneNormal, maxPlane) == BACK;
                     
-                    if(true)//TODO: add vertical planes limitation
+                    if(newVal>maxOffset)//we are under the max offset plane (to avoid taking into account the hands of operators
                         //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
                     {
                         /* Store the new input value: */
@@ -463,12 +461,10 @@ void FrameFilter::updateGradientField()
 ////	maxPlane[3]=-float(newMaxDepth)-0.5f;
 //}
 
-void FrameFilter::setValidElevationInterval(const ofVec3f sbasePlaneNormal,double newMinElevation,double newMaxElevation)
+void FrameFilter::setMaxOffset(float newMaxOffset)
 {
 	/* Calculate the equations of the minimum and maximum elevation planes in camera space: */
-    basePlaneNormal = sbasePlaneNormal;
-    minPlane=newMinElevation;
-    maxPlane=newMaxElevation;
+    maxOffset = newMaxOffset;
     
     //	PTransform::HVector minPlaneCc(basePlane.getNormal());
     //	minPlaneCc[3]=-(basePlane.getOffset()+newMinElevation*basePlane.getNormal().mag());
