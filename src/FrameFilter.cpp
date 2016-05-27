@@ -87,7 +87,6 @@ FrameFilter::~FrameFilter(){
     delete[] averagingBuffer;
     delete[] statBuffer;
     delete[] validBuffer;
-    delete[] wrldcoordbuffer;
     delete[] gradField;
     //	waitForThread(true);
 }
@@ -99,7 +98,6 @@ void FrameFilter::resetBuffers(void){
         delete[] averagingBuffer;
         delete[] statBuffer;
         delete[] validBuffer;
-        delete[] wrldcoordbuffer;
         delete[] gradField;
     }
     initiateBuffers();
@@ -141,13 +139,6 @@ void FrameFilter::initiateBuffers(void){
         for(unsigned int x=0;x<gradFieldcols;++x,++gfPtr)
             *gfPtr=ofVec2f(0);
     
-    /* Initialize the gradient field buffer: */
-    wrldcoordbuffer = new Point3f[height*width];
-    Point3f* wcPtr=wrldcoordbuffer;
-    for(unsigned int y=0;y<height;++y)
-        for(unsigned int x=0;x<width;++x,++wcPtr)
-            *wcPtr=Point3f(0, 0, 0);
-    
     bufferInitiated = true;
     firstImageReady = false;
 }
@@ -167,20 +158,12 @@ bool FrameFilter::isFrameNew(){
     return newFrame;
 }
 
-ofVec2f FrameFilter::getGradFieldXY(int x, int y){
-    int xbin = (int)floorf(((float)x)/(float)gradFieldresolution);
-    int ybin = (int)floorf(((float)y)/(float)gradFieldresolution);
-    return gradField[ybin*gradFieldcols+xbin];
-}
-
+//--------------------------------------------------------------
 ofVec2f* FrameFilter::getGradField(){
     return gradField;
 }
 
-Point3f* FrameFilter::getWrldcoordbuffer(){
-    return wrldcoordbuffer;
-}
-
+//--------------------------------------------------------------
 void FrameFilter::setROI(ofRectangle ROI){
     minX = (int) ROI.getMinX();
     maxX = (int) ROI.getMaxX();
@@ -190,52 +173,12 @@ void FrameFilter::setROI(ofRectangle ROI){
     ROIheight = maxY-minY;
 }
 
+//--------------------------------------------------------------
 bool FrameFilter::isInsideROI(int x, int y){
     bool result = true;
     if (x<minX||x>maxX||y<minY||y>maxY)
         result = false;
     return result;
-}
-
-void FrameFilter::displayFlowField()
-{
-    
-    /*
-     Uncomment to draw an x at the centre of the screen
-     ofPoint screenCenter = ofPoint(ofGetWidth() / 2,ofGetHeight() / 2);
-     ofSetColor(255,0,0,255);
-     ofLine(screenCenter.x - 50,screenCenter.y-50,screenCenter.x+50,screenCenter.y+50);
-     ofLine(screenCenter.x + 50,screenCenter.y-50,screenCenter.x-50,screenCenter.y+50);
-     */
-    
-    for(int rowPos=0; rowPos< gradFieldrows ; rowPos++)
-    {
-        for(int colPos=0; colPos< gradFieldcols ; colPos++)
-        {
-            ofFill();
-            ofPushMatrix();
-            // add half resolution to each dimension to put us in center of each 'cell'
-            ofTranslate((colPos*gradFieldresolution) + gradFieldresolution/2,rowPos*gradFieldresolution  + gradFieldresolution/2);
-            ofVec2f v1(1,0);
-            ofVec2f v2 = gradField[colPos + (rowPos * gradFieldcols)];
-            //float angleToRotate = v1.angle(v2);
-            //ofRotate(angleToRotate);
-            drawArrow(v2*0.1);//(colPos + (rowPos * gradFieldcols))/10);//
-            ofSetColor(0,0,255,255);
-            //int angFloored = angleToRotate;
-            // ofDrawBitmapString(ofToString(angFloored), 0,0); // uncomment to output angle at position for debugging
-            ofPopMatrix();
-        }
-    }
-}
-
-void FrameFilter::drawArrow(ofVec2f v1)
-{
-    // half the length is subtracted from the x point positions to move the rotation axis to the center
-    ofSetColor(255,0,0,255);
-    ofDrawLine(0, 0, v1.x, v1.y);
-    ofDrawCircle(v1.x, v1.y, 5);//(-length/2 + length*0.8, length*0.1, length/2, 0);
-    //ofDrawLine(-length/2 + length*0.8, length*-0.1, length/2, 0);
 }
 
 ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
@@ -421,6 +364,9 @@ void FrameFilter::updateGradientField()
     float* nofPtr=outputframe.getData();
     for(unsigned int y=0;y<gradFieldrows;++y) {
         for(unsigned int x=0;x<gradFieldcols;++x) {
+            if (y == gradFieldrows/2 && x == gradFieldcols/2){
+                
+            }
             gx = 0;
             gvx = 0;
             gy = 0;
@@ -438,7 +384,7 @@ void FrameFilter::updateGradientField()
                 }
             }
             if (gvx !=0 && gvy !=0)
-                gradField[y*gradFieldcols+x]=ofVec2f(gx/gradFieldresolution/gvx*depthrange, gy/gradFieldresolution/gvy*depthrange);
+                gradField[y*gradFieldcols+x]=ofVec2f(gx/gradFieldresolution/gvx, gy/gradFieldresolution/gvy);
             if (gradField[y*gradFieldcols+x].length() > maxgradfield){
                 gradField[y*gradFieldcols+x].scale(maxgradfield);// /= gradField[y*gradFieldcols+x].length()*maxgradfield;
                 lgth+=1;

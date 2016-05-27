@@ -40,9 +40,7 @@ public:
     void resetBuffers(void);
 //    void setDepthRange(float nearclip, float farclip);
     bool isFrameNew();
-    ofVec2f getGradFieldXY(int x, int y); // gradient field at pos x, y
-    ofVec2f* getGradField(); // gradient field
-    Point3f* getWrldcoordbuffer();
+    ofVec2f* getGradField();
 	void setValidElevationInterval(const ofVec3f sbasePlaneNormal, double newMinElevation,double newMaxElevation); // Sets the interval of elevations relative to the given base plane considered by the depth image filter
 	void setStableParameters(unsigned int newMinNumSamples,unsigned int newMaxVariance); // Sets the statistical properties to consider a pixel stable
 	void setHysteresis(float newHysteresis); // Sets the stable value hysteresis envelope
@@ -52,8 +50,6 @@ public:
 	void setROI(ofRectangle ROI); // Sets the ROI
     void setMaxOffset(float newMaxOffset);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
-    void displayFlowField();
-    void drawArrow(ofVec2f);
     void applySpaceFilter(ofFloatPixels& newOutputFrame);
     void updateGradientField();
     ofFloatPixels filter(ofShortPixels inputframe);
@@ -74,7 +70,6 @@ private:
     int gradFieldresolution;           //Resolution of grid relative to window width and height in pixels
     float maxgradfield, depthrange;
     
-    Point3f* wrldcoordbuffer; // Buffer retaining world coordinates of points
     float nearclip, farclip; // nearclip and farclip of kinect
     
     unsigned int width, height; // Width and height of processed frames

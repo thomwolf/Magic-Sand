@@ -6,13 +6,15 @@ class vehicle{
 public:
     ofPoint location;
   
-    void setup(int x, int y, int sscreenWidth, int sscreenHeight);
+    void setup(int x, int y, ofRectangle sborders);
+
+    ofPoint seekForce(const ofPoint & target);
+    ofPoint separateForce(vector<vehicle> vehicles);
+    ofPoint bordersForce();
+    ofPoint slopesForce(ofVec2f* gradient);
     void applyForce(const ofPoint & force);
-    ofPoint seek(const ofPoint & target);
-    ofPoint separate(vector<vehicle> vehicles);
-    void applyBehaviours(vector<vehicle> vehicles, ofVec2f* gradient);
-    ofPoint borders();
-    ofPoint slopes(ofVec2f* gradient);
+
+    void applyBehaviours(vector<vehicle> vehicles, ofVec2f* gradient, ofPoint target);
     void update();
     void draw();
 
@@ -26,9 +28,10 @@ private:
     ofPoint acceleration;
     
 //    const ofVec2f gradient;
+    ofRectangle borders, internalBorders;
     float topSpeed;
     float maxForce; 
-    int r, border, desiredseparation, cor;
+    int r, minborderDist, desiredseparation, cor;
     int screenWidth, screenHeight;
     
     

@@ -1,22 +1,24 @@
 #include "vehicle.h"
 
 //--------------------------------------------------------------
-void vehicle::setup(int x, int y, int sscreenWidth, int sscreenHeight){
+void vehicle::setup(int x, int y, ofRectangle sborders){
     acceleration.set(0, 0);
     velocity.set(0.0, 0.0);
     location.set(x,y);
-    screenWidth = sscreenWidth;
-    screenHeight = sscreenHeight;
+    
+    borders = sborders;
+    minborderDist = 12;
+    internalBorders = sborders;
+    internalBorders.scaleFromCenter((sborders.width-minborderDist)/sborders.width, (sborders.height-minborderDist)/sborders.height);
     
     r = 12;
-    border = 12;
     desiredseparation = 24;
     maxForce = 0.1;
     topSpeed =3;
 }
 
 //--------------------------------------------------------------
-ofPoint vehicle::borders(){
+ofPoint vehicle::bordersForce(){
     ofPoint desired;
     
     // Predict location 5 (arbitrary choice) frames ahead
@@ -26,52 +28,16 @@ ofPoint vehicle::borders(){
     futureLocation += predict;
     
     ofPoint leave(location);
-    if (futureLocation.x < border)
-        leave.x = screenWidth;
-    if (futureLocation.y < border)
-        leave.y = screenHeight;
-    if (futureLocation.x > screenWidth-border)
-        leave.x = 0;
-    if (futureLocation.y > screenHeight-border)
-        leave.y = 0;
-    
-        leave -= location;
-        leave.normalize();
-        leave *= velocity.length();
-        leave += velocity;
-        
-        desired.set(leave);
-        desired.normalize();
-        desired *= topSpeed;
-    
-    ofPoint steer(desired);
-    if (desired.length() != 0) {
-        steer -= velocity;
-        //            PVector steer = PVector.sub(desired, velocity);
-        steer.limit(maxForce);
+    if (!internalBorders.inside(futureLocation)){
+        if (futureLocation.x < internalBorders.getLeft())
+            leave.x = borders.getRight();
+        if (futureLocation.y < internalBorders.getTop())
+            leave.y = borders.getBottom();
+        if (futureLocation.x > internalBorders.getRight())
+            leave.x = borders.getLeft();
+        if (futureLocation.y > internalBorders.getBottom())
+            leave.y = borders.getTop();
     }
-    return steer;
-}
-
-//--------------------------------------------------------------
-ofPoint vehicle::slopes(ofVec2f* gradient){
-    ofPoint desired;
-    
-    // Predict location 5 (arbitrary choice) frames ahead
-    ofPoint predict(velocity);
-    predict *= 10;
-    ofPoint futureLocation(location);
-    futureLocation += predict;
-    
-    ofPoint leave(location);
-    if (futureLocation.x < border)
-        leave.x = screenWidth;
-    if (futureLocation.y < border)
-        leave.y = screenHeight;
-    if (futureLocation.x > screenWidth-border)
-        leave.x = 0;
-    if (futureLocation.y > screenHeight-border)
-        leave.y = 0;
     
     leave -= location;
     leave.normalize();
@@ -92,7 +58,46 @@ ofPoint vehicle::slopes(ofVec2f* gradient){
 }
 
 //--------------------------------------------------------------
-ofPoint vehicle::seek(const ofPoint & target){
+ofPoint vehicle::slopesForce(ofVec2f* gradient){
+    ofPoint desired;
+    
+//    // Predict location 5 (arbitrary choice) frames ahead
+//    ofPoint predict(velocity);
+//    predict *= 10;
+//    ofPoint futureLocation(location);
+//    futureLocation += predict;
+//    
+//    ofPoint leave(location);
+//    if (futureLocation.x < border)
+//        leave.x = screenWidth;
+//    if (futureLocation.y < border)
+//        leave.y = screenHeight;
+//    if (futureLocation.x > screenWidth-border)
+//        leave.x = 0;
+//    if (futureLocation.y > screenHeight-border)
+//        leave.y = 0;
+//    
+//    leave -= location;
+//    leave.normalize();
+//    leave *= velocity.length();
+//    leave += velocity;
+//    
+//    desired.set(leave);
+//    desired.normalize();
+//    desired *= topSpeed;
+//    
+//    ofPoint steer(desired);
+//    if (desired.length() != 0) {
+//        steer -= velocity;
+//        //            PVector steer = PVector.sub(desired, velocity);
+//        steer.limit(maxForce);
+//    }
+//    return steer;
+    return ofPoint(0);
+}
+
+//--------------------------------------------------------------
+ofPoint vehicle::seekForce(const ofPoint & target){
     ofPoint desired;
     desired = target - location;
     
@@ -107,7 +112,7 @@ ofPoint vehicle::seek(const ofPoint & target){
 }
 
 //--------------------------------------------------------------
-ofPoint vehicle::separate(vector<vehicle> vehicles){
+ofPoint vehicle::separateForce(vector<vehicle> vehicles){
 //    float desiredseparation = r*2;
     ofPoint sum;
     int count = 0;
@@ -136,24 +141,22 @@ ofPoint vehicle::separate(vector<vehicle> vehicles){
 }
 
 //--------------------------------------------------------------
-void vehicle::applyBehaviours(vector<vehicle> vehicles, ofVec2f* gradient){
+void vehicle::applyBehaviours(vector<vehicle> vehicles, ofVec2f* gradient, ofPoint target){
 
-    ofPoint mouse(ofGetMouseX(), ofGetMouseY());
+    ofPoint separateF = separateForce(vehicles);
+    ofPoint seekF = seekForce(target);
+    ofPoint bordersF = bordersForce();
+    ofPoint slopesF = slopesForce(gradient);
     
-    ofPoint separateForce = separate(vehicles);
-    ofPoint seekForce = seek(mouse);
-    ofPoint border = borders();
-    ofPoint slope = slopes(gradient);
+    separateF*=2;
+    seekF *= 1;
+    bordersF *=3;
+    slopesF *= 2;
     
-    separateForce*=2;
-    seekForce *= 1;
-    border *=3;
-    slope *= 2;
-    
-    applyForce(slope);
-    applyForce(border);
-    applyForce(separateForce);
-    applyForce(seekForce);
+//    applyForce(slopesF);
+    applyForce(bordersF);
+//    applyForce(separateF);
+    applyForce(seekF);
 }
 
 //--------------------------------------------------------------
@@ -168,17 +171,4 @@ void vehicle::update(){
     location += velocity;
     velocity.limit(topSpeed);
     acceleration *= 0;
-}
-
-//--------------------------------------------------------------
-void vehicle::draw(){
-    //float angle = ofRadToDeg(atan2(velocity.y,velocity.x)) + 90;
-    
-    ofPushMatrix();
-  
-    ofSetColor(255);
-    ofTranslate(location.x, location.y);
-    //ofRotate(angle);
-    ofDrawCircle(0, 0, r/2);
-    ofPopMatrix();
 }

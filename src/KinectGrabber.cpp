@@ -132,7 +132,7 @@ void KinectGrabber::threadedFunction(){
         {
 #if __cplusplus>=201103
             filtered.send(std::move(filteredframe));
-            if (generalState == GENERAL_STATE_SANDBOX)
+            if (generalState == GENERAL_STATE_GAME1)
                 gradient.send(std::move(framefilter.getGradField()));
             if (generalState == GENERAL_STATE_CALIBRATION)
                 colored.send(std::move(kinectColorImage.getPixels()));

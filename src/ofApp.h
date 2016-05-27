@@ -22,6 +22,9 @@ public:
 
     void setup();
     void setRangesAndBasePlaneEquation();
+    void setupGradientField();
+    void setupVehicles();
+    
     void update();
     void draw();
     void drawProjWindow(ofEventArgs& args);
@@ -29,11 +32,17 @@ public:
     void drawTestingPoint(ofVec2f projectedPoint);
     void drawSandbox();
     void prepareContourLines();
+    void drawFlowField();
+    void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
+    void drawVehicles();
+    void drawVehicle(ofVec2f projectedPoint);
+
     void addPointPair();
     void computeBasePlane();
     void findMaxOffset();
     ofVec2f computeTransform(ofVec4f vin);
     void updateROI();
+    void updateROIManualSetup();
     void autoCalib();
     void updateMode();
 
@@ -63,6 +72,12 @@ private:
     ofxCvColorImage             kinectColorImage;
     cv::Mat                     cvRgbImage;
     ofxCvFloatImage             Dptimg;
+    
+    //Gradient field variables
+    ofVec2f* gradField;
+    int gradFieldcols, gradFieldrows;
+    double gradFieldresolution;
+    float arrowLength;
 
     // Calibration variables
     vector<ofVec2f>             currentProjectorPoints;
@@ -84,7 +99,7 @@ private:
     bool firstImageReady;
 
     // States variables
-    General_state generalState;
+    General_state generalState, previousGeneralState;
     Calibration_state calibrationState, previousCalibrationState;
     ROI_calibration_state ROICalibrationState;
     Autocalib_calibration_state autoCalibState;
@@ -94,7 +109,7 @@ private:
     ofxCvContourFinder          contourFinder;
     float threshold;
     ofPolyline large;
-    ofRectangle                 kinectROI;
+    ofRectangle                 kinectROI, kinectROIManualCalib;
 
     // Mesh
     ofMesh mesh;
@@ -122,6 +137,10 @@ private:
     bool cleared;
     int trials;
     bool upframe;
+    
+    // vehicules
+    vector<vehicle> vehicles;
+    int vehicleNum;
 
     // Colormap, contourmap and heightmap variables
     ColorMap    heightMap;
@@ -129,12 +148,10 @@ private:
     float contourLineFboScale, contourLineFboOffset; // Scale and offset values to convert depth from contourline shader values to real values
 	float FilteredDepthScale,FilteredDepthOffset; // Scale and offset values to convert depth from normalized shader values to real values
 
-    double gradFieldresolution;
+    // Contourlines
     float contourLineDistance, contourLineFactor;
     bool drawContourLines; // Flag if topographic contour lines are enabled
     
-//    float farclip, nearclip;
-//    float depthNorm;
     float elevationMin, elevationMax;
     int   chessboardSize;
     int   chessboardX;
