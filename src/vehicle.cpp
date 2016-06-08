@@ -42,7 +42,7 @@ ofPoint vehicle::bordersForce(){
     leave -= location;
     leave.normalize();
     leave *= velocity.length();
-    leave += velocity;
+//    leave += velocity;
     
     desired.set(leave);
     desired.normalize();
@@ -61,39 +61,7 @@ ofPoint vehicle::bordersForce(){
 ofPoint vehicle::slopesForce(ofVec2f* gradient){
     ofPoint desired;
     
-//    // Predict location 5 (arbitrary choice) frames ahead
-//    ofPoint predict(velocity);
-//    predict *= 10;
-//    ofPoint futureLocation(location);
-//    futureLocation += predict;
-//    
-//    ofPoint leave(location);
-//    if (futureLocation.x < border)
-//        leave.x = screenWidth;
-//    if (futureLocation.y < border)
-//        leave.y = screenHeight;
-//    if (futureLocation.x > screenWidth-border)
-//        leave.x = 0;
-//    if (futureLocation.y > screenHeight-border)
-//        leave.y = 0;
-//    
-//    leave -= location;
-//    leave.normalize();
-//    leave *= velocity.length();
-//    leave += velocity;
-//    
-//    desired.set(leave);
-//    desired.normalize();
-//    desired *= topSpeed;
-//    
-//    ofPoint steer(desired);
-//    if (desired.length() != 0) {
-//        steer -= velocity;
-//        //            PVector steer = PVector.sub(desired, velocity);
-//        steer.limit(maxForce);
-//    }
-//    return steer;
-    return ofPoint(0);
+    return ofPoint(1, 0);
 }
 
 //--------------------------------------------------------------
@@ -143,20 +111,32 @@ ofPoint vehicle::separateForce(vector<vehicle> vehicles){
 //--------------------------------------------------------------
 void vehicle::applyBehaviours(vector<vehicle> vehicles, ofVec2f* gradient, ofPoint target){
 
-    ofPoint separateF = separateForce(vehicles);
-    ofPoint seekF = seekForce(target);
-    ofPoint bordersF = bordersForce();
-    ofPoint slopesF = slopesForce(gradient);
+     separateF = separateForce(vehicles);
+     seekF = seekForce(target);
+     bordersF = bordersForce();
+     slopesF = slopesForce(gradient);
     
-    separateF*=2;
+    separateF*=1;//2;
     seekF *= 1;
-    bordersF *=3;
-    slopesF *= 2;
+    bordersF *=1;
+    slopesF *= 1;//2;
     
 //    applyForce(slopesF);
-    applyForce(bordersF);
+//    applyForce(bordersF);
 //    applyForce(separateF);
     applyForce(seekF);
+    currentForce = separateF+seekF+bordersF+slopesF;
+}
+
+//--------------------------------------------------------------
+std::vector<ofVec2f> vehicle::getForces(void)
+{
+    std::vector<ofVec2f> Forces;
+    Forces.push_back( separateF);
+    Forces.push_back( seekF);
+    Forces.push_back( bordersF);
+    Forces.push_back( slopesF);
+    return Forces;
 }
 
 //--------------------------------------------------------------

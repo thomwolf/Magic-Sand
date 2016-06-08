@@ -31,31 +31,31 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
 	/* Initialize the valid depth range: */
     //	setValidDepthInterval(0U,2046U);
     
-//    //Save the depth normalization coef
-//    depthNorm = sdepthNorm;
+    //    //Save the depth normalization coef
+    //    depthNorm = sdepthNorm;
     
 	/* Initialize the stability criterion and averaging buffer */
     numAveragingSlots = 30;
     minNumSamples=(numAveragingSlots+1)/2;
-//    depthNorm = 2000;
+    //    depthNorm = 2000;
     maxVariance = 4 ;/// depthNorm/depthNorm;
     hysteresis = 0.1f ;/// depthNorm;
 	retainValids=true;
 	instableValue=0.0;
     maxgradfield = 1000;
-    unvalidValue = 10; // We never reach 10 since we divide the kinect raw values (0-4000) by depthNorm
+    unvalidValue = 4000;
     
-//    nearclip = snearclip;
-//    farclip = sfarclip;
-//    depthrange = sfarclip-snearclip;
-//    
+    //    nearclip = snearclip;
+    //    farclip = sfarclip;
+    //    depthrange = sfarclip-snearclip;
+    //
     //    minNumSamples=(numAveragingSlots+1)/2;
     //    maxVariance=newMaxVariance;
     //    hysteresis=newHysteresis;
 	
 	/* Enable spatial filtering: */
-    	spatialFilter=true;
-    //spatialFilter = false;
+    //	spatialFilter=true;
+    spatialFilter = false;
     
 	/* Convert the base plane equation from camera space to depth-image space: */
     //	PTransform::HVector basePlaneCc(basePlane.getNormal());
@@ -181,6 +181,7 @@ bool FrameFilter::isInsideROI(int x, int y){
     return result;
 }
 
+//--------------------------------------------------------------
 ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
 {
     // Create a new output frame: */
@@ -213,8 +214,8 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                     point[0] = px;
                     point[1] = py;
                     point[2] = newVal;
-//                    bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
-//                    bool underMax = classifyPointWithPlane(point, basePlaneNormal, maxPlane) == BACK;
+                    //                    bool overMin = classifyPointWithPlane(point, basePlaneNormal, minPlane) == FRONT;
+                    //                    bool underMax = classifyPointWithPlane(point, basePlaneNormal, maxPlane) == BACK;
                     
                     if(newVal>maxOffset)//we are under the max offset plane (to avoid taking into account the hands of operators
                         //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
@@ -279,6 +280,10 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                         *nofPtr=instableValue;
                     }
                 }
+                else
+                {
+                    *nofPtr=unvalidValue;
+                }
             }
         }
         
@@ -292,13 +297,13 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
             applySpaceFilter(newOutputFrame);
         }
         
-   }
+    }
     
     outputframe=newOutputFrame;
     
     // Update gradient field
     updateGradientField();
-
+    
     return newOutputFrame;
 }
 
@@ -364,30 +369,34 @@ void FrameFilter::updateGradientField()
     float* nofPtr=outputframe.getData();
     for(unsigned int y=0;y<gradFieldrows;++y) {
         for(unsigned int x=0;x<gradFieldcols;++x) {
-            if (y == gradFieldrows/2 && x == gradFieldcols/2){
-                
-            }
-            gx = 0;
-            gvx = 0;
-            gy = 0;
-            gvy = 0;
-            for (unsigned int i=0; i<gradFieldresolution; i++) {
-                ind = y*gradFieldresolution*width+i*width+x*gradFieldresolution;
-                if (nofPtr[ind]!= 0 && nofPtr[ind+gradFieldresolution-1]!=0){
-                    gvx+=1;
-                    gx+=nofPtr[ind]-nofPtr[ind+gradFieldresolution-1];
+            if (isInsideROI(x*gradFieldresolution, y*gradFieldresolution) && isInsideROI((x+1)*gradFieldresolution, (y+1)*gradFieldresolution) ){
+                if (y == gradFieldrows/2 && x == gradFieldcols/2){
+                    
                 }
-                ind = y*gradFieldresolution*width+i+x*gradFieldresolution;
-                if (nofPtr[ind]!= 0 && nofPtr[ind+(gradFieldresolution-1)*width]!=0){
-                    gvy+=1;
-                    gy+=nofPtr[ind]-nofPtr[ind+(gradFieldresolution-1)*width];
+                gx = 0;
+                gvx = 0;
+                gy = 0;
+                gvy = 0;
+                for (unsigned int i=0; i<gradFieldresolution; i++) {
+                    ind = y*gradFieldresolution*width+i*width+x*gradFieldresolution;
+                    if (nofPtr[ind]!= 0 && nofPtr[ind+gradFieldresolution-1]!=0){
+                        gvx+=1;
+                        gx+=nofPtr[ind]-nofPtr[ind+gradFieldresolution-1];
+                    }
+                    ind = y*gradFieldresolution*width+i+x*gradFieldresolution;
+                    if (nofPtr[ind]!= 0 && nofPtr[ind+(gradFieldresolution-1)*width]!=0){
+                        gvy+=1;
+                        gy+=nofPtr[ind]-nofPtr[ind+(gradFieldresolution-1)*width];
+                    }
                 }
-            }
-            if (gvx !=0 && gvy !=0)
-                gradField[y*gradFieldcols+x]=ofVec2f(gx/gradFieldresolution/gvx, gy/gradFieldresolution/gvy);
-            if (gradField[y*gradFieldcols+x].length() > maxgradfield){
-                gradField[y*gradFieldcols+x].scale(maxgradfield);// /= gradField[y*gradFieldcols+x].length()*maxgradfield;
-                lgth+=1;
+                if (gvx !=0 && gvy !=0)
+                    gradField[y*gradFieldcols+x]=ofVec2f(gx/gradFieldresolution/gvx, gy/gradFieldresolution/gvy);
+                if (gradField[y*gradFieldcols+x].length() > maxgradfield){
+                    gradField[y*gradFieldcols+x].scale(maxgradfield);// /= gradField[y*gradFieldcols+x].length()*maxgradfield;
+                    lgth+=1;
+                }
+            } else {
+                gradField[y*gradFieldcols+x] = ofVec2f(0);
             }
         }
     }

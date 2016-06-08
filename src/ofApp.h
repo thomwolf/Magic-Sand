@@ -21,6 +21,8 @@ class ofApp : public ofBaseApp{
 public:
 
     void setup();
+    void clearFbos();
+    void setupMesh();
     void setRangesAndBasePlaneEquation();
     void setupGradientField();
     void setupVehicles();
@@ -35,7 +37,7 @@ public:
     void drawFlowField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
     void drawVehicles();
-    void drawVehicle(ofVec2f projectedPoint);
+    void drawVehicle(ofVec2f projectedPoint,ofVec2f force, std::vector<ofVec2f> forces);
 
     void addPointPair();
     void computeBasePlane();

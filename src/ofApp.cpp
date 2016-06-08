@@ -10,6 +10,7 @@ void ofApp::setup(){
     // OF basics
     ofSetFrameRate(60);
     ofBackground(0);
+//    ofSetBackgroundAuto(false); // Avoid autoclear on draw
 	ofSetVerticalSync(true);
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetLogLevel("ofThread", OF_LOG_WARNING);
@@ -71,29 +72,8 @@ void ofApp::setup(){
     thresholdedImage.allocate(kinectResX, kinectResY);
     Dptimg.allocate(20, 20); // Small detailed ROI
     
-    // Initialise mesh
-    float planeScale = 1;
-	meshwidth = kinectResX;
-	meshheight = kinectResY;
-    mesh.clear();
- 	for(unsigned int y=0;y<meshheight;y++)
-		for(unsigned int x=0;x<meshwidth;x++)
-        {
-            ofPoint pt = ofPoint(x*kinectResX*planeScale/(meshwidth-1),y*kinectResY*planeScale/(meshheight-1),0.0f)-kinectROI.getCenter()*planeScale+kinectROI.getCenter()-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
-            mesh.addVertex(pt); // make a new vertex
-            mesh.addTexCoord(pt);
-        }
-    for(unsigned int y=0;y<meshheight-1;y++)
-		for(unsigned int x=0;x<meshwidth-1;x++)
-        {
-            mesh.addIndex(x+y*meshwidth);         // 0
-            mesh.addIndex((x+1)+y*meshwidth);     // 1
-            mesh.addIndex(x+(y+1)*meshwidth);     // 10
-            
-            mesh.addIndex((x+1)+y*meshwidth);     // 1
-            mesh.addIndex((x+1)+(y+1)*meshwidth); // 11
-            mesh.addIndex(x+(y+1)*meshwidth);     // 10
-        }
+    //setup the mesh
+    setupMesh();
     
 	// Load shaders
     bool loaded = true;
@@ -138,6 +118,7 @@ void ofApp::setup(){
     if (loadSettings("settings.xml"))
     {
         cout << "Settings loaded " << endl;
+        ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
     } else {
         cout << "Settings could not be loaded " << endl;
     }
@@ -156,6 +137,50 @@ void ofApp::setup(){
     setupVehicles();
     
 	kinectgrabber.startThread(true);
+}
+
+
+//--------------------------------------------------------------
+void ofApp::clearFbos(){
+    fboProjWindow.begin();
+    ofClear(0,0,0,255);
+    fboProjWindow.end();
+
+    contourLineFramebufferObject.begin();
+    ofClear(0,0,0,255);
+    contourLineFramebufferObject.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::setupMesh(){
+    
+    //clear Fbos
+    clearFbos();
+    
+    // Initialise mesh
+//    float planeScale = 1;
+    meshwidth = kinectROI.width;//kinectResX;
+    meshheight = kinectROI.height;//kinectResY;
+    mesh.clear();
+    for(unsigned int y=0;y<meshheight;y++)
+    for(unsigned int x=0;x<meshwidth;x++)
+    {
+        ofPoint pt = ofPoint(x*kinectResX/(meshwidth-1)+kinectROI.x,y*kinectResY/(meshheight-1)+kinectROI.y,0.0f)-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
+//        ofPoint pt = ofPoint(x*kinectResX*planeScale/(meshwidth-1)+kinectROI.x,y*kinectResY*planeScale/(meshheight-1)+kinectROI.y,0.0f)-kinectROI.getCenter()*planeScale+kinectROI.getCenter()-ofPoint(0.5,0.5,0); // with a planescaling
+        mesh.addVertex(pt); // make a new vertex
+        mesh.addTexCoord(pt);
+    }
+    for(unsigned int y=0;y<meshheight-1;y++)
+    for(unsigned int x=0;x<meshwidth-1;x++)
+    {
+        mesh.addIndex(x+y*meshwidth);         // 0
+        mesh.addIndex((x+1)+y*meshwidth);     // 1
+        mesh.addIndex(x+(y+1)*meshwidth);     // 10
+        
+        mesh.addIndex((x+1)+y*meshwidth);     // 1
+        mesh.addIndex((x+1)+(y+1)*meshwidth); // 11
+        mesh.addIndex(x+(y+1)*meshwidth);     // 10
+    }
 }
 
 //--------------------------------------------------------------
@@ -302,7 +327,7 @@ void ofApp::update(){
             wc.w = 1;
             
             ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-            drawTestingPoint(projectedPoint);
+           // drawTestingPoint(projectedPoint);
             
             if (drawContourLines)
                 prepareContourLines();
@@ -323,7 +348,7 @@ void ofApp::update(){
     if (generalState == GENERAL_STATE_GAME1){
         // update vehicles
         for (auto & v : vehicles){
-            v.applyBehaviours(vehicles, gradField, ofPoint(kinectResX/2, kinectResY/2, basePlaneOffset.z));
+            v.applyBehaviours(vehicles, gradField, ofPoint(kinectResX/2, kinectResY/2));
             v.update();
         }
     }
@@ -414,7 +439,7 @@ void ofApp::draw(){
         }
         ofSetColor(255);
     } else if (generalState == GENERAL_STATE_SANDBOX){
-        //        kinectColorImage.draw(0, 0, 640, 480);
+        fboProjWindow.draw(0, 0, 640, 480);
         //Draw testing point indicator
         float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 10);
         ofDrawCircle(testPoint.x, testPoint.y, ptSize);
@@ -443,7 +468,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::drawProjWindow(ofEventArgs &args){ // Main draw call for proj window
-    ofSetColor(ofColor::white);
+//    ofSetColor(ofColor::white);
     fboProjWindow.draw(0, 0);
     
     if (generalState == GENERAL_STATE_GAME1)
@@ -489,7 +514,7 @@ void ofApp::drawChessboard(int x, int y, int chessboardSize) { // Prepare proj w
 void ofApp::drawTestingPoint(ofVec2f projectedPoint) { // Prepare proj window fbo
     float ptSize = ofMap(sin(ofGetFrameNum()*0.1), -1, 1, 3, 40);
     fboProjWindow.begin();
-    ofBackground(255);
+//    ofBackground(255);
     ofSetColor(0, 255, 0);
     // Not-normalized (on proj screen)
     ofDrawCircle(projectedPoint.x, projectedPoint.y, ptSize);
@@ -505,7 +530,8 @@ void ofApp::drawTestingPoint(ofVec2f projectedPoint) { // Prepare proj window fb
 //--------------------------------------------------------------
 void ofApp::drawSandbox() { // Prepare proj window fbo
     fboProjWindow.begin();
-    //    ofClear(0,0,0,255); // Don't clear the testing point that was previously drawn
+    ofBackground(0);
+//    ofClear(0,0,0,255); // Don't clear the testing point that was previously drawn
     //    ofSetColor(ofColor::red);
     FilteredDepthImage.getTexture().bind();
     heightMapShader.begin();
@@ -679,12 +705,14 @@ void ofApp::drawVehicles()
         wc.w = 1;
         ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
         
-        drawVehicle(projectedPoint);
+        ofVec2f force = v.getCurrentForce();
+        std::vector<ofVec2f> forces = v.getForces();
+        drawVehicle(projectedPoint, force, forces);
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::drawVehicle(ofVec2f projectedPoint)
+void ofApp::drawVehicle(ofVec2f projectedPoint, ofVec2f force, std::vector<ofVec2f> forces)
 {
     //    fboProjWindow.begin();
     
@@ -695,7 +723,29 @@ void ofApp::drawVehicle(ofVec2f projectedPoint)
     
     ofSetColor(255);
     
+    ofVec2f frc = force*750;
+    if (frc.length() > 200)
+        frc.scale(200);
+    
     ofDrawCircle(0, 0, 25);
+    ofDrawLine(0, 0, frc.x, frc.y);
+    ofDrawCircle(frc.x, frc.y, 5);
+    
+    for (int i=0; i<forces.size(); i++){
+        ofColor c = ofColor(0); // c is black
+        c.setHsb(i/(forces.size()-1)*255, 255, 255); // rainbow
+        
+        frc = forces[i]*750;
+        if (frc.length() > 200)
+            frc.scale(200);
+        frc.normalize();
+        
+        ofSetColor(c);
+        ofDrawCircle(0, 0, 25);
+        ofDrawLine(0, 0, frc.x, frc.y);
+        ofDrawCircle(frc.x, frc.y, 5);
+    }
+    ofSetColor(255);
     
     ofPopMatrix();
     
@@ -1032,6 +1082,8 @@ void ofApp::updateROI(){
         // We are finished, set back kinect depth range and update ROI
         ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
         kinectgrabber.setKinectROI(kinectROI);
+        //update the mesh
+        setupMesh();
         //        }
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
     }
@@ -1054,6 +1106,11 @@ void ofApp::updateROIManualSetup(){
 
 //--------------------------------------------------------------
 void ofApp::updateMode(){
+    if (generalState == GENERAL_STATE_CALIBRATION)
+        ofBackground(255);
+    else
+        ofBackground(0);
+    
     cout << "General state: " << generalState << endl;
     cout << "Calibration state: " << calibrationState << endl;
 #if __cplusplus>=201103
@@ -1188,7 +1245,7 @@ void ofApp::keyPressed(int key){
         }
     }
     
-    if (key=='r' || key== 'y'|| key=='t' || key=='b' || key == 'e') {
+    if (key=='r'|| key== 'm' || key== 'y'|| key=='t' || key=='b' || key == 'e') {
         firstImageReady = false;
         updateMode();
     }
@@ -1246,6 +1303,8 @@ void ofApp::mousePressed(int x, int y, int button){
             kinectROI.standardize();
             cout << "kinectROI : " << kinectROI << endl;
             kinectgrabber.setKinectROI(kinectROI);
+            //update the mesh
+            setupMesh();
         }
     }
 }

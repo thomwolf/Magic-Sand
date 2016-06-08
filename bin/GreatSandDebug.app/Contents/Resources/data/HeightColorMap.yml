@@ -1,5 +1,6 @@
 %YAML:1.0
 ColorMap:
+   - { z:-220., color:0 }
    - { z:-200., color:80 }
    - { z:-170., color:7780 }
    - { z:-150., color:12902 }

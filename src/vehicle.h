@@ -21,11 +21,22 @@ public:
     const ofPoint& getLocation() const {
         return location;
     }
+    const ofVec2f& getCurrentForce() const {
+        return currentForce;
+    }
     
+    std::vector<ofVec2f> getForces(void);
+
 private:
     
+    ofVec2f separateF ;
+    ofVec2f seekF ;
+    ofVec2f bordersF ;
+    ofVec2f slopesF ;
+
     ofPoint velocity;
     ofPoint acceleration;
+    ofVec2f currentForce;
     
 //    const ofVec2f gradient;
     ofRectangle borders, internalBorders;

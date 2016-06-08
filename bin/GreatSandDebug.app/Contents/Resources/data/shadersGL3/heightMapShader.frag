@@ -58,7 +58,7 @@ void main()
         }
     }
 
-    outputColor = color;//texture1D(heightColorMapSampler,bug);//vec4(bug, 0.0, 0.0, 1.0);//
+    outputColor = color;//vec4(bug/512, 0.0, 0.0, 1.0);//color;//texture1D(heightColorMapSampler,bug);//
 }
 
 //uniform sampler2DRect pixelCornerElevationSampler;
