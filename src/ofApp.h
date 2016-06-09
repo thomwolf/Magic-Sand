@@ -28,14 +28,20 @@ public:
     void setupVehicles();
     
     void update();
+    
     void draw();
     void drawProjWindow(ofEventArgs& args);
     void drawChessboard(int x, int y, int chessboardSize);
     void drawTestingPoint(ofVec2f projectedPoint);
+    
     void drawSandbox();
     void prepareContourLines();
+    
     void drawFlowField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
+    
+    void updateVehiclesFilteredDepthImageAndGradient();
+    void updateVehiclesBasePlaneEq();
     void drawVehicles();
     void drawVehicle(ofVec2f projectedPoint,ofVec2f force, std::vector<ofVec2f> forces);
 

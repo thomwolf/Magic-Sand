@@ -1,20 +1,24 @@
 #pragma once
 #include "ofMain.h"
+#include "ofxOpenCv.h"
+#include "ofxCv.h"
 
 class vehicle{
 
 public:
     ofPoint location;
   
-    void setup(int x, int y, ofRectangle sborders);
+    void setup(int x, int y, ofRectangle sborders, ofMatrix4x4 skinectWorldMatrix, ofVec4f sbasePlaneEq, int skinectResX, int sgradFieldcols, int sgradFieldrows, double sgradFieldresolution);
+    void updateBasePlaneEq(ofVec4f sbasePlaneEq);
+    void updateFilteredDepthImageAndGradient(ofxCvFloatImage sFilteredDepthImage, ofVec2f* sgradient);
 
     ofPoint seekForce(const ofPoint & target);
     ofPoint separateForce(vector<vehicle> vehicles);
     ofPoint bordersForce();
-    ofPoint slopesForce(ofVec2f* gradient);
+    ofPoint slopesForce();
     void applyForce(const ofPoint & force);
 
-    void applyBehaviours(vector<vehicle> vehicles, ofVec2f* gradient, ofPoint target);
+    void applyBehaviours(vector<vehicle> vehicles, ofPoint target);
     void update();
     void draw();
 
@@ -28,7 +32,15 @@ public:
     std::vector<ofVec2f> getForces(void);
 
 private:
-    
+    //Images and cv matrixes
+    ofxCvFloatImage             FilteredDepthImage;
+    ofVec2f*                    gradient;
+    ofMatrix4x4                 kinectWorldMatrix;
+    ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
+    int kinectResX;
+    int gradFieldcols, gradFieldrows;
+    double gradFieldresolution;
+
     ofVec2f separateF ;
     ofVec2f seekF ;
     ofVec2f bordersF ;

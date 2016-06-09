@@ -188,6 +188,8 @@ void ofApp::setRangesAndBasePlaneEquation(){
     //if(elevationMin<heightMap.getScalarRangeMin())
     basePlaneEq=getPlaneEquation(basePlaneOffset,basePlaneNormal); //homogeneous base plane equation
     //basePlaneEq /= ofVec4f(depthNorm, depthNorm, 1, depthNorm); // Normalized coordinates for the shader (except z since it is already normalized in the Depthframe)
+    //update vehicles base plane eq
+    updateVehiclesBasePlaneEq();
     
     elevationMin=-heightMap.getScalarRangeMin();///depthNorm;
     //if(elevationMax>heightMap.getScalarRangeMax())
@@ -239,7 +241,7 @@ void ofApp::setupVehicles(){
     vehicles.resize(vehicleNum);
     for(auto & v : vehicles){
         ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-        v.setup(location.x, location.y, kinectROI);
+        v.setup(location.x, location.y, kinectROI, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
     }
 }
 
@@ -333,9 +335,13 @@ void ofApp::update(){
                 prepareContourLines();
             
             drawSandbox();
-        } else if (generalState == GENERAL_STATE_GAME1){
+        }
+        else if (generalState == GENERAL_STATE_GAME1){
             // Get gradient field from kinect grabber
             kinectgrabber.gradient.tryReceive(gradField);
+            
+            // update vehicles datas
+            updateVehiclesFilteredDepthImageAndGradient();
             
             if (drawContourLines)
                 prepareContourLines();
@@ -347,9 +353,11 @@ void ofApp::update(){
     }
     if (generalState == GENERAL_STATE_GAME1){
         // update vehicles
-        for (auto & v : vehicles){
-            v.applyBehaviours(vehicles, gradField, ofPoint(kinectResX/2, kinectResY/2));
-            v.update();
+        if (firstImageReady) {
+            for (auto & v : vehicles){
+                v.applyBehaviours(vehicles, ofPoint(kinectResX/2, kinectResY/2));
+                v.update();
+            }
         }
     }
 }
@@ -692,6 +700,20 @@ void ofApp::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
 }
 
 //--------------------------------------------------------------
+void ofApp::updateVehiclesFilteredDepthImageAndGradient(){
+    for (auto & v : vehicles){
+        v.updateFilteredDepthImageAndGradient(FilteredDepthImage, gradField);
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::updateVehiclesBasePlaneEq(){
+    for (auto & v : vehicles){
+        v.updateBasePlaneEq(basePlaneEq);
+    }
+}
+
+//--------------------------------------------------------------
 void ofApp::drawVehicles()
 {
     for (auto & v : vehicles){
@@ -723,22 +745,22 @@ void ofApp::drawVehicle(ofVec2f projectedPoint, ofVec2f force, std::vector<ofVec
     
     ofSetColor(255);
     
-    ofVec2f frc = force*750;
-    if (frc.length() > 200)
-        frc.scale(200);
+    ofVec2f frc = force;
+    frc.normalize();
+    frc *= 100;
     
     ofDrawCircle(0, 0, 25);
     ofDrawLine(0, 0, frc.x, frc.y);
-    ofDrawCircle(frc.x, frc.y, 5);
+    ofDrawRectangle(frc.x, frc.y, 5, 5);
     
     for (int i=0; i<forces.size(); i++){
         ofColor c = ofColor(0); // c is black
-        c.setHsb(i/(forces.size()-1)*255, 255, 255); // rainbow
+        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c.setHsb((int)hsb, 255, 255); // rainbow
         
-        frc = forces[i]*750;
-        if (frc.length() > 200)
-            frc.scale(200);
+        frc = forces[i];
         frc.normalize();
+        frc *= 100;
         
         ofSetColor(c);
         ofDrawCircle(0, 0, 25);
