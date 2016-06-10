@@ -25,6 +25,10 @@ public:
     const ofPoint& getLocation() const {
         return location;
     }
+    const ofPoint& getVelocity() const {
+        return velocity;
+    }
+    
     const ofVec2f& getCurrentForce() const {
         return currentForce;
     }
