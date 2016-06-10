@@ -20,7 +20,7 @@ void vehicle::setup(int x, int y, ofRectangle sborders, ofMatrix4x4 skinectWorld
     
     r = 12;
     desiredseparation = 24;
-    maxForce = 0.1;
+    maxForce = 1;
     topSpeed =3;
 }
 
@@ -37,39 +37,31 @@ void vehicle::updateBasePlaneEq(ofVec4f sbasePlaneEq){
 
 //--------------------------------------------------------------
 ofPoint vehicle::bordersForce(){
-    ofPoint desired;
+    ofPoint desired, futureLocation, predict;
     
-    // Predict location 5 (arbitrary choice) frames ahead
-    ofPoint predict(velocity);
-    predict *= 10;
-    ofPoint futureLocation(location);
-    futureLocation += predict;
+    // Predict location 10 (arbitrary choice) frames ahead
+    predict = velocity*10;
+    futureLocation = location + predict;
     
-    ofPoint leave(location);
-    if (!internalBorders.inside(futureLocation)){
+    ofPoint target = location;
+    if (!internalBorders.inside(futureLocation)){ // Go to the opposite direction
         if (futureLocation.x < internalBorders.getLeft())
-            leave.x = borders.getRight();
+            target.x = borders.getRight();
         if (futureLocation.y < internalBorders.getTop())
-            leave.y = borders.getBottom();
+            target.y = borders.getBottom();
         if (futureLocation.x > internalBorders.getRight())
-            leave.x = borders.getLeft();
+            target.x = borders.getLeft();
         if (futureLocation.y > internalBorders.getBottom())
-            leave.y = borders.getTop();
+            target.y = borders.getTop();
     }
     
-    leave -= location;
-//    leave.normalize();
-//    leave *= velocity.length();
-//    leave += velocity;
-    
-    desired.set(leave);
+    desired = target - location;
     desired.normalize();
     desired *= topSpeed;
     
-    ofPoint steer(desired);
+    ofPoint steer(0);
     if (desired.length() != 0) {
-        steer -= velocity;
-        //            PVector steer = PVector.sub(desired, velocity);
+        steer = desired - velocity;
         steer.limit(maxForce);
     }
     return steer;
@@ -77,47 +69,32 @@ ofPoint vehicle::bordersForce(){
 
 //--------------------------------------------------------------
 ofPoint vehicle::slopesForce(){
-    ofPoint desired;
+    ofPoint desired, futureLocation, predict;
     
-    // Predict location 5 (arbitrary choice) frames ahead
-    ofPoint predict(velocity);
-    predict *= 10;
-    ofPoint futureLocation(location);
-    futureLocation += predict;
+    // Predict location 10 (arbitrary choice) frames ahead
+    predict = velocity*10;
+    futureLocation = location + predict;
     
-    // Get kinect depth image coord
-    ofVec3f worldPoint = ofVec3f(futureLocation);
-    worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
-    ofVec4f wc = ofVec4f(worldPoint);
+    // Get elevation at future location from kinectdepth, conversion matrices and baseplane equation
+    ofVec4f wc = ofVec3f(futureLocation);
+    wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
     wc.w = 1;
-    
-    /* Transform the vertex from depth image space to world space: */
-    //    ofVec3f vertexCcxx = kinectgrabber.kinect.getWorldCoordinateAt(vertexDic.x, vertexDic.y, vertexDic.z);
     ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
     vertexCc.w = 1;
-    
-    /* Plug camera-space vertex into the base plane equation: */
     float elevation=-basePlaneEq.dot(vertexCc);///vertexCc.w;
     
-    ofPoint grd(0);
-    if (elevation > 0)
+    if (elevation > 0) // Our fish want to stay in the water, take the gradient field direction at the futurelocation
     {
-        grd = -gradient[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
+        desired = -gradient[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
+        desired.normalize();
+        desired *= topSpeed;
+    } else {
+        desired = 0;
     }
-    grd.normalize();
     
-    grd *= 10;
-    ofPoint leave(location);
-    leave += grd;
-    
-    desired.set(leave);
-    desired.normalize();
-    desired *= topSpeed;
-    
-    ofPoint steer(desired);
+    ofPoint steer(0);
     if (desired.length() != 0) {
-        steer -= velocity;
-        //            PVector steer = PVector.sub(desired, velocity);
+        steer = desired - velocity;
         steer.limit(maxForce);
     }
     return steer;
@@ -128,8 +105,17 @@ ofPoint vehicle::seekForce(const ofPoint & target){
     ofPoint desired;
     desired = target - location;
     
+    float d = desired.length();
     desired.normalize();
-    desired*=topSpeed;
+
+//If we are closer than 100 pixels...
+    if (d < 100) {
+//...set the magnitude according to how close we are.
+      desired *= ofMap(d,0,100,0,topSpeed);
+    } else {
+//Otherwise, proceed at maximum speed.
+      desired *= topSpeed;
+    }
     
     ofPoint steer;
     steer = desired - velocity;
@@ -143,13 +129,12 @@ ofPoint vehicle::separateForce(vector<vehicle> vehicles){
 //    float desiredseparation = r*2;
     ofPoint sum;
     int count = 0;
-    
+    ofPoint diff;
     vector<vehicle>::iterator other;
     for (other = vehicles.begin(); other < vehicles.end(); other++){
         float d = (location - other->getLocation()).length();
         if((d>0) && (d < desiredseparation)){
-         
-            ofPoint diff = location - other->getLocation();
+            diff = location - other->getLocation();
             diff.normalize();
             diff /= d;
             sum+= diff;
@@ -175,7 +160,7 @@ void vehicle::applyBehaviours(vector<vehicle> vehicles, ofPoint target){
      bordersF = bordersForce();
      slopesF = slopesForce();
     
-    separateF*=0;//2;
+    separateF*=1;//2;
     seekF *= 1;
     bordersF *=1;
     slopesF *= 2;//2;
@@ -200,14 +185,13 @@ std::vector<ofVec2f> vehicle::getForces(void)
 
 //--------------------------------------------------------------
 void vehicle::applyForce(const ofPoint & force){
-    ofPoint f(force);
-    acceleration += f;
+    acceleration += force;
 }
 
 //--------------------------------------------------------------
 void vehicle::update(){
     velocity += acceleration;
-    location += velocity;
     velocity.limit(topSpeed);
+    location += velocity;
     acceleration *= 0;
 }
