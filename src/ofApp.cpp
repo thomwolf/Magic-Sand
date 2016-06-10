@@ -33,7 +33,7 @@ void ofApp::setup(){
     chessboardY = 4;
     
     // 	gradFieldresolution
-	gradFieldresolution = 20;
+	gradFieldresolution = 10;
     arrowLength = 25;
 	
     // Setup sandbox boundaries, base plane and kinect clip planes
@@ -48,6 +48,7 @@ void ofApp::setup(){
     
     // Vehicles
     vehicleNum = 1;
+    P = 128.0; // Min rotation speed of fish tails
     
     // Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
@@ -108,7 +109,7 @@ void ofApp::setup(){
         cout << "kinectProjMatrix: " << kinectProjMatrix << endl;
         loaded = true;
         calibrated = true;
-        generalState = GENERAL_STATE_SANDBOX;
+        generalState = GENERAL_STATE_GAME1;
         updateMode();
     } else {
         cout << "Calibration could not be loaded " << endl;
@@ -348,7 +349,7 @@ void ofApp::update(){
             
             drawSandbox();
             
-            drawFlowField();
+            //drawFlowField();
         }
     }
     if (generalState == GENERAL_STATE_GAME1){
@@ -378,7 +379,7 @@ void ofApp::draw(){
     i++;
     ofDrawBitmapStringHighlight("w & x: inc/dec maxOffset.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("d & f: inc/dec arrow size.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("d & f: inc/dec fish tail mvmt.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("g & h: inc/dec contour line distance.", xbase, ybase+i*yinc);
     i++;
@@ -727,66 +728,74 @@ void ofApp::drawVehicles()
         wc.w = 1;
         ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
         
-        ofVec2f force = v.getCurrentForce();
+//        ofVec2f force = v.getCurrentForce();
         ofVec2f velocity = v.getVelocity();
-        std::vector<ofVec2f> forces = v.getForces();
-        drawVehicle(projectedPoint, velocity, force, forces);
+//        std::vector<ofVec2f> forces = v.getForces();
+        float angle = v.getAngle(); // angle of the fish
+ 
+        float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
+        
+//        int P=5;
+        float fact = P+P/2*velocity.length()/3;
+        float tailangle = nv/100 * abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50);
+        //float tailangle = ofMap(sin(ofGetFrameNum()*10), -1, 1, -nv, nv);
+
+        drawVehicle(projectedPoint, angle, tailangle);
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::drawVehicle(ofVec2f projectedPoint, ofVec2f velocity, ofVec2f force, std::vector<ofVec2f> forces)
+void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)
 {
     //    fboProjWindow.begin();
-	float nv = 0.5*velocity.length()/2; // Tail movement amplitude
-    float angle = ofMap(sin(ofGetFrameNum()*0.1), -1, 1, -nv, nv);
-    ofPolyline fish;
-    
-    ofFill();
+
+    ofNoFill();
     ofPushMatrix();
     
     ofTranslate(projectedPoint);
     
-	ofVec2f v1(-1,0);
-	float angle = velocity.angle(v1); // angle of the velocity with left vector
-    ofRotate(angle);
+//    ofSetColor(255);
+//    ofVec2f frc = ofVec2f(100, 0);
+//    frc.rotate(angle);
+//    ofDrawLine(0, 0, frc.x, frc.y);
+//    ofDrawRectangle(frc.x, frc.y, 5, 5);
+//    
+//    for (int i=0; i<forces.size(); i++){
+//        ofColor c = ofColor(0); // c is black
+//        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+//        c.setHsb((int)hsb, 255, 255); // rainbow
+//        
+//        frc = forces[i];
+//        frc.normalize();
+//        frc *= 100;
+//        
+//        ofSetColor(c);
+//        ofDrawLine(0, 0, frc.x, frc.y);
+//        ofDrawCircle(frc.x, frc.y, 5);
+//    }
+//    
+    ofRotate(-angle);
+    
+    int tailSize = 10;
+    int fishLength = 20;
+    int fishHead = tailSize;
+    
     ofSetColor(255);
-    
-    ofVec2f frc = force;
-    frc.normalize();
-    frc *= 100;
-    
-    fish.curveTo( ofPoint(-20+10*cos(angle+0.8), 10*sin(angle+0.8)));
-    fish.curveTo( ofPoint(-20+10*cos(angle+0.8), 10*sin(angle+0.8)));
-    fish.curveTo( ofPoint(-20, 0));
-    fish.curveTo( ofPoint(0, -10));
-    fish.curveTo( ofPoint(10, 0));
-    fish.curveTo( ofPoint(0, 10));
-    fish.curveTo( ofPoint(-20, 0));
-    fish.curveTo( ofPoint(-20+10*cos(angle-0.8), 10*sin(angle-0.8)));
-    fish.curveTo( ofPoint(-20+10*cos(angle-0.8), 10*sin(angle-0.8)));
+    ofPolyline fish;
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
+    fish.curveTo( ofPoint(-fishLength, 0));
+    fish.curveTo( ofPoint(0, -fishHead));
+    fish.curveTo( ofPoint(fishHead, 0));
+    fish.curveTo( ofPoint(0, fishHead));
+    fish.curveTo( ofPoint(-fishLength, 0));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
     fish.close();
     ofSetLineWidth(2.0);  // Line widths apply to polylines
     fish.draw();
-//    ofDrawCircle(0, 0, 25);
-    ofDrawLine(0, 0, frc.x, frc.y);
-    ofDrawRectangle(frc.x, frc.y, 5, 5);
-    
-    for (int i=0; i<forces.size(); i++){
-        ofColor c = ofColor(0); // c is black
-        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
-        c.setHsb((int)hsb, 255, 255); // rainbow
-        
-        frc = forces[i];
-        frc.normalize();
-        frc *= 100;
-        
-        ofSetColor(c);
-        ofDrawCircle(0, 0, 25);
-        ofDrawLine(0, 0, frc.x, frc.y);
-        ofDrawCircle(frc.x, frc.y, 5);
-    }
     ofSetColor(255);
+    ofDrawCircle(0, 0, 5);
     
     ofPopMatrix();
     
@@ -1176,6 +1185,10 @@ void ofApp::keyPressed(int key){
             if (!upframe)
                 upframe = true;
         }
+        if (generalState == GENERAL_STATE_GAME1)
+        {
+            setupVehicles();
+        }
     } else if (key=='a') {
         chessboardSize -= 20;
     } else if (key=='z') {
@@ -1201,9 +1214,11 @@ void ofApp::keyPressed(int key){
         cout << "maxOffset" << maxOffset << endl;
         kinectgrabber.setMaxOffset(maxOffset);
     } else if (key=='d') {
-        arrowLength *= 0.80; // Deacrease the arrow size
+        P *= 1.25; // Increase fish tail speed
+        cout << "P: " << P << endl;
     } else if (key=='f') {
-        arrowLength *= 1.25; // Increase the arrow size
+        P *= 0.8; // Decrease fish tail speed
+        cout << "P: " << P << endl;
     } else if (key=='u') {
         basePlaneNormal.rotate(-1, ofVec3f(1,0,0)); // Rotate the base plane normal
         setRangesAndBasePlaneEquation();

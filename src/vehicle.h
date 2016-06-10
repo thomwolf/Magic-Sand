@@ -12,11 +12,11 @@ public:
     void updateBasePlaneEq(ofVec4f sbasePlaneEq);
     void updateFilteredDepthImageAndGradient(ofxCvFloatImage sFilteredDepthImage, ofVec2f* sgradient);
 
-    ofPoint seekForce(const ofPoint & target);
-    ofPoint separateForce(vector<vehicle> vehicles);
-    ofPoint bordersForce();
-    ofPoint slopesForce();
-    void applyForce(const ofPoint & force);
+    ofPoint seekEffect(const ofPoint & target);
+    ofPoint separateEffect(vector<vehicle> vehicles);
+    ofPoint bordersEffect();
+    ofPoint slopesEffect();
+    void applyVelocityChange(const ofPoint & force);
 
     void applyBehaviours(vector<vehicle> vehicles, ofPoint target);
     void update();
@@ -31,6 +31,10 @@ public:
     
     const ofVec2f& getCurrentForce() const {
         return currentForce;
+    }
+    
+    const float getAngle() const {
+        return angle;
     }
     
     std::vector<ofVec2f> getForces(void);
@@ -51,13 +55,15 @@ private:
     ofVec2f slopesF ;
 
     ofPoint velocity;
-    ofPoint acceleration;
+    ofPoint globalVelocityChange;
     ofVec2f currentForce;
+    float angle; // direction of the fish drawing
     
 //    const ofVec2f gradient;
     ofRectangle borders, internalBorders;
     float topSpeed;
-    float maxForce; 
+    float maxVelocityChange;
+    float maxRotation;
     int r, minborderDist, desiredseparation, cor;
     int screenWidth, screenHeight;
     

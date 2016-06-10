@@ -43,7 +43,7 @@ public:
     void updateVehiclesFilteredDepthImageAndGradient();
     void updateVehiclesBasePlaneEq();
     void drawVehicles();
-    void drawVehicle(ofVec2f projectedPoint,ofVec2f force, std::vector<ofVec2f> forces);
+    void drawVehicle(ofVec2f projectedPoint, float angle, float tailangle);
 
     void addPointPair();
     void computeBasePlane();
@@ -149,6 +149,7 @@ private:
     // vehicules
     vector<vehicle> vehicles;
     int vehicleNum;
+    float P;
 
     // Colormap, contourmap and heightmap variables
     ColorMap    heightMap;
