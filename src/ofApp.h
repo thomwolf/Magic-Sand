@@ -40,10 +40,10 @@ public:
     void drawFlowField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
     
-    void updateVehiclesFilteredDepthImageAndGradient();
-    void updateVehiclesBasePlaneEq();
+    void updateVehiclesFutureElevationAndGradient();
+//    void updateVehiclesBasePlaneEq();
     void drawVehicles();
-    void drawVehicle(ofVec2f projectedPoint, float angle, float tailangle);
+    void drawVehicle(ofVec2f projectedPoint, float angle, float tailangle);//, std::vector<ofVec2f> forces);
 
     void addPointPair();
     void computeBasePlane();
@@ -149,6 +149,8 @@ private:
     // vehicules
     vector<vehicle> vehicles;
     int vehicleNum;
+    // For slope effect
+    static const int MAX_STEPS = 10;
     float P;
 
     // Colormap, contourmap and heightmap variables

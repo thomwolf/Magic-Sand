@@ -47,7 +47,7 @@ void ofApp::setup(){
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Vehicles
-    vehicleNum = 1;
+    vehicleNum = 5;
     P = 128.0; // Min rotation speed of fish tails
     
     // Load colormap and set heightmap
@@ -190,7 +190,7 @@ void ofApp::setRangesAndBasePlaneEquation(){
     basePlaneEq=getPlaneEquation(basePlaneOffset,basePlaneNormal); //homogeneous base plane equation
     //basePlaneEq /= ofVec4f(depthNorm, depthNorm, 1, depthNorm); // Normalized coordinates for the shader (except z since it is already normalized in the Depthframe)
     //update vehicles base plane eq
-    updateVehiclesBasePlaneEq();
+ //   updateVehiclesBasePlaneEq();
     
     elevationMin=-heightMap.getScalarRangeMin();///depthNorm;
     //if(elevationMax>heightMap.getScalarRangeMax())
@@ -242,7 +242,7 @@ void ofApp::setupVehicles(){
     vehicles.resize(vehicleNum);
     for(auto & v : vehicles){
         ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-        v.setup(location.x, location.y, kinectROI, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+        v.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
     }
 }
 
@@ -341,9 +341,6 @@ void ofApp::update(){
             // Get gradient field from kinect grabber
             kinectgrabber.gradient.tryReceive(gradField);
             
-            // update vehicles datas
-            updateVehiclesFilteredDepthImageAndGradient();
-            
             if (drawContourLines)
                 prepareContourLines();
             
@@ -355,6 +352,9 @@ void ofApp::update(){
     if (generalState == GENERAL_STATE_GAME1){
         // update vehicles
         if (firstImageReady) {
+            // update vehicles datas
+            updateVehiclesFutureElevationAndGradient();
+            
             for (auto & v : vehicles){
                 v.applyBehaviours(vehicles, ofPoint(kinectResX/2, kinectResY/2));
                 v.update();
@@ -701,18 +701,49 @@ void ofApp::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
 }
 
 //--------------------------------------------------------------
-void ofApp::updateVehiclesFilteredDepthImageAndGradient(){
+void ofApp::updateVehiclesFutureElevationAndGradient(){
+    std::vector<float> futureZ;
+    std::vector<ofVec2f> futureGradient;
+
+    ofPoint futureLocation, velocity;
+
     for (auto & v : vehicles){
-        v.updateFilteredDepthImageAndGradient(FilteredDepthImage, gradField);
+        futureLocation = v.getLocation();
+        velocity = v.getVelocity();
+        futureZ.clear();
+        futureGradient.clear();
+        int i = 1;
+        float beachDist = 1;
+        ofVec2f beachSlope(0);
+        bool water = true;
+       while (i < 10 && water)
+        {
+            ofVec4f wc = ofVec3f(futureLocation);
+            wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
+            wc.w = 1;
+            ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
+            vertexCc.w = 1;
+            float elevation = -basePlaneEq.dot(vertexCc);
+            if (elevation >0)
+            {
+                water = false;
+                beachDist = i;
+                beachSlope = -gradField[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
+            }
+            futureLocation += velocity; // Go to next future location step
+            i++;
+       }
+        v.updateBeachDetection(!water, beachDist, beachSlope);
+//        v.updateFutureElevationAndGradient(futureZ, futureGradient);
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::updateVehiclesBasePlaneEq(){
-    for (auto & v : vehicles){
-        v.updateBasePlaneEq(basePlaneEq);
-    }
-}
+//void ofApp::updateVehiclesBasePlaneEq(){
+//    for (auto & v : vehicles){
+//        v.updateBasePlaneEq(basePlaneEq);
+//    }
+//}
 
 //--------------------------------------------------------------
 void ofApp::drawVehicles()
@@ -740,12 +771,12 @@ void ofApp::drawVehicles()
         float tailangle = nv/100 * abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50);
         //float tailangle = ofMap(sin(ofGetFrameNum()*10), -1, 1, -nv, nv);
 
-        drawVehicle(projectedPoint, angle, tailangle);
+        drawVehicle(projectedPoint, angle, tailangle);//, forces);
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)
+void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)//, std::vector<ofVec2f> forces)
 {
     //    fboProjWindow.begin();
 
@@ -755,7 +786,7 @@ void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)
     ofTranslate(projectedPoint);
     
 //    ofSetColor(255);
-//    ofVec2f frc = ofVec2f(100, 0);
+    ofVec2f frc = ofVec2f(100, 0);
 //    frc.rotate(angle);
 //    ofDrawLine(0, 0, frc.x, frc.y);
 //    ofDrawRectangle(frc.x, frc.y, 5, 5);
@@ -773,8 +804,8 @@ void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)
 //        ofDrawLine(0, 0, frc.x, frc.y);
 //        ofDrawCircle(frc.x, frc.y, 5);
 //    }
-//    
-    ofRotate(-angle);
+//
+    ofRotate(angle);
     
     int tailSize = 10;
     int fishLength = 20;
