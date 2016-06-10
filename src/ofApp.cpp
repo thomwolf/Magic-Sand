@@ -728,28 +728,47 @@ void ofApp::drawVehicles()
         ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
         
         ofVec2f force = v.getCurrentForce();
+        ofVec2f velocity = v.getVelocity();
         std::vector<ofVec2f> forces = v.getForces();
-        drawVehicle(projectedPoint, force, forces);
+        drawVehicle(projectedPoint, velocity, force, forces);
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::drawVehicle(ofVec2f projectedPoint, ofVec2f force, std::vector<ofVec2f> forces)
+void ofApp::drawVehicle(ofVec2f projectedPoint, ofVec2f velocity, ofVec2f force, std::vector<ofVec2f> forces)
 {
     //    fboProjWindow.begin();
+	float nv = 0.5*velocity.length()/2; // Tail movement amplitude
+    float angle = ofMap(sin(ofGetFrameNum()*0.1), -1, 1, -nv, nv);
+    ofPolyline fish;
     
     ofFill();
     ofPushMatrix();
     
     ofTranslate(projectedPoint);
     
+	ofVec2f v1(-1,0);
+	float angle = velocity.angle(v1); // angle of the velocity with left vector
+    ofRotate(angle);
     ofSetColor(255);
     
     ofVec2f frc = force;
     frc.normalize();
     frc *= 100;
     
-    ofDrawCircle(0, 0, 25);
+    fish.curveTo( ofPoint(-20+10*cos(angle+0.8), 10*sin(angle+0.8)));
+    fish.curveTo( ofPoint(-20+10*cos(angle+0.8), 10*sin(angle+0.8)));
+    fish.curveTo( ofPoint(-20, 0));
+    fish.curveTo( ofPoint(0, -10));
+    fish.curveTo( ofPoint(10, 0));
+    fish.curveTo( ofPoint(0, 10));
+    fish.curveTo( ofPoint(-20, 0));
+    fish.curveTo( ofPoint(-20+10*cos(angle-0.8), 10*sin(angle-0.8)));
+    fish.curveTo( ofPoint(-20+10*cos(angle-0.8), 10*sin(angle-0.8)));
+    fish.close();
+    ofSetLineWidth(2.0);  // Line widths apply to polylines
+    fish.draw();
+//    ofDrawCircle(0, 0, 25);
     ofDrawLine(0, 0, frc.x, frc.y);
     ofDrawRectangle(frc.x, frc.y, 5, 5);
     
