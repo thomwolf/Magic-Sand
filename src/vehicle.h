@@ -10,20 +10,21 @@ public:
     
     float animalCoef; // 1 for fish who want to stay in the water, -1 for rabbits who want to stay on the ground
   
-    void setup(int x, int y, ofRectangle sborders);
+    virtual void setup(int x, int y, ofRectangle sborders);
 //    void updateBasePlaneEq(ofVec4f sbasePlaneEq);
     void updateBeachDetection(bool beach, float beachDist, ofVec2f beachSlope);
 
     ofPoint seekEffect(const ofPoint & target);
-    ofPoint separateEffect(vector<vehicle> vehicles);
     ofPoint bordersEffect();
     ofPoint slopesEffect();
-    ofPoint wanderEffect();
+    virtual ofPoint wanderEffect();
     void applyVelocityChange(const ofPoint & force);
 
-    void applyBehaviours(vector<vehicle> vehicles, ofPoint target);
     void update();
     void draw();
+    
+//    ofPoint separateEffect(vector<vehicle> vehicles);
+//    virtual void applyBehaviours(vector<vehicle> vehicles, ofPoint target);
 
     const ofPoint& getLocation() const {
         return location;
@@ -42,7 +43,13 @@ public:
     
     std::vector<ofVec2f> getForces(void);
 
-private:
+    float wanderR ;         // Radius for our "wander circle"
+    float wanderD ;         // Distance for our "wander circle"
+    float change ;
+    float wandertheta;
+    float topSpeed;
+
+protected:
     ofVec2f separateF ;
     ofVec2f seekF ;
     ofVec2f bordersF ;
@@ -52,17 +59,23 @@ private:
     ofPoint velocity;
     ofPoint globalVelocityChange;
     ofVec2f currentForce;
-    float angle; // direction of the fish drawing
-    float wandertheta;
+    float angle; // direction of the drawing
+    float velocityIncreaseStep; // Rabbit increase step
+    float minVelocity;
+    int maxStraightPath; // max rabbit straight path length
+    int currentStraightPathLength;// current rabbit straight path length
     
-    // For slope effect
     bool beach;
+    bool border;
+    bool setWait;
+    int waitCounter, waitTime, maxWaitingTime, minWaitingTime;
+    // For slope effect
     float beachDist;
     ofVec2f beachSlope;
     
 //    const ofVec2f gradient;
     ofRectangle borders, internalBorders;
-    float topSpeed;
+//    float topSpeed;
     float maxVelocityChange;
     float maxRotation;
     int r, minborderDist, desiredseparation, cor;
@@ -70,3 +83,22 @@ private:
     
     
 };
+
+class Fish : public vehicle {
+public:
+//    ofPoint separateEffect(vector<vehicle> vehicles);
+    void setup(int x, int y, ofRectangle sborders);
+    ofPoint wanderEffect();
+
+    void applyBehaviours(ofPoint target);
+};
+
+class Rabbit : public vehicle {
+public:
+ //   ofPoint separateEffect(vector<vehicle> vehicles);
+    void setup(int x, int y, ofRectangle sborders);
+    ofPoint wanderEffect();
+
+    void applyBehaviours(ofPoint target);
+};
+

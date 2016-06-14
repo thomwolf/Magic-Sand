@@ -40,11 +40,11 @@ public:
     void drawFlowField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
     
-    void updateVehiclesFutureElevationAndGradient();
+    void updateVehiclesFutureElevationAndGradient(vehicle& v);
 //    void updateVehiclesBasePlaneEq();
     void drawVehicles();
-    void drawFish(ofVec2f projectedPoint, float angle, float fact);//, std::vector<ofVec2f> forces);
-    void drawRabbit(ofVec2f projectedPoint, float angle, float fact);//, std::vector<ofVec2f> forces);
+    void drawFish(Fish& v);//, std::vector<ofVec2f> forces);
+    void drawRabbit(Rabbit& r);//, std::vector<ofVec2f> forces);
 
     void addPointPair();
     void computeBasePlane();
@@ -148,7 +148,8 @@ private:
     bool upframe;
     
     // vehicules
-    vector<vehicle> vehicles;
+    vector<Fish> fish;
+    vector<Rabbit> rabbits;
     int fishNum, rabbitsNum;
     // For slope effect
     static const int MAX_STEPS = 10;

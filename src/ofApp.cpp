@@ -49,7 +49,6 @@ void ofApp::setup(){
     // Vehicles
     fishNum = 2;
     rabbitsNum = 2;
-    P = 128.0; // Min rotation speed of fish tails
     
     // Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
@@ -240,16 +239,17 @@ void ofApp::setupGradientField(){
 //--------------------------------------------------------------
 void ofApp::setupVehicles(){
     // setup vehicles
-    vehicles.resize(fishNum+rabbitsNum);
-    for(int i=0; i<fishNum+rabbitsNum; i++){
+    fish.resize(fishNum);
+    rabbits.resize(rabbitsNum);
+    for (auto & f : fish){
         ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-        vehicles[i].setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
-        if (i<fishNum)
-        {
-            vehicles[i].animalCoef = 1;
-        } else {
-            vehicles[i].animalCoef = -1;
-        }
+        f.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+        f.animalCoef = 1;
+    }
+    for (auto & r : rabbits){
+        ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
+        r.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+        r.animalCoef = -1;
     }
 }
 
@@ -360,11 +360,16 @@ void ofApp::update(){
         // update vehicles
         if (firstImageReady) {
             // update vehicles datas
-            updateVehiclesFutureElevationAndGradient();
             
-            for (auto & v : vehicles){
-                v.applyBehaviours(vehicles, ofPoint(kinectResX/2, kinectResY/2));
-                v.update();
+            for (auto & f : fish){
+                updateVehiclesFutureElevationAndGradient(f);
+                f.applyBehaviours(ofPoint(kinectResX/2, kinectResY/2));
+                f.update();
+            }
+            for (auto & r : rabbits){
+                updateVehiclesFutureElevationAndGradient(r);
+                r.applyBehaviours(ofPoint(kinectResX/2, kinectResY/2));
+                r.update();
             }
         }
     }
@@ -708,41 +713,39 @@ void ofApp::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
 }
 
 //--------------------------------------------------------------
-void ofApp::updateVehiclesFutureElevationAndGradient(){
+void ofApp::updateVehiclesFutureElevationAndGradient(vehicle& v){
     std::vector<float> futureZ;
     std::vector<ofVec2f> futureGradient;
 
     ofPoint futureLocation, velocity;
     
-    for (auto & v : vehicles){
-        futureLocation = v.getLocation();
-        velocity = v.getVelocity();
-        futureZ.clear();
-        futureGradient.clear();
-        int i = 1;
-        float beachDist = 1;
-        ofVec2f beachSlope(0);
-        bool water = true;
-       while (i < 10 && water)
+    futureLocation = v.getLocation();
+    velocity = v.getVelocity();
+    futureZ.clear();
+    futureGradient.clear();
+    int i = 1;
+    float beachDist = 1;
+    ofVec2f beachSlope(0);
+    bool water = true;
+    while (i < 10 && water)
+    {
+        ofVec4f wc = ofVec3f(futureLocation);
+        wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
+        wc.w = 1;
+        ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
+        vertexCc.w = 1;
+        float elevation = -basePlaneEq.dot(vertexCc);
+        if (v.animalCoef*elevation > 0)
         {
-            ofVec4f wc = ofVec3f(futureLocation);
-            wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
-            wc.w = 1;
-            ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
-            vertexCc.w = 1;
-            float elevation = -basePlaneEq.dot(vertexCc);
-            if (v.animalCoef*elevation > 0)
-            {
-                water = false;
-                beachDist = i;
-                beachSlope = -v.animalCoef*gradField[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
-            }
-            futureLocation += velocity; // Go to next future location step
-            i++;
-       }
-        v.updateBeachDetection(!water, beachDist, beachSlope);
+            water = false;
+            beachDist = i;
+            beachSlope = -v.animalCoef*gradField[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
+        }
+        futureLocation += velocity; // Go to next future location step
+        i++;
+   }
+    v.updateBeachDetection(!water, beachDist, beachSlope);
 //        v.updateFutureElevationAndGradient(futureZ, futureGradient);
-    }
 }
 
 //--------------------------------------------------------------
@@ -755,37 +758,35 @@ void ofApp::updateVehiclesFutureElevationAndGradient(){
 //--------------------------------------------------------------
 void ofApp::drawVehicles()
 {
-    for (auto & v : vehicles){
-        
-        // Get vehicule coord
-        ofVec2f t = v.getLocation();
-        
-        ofVec3f worldPoint = ofVec3f(t);
-        worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-        ofVec4f wc = ofVec4f(worldPoint);
-        wc.w = 1;
-        ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-        
-//        ofVec2f force = v.getCurrentForce();
-        ofVec2f velocity = v.getVelocity();
-//        std::vector<ofVec2f> forces = v.getForces();
-        float angle = v.getAngle(); // angle of the fish
-        float fact = P+P/2*velocity.length()/3;
-        if (v.animalCoef == 1)
-        {
-            drawFish(projectedPoint, angle, fact);//, forces);
-        } else {
-            drawRabbit(projectedPoint, angle, fact);//, forces);
+    for (auto & f : fish){
+            drawFish(f);//, forces);
         }
-    }
+    for (auto & r : rabbits){
+            drawRabbit(r);//, forces);
+        }
 }
 
 //--------------------------------------------------------------
-void ofApp::drawFish(ofVec2f projectedPoint, float angle, float fact)//, std::vector<ofVec2f> forces)
+void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
 {
+    // Get vehicule coord
+    ofVec2f t = v.getLocation();
+    
+    ofVec3f worldPoint = ofVec3f(t);
+    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    ofVec4f wc = ofVec4f(worldPoint);
+    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    
+    //        ofVec2f force = v.getCurrentForce();
+    ofVec2f velocity = v.getVelocity();
+    //        std::vector<ofVec2f> forces = v.getForces();
+    float angle = v.getAngle(); // angle of the fish
+    float fact = 50+250*velocity.length()/v.topSpeed;
+
     //    fboProjWindow.begin();
     float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
-    float tailangle = nv/100 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
+    float tailangle = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
     //float tailangle = ofMap(sin(ofGetFrameNum()*10), -1, 1, -nv, nv);
     
 
@@ -840,12 +841,95 @@ void ofApp::drawFish(ofVec2f projectedPoint, float angle, float fact)//, std::ve
     
     ofPopMatrix();
     
+// Display tail movement indication
+//    t = ofPoint(kinectResX/2, kinectResY/2);
+//    ofPoint front = velocity;
+//    front.normalize();
+//    front *= v.wanderD;
+//    ofPoint circleloc = t;
+//
+//    worldPoint = ofVec3f(circleloc);
+//    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+//    wc = ofVec4f(worldPoint);
+//    wc.w = 1;
+//    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+//
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofDrawCircle(0, 0, v.wanderR);
+//    ofPopMatrix();
+//
+//	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+//    ofPoint circleOffSet = ofPoint(v.wanderR*cos(tailangle),v.wanderR*sin(tailangle));
+//    ofPoint target = circleloc + circleOffSet;
+//
+//    worldPoint = ofVec3f(target);
+//    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+//    wc = ofVec4f(worldPoint);
+//    wc.w = 1;
+//    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+//
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofSetColor(255, 0, 0, 255);
+//    ofDrawCircle(0, 0, 5);
+//    ofPopMatrix();
+
+// Display wandering circle
+//    ofPoint front = velocity;
+//    front.normalize();
+//    front *= v.wanderD;
+//    ofPoint circleloc = t + front;
+//   
+//    worldPoint = ofVec3f(circleloc);
+//    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+//    wc = ofVec4f(worldPoint);
+//    wc.w = 1;
+//    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+//    
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofDrawCircle(0, 0, v.wanderR);
+//    ofPopMatrix();
+//    
+//	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+//    ofPoint circleOffSet = ofPoint(v.wanderR*cos(v.wandertheta+h),v.wanderR*sin(v.wandertheta+h));
+//    ofPoint target = circleloc + circleOffSet;
+//
+//    worldPoint = ofVec3f(target);
+//    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+//    wc = ofVec4f(worldPoint);
+//    wc.w = 1;
+//    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+//    
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofSetColor(255, 0, 0, 255);
+//    ofDrawCircle(0, 0, 5);
+//    ofPopMatrix();
+    
+    
     //    fboProjWindow.end();
 }
 
 //--------------------------------------------------------------
-void ofApp::drawRabbit(ofVec2f projectedPoint, float angle, float fact)//, std::vector<ofVec2f> forces)
+void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
 {
+    // Get vehicule coord
+    ofVec2f t = v.getLocation();
+    
+    ofVec3f worldPoint = ofVec3f(t);
+    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    ofVec4f wc = ofVec4f(worldPoint);
+    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    
+    //        ofVec2f force = v.getCurrentForce();
+    ofVec2f velocity = v.getVelocity();
+    //        std::vector<ofVec2f> forces = v.getForces();
+    float angle = v.getAngle(); // angle of the fish
+    float fact = P+P/2*velocity.length()/3;
+
     //    fboProjWindow.begin();
     float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
     float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
@@ -957,6 +1041,40 @@ void ofApp::drawRabbit(ofVec2f projectedPoint, float angle, float fact)//, std::
     
 
     ofPopMatrix();
+    
+// Display wandering circle
+//    ofPoint front = velocity;
+//    front.normalize();
+//    front *= v.wanderD;
+//    ofPoint circleloc = t + front;
+//
+//    worldPoint = ofVec3f(circleloc);
+//    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+//    wc = ofVec4f(worldPoint);
+//    wc.w = 1;
+//    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+//
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofDrawCircle(0, 0, v.wanderR);
+//    ofPopMatrix();
+//
+//	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+//    ofPoint circleOffSet = ofPoint(v.wanderR*cos(v.wandertheta+h),v.wanderR*sin(v.wandertheta+h));
+//    ofPoint target = circleloc + circleOffSet;
+//
+//    worldPoint = ofVec3f(target);
+//    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+//    wc = ofVec4f(worldPoint);
+//    wc.w = 1;
+//    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+//
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofSetColor(255, 0, 0, 255);
+//    ofDrawCircle(0, 0, 5);
+//    ofPopMatrix();
+//    ofSetColor(255);
     
     //    fboProjWindow.end();
 }
