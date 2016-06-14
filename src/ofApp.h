@@ -82,6 +82,8 @@ private:
     cv::Mat                     cvRgbImage;
     ofxCvFloatImage             Dptimg;
     
+    ofxCvGrayscaleImage vhcle;
+    
     //Gradient field variables
     ofVec2f* gradField;
     int gradFieldcols, gradFieldrows;
@@ -106,6 +108,7 @@ private:
     bool loaded;
     bool calibrated;
     bool firstImageReady;
+    bool waitingForFirstImage;
 
     // States variables
     General_state generalState, previousGeneralState;
