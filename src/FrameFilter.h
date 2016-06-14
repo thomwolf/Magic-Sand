@@ -91,7 +91,8 @@ private:
 	float maxVariance; // Maximum variance to consider a pixel stable
 //    float depthNorm; // Normalization of depth
     float unvalidValue;
-	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update
+	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update the display
+    float bigChange; // Amount of change over which the averaging slot is reset to new value
 	bool retainValids; // Flag whether to retain previous stable values if a new pixel in instable, or reset to a default value
 	float instableValue; // Value to assign to instable pixels if retainValids is false
 	bool spatialFilter; // Flag whether to apply a spatial filter to time-averaged depth values

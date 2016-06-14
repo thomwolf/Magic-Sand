@@ -7,6 +7,8 @@ class vehicle{
 
 public:
     ofPoint location;
+    
+    float animalCoef; // 1 for fish who want to stay in the water, -1 for rabbits who want to stay on the ground
   
     void setup(int x, int y, ofRectangle sborders);
 //    void updateBasePlaneEq(ofVec4f sbasePlaneEq);

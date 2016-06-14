@@ -23,7 +23,7 @@ void vehicle::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWo
     r = 12;
     desiredseparation = 24;
     maxVelocityChange = 1;
-    maxRotation = 50;
+    maxRotation = 30;
     topSpeed =3;
 }
 

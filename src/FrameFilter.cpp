@@ -39,7 +39,8 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     minNumSamples=(numAveragingSlots+1)/2;
     //    depthNorm = 2000;
     maxVariance = 4 ;/// depthNorm/depthNorm;
-    hysteresis = 0.1f ;/// depthNorm;
+    hysteresis = 0.5f ;/// depthNorm;
+    bigChange = 10.0f ;/// depthNorm;
 	retainValids=true;
 	instableValue=0.0;
     maxgradfield = 1000;
@@ -55,7 +56,7 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
 	
 	/* Enable spatial filtering: */
     //	spatialFilter=true;
-    spatialFilter = false;
+    spatialFilter = true;
     
 	/* Convert the base plane equation from camera space to depth-image space: */
     //	PTransform::HVector basePlaneCc(basePlane.getNormal());
@@ -223,6 +224,22 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                         /* Store the new input value: */
                         *abPtr=newVal;
                         
+                        //Check if there is a big change
+                        float oldFiltered =sPtr[1]/sPtr[0];
+                        if(abs(oldFiltered-newVal)>=bigChange)
+                        {
+                            float* aabPtr;
+                            // update all averaging slots
+                            for (int i = 0; i < numAveragingSlots; i++){
+                                aabPtr=averagingBuffer+i*height*width+y*width+x;
+                                *aabPtr =newVal;
+                            }
+                            //Update statistics
+                            sPtr[0] = numAveragingSlots;
+                            sPtr[1] = newVal*numAveragingSlots;
+                            sPtr[2] = newVal*newVal*numAveragingSlots;
+                        }
+                        
                         /* Update the pixel's statistics: */
                         ++sPtr[0]; // Number of valid samples
                         sPtr[1]+=newVal; // Sum of valid samples
@@ -236,7 +253,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                             sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
                         }
                     }
-                    else if(!retainValids)
+                    else if(!retainValids) // retainValid = true in production conditons
                     {
                         /* Store an invalid input value: */
                         *abPtr=unvalidValue;
@@ -249,9 +266,25 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                             sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
                         }
                     }
-                    float s0 = sPtr[0];
-                    float s1 = sPtr[1];
-                    float s2 = sPtr[2];
+//                    float s0 = sPtr[0];
+//                    float s1 = sPtr[1];
+//                    float s2 = sPtr[2];
+                    if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
+                    {
+                        float newFiltered=sPtr[1]/sPtr[0];
+                        /* Check if the new depth-corrected running mean is outside the previous value's envelope: */
+                        if(abs(newFiltered-*ofPtr)>=hysteresis)
+                        {
+                            /* Set the output pixel value to the depth-corrected running mean: */
+                            *nofPtr=*ofPtr=newFiltered;
+                            firstImageReady = true;
+                        }
+                        else
+                        {
+                            /* Leave the pixel at its previous value: */
+                            *nofPtr=*ofPtr;
+                        }
+                    }
                     // Check if the pixel is considered "stable": */
                     if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
                     {
@@ -269,7 +302,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                             *nofPtr=*ofPtr;
                         }
                     }
-                    else if(retainValids)
+                    else if(retainValids) // retainValid = true in production conditons
                     {
                         /* Leave the pixel at its previous value: */
                         *nofPtr=*ofPtr;

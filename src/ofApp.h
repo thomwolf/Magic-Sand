@@ -43,7 +43,8 @@ public:
     void updateVehiclesFutureElevationAndGradient();
 //    void updateVehiclesBasePlaneEq();
     void drawVehicles();
-    void drawVehicle(ofVec2f projectedPoint, float angle, float tailangle);//, std::vector<ofVec2f> forces);
+    void drawFish(ofVec2f projectedPoint, float angle, float fact);//, std::vector<ofVec2f> forces);
+    void drawRabbit(ofVec2f projectedPoint, float angle, float fact);//, std::vector<ofVec2f> forces);
 
     void addPointPair();
     void computeBasePlane();
@@ -148,7 +149,7 @@ private:
     
     // vehicules
     vector<vehicle> vehicles;
-    int vehicleNum;
+    int fishNum, rabbitsNum;
     // For slope effect
     static const int MAX_STEPS = 10;
     float P;

@@ -47,7 +47,8 @@ void ofApp::setup(){
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Vehicles
-    vehicleNum = 5;
+    fishNum = 2;
+    rabbitsNum = 2;
     P = 128.0; // Min rotation speed of fish tails
     
     // Load colormap and set heightmap
@@ -239,10 +240,16 @@ void ofApp::setupGradientField(){
 //--------------------------------------------------------------
 void ofApp::setupVehicles(){
     // setup vehicles
-    vehicles.resize(vehicleNum);
-    for(auto & v : vehicles){
+    vehicles.resize(fishNum+rabbitsNum);
+    for(int i=0; i<fishNum+rabbitsNum; i++){
         ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-        v.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+        vehicles[i].setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+        if (i<fishNum)
+        {
+            vehicles[i].animalCoef = 1;
+        } else {
+            vehicles[i].animalCoef = -1;
+        }
     }
 }
 
@@ -706,7 +713,7 @@ void ofApp::updateVehiclesFutureElevationAndGradient(){
     std::vector<ofVec2f> futureGradient;
 
     ofPoint futureLocation, velocity;
-
+    
     for (auto & v : vehicles){
         futureLocation = v.getLocation();
         velocity = v.getVelocity();
@@ -724,11 +731,11 @@ void ofApp::updateVehiclesFutureElevationAndGradient(){
             ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
             vertexCc.w = 1;
             float elevation = -basePlaneEq.dot(vertexCc);
-            if (elevation >0)
+            if (v.animalCoef*elevation > 0)
             {
                 water = false;
                 beachDist = i;
-                beachSlope = -gradField[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
+                beachSlope = -v.animalCoef*gradField[(int)(futureLocation.x/gradFieldresolution)+gradFieldcols*((int)(futureLocation.y/gradFieldresolution))];
             }
             futureLocation += velocity; // Go to next future location step
             i++;
@@ -763,22 +770,24 @@ void ofApp::drawVehicles()
         ofVec2f velocity = v.getVelocity();
 //        std::vector<ofVec2f> forces = v.getForces();
         float angle = v.getAngle(); // angle of the fish
- 
-        float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
-        
-//        int P=5;
         float fact = P+P/2*velocity.length()/3;
-        float tailangle = nv/100 * abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50);
-        //float tailangle = ofMap(sin(ofGetFrameNum()*10), -1, 1, -nv, nv);
-
-        drawVehicle(projectedPoint, angle, tailangle);//, forces);
+        if (v.animalCoef == 1)
+        {
+            drawFish(projectedPoint, angle, fact);//, forces);
+        } else {
+            drawRabbit(projectedPoint, angle, fact);//, forces);
+        }
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)//, std::vector<ofVec2f> forces)
+void ofApp::drawFish(ofVec2f projectedPoint, float angle, float fact)//, std::vector<ofVec2f> forces)
 {
     //    fboProjWindow.begin();
+    float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
+    float tailangle = nv/100 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
+    //float tailangle = ofMap(sin(ofGetFrameNum()*10), -1, 1, -nv, nv);
+    
 
     ofNoFill();
     ofPushMatrix();
@@ -806,10 +815,11 @@ void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)//,
 //    }
 //
     ofRotate(angle);
+    float sc = 10; // Fish scale
     
-    int tailSize = 10;
-    int fishLength = 20;
-    int fishHead = tailSize;
+    float tailSize = 1*sc;
+    float fishLength = 2*sc;
+    float fishHead = tailSize;
     
     ofSetColor(255);
     ofPolyline fish;
@@ -828,6 +838,124 @@ void ofApp::drawVehicle(ofVec2f projectedPoint, float angle, float tailangle)//,
     ofSetColor(255);
     ofDrawCircle(0, 0, 5);
     
+    ofPopMatrix();
+    
+    //    fboProjWindow.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::drawRabbit(ofVec2f projectedPoint, float angle, float fact)//, std::vector<ofVec2f> forces)
+{
+    //    fboProjWindow.begin();
+    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
+    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
+    
+    ofNoFill();
+    ofPushMatrix();
+    
+    ofTranslate(projectedPoint);
+    
+    //    ofSetColor(255);
+    ofVec2f frc = ofVec2f(100, 0);
+    //    frc.rotate(angle);
+    //    ofDrawLine(0, 0, frc.x, frc.y);
+    //    ofDrawRectangle(frc.x, frc.y, 5, 5);
+    //
+    //    for (int i=0; i<forces.size(); i++){
+    //        ofColor c = ofColor(0); // c is black
+    //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+    //        c.setHsb((int)hsb, 255, 255); // rainbow
+    //
+    //        frc = forces[i];
+    //        frc.normalize();
+    //        frc *= 100;
+    //
+    //        ofSetColor(c);
+    //        ofDrawLine(0, 0, frc.x, frc.y);
+    //        ofDrawCircle(frc.x, frc.y, 5);
+    //    }
+    //
+    ofRotate(angle);
+    
+    float sc = 1; // Rabbit scale
+    
+    ofSetColor(255);
+    ofSetLineWidth(1.0);  // Line widths apply to polylines
+
+    ofPolyline head;
+    head.curveTo( ofPoint(0, 1.5*sc));
+    head.curveTo( ofPoint(0, 1.5*sc));
+    head.curveTo( ofPoint(-3*sc, 1.5*sc));
+    head.curveTo( ofPoint(-9*sc, 3.5*sc));
+    head.curveTo( ofPoint(0, 5.5*sc));
+    head.curveTo( ofPoint(8*sc, 0));
+    head.curveTo( ofPoint(0, -5.5*sc));
+    head.curveTo( ofPoint(-9*sc, -3.5*sc));
+    head.curveTo( ofPoint(-3*sc, -1.5*sc));
+    head.curveTo( ofPoint(0, -1.5*sc));
+    head.curveTo( ofPoint(0, -1.5*sc));
+//    head.close();
+    head.draw();
+
+    ofDrawCircle(8.5*sc, 0, 1*sc);
+    
+    ofPolyline body;
+    body.curveTo( ofPoint(-2*sc, 5.5*sc));
+    body.curveTo( ofPoint(-2*sc, 5.5*sc));
+    body.curveTo( ofPoint(-9*sc, 7.5*sc));
+    body.curveTo( ofPoint(-17*sc, 0*sc));
+    body.curveTo( ofPoint(-9*sc, -7.5*sc));
+    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+//    body.close();
+//    ofSetLineWidth(2.0);  // Line widths apply to polylines
+    body.draw();
+    
+    ofDrawCircle(-19*sc, 0, 2*sc);
+
+//    ofPolyline foot;
+//    foot.curveTo( ofPoint(6*sc, -3.5*sc));
+//    foot.curveTo( ofPoint(6*sc, -3.5*sc));
+//    foot.curveTo( ofPoint((10+footpos*4)*sc, -4.5*sc));
+//    foot.curveTo( ofPoint((7+footpos*1)*sc, (-5.75-footpos*0.25)*sc));
+//    foot.curveTo( ofPoint((2+footpos*0.5)*sc, -5*sc));
+//    foot.curveTo( ofPoint((2+footpos*0.5)*sc, -5*sc));
+//    //    body.close();
+//    foot.draw();
+//    
+//    foot.clear();
+//    foot.curveTo( ofPoint(6*sc, 3.5*sc));
+//    foot.curveTo( ofPoint(6*sc, 3.5*sc));
+//    foot.curveTo( ofPoint((10+footpos*4)*sc, 4.5*sc));
+//    foot.curveTo( ofPoint((7+footpos*1)*sc, (5.75+footpos*0.25)*sc));
+//    foot.curveTo( ofPoint((2+footpos*0.5)*sc, 5*sc));
+//    foot.curveTo( ofPoint((2+footpos*0.5)*sc, 5*sc));
+//    //    body.close();
+//    foot.draw();
+//
+//    foot.clear();
+//    foot.curveTo( ofPoint(-13*sc, -6*sc));
+//    foot.curveTo( ofPoint(-13*sc, -6*sc));
+//    foot.curveTo( ofPoint((-16-footpos*1)*sc, (-6.75-footpos*0.25)*sc));
+//    foot.curveTo( ofPoint((-19-footpos*3)*sc, -5.5*sc));
+//    foot.curveTo( ofPoint((-16.5-footpos*1.5)*sc, -4*sc));
+//    foot.curveTo( ofPoint(-15*sc, -4*sc));
+//    foot.curveTo( ofPoint(-15*sc, -4*sc));
+//    //    body.close();
+//    foot.draw();
+//    
+//    foot.clear();
+//    foot.curveTo( ofPoint(-13*sc, 6*sc));
+//    foot.curveTo( ofPoint(-13*sc, 6*sc));
+//    foot.curveTo( ofPoint((-16-footpos*1)*sc, (6.75+footpos*0.25)*sc));
+//    foot.curveTo( ofPoint((-19-footpos*3)*sc, 5.5*sc));
+//    foot.curveTo( ofPoint((-16.5-footpos*1.5)*sc, 4*sc));
+//    foot.curveTo( ofPoint(-15*sc, 4*sc));
+//    foot.curveTo( ofPoint(-15*sc, 4*sc));
+//    //    body.close();
+//    foot.draw();
+    
+
     ofPopMatrix();
     
     //    fboProjWindow.end();
