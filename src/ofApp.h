@@ -45,6 +45,8 @@ public:
     void drawVehicles();
     void drawFish(Fish& v);//, std::vector<ofVec2f> forces);
     void drawRabbit(Rabbit& r);//, std::vector<ofVec2f> forces);
+    void drawMotherFish();//, std::vector<ofVec2f> forces);
+    void drawMotherRabbit();//, std::vector<ofVec2f> forces);
 
     void addPointPair();
     void computeBasePlane();
@@ -82,7 +84,7 @@ private:
     cv::Mat                     cvRgbImage;
     ofxCvFloatImage             Dptimg;
     
-    ofxCvGrayscaleImage vhcle;
+    ofxCvFloatImage vhcle;
     
     //Gradient field variables
     ofVec2f* gradField;
@@ -154,9 +156,10 @@ private:
     vector<Fish> fish;
     vector<Rabbit> rabbits;
     int fishNum, rabbitsNum;
-    // For slope effect
     static const int MAX_STEPS = 10;
     float P;
+    ofPoint motherFish, motherRabbit; // Location of fish and rabbit mothers
+    float motherFishPlatformSize, motherRabbitPlatformSize;
 
     // Colormap, contourmap and heightmap variables
     ColorMap    heightMap;

@@ -65,6 +65,8 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     //	basePlaneDic/=Geometry::mag(basePlaneDic.toVector());
     maxOffset =newMaxOffset;
 	
+    game = false;
+
 	/* Initialize the gradient field vector*/
     gradFieldresolution = sgradFieldresolution;
     std::cout<< "Gradient Field resolution" << gradFieldresolution <<std::endl;
@@ -165,6 +167,38 @@ ofVec2f* FrameFilter::getGradField(){
 }
 
 //--------------------------------------------------------------
+void FrameFilter::setGame(ofPoint smotherRabbit, ofPoint smotherFish, int stype, int splateformSizeX, int splateformSizeY,bool sgame){
+    motherRabbit = smotherRabbit;
+    motherFish = smotherFish;
+    type = stype;
+    plateformSizeX = splateformSizeX;
+    plateformSizeY = splateformSizeY;
+    game = sgame;
+}
+
+//--------------------------------------------------------------
+float FrameFilter::isInsideAnimalPlateform(int x, int y){ // test is x, y is inside an animal plateform
+    float back = 0.0f;
+    if (game){
+        if (type == 0 || type == 2) {// Test fish
+            int dx = x-motherFish.x;
+            int dy = y-motherFish.y;
+            if (abs(dx)<plateformSizeX && abs(dy)<plateformSizeX)
+                if ((dx*dx+dy*dy)<plateformSizeX*plateformSizeX)
+                    back = motherFish.z;
+        }
+        if (type == 1 || type == 2) {// Test fish
+            int dx = x-motherRabbit.x;
+            int dy = y-motherRabbit.y;
+            if (abs(dx)<plateformSizeY && abs(dy)<plateformSizeY)
+                if ((dx*dx+dy*dy)<plateformSizeY*plateformSizeY)
+                    back = motherRabbit.z;
+        }
+    }
+    return back;
+}
+
+//--------------------------------------------------------------
 void FrameFilter::setROI(ofRectangle ROI){
     minX = (int) ROI.getMinX();
     maxX = (int) ROI.getMaxX();
@@ -198,6 +232,7 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
         float* ofPtr=validBuffer; // static_cast<const float*>(outputFrame.getBuffer());
         float* nofPtr=static_cast<float*>(newOutputFrame.getData());
         float z;
+        float animal;
         ofVec3f point;
         for(unsigned int y=0;y<height;++y)
         {
@@ -207,8 +242,12 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                 float px=float(x)+0.5f;
                 if(isInsideROI(x, y)) // Check if pixel is inside ROI
                 {
-                    float oldVal=*abPtr;
                     RawDepth newValRD = *ifPtr;
+                    animal = isInsideAnimalPlateform(x, y);
+                    if (animal != 0.0f){
+                        newValRD = animal; // We are on an animal plateform
+                    }
+                    float oldVal=*abPtr;
                     float newVal = (float) newValRD;///depthNorm;
                     
                     /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */

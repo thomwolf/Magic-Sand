@@ -123,11 +123,13 @@ ofPoint vehicle::seekEffect(const ofPoint & target){
     
     float d = desired.length();
     desired.normalize();
+    mother = false;
     
-    //If we are closer than 100 pixels...
-    if (d < 100) {
+    //If we are closer than 50 pixels...
+    if (d < 10) {
         //...set the magnitude according to how close we are.
         desired *= ofMap(d,0,100,0,topSpeed);
+        mother = true;
     } else {
         //Otherwise, proceed at maximum speed.
         desired *= topSpeed;
@@ -136,6 +138,11 @@ ofPoint vehicle::seekEffect(const ofPoint & target){
     ofPoint velocityChange;
     velocityChange = desired - velocity;
     velocityChange.limit(maxVelocityChange);
+    
+    //If we are further than 200 pixels we don't see the mother
+    if (d > 50) {
+        velocityChange = ofPoint(0);
+    }
     
     return velocityChange;
 }
@@ -281,7 +288,7 @@ void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
     wanderF = wanderEffect();
     
     //    separateF*=1;//2;
-    seekF *= 0;
+    seekF *= 1;
     bordersF *=2;
     slopesF *= 2;//2;
     wanderF *= 0.8;
@@ -293,8 +300,11 @@ void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
         applyVelocityChange(bordersF);
     }
     //    applyVelocityChange(separateF);
-    applyVelocityChange(seekF);
-    applyVelocityChange(wanderF);
+    if (seekF.lengthSquared() == 0){
+        applyVelocityChange(wanderF);
+    } else {
+        applyVelocityChange(seekF);
+    }
     //    currentForce = separateF+seekF+bordersF+slopesF;
 }
 
@@ -381,9 +391,9 @@ void Rabbit::applyBehaviours(ofPoint target){
     ofPoint littleSlopeF = slopesF;
     
     //    separateF*=1;//2;
-    seekF *= 0;
+    seekF *= 1;
     bordersF *=0.5;
-    slopesF *= 0.5;//2;
+    slopesF *= 2;//2;
     wanderF *= 1;// Used to introduce some randomness in the direction changes
     littleSlopeF *= 1;
     
@@ -398,8 +408,13 @@ void Rabbit::applyBehaviours(ofPoint target){
             // Compute a new direction
             //            oldDir.scale(topSpeed);
             wanderF = wanderEffect();
-            ofPoint newDir = wanderF;
-            newDir +=seekF;
+            ofPoint newDir;
+            if (seekF.lengthSquared() == 0){
+                newDir = wanderF;
+            } else {
+                newDir = seekF;
+            }
+
             //            newDir +=littleSlopeF;
             if (border)
                 newDir +=bordersF;
@@ -407,7 +422,6 @@ void Rabbit::applyBehaviours(ofPoint target){
                 newDir +=slopesF;
             
             newDir.scale(velocityIncreaseStep);
-            
             applyVelocityChange(newDir);
             
             currentStraightPathLength = 0;
@@ -415,7 +429,7 @@ void Rabbit::applyBehaviours(ofPoint target){
             
         }
     } else {
-        if (!beach && !border && currentStraightPathLength < maxStraightPath)
+        if (!beach && !border && !mother && currentStraightPathLength < maxStraightPath)
         {
             
             applyVelocityChange(oldDir); // Just accelerate

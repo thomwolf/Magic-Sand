@@ -47,9 +47,15 @@ public:
 	void setRetainValids(bool newRetainValids); // Sets whether the filter retains previous stable values for instable pixels
 	void setInstableValue(float newInstableValue); // Sets the depth value to assign to instable pixels
 	void setSpatialFilter(bool newSpatialFilter); // Sets the spatial filtering flag
+    
+    void setGame(ofPoint smotherRabbit, ofPoint smotherFish, int stype, int splateformSizeX, int splateformSizeY, bool game);
+
 	void setROI(ofRectangle ROI); // Sets the ROI
     void setMaxOffset(float newMaxOffset);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
+
+    float isInsideAnimalPlateform(int x, int y); // test is x, y is inside an animal plateform return 0 of the depth value
+
     void applySpaceFilter(ofFloatPixels& newOutputFrame);
     void updateGradientField();
     ofFloatPixels filter(ofShortPixels inputframe);
@@ -80,6 +86,13 @@ private:
     
     int minX, maxX, ROIwidth; // ROI definition
     int minY, maxY, ROIheight;
+    
+    // Game variables
+    ofPoint motherRabbit;
+    ofPoint motherFish;
+    int type; // 0=>Fish only, 1=>Rabbit onyl, 2=> both
+    int plateformSizeX, plateformSizeY;
+    bool game;
     
 //	ofVec4f basePlaneNormal; // Base plane normal
 //	float minPlane, maxPlane; //  lower bound & upper bound of valid depth values in depth image space

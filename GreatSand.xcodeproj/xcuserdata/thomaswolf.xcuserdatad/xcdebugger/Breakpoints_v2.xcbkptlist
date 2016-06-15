@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1543"
-            endingLineNumber = "1543"
+            startingLineNumber = "1712"
+            endingLineNumber = "1712"
             landmarkName = "ofApp::updateMode()"
             landmarkType = "5">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "432"
-            endingLineNumber = "432"
+            startingLineNumber = "483"
+            endingLineNumber = "483"
             landmarkName = "ofApp::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1206"
-            endingLineNumber = "1206"
+            startingLineNumber = "1375"
+            endingLineNumber = "1375"
             landmarkName = "ofApp::addPointPair()"
             landmarkType = "5">
             <Locations>
@@ -88,11 +88,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1204"
-            endingLineNumber = "1204"
+            startingLineNumber = "1373"
+            endingLineNumber = "1373"
             landmarkName = "ofApp::addPointPair()"
             landmarkType = "5">
             <Locations>
@@ -134,11 +134,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1217"
-            endingLineNumber = "1217"
+            startingLineNumber = "1386"
+            endingLineNumber = "1386"
             landmarkName = "ofApp::addPointPair()"
             landmarkType = "5">
          </BreakpointContent>
@@ -150,11 +150,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "251"
-            endingLineNumber = "251"
+            startingLineNumber = "290"
+            endingLineNumber = "290"
             landmarkName = "FrameFilter::filter(ofShortPixels inputframe)"
             landmarkType = "5">
          </BreakpointContent>
@@ -166,11 +166,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "256"
-            endingLineNumber = "256"
+            startingLineNumber = "295"
+            endingLineNumber = "295"
             landmarkName = "FrameFilter::filter(ofShortPixels inputframe)"
             landmarkType = "5">
          </BreakpointContent>
@@ -182,11 +182,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "257"
-            endingLineNumber = "257"
+            startingLineNumber = "296"
+            endingLineNumber = "296"
             landmarkName = "FrameFilter::filter(ofShortPixels inputframe)"
             landmarkType = "5">
          </BreakpointContent>
@@ -198,11 +198,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "652"
-            endingLineNumber = "652"
+            startingLineNumber = "703"
+            endingLineNumber = "703"
             landmarkName = "ofApp::drawSandbox()"
             landmarkType = "5">
          </BreakpointContent>
@@ -214,11 +214,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "647"
-            endingLineNumber = "647"
+            startingLineNumber = "698"
+            endingLineNumber = "698"
             landmarkName = "ofApp::drawSandbox()"
             landmarkType = "5">
          </BreakpointContent>
@@ -230,11 +230,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "388"
-            endingLineNumber = "388"
+            startingLineNumber = "439"
+            endingLineNumber = "439"
             landmarkName = "ofApp::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -246,11 +246,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "648"
-            endingLineNumber = "648"
+            startingLineNumber = "699"
+            endingLineNumber = "699"
             landmarkName = "ofApp::drawSandbox()"
             landmarkType = "5">
          </BreakpointContent>
@@ -262,11 +262,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "655"
-            endingLineNumber = "655"
+            startingLineNumber = "706"
+            endingLineNumber = "706"
             landmarkName = "ofApp::drawSandbox()"
             landmarkType = "5">
             <Locations>
@@ -308,11 +308,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "657"
-            endingLineNumber = "657"
+            startingLineNumber = "708"
+            endingLineNumber = "708"
             landmarkName = "ofApp::drawSandbox()"
             landmarkType = "5">
             <Locations>
@@ -386,11 +386,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1313"
-            endingLineNumber = "1313"
+            startingLineNumber = "1482"
+            endingLineNumber = "1482"
             landmarkName = "ofApp::findMaxOffset()"
             landmarkType = "5">
          </BreakpointContent>
@@ -402,11 +402,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1320"
-            endingLineNumber = "1320"
+            startingLineNumber = "1489"
+            endingLineNumber = "1489"
             landmarkName = "ofApp::findMaxOffset()"
             landmarkType = "5">
          </BreakpointContent>
@@ -418,11 +418,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1371"
-            endingLineNumber = "1371"
+            startingLineNumber = "1540"
+            endingLineNumber = "1540"
             landmarkName = "ofApp::autoCalib()"
             landmarkType = "5">
          </BreakpointContent>
@@ -434,11 +434,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1366"
-            endingLineNumber = "1366"
+            startingLineNumber = "1535"
+            endingLineNumber = "1535"
             landmarkName = "ofApp::autoCalib()"
             landmarkType = "5">
          </BreakpointContent>
@@ -450,11 +450,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1226"
-            endingLineNumber = "1226"
+            startingLineNumber = "1395"
+            endingLineNumber = "1395"
             landmarkName = "ofApp::computeTransform(ofVec4f vin)"
             landmarkType = "5">
          </BreakpointContent>
@@ -466,11 +466,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1253"
-            endingLineNumber = "1253"
+            startingLineNumber = "1422"
+            endingLineNumber = "1422"
             landmarkName = "ofApp::computeBasePlane()"
             landmarkType = "5">
          </BreakpointContent>
@@ -482,11 +482,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1259"
-            endingLineNumber = "1259"
+            startingLineNumber = "1428"
+            endingLineNumber = "1428"
             landmarkName = "ofApp::computeBasePlane()"
             landmarkType = "5">
          </BreakpointContent>
@@ -498,11 +498,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "713"
-            endingLineNumber = "713"
+            startingLineNumber = "764"
+            endingLineNumber = "764"
             landmarkName = "ofApp::prepareContourLines()"
             landmarkType = "5">
          </BreakpointContent>
@@ -514,11 +514,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487550525.50773"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "221"
-            endingLineNumber = "221"
+            startingLineNumber = "260"
+            endingLineNumber = "260"
             landmarkName = "FrameFilter::filter(ofShortPixels inputframe)"
             landmarkType = "5">
          </BreakpointContent>
@@ -530,11 +530,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "403"
-            endingLineNumber = "403"
+            startingLineNumber = "442"
+            endingLineNumber = "442"
             landmarkName = "FrameFilter::updateGradientField()"
             landmarkType = "5">
             <Locations>
@@ -576,11 +576,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "407"
-            endingLineNumber = "407"
+            startingLineNumber = "446"
+            endingLineNumber = "446"
             landmarkName = "FrameFilter::updateGradientField()"
             landmarkType = "5">
          </BreakpointContent>
@@ -592,11 +592,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "425"
-            endingLineNumber = "425"
+            startingLineNumber = "464"
+            endingLineNumber = "464"
             landmarkName = "FrameFilter::updateGradientField()"
             landmarkType = "5">
          </BreakpointContent>
@@ -608,11 +608,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "764"
-            endingLineNumber = "764"
+            startingLineNumber = "815"
+            endingLineNumber = "815"
             landmarkName = "ofApp::drawFlowField()"
             landmarkType = "5">
          </BreakpointContent>
@@ -624,11 +624,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "468"
-            endingLineNumber = "468"
+            startingLineNumber = "519"
+            endingLineNumber = "519"
             landmarkName = "ofApp::draw()"
             landmarkType = "5">
          </BreakpointContent>
@@ -640,11 +640,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "516"
-            endingLineNumber = "516"
+            startingLineNumber = "567"
+            endingLineNumber = "567"
             landmarkName = "ofApp::draw()"
             landmarkType = "5">
          </BreakpointContent>
@@ -704,11 +704,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487694212.71813"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1222"
-            endingLineNumber = "1222">
+            startingLineNumber = "1391"
+            endingLineNumber = "1391">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -718,43 +718,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487600367.903637"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
-            landmarkName = "vehicle::seekEffect(const ofPoint &amp; target)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/vehicle.cpp"
-            timestampString = "487600367.903637"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "vehicle::seekEffect(const ofPoint &amp; target)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/vehicle.cpp"
-            timestampString = "487600367.903637"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "190"
-            endingLineNumber = "190"
+            startingLineNumber = "197"
+            endingLineNumber = "197"
             landmarkName = "vehicle::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -766,43 +734,43 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487600367.903637"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "193"
-            endingLineNumber = "193"
-            landmarkName = "vehicle::update()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/vehicle.cpp"
-            timestampString = "487601223.473508"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "201"
-            endingLineNumber = "201"
-            landmarkName = "vehicle::update()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/vehicle.cpp"
-            timestampString = "487601223.473508"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "200"
             endingLineNumber = "200"
+            landmarkName = "vehicle::update()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/vehicle.cpp"
+            timestampString = "487693590.191594"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "208"
+            endingLineNumber = "208"
+            landmarkName = "vehicle::update()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/vehicle.cpp"
+            timestampString = "487693590.191594"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
             landmarkName = "vehicle::update()"
             landmarkType = "5">
             <Locations>
@@ -858,11 +826,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/FrameFilter.cpp"
-            timestampString = "487552078.633251"
+            timestampString = "487694002.573292"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "361"
-            endingLineNumber = "361"
+            startingLineNumber = "400"
+            endingLineNumber = "400"
             landmarkName = "FrameFilter::applySpaceFilter(ofFloatPixels&amp; newOutputFrame)"
             landmarkType = "5">
          </BreakpointContent>
@@ -874,11 +842,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487687877.60879"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "244"
-            endingLineNumber = "244"
+            startingLineNumber = "246"
+            endingLineNumber = "246"
             landmarkName = "ofApp::setupVehicles()"
             landmarkType = "5">
          </BreakpointContent>
@@ -890,11 +858,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "808"
-            endingLineNumber = "808"
+            startingLineNumber = "859"
+            endingLineNumber = "859"
             landmarkName = "ofApp::updateVehiclesFutureElevationAndGradient(vehicle&amp; v)"
             landmarkType = "5">
          </BreakpointContent>
@@ -906,11 +874,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "838"
-            endingLineNumber = "838"
+            startingLineNumber = "889"
+            endingLineNumber = "889"
             landmarkName = "ofApp::updateVehiclesFutureElevationAndGradient(vehicle&amp; v)"
             landmarkType = "5">
          </BreakpointContent>
@@ -954,11 +922,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "450"
-            endingLineNumber = "450"
+            startingLineNumber = "501"
+            endingLineNumber = "501"
             landmarkName = "ofApp::update()"
             landmarkType = "5">
             <Locations>
@@ -1056,11 +1024,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "421"
-            endingLineNumber = "421"
+            startingLineNumber = "435"
+            endingLineNumber = "435"
             landmarkName = "Rabbit::applyBehaviours(ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1072,11 +1040,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "422"
-            endingLineNumber = "422"
+            startingLineNumber = "436"
+            endingLineNumber = "436"
             landmarkName = "Rabbit::applyBehaviours(ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1088,11 +1056,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487603571.502267"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
+            startingLineNumber = "285"
+            endingLineNumber = "285"
             landmarkName = "Fish::applyBehaviours(/*vector&lt;vehicle&gt; vehicles, */ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1104,11 +1072,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487603571.502267"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "284"
-            endingLineNumber = "284"
+            startingLineNumber = "291"
+            endingLineNumber = "291"
             landmarkName = "Fish::applyBehaviours(/*vector&lt;vehicle&gt; vehicles, */ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1120,11 +1088,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487603571.502267"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "292"
-            endingLineNumber = "292"
+            startingLineNumber = "299"
+            endingLineNumber = "299"
             landmarkName = "Fish::applyBehaviours(/*vector&lt;vehicle&gt; vehicles, */ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1135,88 +1103,12 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/vehicle.cpp"
-            timestampString = "487603571.502267"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "225"
-            endingLineNumber = "225"
-            landmarkName = "Fish::wanderEffect()"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Fish::wanderEffect()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/vehicle.cpp"
-                  timestampString = "487600415.147594"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
-                  offsetFromSymbolStart = "391">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Fish::wanderEffect()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/vehicle.cpp"
-                  timestampString = "487600415.148297"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
-                  offsetFromSymbolStart = "449">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Fish::wanderEffect()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/vehicle.cpp"
-                  timestampString = "487600415.148846"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "215"
-                  endingLineNumber = "215"
-                  offsetFromSymbolStart = "532">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/vehicle.cpp"
-            timestampString = "487603571.502267"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "232"
-            endingLineNumber = "232"
-            landmarkName = "Fish::wanderEffect()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "881"
-            endingLineNumber = "881"
+            startingLineNumber = "934"
+            endingLineNumber = "934"
             landmarkName = "ofApp::drawFish(Fish&amp; v)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1228,11 +1120,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "880"
-            endingLineNumber = "880"
+            startingLineNumber = "933"
+            endingLineNumber = "933"
             landmarkName = "ofApp::drawFish(Fish&amp; v)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1244,11 +1136,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "884"
-            endingLineNumber = "884"
+            startingLineNumber = "937"
+            endingLineNumber = "937"
             landmarkName = "ofApp::drawFish(Fish&amp; v)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1260,11 +1152,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "352"
-            endingLineNumber = "352"
+            startingLineNumber = "362"
+            endingLineNumber = "362"
             landmarkName = "Rabbit::wanderEffect()"
             landmarkType = "5">
             <Locations>
@@ -1306,11 +1198,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "354"
-            endingLineNumber = "354"
+            startingLineNumber = "364"
+            endingLineNumber = "364"
             landmarkName = "Rabbit::wanderEffect()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1322,11 +1214,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "355"
-            endingLineNumber = "355"
+            startingLineNumber = "365"
+            endingLineNumber = "365"
             landmarkName = "Rabbit::wanderEffect()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1338,11 +1230,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "392"
-            endingLineNumber = "392"
+            startingLineNumber = "402"
+            endingLineNumber = "402"
             landmarkName = "Rabbit::applyBehaviours(ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1354,11 +1246,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/vehicle.cpp"
-            timestampString = "487605246.593998"
+            timestampString = "487693590.191594"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "395"
-            endingLineNumber = "395"
+            startingLineNumber = "405"
+            endingLineNumber = "405"
             landmarkName = "Rabbit::applyBehaviours(ofPoint target)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1370,11 +1262,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487687877.60879"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "269"
-            endingLineNumber = "269"
+            startingLineNumber = "271"
+            endingLineNumber = "271"
             landmarkName = "ofApp::setupVehicles()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1386,43 +1278,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487691716.705085"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "270"
-            endingLineNumber = "270"
-            landmarkName = "ofApp::setupVehicles()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "274"
-            endingLineNumber = "274"
-            landmarkName = "ofApp::setupVehicles()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "307"
-            endingLineNumber = "307"
+            startingLineNumber = "301"
+            endingLineNumber = "301"
             landmarkName = "ofApp::setupVehicles()"
             landmarkType = "5">
             <Locations>
@@ -1520,11 +1380,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487691716.705085"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "278"
-            endingLineNumber = "278"
+            startingLineNumber = "280"
+            endingLineNumber = "280"
             landmarkName = "ofApp::setupVehicles()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1536,11 +1396,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "448"
-            endingLineNumber = "448"
+            startingLineNumber = "499"
+            endingLineNumber = "499"
             landmarkName = "ofApp::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1552,11 +1412,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "447"
-            endingLineNumber = "447"
+            startingLineNumber = "498"
+            endingLineNumber = "498"
             landmarkName = "ofApp::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1568,11 +1428,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            timestampString = "487693264.651653"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "446"
-            endingLineNumber = "446"
+            startingLineNumber = "497"
+            endingLineNumber = "497"
             landmarkName = "ofApp::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1583,44 +1443,30 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/ofApp.cpp"
-            timestampString = "487640893.904504"
+            filePath = "src/FrameFilter.h"
+            timestampString = "487690127.114921"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "312"
-            endingLineNumber = "312"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
+            landmarkName = "class FrameFilter"
+            landmarkType = "3">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/ofApp.cpp"
+            timestampString = "487691716.705085"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "361"
+            endingLineNumber = "361"
             landmarkName = "ofApp::setupVehicles()"
             landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ofApp::setupVehicles()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/ofApp.cpp"
-                  timestampString = "487640629.788134"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311"
-                  offsetFromSymbolStart = "5186">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "ofApp::setupVehicles()"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/ofApp.cpp"
-                  timestampString = "487640629.788448"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "311"
-                  endingLineNumber = "311"
-                  offsetFromSymbolStart = "5246">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

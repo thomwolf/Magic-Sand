@@ -68,6 +68,7 @@ protected:
     bool beach;
     bool border;
     bool setWait;
+    bool mother;
     int waitCounter, waitTime, maxWaitingTime, minWaitingTime;
     // For slope effect
     float beachDist;

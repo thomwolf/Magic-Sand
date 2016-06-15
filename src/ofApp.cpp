@@ -48,8 +48,10 @@ void ofApp::setup(){
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Vehicles
-    fishNum = 2;
-    rabbitsNum = 2;
+    fishNum = 5;
+    rabbitsNum = 5;
+    motherFishPlatformSize = 20;
+    motherRabbitPlatformSize = 20;
     
     // Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
@@ -259,15 +261,15 @@ void ofApp::setupVehicles(){
         vhcle = FilteredDepthImage;
         float elevation;
         int earth = 0;
-        for (int x = 0; x<kinectResX; x ++){ // Project on base plane
-            for (int y = 0; y < kinectResY; y++){
+        for (int x = kinectROI.getLeft(); x<kinectROI.getRight(); x ++){ // Project on base plane
+            for (int y = kinectROI.getTop(); y < kinectROI.getBottom(); y++){
                 ofVec4f wc = ofVec2f(x, y);
                 wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[y*kinectResX+x];
                 wc.w = 1;
                 ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
                 vertexCc.w = 1;
                 elevation = -basePlaneEq.dot(vertexCc);
-                if (elevation > 0) {
+                if (elevation > 0){
                     vhcle.getPixels().getData()[y*kinectResX+x] = 255;
                     earth ++;
                 } else {
@@ -278,61 +280,110 @@ void ofApp::setupVehicles(){
         float rapprt = (float)earth/(kinectROI.width*kinectROI.height);
         cout << "Rapport earth/water : "<< rapprt << endl;
         
-        contourFinder.findContours(vhcle, 50, kinectResX*kinectResY, 20, true);
-        //findContours( ofxCvGrayscaleImage&  input,
-        //        int minArea,
-        //        int maxArea,
-        //        int nConsidered,
-        //        bool bFindHoles,
-        //        bool bUseApproximation)
-        
-        //contourFinder.findContours(thresholdedImage);
-        //ofPoint cent = ofPoint(projectorWidth/2, projectorHeight/2);
-        
-        vector<ofPolyline>  water;
-        vector<ofRectangle>  bounding;
-        for (int i = 0; i < contourFinder.nBlobs; i++) {
-            ofxCvBlob blobContour = contourFinder.blobs[i];
-            if (blobContour.hole) {
-                water.push_back(ofPolyline(blobContour.pts));//.getResampledByCount(50);
-                bounding.push_back(blobContour.boundingRect);
-            }
-        }
+        //        contourFinder.findContours(vhcle, 50, kinectResX*kinectResY, 20, true);
+        //
+        //        vector<ofPolyline>  water;
+        //        vector<ofRectangle>  bounding;
+        //        for (int i = 0; i < contourFinder.nBlobs; i++) {
+        //            ofxCvBlob blobContour = contourFinder.blobs[i];
+        //            if (blobContour.hole) {
+        //                water.push_back(ofPolyline(blobContour.pts));//.getResampledByCount(50);
+        //                bounding.push_back(blobContour.boundingRect);
+        //            }
+        //        }
         ofPoint location;
         
-        cout << "nBlobs : " << contourFinder.nBlobs << endl;
-        cout << "water : " << water.size() << endl;
-        
-        if (water.size() != 0){
+        //        cout << "nBlobs : " << contourFinder.nBlobs << endl;
+        //        cout << "water : " << water.size() << endl;
+        //
+        if (rapprt < 0.8 && rapprt > 0.2){ // Water detection was performed ok
+            bool outsidewater = false;
+            bool insidewater = false;
+            
             for (auto & f : fish){
-                bool insidewater = false;
+                insidewater = false;
                 while (!insidewater) {
                     location = ofPoint(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-                    int blob = 0;
-                    while (!insidewater && blob < water.size()){
-                        if (water[blob].inside(location))
-                            insidewater = true;
-                        blob ++;
-                    }
+                    if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 0)
+                        insidewater = true;
                 }
                 f.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
                 f.animalCoef = 1;
             }
             for (auto & r : rabbits){
-                bool outsidewater = false;
+                outsidewater = false;
                 while (!outsidewater) {
                     location = ofPoint(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-                    int blob = 0;
-                    bool insidewater = false;
-                    while (blob < water.size()){
-                        insidewater = insidewater || water[blob].inside(location);
-                        blob ++;
-                    }
-                    outsidewater = !insidewater;
+                    if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 255)
+                        outsidewater = true;
                 }
                 r.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
                 r.animalCoef = -1;
             }
+            int minborderDist = 40;
+            ofRectangle internalBorders = kinectROI;
+            internalBorders.scaleFromCenter((kinectROI.width-minborderDist)/kinectROI.width, (kinectROI.height-minborderDist)/kinectROI.height);
+            
+            ofPoint close;
+            outsidewater = false;
+            while (!outsidewater) {
+                location = ofPoint(ofRandom(internalBorders.getLeft(),internalBorders.getRight()), ofRandom(internalBorders.getTop(),internalBorders.getBottom()));
+                if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 255)
+                    outsidewater = true;
+            }
+            motherFish = location; // Put the Fish mother outside of the water to be sure the fish cannot reach her without help
+            
+            // move mother Fish plateform location under the sea level
+            float seaLevelDistance = 10; // We want the plateform not exacty at the sea level but a little bit under
+            ofVec4f wc = location;
+            wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[((int)location.y*kinectResX)+(int)location.x];
+            wc.w = 1;
+            ofVec4f vertexCc;
+            insidewater = false;
+            while (!insidewater) {
+                vertexCc = kinectWorldMatrix*wc*wc.z;
+                vertexCc.w = 1;
+                elevation = -basePlaneEq.dot(vertexCc);
+                if (elevation < -seaLevelDistance){
+                    insidewater = true;
+                } else {
+                    wc.z += 1; // Move down the plateform (kinect coordinates are reversed
+                }
+            }
+            motherFish.z = wc.z;
+            
+            insidewater = false;
+            while (!insidewater) {
+                location = ofPoint(ofRandom(internalBorders.getLeft(),internalBorders.getRight()), ofRandom(internalBorders.getTop(),internalBorders.getBottom()));
+                if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 0)
+                    insidewater = true;
+            }
+            motherRabbit = location; // Put the Rabbits mother inside the water to be sure the rabbit cannot reach her without help
+            
+            // move mother Fish plateform location under the sea level
+            seaLevelDistance = 10; // We want the plateform not exacty at the sea level but a little bit under
+            wc = location;
+            wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[((int)location.y*kinectResX)+(int)location.x];
+            wc.w = 1;
+            outsidewater = false;
+            while (!outsidewater) {
+                vertexCc = kinectWorldMatrix*wc*wc.z;
+                vertexCc.w = 1;
+                elevation = -basePlaneEq.dot(vertexCc);
+                if (elevation > seaLevelDistance){
+                    outsidewater = true;
+                } else {
+                    wc.z -= 1; // Move up the plateform (kinect coordinates are reversed
+                }
+            }
+            motherRabbit.z = wc.z;
+            
+            kinectgrabber.framefilter.setGame(motherRabbit, motherFish, 2, motherFishPlatformSize, motherRabbitPlatformSize, true);
+            
+            // Clean z for distance measurments
+            motherRabbit.z = 0;
+            motherFish.z = 0;
+            
             waitingForFirstImage = false;
         }
         
@@ -451,12 +502,12 @@ void ofApp::update(){
             
             for (auto & f : fish){
                 updateVehiclesFutureElevationAndGradient(f);
-                f.applyBehaviours(ofPoint(kinectResX/2, kinectResY/2));
+                f.applyBehaviours(motherFish);
                 f.update();
             }
             for (auto & r : rabbits){
                 updateVehiclesFutureElevationAndGradient(r);
-                r.applyBehaviours(ofPoint(kinectResX/2, kinectResY/2));
+                r.applyBehaviours(motherRabbit);
                 r.update();
             }
         }
@@ -855,6 +906,8 @@ void ofApp::drawVehicles()
     for (auto & r : rabbits){
         drawRabbit(r);//, forces);
     }
+    drawMotherFish();
+    drawMotherRabbit();
 }
 
 //--------------------------------------------------------------
@@ -907,7 +960,7 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     //    }
     //
     ofRotate(angle);
-    float sc = 10; // Fish scale
+    float sc = 7; // Fish scale
     
     float tailSize = 1*sc;
     float fishLength = 2*sc;
@@ -928,7 +981,7 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     ofSetLineWidth(2.0);  // Line widths apply to polylines
     fish.draw();
     ofSetColor(255);
-    ofDrawCircle(0, 0, 5);
+    ofDrawCircle(0, 0, sc*0.5);
     
     ofPopMatrix();
     
@@ -1171,6 +1224,122 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     ofSetColor(255);
     
     //    fboProjWindow.end();
+}
+//--------------------------------------------------------------
+void ofApp::drawMotherFish()//, std::vector<ofVec2f> forces)
+{
+    // Get vehicule coord
+    ofVec2f t = motherFish;
+    
+    ofVec3f worldPoint = ofVec3f(t);
+    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    ofVec4f wc = ofVec4f(worldPoint);
+    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    
+    //    float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
+    float tailangle = 0;//nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
+    
+    //    ofRotate(angle);
+    
+    float sc = 10; // Mother fish scale
+    
+    float tailSize = 1*sc;
+    float fishLength = 2*sc;
+    float fishHead = tailSize;
+    
+    projectedPoint.x +=tailSize;
+    
+    ofNoFill();
+    ofPushMatrix();
+    ofTranslate(projectedPoint);
+    
+    ofSetColor(255);
+    ofPolyline fish;
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
+    fish.curveTo( ofPoint(-fishLength, 0));
+    fish.curveTo( ofPoint(0, -fishHead));
+    fish.curveTo( ofPoint(fishHead, 0));
+    fish.curveTo( ofPoint(0, fishHead));
+    fish.curveTo( ofPoint(-fishLength, 0));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
+    fish.close();
+    ofSetLineWidth(2.0);  // Line widths apply to polylines
+    fish.draw();
+    ofSetColor(255);
+    ofDrawCircle(0, 0, 5);
+    
+    ofPopMatrix();
+}
+
+//--------------------------------------------------------------
+void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
+{
+    // Get vehicule coord
+    ofVec2f t = motherRabbit;
+    
+    ofVec3f worldPoint = ofVec3f(t);
+    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    ofVec4f wc = ofVec4f(worldPoint);
+    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    
+    //    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
+    //    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
+    
+    ofPushMatrix();
+    
+    //    ofRotate(angle);
+    
+    float sc = 2; // MotherRabbit scale
+    
+    projectedPoint.x += 5*sc;
+    
+    ofTranslate(projectedPoint);
+    
+    ofFill();
+    ofSetLineWidth(1.0);  // Line widths apply to polylines
+    
+    ofPath body;
+    body.curveTo( ofPoint(-2*sc, 5.5*sc));
+    body.curveTo( ofPoint(-2*sc, 5.5*sc));
+    body.curveTo( ofPoint(-9*sc, 7.5*sc));
+    body.curveTo( ofPoint(-17*sc, 0*sc));
+    body.curveTo( ofPoint(-9*sc, -7.5*sc));
+    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+    body.close();
+    //    ofSetLineWidth(2.0);  // Line widths apply to polylines
+    body.setFillColor(0);
+    body.draw();
+    
+    ofSetColor(255);
+    ofDrawCircle(-19*sc, 0, 2*sc);
+    
+    ofPath head;
+    head.curveTo( ofPoint(0, 1.5*sc));
+    head.curveTo( ofPoint(0, 1.5*sc));
+    head.curveTo( ofPoint(-3*sc, 1.5*sc));
+    head.curveTo( ofPoint(-9*sc, 3.5*sc));
+    head.curveTo( ofPoint(0, 5.5*sc));
+    head.curveTo( ofPoint(8*sc, 0));
+    head.curveTo( ofPoint(0, -5.5*sc));
+    head.curveTo( ofPoint(-9*sc, -3.5*sc));
+    head.curveTo( ofPoint(-3*sc, -1.5*sc));
+    head.curveTo( ofPoint(0, -1.5*sc));
+    head.curveTo( ofPoint(0, -1.5*sc));
+    head.close();
+    head.setFillColor(255);
+    head.draw();
+    
+    ofSetColor(0);
+    ofDrawCircle(8.5*sc, 0, 1*sc);
+    
+    
+    ofPopMatrix();
+    ofSetColor(255);
 }
 //--------------------------------------------------------------
 void ofApp::addPointPair() {
