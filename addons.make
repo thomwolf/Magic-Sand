@@ -1,4 +1,5 @@
 ofxCv
+ofxImGui
 ofxKinect
 ofxKinectProjectorToolkit
 ofxOpenCv

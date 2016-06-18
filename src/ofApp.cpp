@@ -141,6 +141,8 @@ void ofApp::setup(){
     
     setupVehicles();
     
+    setupGui();
+    
 	kinectgrabber.startThread(true);
 }
 
@@ -154,6 +156,43 @@ void ofApp::clearFbos(){
     contourLineFramebufferObject.begin();
     ofClear(0,0,0,255);
     contourLineFramebufferObject.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::setupGui(){
+    //required call
+    gui.setup();
+
+    ImGui::GetIO().MouseDrawCursor = false;
+    //backgroundColor is stored as an ImVec4 type but can handle ofColor
+    backgroundColor = ofColor(114, 144, 154);
+    show_test_window = false;
+    show_another_window = true;
+    floatValue = basePlaneOffset.z;
+
+    //load your own ofImage
+    imageButtonSource.load("of.png");
+    imageButtonID = gui.loadImage(imageButtonSource);
+
+    //or have the loading done for you if you don't need the ofImage reference
+    //imageButtonID = gui.loadImage("of.png");
+
+    //can also use ofPixels in same manner
+    ofLoadImage(pixelsButtonSource, "of_upside_down.png");
+    pixelsButtonID = gui.loadPixels(pixelsButtonSource);
+
+    //and alt method
+    //pixelsButtonID = gui.loadPixels("of_upside_down.png");
+
+    //pass in your own texture reference if you want to keep it
+    textureSourceID = gui.loadTexture(textureSource, "of_upside_down.png");
+
+    //or just pass a path
+    //textureSourceID = gui.loadTexture("of_upside_down.png");
+
+    ofLogVerbose() << "textureSourceID: " << textureSourceID;
+    doSetTheme = false;
+    doThemeColorsWindow = false;
 }
 
 //--------------------------------------------------------------
@@ -530,7 +569,7 @@ void ofApp::draw(){
     i++;
     ofDrawBitmapStringHighlight("w & x: inc/dec maxOffset.", xbase, ybase+i*yinc);
     i++;
-    ofDrawBitmapStringHighlight("d & f: inc/dec fish tail mvmt.", xbase, ybase+i*yinc);
+    ofDrawBitmapStringHighlight("d & f: change GUI doThemeColorsWindow & doSetTheme.", xbase, ybase+i*yinc);
     i++;
     ofDrawBitmapStringHighlight("g & h: inc/dec contour line distance.", xbase, ybase+i*yinc);
     i++;
@@ -627,6 +666,8 @@ void ofApp::draw(){
         vhcle.draw(0,0);
         contourFinder.draw(0,0);
     }
+    
+    drawGui();
 }
 
 //--------------------------------------------------------------
@@ -900,14 +941,14 @@ void ofApp::updateVehiclesFutureElevationAndGradient(vehicle& v){
 //--------------------------------------------------------------
 void ofApp::drawVehicles()
 {
+    drawMotherFish();
+    drawMotherRabbit();
     for (auto & f : fish){
         drawFish(f);//, forces);
     }
     for (auto & r : rabbits){
         drawRabbit(r);//, forces);
     }
-    drawMotherFish();
-    drawMotherRabbit();
 }
 
 //--------------------------------------------------------------
@@ -926,15 +967,19 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     ofVec2f velocity = v.getVelocity();
     //        std::vector<ofVec2f> forces = v.getForces();
     float angle = v.getAngle(); // angle of the fish
-    float fact = 50+250*velocity.length()/v.topSpeed;
     
     //    fboProjWindow.begin();
+    // Tail position
     float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
+    float fact = 50+250*velocity.length()/v.topSpeed;
     float tailangle = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
     //float tailangle = ofMap(sin(ofGetFrameNum()*10), -1, 1, -nv, nv);
     
+    // Color of the fish
+    nv = 255;
+    fact = 50;
+    float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
     
-    ofNoFill();
     ofPushMatrix();
     
     ofTranslate(projectedPoint);
@@ -966,8 +1011,7 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     float fishLength = 2*sc;
     float fishHead = tailSize;
     
-    ofSetColor(255);
-    ofPolyline fish;
+    ofPath fish;
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
     fish.curveTo( ofPoint(-fishLength, 0));
@@ -979,12 +1023,31 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
     fish.close();
     ofSetLineWidth(2.0);  // Line widths apply to polylines
+    
+    ofColor c = ofColor(255);
+    ofSetColor(c);
+    if (v.foundMother())
+    {
+        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c.setHsb((int)hsb, 255, 255); // rainbow
+        ofFill();
+        fish.setFillColor(c);
+    } else {
+        ofNoFill();
+    }
     fish.draw();
-    ofSetColor(255);
+    
+    if (v.foundMother())
+    {
+        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c.setHsb(255-(int)hsb, 255, 255); // rainbow
+        ofSetColor(c);
+    }
     ofDrawCircle(0, 0, sc*0.5);
     
     ofPopMatrix();
     
+    ofNoFill();
     // Display tail movement indication
     //    t = ofPoint(kinectResX/2, kinectResY/2);
     //    ofPoint front = velocity;
@@ -1072,11 +1135,11 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     ofVec2f velocity = v.getVelocity();
     //        std::vector<ofVec2f> forces = v.getForces();
     float angle = v.getAngle(); // angle of the fish
-    float fact = P+P/2*velocity.length()/3;
-    
-    //    fboProjWindow.begin();
-    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
-    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
+//    float fact = P+P/2*velocity.length()/3;
+//    
+//    //    fboProjWindow.begin();
+//    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
+//    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
     
     ofPushMatrix();
     
@@ -1109,6 +1172,19 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     ofFill();
     ofSetLineWidth(1.0);  // Line widths apply to polylines
     
+    ofColor c1 = ofColor(255);
+    ofColor c2 = ofColor(0);
+    if (v.foundMother())
+    {
+        float nv = 255;
+        int fact = 50;
+        float et = ofGetElapsedTimef();
+        float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
+        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c1.setHsb((int)hsb, 255, 255); // rainbow
+        c2.setHsb(255-(int)hsb, 255, 255);
+    }
+
     ofPath body;
     body.curveTo( ofPoint(-2*sc, 5.5*sc));
     body.curveTo( ofPoint(-2*sc, 5.5*sc));
@@ -1116,13 +1192,17 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     body.curveTo( ofPoint(-17*sc, 0*sc));
     body.curveTo( ofPoint(-9*sc, -7.5*sc));
     body.curveTo( ofPoint(-2*sc, -5.5*sc));
-    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+    body.curveTo( ofPoint(4*sc, 0*sc));
+    body.curveTo( ofPoint(4*sc, 0*sc));
     body.close();
     //    ofSetLineWidth(2.0);  // Line widths apply to polylines
-    body.setFillColor(0);
-    body.draw();
     
-    ofSetColor(255);
+    ofSetColor(c1);
+    
+    body.setFillColor(c1);
+    body.draw();
+
+    ofSetColor(c2);
     ofDrawCircle(-19*sc, 0, 2*sc);
     
     ofPath head;
@@ -1138,10 +1218,12 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     head.curveTo( ofPoint(0, -1.5*sc));
     head.curveTo( ofPoint(0, -1.5*sc));
     head.close();
-    head.setFillColor(255);
-    head.draw();
     
-    ofSetColor(0);
+    ofSetColor(c2);
+    head.setFillColor(c2);
+    head.draw();
+
+    ofSetColor(c1);
     ofDrawCircle(8.5*sc, 0, 1*sc);
     
     //    ofPolyline foot;
@@ -1309,7 +1391,8 @@ void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
     body.curveTo( ofPoint(-17*sc, 0*sc));
     body.curveTo( ofPoint(-9*sc, -7.5*sc));
     body.curveTo( ofPoint(-2*sc, -5.5*sc));
-    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+    body.curveTo( ofPoint(4*sc, 0*sc));
+    body.curveTo( ofPoint(4*sc, 0*sc));
     body.close();
     //    ofSetLineWidth(2.0);  // Line widths apply to polylines
     body.setFillColor(0);
@@ -1340,6 +1423,80 @@ void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
     
     ofPopMatrix();
     ofSetColor(255);
+}
+//--------------------------------------------------------------
+void ofApp::drawGui(){
+    
+    //backgroundColor is stored as an ImVec4 type but is converted to ofColor automatically
+    
+    ofSetBackgroundColor(backgroundColor);
+    
+    //required to call this at beginning
+    gui.begin();
+    
+    //In between gui.begin() and gui.end() you can use ImGui as you would anywhere else
+    
+    // 1. Show a simple window
+    {
+        ImGui::Text("Hello, world!");
+        // Adjust display_format to decorate the value with a prefix or a suffix.
+        //   "%.3f"         1.234
+        //   "%5.2f secs"   01.23 secs
+        //   "Gold: %.0f"   Gold: 1
+//        bool ImGui::SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format, float power)
+        ImGui::SliderFloat("Base plane height", &basePlaneOffset.z, 500, 2000, "%.2f mm from the kinect sensor");
+        
+        //this will change the app background color
+        ImGui::ColorEdit3("Background Color", (float*)&backgroundColor);
+        if(ImGui::Button("Test Window"))
+        {
+            show_test_window = !show_test_window;
+        }
+        
+        if (ImGui::Button("Another Window"))
+        {
+            //bitwise OR
+            show_another_window ^= 1;
+            
+        }
+        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    }
+    // 2. Show another window, this time using an explicit ImGui::Begin and ImGui::End
+    if (show_another_window)
+    {
+        //note: ofVec2f and ImVec2f are interchangeable
+        ImGui::SetNextWindowSize(ofVec2f(200,100), ImGuiSetCond_FirstUseEver);
+        ImGui::Begin("Another Window", &show_another_window);
+        ImGui::Text("Hello");
+        ImGui::End();
+    }
+    
+    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+    if (show_test_window)
+    {
+        ImGui::SetNextWindowPos(ofVec2f(650, 20), ImGuiSetCond_FirstUseEver);
+        ImGui::ShowTestWindow(&show_test_window);
+    }
+    
+    
+    bool pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)imageButtonID, ImVec2(200, 200));
+    pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)pixelsButtonID, ImVec2(200, 200));
+    pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)textureSourceID, ImVec2(200, 200));
+    
+    
+    if(doThemeColorsWindow)
+    {
+        gui.openThemeColorWindow();
+        
+    }
+    
+    //required to call this at end
+    gui.end();
+    
+    if(textureSource.isAllocated())
+    {
+        //textureSource.draw(ofRandom(200), ofRandom(200));
+    }
 }
 //--------------------------------------------------------------
 void ofApp::addPointPair() {
@@ -1754,11 +1911,11 @@ void ofApp::keyPressed(int key){
         cout << "maxOffset" << maxOffset << endl;
         kinectgrabber.setMaxOffset(maxOffset);
     } else if (key=='d') {
-        P *= 1.25; // Increase fish tail speed
-        cout << "P: " << P << endl;
+        doThemeColorsWindow = !doThemeColorsWindow;
+        cout << "doThemeColorsWindow: " << doThemeColorsWindow << endl;
     } else if (key=='f') {
-        P *= 0.8; // Decrease fish tail speed
-        cout << "P: " << P << endl;
+        doSetTheme = !doSetTheme;
+        cout << "doSetTheme: " << doSetTheme << endl;
     } else if (key=='u') {
         basePlaneNormal.rotate(-1, ofVec3f(1,0,0)); // Rotate the base plane normal
         setRangesAndBasePlaneEquation();

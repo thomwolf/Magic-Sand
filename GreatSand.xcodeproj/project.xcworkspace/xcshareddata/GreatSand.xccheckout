@@ -5,11 +5,13 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>11D1BE65-D845-4D3B-9576-D1B607E86AF6</string>
+	<string>4A831D9A-EAB7-4D74-9F9A-8BD62E46B3C8</string>
 	<key>IDESourceControlProjectName</key>
 	<string>GreatSand</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
+		<key>5633BBE6-A5EA-4D7D-AC14-E766F4EC898E</key>
+		<string>https://github.com/thomwolf/ofxImGui.git</string>
 		<key>8AAD279F-A544-4747-80AF-CF2E568D8693</key>
 		<string>https://github.com/thomwolf/ofxCv.git</string>
 		<key>BA497D70-7343-429E-9A53-58FB6A39475F</key>
@@ -21,6 +23,8 @@
 	<string>GreatSand.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
+		<key>5633BBE6-A5EA-4D7D-AC14-E766F4EC898E</key>
+		<string>../../../../../addons/ofxImGui</string>
 		<key>8AAD279F-A544-4747-80AF-CF2E568D8693</key>
 		<string>../../../../../addons/ofxCv</string>
 		<key>BA497D70-7343-429E-9A53-58FB6A39475F</key>
@@ -51,6 +55,14 @@
 			<string>8AAD279F-A544-4747-80AF-CF2E568D8693</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxCv</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>5633BBE6-A5EA-4D7D-AC14-E766F4EC898E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>ofxImGui</string>
 		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>

@@ -41,6 +41,10 @@ public:
         return angle;
     }
     
+    const bool foundMother() const {
+        return mother;
+    }
+    
     std::vector<ofVec2f> getForces(void);
 
     float wanderR ;         // Radius for our "wander circle"

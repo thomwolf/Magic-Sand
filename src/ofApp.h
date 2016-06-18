@@ -4,6 +4,7 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
+#include "ofxImGui.h"
 
 #include "ColorMap.h"
 #include "FrameFilter.h"
@@ -22,6 +23,7 @@ public:
 
     void setup();
     void clearFbos();
+    void setupGui();
     void setupMesh();
     void setRangesAndBasePlaneEquation();
     void setupGradientField();
@@ -47,6 +49,7 @@ public:
     void drawRabbit(Rabbit& r);//, std::vector<ofVec2f> forces);
     void drawMotherFish();//, std::vector<ofVec2f> forces);
     void drawMotherRabbit();//, std::vector<ofVec2f> forces);
+    void drawGui();
 
     void addPointPair();
     void computeBasePlane();
@@ -73,6 +76,24 @@ public:
     
     shared_ptr<ofAppBaseWindow> projWindow;
 
+    // GUI
+    ofxImGui gui;
+    ImVec4 backgroundColor;
+    bool show_test_window;
+    bool show_another_window;
+    bool doSetTheme;
+    bool doThemeColorsWindow;
+    
+    float floatValue;
+    ofImage imageButtonSource;
+    GLuint imageButtonID;
+    
+    ofPixels pixelsButtonSource;
+    GLuint pixelsButtonID;
+    
+    ofTexture textureSource;
+    GLuint textureSourceID;
+    
 private:
     //kinect interfaces and calibration
     KinectGrabber               kinectgrabber;

@@ -41,7 +41,6 @@ bool FrameFilter::setup(const unsigned int swidth,const unsigned int sheight,int
     maxVariance = 4 ;/// depthNorm/depthNorm;
     hysteresis = 0.5f ;/// depthNorm;
     bigChange = 10.0f ;/// depthNorm;
-	retainValids=true;
 	instableValue=0.0;
     maxgradfield = 1000;
     unvalidValue = 4000;
@@ -292,19 +291,19 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                             sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
                         }
                     }
-                    else if(!retainValids) // retainValid = true in production conditons
-                    {
-                        /* Store an invalid input value: */
-                        *abPtr=unvalidValue;
-                        
-                        /* Check if the previous value in the averaging buffer was valid: */
-                        if(oldVal!=unvalidValue)
-                        {
-                            --sPtr[0]; // Number of valid samples
-                            sPtr[1]-=oldVal; // Sum of valid samples
-                            sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
-                        }
-                    }
+//                    else if(!retainValids) // retainValid = true in production conditons
+//                    {
+//                        /* Store an invalid input value: */
+//                        *abPtr=unvalidValue;
+//                        
+//                        /* Check if the previous value in the averaging buffer was valid: */
+//                        if(oldVal!=unvalidValue)
+//                        {
+//                            --sPtr[0]; // Number of valid samples
+//                            sPtr[1]-=oldVal; // Sum of valid samples
+//                            sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
+//                        }
+//                    }
 //                    float s0 = sPtr[0];
 //                    float s1 = sPtr[1];
 //                    float s2 = sPtr[2];
@@ -341,16 +340,16 @@ ofFloatPixels FrameFilter::filter(ofShortPixels inputframe)
                             *nofPtr=*ofPtr;
                         }
                     }
-                    else if(retainValids) // retainValid = true in production conditons
-                    {
+//                    else if(retainValids) // retainValid = true in production conditons
+//                    {
                         /* Leave the pixel at its previous value: */
                         *nofPtr=*ofPtr;
-                    }
-                    else
-                    {
-                        /* Assign default value to instable pixels: */
-                        *nofPtr=instableValue;
-                    }
+//                    }
+//                    else
+//                    {
+//                        /* Assign default value to instable pixels: */
+//                        *nofPtr=instableValue;
+//                    }
                 }
                 else
                 {
@@ -509,28 +508,28 @@ void FrameFilter::setMaxOffset(float newMaxOffset)
     //		minPlane[i]=float(maxPlaneDic[i]*maxPlaneScale);
 }
 
-void FrameFilter::setStableParameters(unsigned int newMinNumSamples,unsigned int newMaxVariance)
-{
-    minNumSamples=newMinNumSamples;
-    maxVariance=newMaxVariance;
-}
-
-void FrameFilter::setHysteresis(float newHysteresis)
-{
-    hysteresis=newHysteresis;
-}
-
-void FrameFilter::setRetainValids(bool newRetainValids)
-{
-    retainValids=newRetainValids;
-}
-
-void FrameFilter::setInstableValue(float newInstableValue)
-{
-    instableValue=newInstableValue;
-}
-
-void FrameFilter::setSpatialFilter(bool newSpatialFilter)
-{
-    spatialFilter=newSpatialFilter;
-}
+//void FrameFilter::setStableParameters(unsigned int newMinNumSamples,unsigned int newMaxVariance)
+//{
+//    minNumSamples=newMinNumSamples;
+//    maxVariance=newMaxVariance;
+//}
+//
+//void FrameFilter::setHysteresis(float newHysteresis)
+//{
+//    hysteresis=newHysteresis;
+//}
+//
+//void FrameFilter::setRetainValids(bool newRetainValids)
+//{
+//    retainValids=newRetainValids;
+//}
+//
+//void FrameFilter::setInstableValue(float newInstableValue)
+//{
+//    instableValue=newInstableValue;
+//}
+//
+//void FrameFilter::setSpatialFilter(bool newSpatialFilter)
+//{
+//    spatialFilter=newSpatialFilter;
+//}

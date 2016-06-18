@@ -7,6 +7,7 @@ void vehicle::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWo
     angle = 0;
     wandertheta = 0;
     currentStraightPathLength = 0;
+    mother = false;
     location.set(x,y);
     
     //    kinectWorldMatrix = skinectWorldMatrix;
@@ -123,11 +124,9 @@ ofPoint vehicle::seekEffect(const ofPoint & target){
     
     float d = desired.length();
     desired.normalize();
-    mother = false;
     
-    //If we are closer than 50 pixels...
+    //If we are closer than XX pixels slow down
     if (d < 10) {
-        //...set the magnitude according to how close we are.
         desired *= ofMap(d,0,100,0,topSpeed);
         mother = true;
     } else {
@@ -139,7 +138,7 @@ ofPoint vehicle::seekEffect(const ofPoint & target){
     velocityChange = desired - velocity;
     velocityChange.limit(maxVelocityChange);
     
-    //If we are further than 200 pixels we don't see the mother
+    //If we are further than XX pixels we don't see the mother
     if (d > 50) {
         velocityChange = ofPoint(0);
     }
@@ -194,19 +193,21 @@ void vehicle::applyVelocityChange(const ofPoint & velocityChange){
 
 //--------------------------------------------------------------
 void vehicle::update(){
-    velocity += globalVelocityChange;
-    velocity.limit(topSpeed);
-    location += velocity;
-    globalVelocityChange *= 0;
-    
-    float desiredAngle = ofRadToDeg(atan2(velocity.y,velocity.x));
-    float angleChange = desiredAngle - angle;
-    angleChange += (angleChange > 180) ? -360 : (angleChange < -180) ? 360 : 0; // To take into account that the difference between -180 and 180 is 0 and not 360
-    angleChange *= velocity.length();
-    angleChange /= topSpeed;
-    angleChange = max(min(angleChange, maxRotation), -maxRotation);
-    angle += angleChange;
-    
+    if (!mother || velocity.lengthSquared() != 0)
+    {
+        velocity += globalVelocityChange;
+        velocity.limit(topSpeed);
+        location += velocity;
+        globalVelocityChange *= 0;
+        
+        float desiredAngle = ofRadToDeg(atan2(velocity.y,velocity.x));
+        float angleChange = desiredAngle - angle;
+        angleChange += (angleChange > 180) ? -360 : (angleChange < -180) ? 360 : 0; // To take into account that the difference between -180 and 180 is 0 and not 360
+        angleChange *= velocity.length();
+        angleChange /= topSpeed;
+        angleChange = max(min(angleChange, maxRotation), -maxRotation);
+        angle += angleChange;
+    }
 }
 
 
@@ -250,6 +251,7 @@ void Fish::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWorld
     wandertheta = 0;
     beach = false;
     border = false;
+    mother = false;
     currentStraightPathLength = 0;
     location.set(x,y);
     
@@ -322,6 +324,7 @@ void Rabbit::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWor
     beach = false;
     border = false;
     setWait = false;
+    mother = false;
     location.set(x,y);
     
     //    kinectWorldMatrix = skinectWorldMatrix;
