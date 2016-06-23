@@ -306,6 +306,152 @@ void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
     //    currentForce = separateF+seekF+bordersF+slopesF;
 }
 
+//--------------------------------------------------------------
+void Fish::draw()
+{
+    // Compute tail angle
+    float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
+    float fact = 50+250*velocity.length()/topSpeed;
+    float tailangle = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
+    
+    // Color of the fish
+    nv = 255;
+    fact = 50;
+    float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
+    
+    ofVec2f frc = ofVec2f(100, 0);
+    float sc = 7; // Fish scale
+    
+    float tailSize = 1*sc;
+    float fishLength = 2*sc;
+    float fishHead = tailSize;
+    
+    ofPolyline fish;
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
+    fish.curveTo( ofPoint(-fishLength, 0));
+    fish.curveTo( ofPoint(0, -fishHead));
+    fish.curveTo( ofPoint(fishHead, 0));
+    fish.curveTo( ofPoint(0, fishHead));
+    fish.curveTo( ofPoint(-fishLength, 0));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
+    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
+    fish.close();
+    ofSetLineWidth(2.0);  // Line widths apply to polylines
+    
+    ofColor c = ofColor(255);
+    ofSetColor(c);
+    if (mother)
+    {
+        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c.setHsb((int)hsb, 255, 255); // rainbow
+        ofFill();
+        //        fish.setFillColor(c);
+    } else {
+        ofNoFill();
+    }
+    fish.draw();
+    
+    if (mother)
+    {
+        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c.setHsb(255-(int)hsb, 255, 255); // rainbow
+        ofSetColor(c);
+    }
+    ofDrawCircle(0, 0, sc*0.5);
+    
+    ofNoFill();
+    
+    // Draw forces applied to the vehicle
+    //    frc.rotate(angle);
+    //    ofDrawLine(0, 0, frc.x, frc.y);
+    //    ofDrawRectangle(frc.x, frc.y, 5, 5);
+    //
+    //    for (int i=0; i<forces.size(); i++){
+    //        ofColor c = ofColor(0); // c is black
+    //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+    //        c.setHsb((int)hsb, 255, 255); // rainbow
+    //
+    //        frc = forces[i];
+    //        frc.normalize();
+    //        frc *= 100;
+    //
+    //        ofSetColor(c);
+    //        ofDrawLine(0, 0, frc.x, frc.y);
+    //        ofDrawCircle(frc.x, frc.y, 5);
+    //    }
+    //
+    // Display tail movement indication
+    //    t = ofPoint(kinectResX/2, kinectResY/2);
+    //    ofPoint front = velocity;
+    //    front.normalize();
+    //    front *= v.wanderD;
+    //    ofPoint circleloc = t;
+    //
+    //    worldPoint = ofVec3f(circleloc);
+    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //
+    //    ofPushMatrix();
+    //    ofTranslate(projectedPoint);
+    //    ofDrawCircle(0, 0, v.wanderR);
+    //    ofPopMatrix();
+    //
+    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+    //    ofPoint circleOffSet = ofPoint(v.wanderR*cos(tailangle),v.wanderR*sin(tailangle));
+    //    ofPoint target = circleloc + circleOffSet;
+    //
+    //    worldPoint = ofVec3f(target);
+    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //
+    //    ofPushMatrix();
+    //    ofTranslate(projectedPoint);
+    //    ofSetColor(255, 0, 0, 255);
+    //    ofDrawCircle(0, 0, 5);
+    //    ofPopMatrix();
+    
+    // Display wandering circle
+    //    ofPoint front = velocity;
+    //    front.normalize();
+    //    front *= v.wanderD;
+    //    ofPoint circleloc = t + front;
+    //
+    //    worldPoint = ofVec3f(circleloc);
+    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //
+    //    ofPushMatrix();
+    //    ofTranslate(projectedPoint);
+    //    ofDrawCircle(0, 0, v.wanderR);
+    //    ofPopMatrix();
+    //
+    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+    //    ofPoint circleOffSet = ofPoint(v.wanderR*cos(v.wandertheta+h),v.wanderR*sin(v.wandertheta+h));
+    //    ofPoint target = circleloc + circleOffSet;
+    //
+    //    worldPoint = ofVec3f(target);
+    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //
+    //    ofPushMatrix();
+    //    ofTranslate(projectedPoint);
+    //    ofSetColor(255, 0, 0, 255);
+    //    ofDrawCircle(0, 0, 5);
+    //    ofPopMatrix();
+    
+    
+    //    fboProjWindow.end();
+}
+
 //==============================================================
 // Derived class Rabbit
 //==============================================================
@@ -448,4 +594,151 @@ void Rabbit::applyBehaviours(ofPoint target){
         }
     }
 }
+
+//--------------------------------------------------------------
+void Rabbit::draw()//, std::vector<ofVec2f> forces)
+{
+    ofVec2f frc = ofVec2f(100, 0);
+    
+    float sc = 1; // Rabbit scale
+    
+    ofFill();
+    ofSetLineWidth(1.0);  // Line widths apply to polylines
+    
+    ofColor c1 = ofColor(255);
+    ofColor c2 = ofColor(0);
+    if (mother)
+    {
+        float nv = 255;
+        int fact = 50;
+        float et = ofGetElapsedTimef();
+        float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
+        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
+        c1.setHsb((int)hsb, 255, 255); // rainbow
+        c2.setHsb(255-(int)hsb, 255, 255);
+    }
+    
+    ofPath body;
+    body.curveTo( ofPoint(-2*sc, 5.5*sc));
+    body.curveTo( ofPoint(-2*sc, 5.5*sc));
+    body.curveTo( ofPoint(-9*sc, 7.5*sc));
+    body.curveTo( ofPoint(-17*sc, 0*sc));
+    body.curveTo( ofPoint(-9*sc, -7.5*sc));
+    body.curveTo( ofPoint(-2*sc, -5.5*sc));
+    body.curveTo( ofPoint(4*sc, 0*sc));
+    body.curveTo( ofPoint(4*sc, 0*sc));
+    body.close();
+    //    ofSetLineWidth(2.0);  // Line widths apply to polylines
+    
+    ofSetColor(c1);
+    
+    body.setFillColor(c1);
+    body.draw();
+    
+    ofSetColor(c2);
+    ofDrawCircle(-19*sc, 0, 2*sc);
+    
+    ofPath head;
+    head.curveTo( ofPoint(0, 1.5*sc));
+    head.curveTo( ofPoint(0, 1.5*sc));
+    head.curveTo( ofPoint(-3*sc, 1.5*sc));
+    head.curveTo( ofPoint(-9*sc, 3.5*sc));
+    head.curveTo( ofPoint(0, 5.5*sc));
+    head.curveTo( ofPoint(8*sc, 0));
+    head.curveTo( ofPoint(0, -5.5*sc));
+    head.curveTo( ofPoint(-9*sc, -3.5*sc));
+    head.curveTo( ofPoint(-3*sc, -1.5*sc));
+    head.curveTo( ofPoint(0, -1.5*sc));
+    head.curveTo( ofPoint(0, -1.5*sc));
+    head.close();
+    
+    ofSetColor(c2);
+    head.setFillColor(c2);
+    head.draw();
+    
+    ofSetColor(c1);
+    ofDrawCircle(8.5*sc, 0, 1*sc);
+
+    ofSetColor(255);
+    ofNoFill();
+
+    //    ofPolyline foot;
+    //    foot.curveTo( ofPoint(6*sc, -3.5*sc));
+    //    foot.curveTo( ofPoint(6*sc, -3.5*sc));
+    //    foot.curveTo( ofPoint((10+footpos*4)*sc, -4.5*sc));
+    //    foot.curveTo( ofPoint((7+footpos*1)*sc, (-5.75-footpos*0.25)*sc));
+    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, -5*sc));
+    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, -5*sc));
+    //    //    body.close();
+    //    foot.draw();
+    //
+    //    foot.clear();
+    //    foot.curveTo( ofPoint(6*sc, 3.5*sc));
+    //    foot.curveTo( ofPoint(6*sc, 3.5*sc));
+    //    foot.curveTo( ofPoint((10+footpos*4)*sc, 4.5*sc));
+    //    foot.curveTo( ofPoint((7+footpos*1)*sc, (5.75+footpos*0.25)*sc));
+    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, 5*sc));
+    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, 5*sc));
+    //    //    body.close();
+    //    foot.draw();
+    //
+    //    foot.clear();
+    //    foot.curveTo( ofPoint(-13*sc, -6*sc));
+    //    foot.curveTo( ofPoint(-13*sc, -6*sc));
+    //    foot.curveTo( ofPoint((-16-footpos*1)*sc, (-6.75-footpos*0.25)*sc));
+    //    foot.curveTo( ofPoint((-19-footpos*3)*sc, -5.5*sc));
+    //    foot.curveTo( ofPoint((-16.5-footpos*1.5)*sc, -4*sc));
+    //    foot.curveTo( ofPoint(-15*sc, -4*sc));
+    //    foot.curveTo( ofPoint(-15*sc, -4*sc));
+    //    //    body.close();
+    //    foot.draw();
+    //
+    //    foot.clear();
+    //    foot.curveTo( ofPoint(-13*sc, 6*sc));
+    //    foot.curveTo( ofPoint(-13*sc, 6*sc));
+    //    foot.curveTo( ofPoint((-16-footpos*1)*sc, (6.75+footpos*0.25)*sc));
+    //    foot.curveTo( ofPoint((-19-footpos*3)*sc, 5.5*sc));
+    //    foot.curveTo( ofPoint((-16.5-footpos*1.5)*sc, 4*sc));
+    //    foot.curveTo( ofPoint(-15*sc, 4*sc));
+    //    foot.curveTo( ofPoint(-15*sc, 4*sc));
+    //    //    body.close();
+    //    foot.draw();
+    
+    
+    // Display wandering circle
+    //    ofPoint front = velocity;
+    //    front.normalize();
+    //    front *= v.wanderD;
+    //    ofPoint circleloc = t + front;
+    //
+    //    worldPoint = ofVec3f(circleloc);
+    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //
+    //    ofPushMatrix();
+    //    ofTranslate(projectedPoint);
+    //    ofDrawCircle(0, 0, v.wanderR);
+    //    ofPopMatrix();
+    //
+    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+    //    ofPoint circleOffSet = ofPoint(v.wanderR*cos(v.wandertheta+h),v.wanderR*sin(v.wandertheta+h));
+    //    ofPoint target = circleloc + circleOffSet;
+    //
+    //    worldPoint = ofVec3f(target);
+    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //
+    //    ofPushMatrix();
+    //    ofTranslate(projectedPoint);
+    //    ofSetColor(255, 0, 0, 255);
+    //    ofDrawCircle(0, 0, 5);
+    //    ofPopMatrix();
+    
+    //    fboProjWindow.end();
+}
+
 

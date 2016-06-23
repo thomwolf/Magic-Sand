@@ -59,8 +59,8 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
     minInitFrame = 60;
     
     maxOffset =newMaxOffset;
-    game = false;
     
+    //Setup ROI
     setKinectROI(ROI);
     
     //setting buffers
@@ -102,11 +102,11 @@ void KinectGrabber::initiateBuffers(void){
             *gfPtr=ofVec2f(0);
     
 	/* Initialize the gradient field vector*/
-    std::cout<< "Gradient Field resolution" << gradFieldresolution <<std::endl;
+    ofLogVerbose("kinectGrabber") << "initiateBuffers(): Gradient Field resolution: " << gradFieldresolution;
     gradFieldcols = width / gradFieldresolution;
-    std::cout<< "Width: " << width << " Cols: " << gradFieldcols <<std::endl;
+    ofLogVerbose("kinectGrabber") << "initiateBuffers(): Width: " << width << " Cols: " << gradFieldcols;
     gradFieldrows = height / gradFieldresolution;
-    std::cout<< "Height: " << height << " Rows: " << gradFieldrows <<std::endl;
+    ofLogVerbose("kinectGrabber") << "initiateBuffers(): Height: " << height << " Rows: " << gradFieldrows;
     
     bufferInitiated = true;
     currentInitFrame = 0;
@@ -131,20 +131,12 @@ void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scali
     calibrationState = scalibrationState;
     resetBuffers();
 }
-//--------------------------------------------------------------
-void KinectGrabber::setGame(ofPoint smotherRabbit, ofPoint smotherFish, int stype, int splateformSize, bool sgame){
-    motherRabbit = smotherRabbit;
-    motherFish = smotherFish;
-    type = stype;
-    plateformSize = splateformSize;
-    game = sgame;
-}
 
 //--------------------------------------------------------------
 ofMatrix4x4 KinectGrabber::getWorldMatrix(){
     ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);//*depthNorm; // Trick to access kinect internal parameters without having to modify ofxKinect
     ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);//*depthNorm;
-    cout << "Computing kinect world matrix" << endl;
+    ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
     return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
                        0,       b.y-a.y,    0,  a.y,
                        0,       0,          0,  1/*depthNorm*/,
@@ -220,10 +212,6 @@ void KinectGrabber::filter()
                 if(isInsideROI(x, y)) // Check if pixel is inside ROI
                 {
                     RawDepth newValRD = *ifPtr;
-                    animal = isInsideAnimalPlateform(x, y);
-                    if (animal != 0.0f){
-                        newValRD = animal; // We are on an animal plateform
-                    }
                     float oldVal=*abPtr;
                     float newVal = (float) newValRD;///depthNorm;
                     
@@ -434,28 +422,6 @@ void KinectGrabber::updateGradientField()
 }
 
 //--------------------------------------------------------------
-float KinectGrabber::isInsideAnimalPlateform(int x, int y){ // test is x, y is inside an animal plateform
-    float back = 0.0f;
-    if (false){//game){
-        if (type == 0 || type == 2) {// Test fish
-            int dx = x-motherFish.x;
-            int dy = y-motherFish.y;
-            if (abs(dx)<plateformSize && abs(dy)<plateformSize)
-                if ((dx*dx+dy*dy)<plateformSize*plateformSize)
-                    back = motherFish.z;
-        }
-        if (type == 1 || type == 2) {// Test fish
-            int dx = x-motherRabbit.x;
-            int dy = y-motherRabbit.y;
-            if (abs(dx)<plateformSize && abs(dy)<plateformSize)
-                if ((dx*dx+dy*dy)<plateformSize*plateformSize)
-                    back = motherRabbit.z;
-        }
-    }
-    return back;
-}
-
-//--------------------------------------------------------------
 void KinectGrabber::setKinectROI(ofRectangle ROI){
     minX = (int) ROI.getMinX();
     maxX = (int) ROI.getMaxX();
@@ -463,6 +429,7 @@ void KinectGrabber::setKinectROI(ofRectangle ROI){
     maxY = (int) ROI.getMaxY();
     ROIwidth = maxX-minX;
     ROIheight = maxY-minY;
+    resetBuffers();
 }
 
 //--------------------------------------------------------------

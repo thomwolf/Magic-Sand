@@ -6,7 +6,7 @@
 #include "ofxKinectProjectorToolkit.h"
 
 #include "ColorMap.h"
-#include "FrameFilter.h"
+//#include "FrameFilter.h"
 #include "KinectGrabber.h"
 #include "vehicle.h"
 //#include "SurfaceRenderer.h"
@@ -37,17 +37,16 @@ public:
     
     void drawSandbox();
     void prepareContourLines();
+    void prepareMotherPlateform();
     
     void drawFlowField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
     
     void updateVehiclesFutureElevationAndGradient(vehicle& v);
-//    void updateVehiclesBasePlaneEq();
     void drawVehicles();
-    void drawFish(Fish& v);//, std::vector<ofVec2f> forces);
-    void drawRabbit(Rabbit& r);//, std::vector<ofVec2f> forces);
-    void drawMotherFish();//, std::vector<ofVec2f> forces);
-    void drawMotherRabbit();//, std::vector<ofVec2f> forces);
+    void drawMotherFish();
+    void drawMotherRabbit();
+    
     void drawGui();
 
     void addPointPair();
@@ -56,7 +55,9 @@ public:
     ofVec2f computeTransform(ofVec4f vin);
     ofVec4f getWorldCoord(float x, float y);
 
-    void updateROI();
+    void updateROIAutoSetup();
+    void updateROIFromColorImage();
+    void updateROIFromDepthImage();
     void updateROIManualSetup();
     void autoCalib();
     void updateMode();
@@ -133,7 +134,7 @@ private:
     bool loaded;
     bool calibrated;
     bool firstImageReady;
-    bool waitingForFirstImage;
+    bool waitingToInitialiseVehicles;
 
     // States variables
     General_state generalState, previousGeneralState;

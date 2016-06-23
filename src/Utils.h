@@ -25,8 +25,9 @@ namespace states
     enum ROI_calibration_state
     {
         ROI_CALIBRATION_STATE_INIT = 0,
-        ROI_CALIBRATION_STATE_MOVE_UP = 1,
-        ROI_CALIBRATION_STATE_DONE = 2
+        ROI_CALIBRATION_STATE_READY_TO_MOVE_UP = 1,
+        ROI_CALIBRATION_STATE_MOVE_UP = 2,
+        ROI_CALIBRATION_STATE_DONE = 3
     };
     enum Autocalib_calibration_state
     {
@@ -35,6 +36,13 @@ namespace states
         AUTOCALIB_STATE_NEXT_POINT = 2,
         AUTOCALIB_STATE_COMPUTE = 3,
         AUTOCALIB_STATE_DONE = 4
+    };
+    enum Update_kinectgrabber_state
+    {
+        UPDATE_ROI = 0,
+        UPDATE_GENERAL_STATE = 1,
+        UPDATE_CALIBRATION_STATE = 2,
+        UPDATE_GAME_PARAMETERS = 3,
     };
 }
 namespace ofxCSG
@@ -380,7 +388,7 @@ namespace ofxCSG
     // Compute plane equation from point cloud
     static ofVec4f plane_from_points(ofVec3f* points, int n) {
         if (n < 3){
-            cout << "At least three points required" << endl;
+            ofLogVerbose("GreatSand") << "At least three points required" << endl;
             return ofVec3f();
         }
         
@@ -390,7 +398,7 @@ namespace ofxCSG
         }
         ofVec3f centroid = sum/n;
         
-        cout << "Centroid coordinates : " << centroid << endl;
+        ofLogVerbose("GreatSand") << "Centroid coordinates : " << centroid << endl;
 
         // Calc full 3x3 covariance matrix, excluding symmetries:
         float xx = 0.0; float xy = 0.0; float xz = 0.0;
@@ -411,31 +419,31 @@ namespace ofxCSG
         float det_z = xx*yy - xy*xy;
         
         float det_max = max(det_x, max(det_y, det_z));
-        cout << "det_max : " << det_max << endl;
+        ofLogVerbose("GreatSand") << "det_max : " << det_max << endl;
         if(det_max == 0.0){
-            cout << "The points don't span a plane" << endl;
+            ofLogVerbose("GreatSand") << "The points don't span a plane" << endl;
             return ofVec3f();
         }
     
         // Pick path with best conditioning:
         ofVec3f dir;
         if (det_max == det_x) {
-            cout << "Plane oriented toward x" << endl;
+            ofLogVerbose("GreatSand") << "Plane oriented toward x" << endl;
             float a = (xz*yz - xy*zz) / det_x;
             float b = (xy*yz - xz*yy) / det_x;
             dir = ofVec3f(1.0, a, b);
         } else if (det_max == det_y) {
-            cout << "Plane oriented toward y" << endl;
+            ofLogVerbose("GreatSand") << "Plane oriented toward y" << endl;
             float a = (yz*xz - xy*zz) / det_y;
             float b = (xy*xz - yz*xx) / det_y;
             dir = ofVec3f(a, 1.0, b);
         } else if (det_max == det_z){
-            cout << "Plane oriented toward z" << endl;
+            ofLogVerbose("GreatSand") << "Plane oriented toward z" << endl;
             float a = (yz*xy - xz*yy) / det_z;
             float b = (xz*xy - yz*xx) / det_z;
             dir = ofVec3f(a, b, 1.0);
         } else {
-            cout << "Error treating plane orientation" << endl;
+            ofLogVerbose("GreatSand") << "Error treating plane orientation" << endl;
         }
         
         return getPlaneEquation(centroid,dir);

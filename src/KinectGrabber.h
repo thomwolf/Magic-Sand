@@ -60,7 +60,6 @@ private:
     void applySpaceFilter();
     void updateGradientField();
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
-    float isInsideAnimalPlateform(int x, int y); // test is x, y is inside an animal plateform return 0 of the depth value
     
     // General state flags and variables
     General_state generalState;
@@ -106,12 +105,4 @@ private:
     
     int minInitFrame; // Minimal number of frame to consider the kinect initialized
     int currentInitFrame;
-    
-    // Game related variables
-    ofPoint motherRabbit;
-    ofPoint motherFish;
-    int type; // 0=>Fish only, 1=>Rabbit onyl, 2=> both
-    int plateformSize;
-    bool game;
-    
 };

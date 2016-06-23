@@ -47,12 +47,6 @@ public:
     
     std::vector<ofVec2f> getForces(void);
 
-    float wanderR ;         // Radius for our "wander circle"
-    float wanderD ;         // Distance for our "wander circle"
-    float change ;
-    float wandertheta;
-    float topSpeed;
-
 protected:
     ofVec2f separateF ;
     ofVec2f seekF ;
@@ -84,9 +78,12 @@ protected:
     float maxVelocityChange;
     float maxRotation;
     int r, minborderDist, desiredseparation, cor;
-    int screenWidth, screenHeight;
     
-    
+    float wanderR ;         // Radius for our "wander circle"
+    float wanderD ;         // Distance for our "wander circle"
+    float change ;
+    float wandertheta;
+    float topSpeed;
 };
 
 class Fish : public vehicle {
@@ -96,6 +93,7 @@ public:
     ofPoint wanderEffect();
 
     void applyBehaviours(ofPoint target);
+    void draw();
 };
 
 class Rabbit : public vehicle {
@@ -105,5 +103,6 @@ public:
     ofPoint wanderEffect();
 
     void applyBehaviours(ofPoint target);
+    void draw();
 };
 
