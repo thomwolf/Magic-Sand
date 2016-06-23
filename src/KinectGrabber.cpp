@@ -45,6 +45,12 @@ void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
 //--------------------------------------------------------------
 void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffset, ofRectangle ROI) {
     gradFieldresolution = sgradFieldresolution;
+    ofLogVerbose("kinectGrabber") << "setupFramefilter(): Gradient Field resolution: " << gradFieldresolution;
+    gradFieldcols = width / gradFieldresolution;
+    ofLogVerbose("kinectGrabber") << "setupFramefilter(): Width: " << width << " Gradient Field Cols: " << gradFieldcols;
+    gradFieldrows = height / gradFieldresolution;
+    ofLogVerbose("kinectGrabber") << "setupFramefilter(): Height: " << height << " Gradient Field Rows: " << gradFieldrows;
+    
 	
 	//Framefilter parameters
     numAveragingSlots = 30;
@@ -101,13 +107,6 @@ void KinectGrabber::initiateBuffers(void){
         for(unsigned int x=0;x<gradFieldcols;++x,++gfPtr)
             *gfPtr=ofVec2f(0);
     
-	/* Initialize the gradient field vector*/
-    ofLogVerbose("kinectGrabber") << "initiateBuffers(): Gradient Field resolution: " << gradFieldresolution;
-    gradFieldcols = width / gradFieldresolution;
-    ofLogVerbose("kinectGrabber") << "initiateBuffers(): Width: " << width << " Cols: " << gradFieldcols;
-    gradFieldrows = height / gradFieldresolution;
-    ofLogVerbose("kinectGrabber") << "initiateBuffers(): Height: " << height << " Rows: " << gradFieldrows;
-    
     bufferInitiated = true;
     currentInitFrame = 0;
     firstImageReady = false;
@@ -129,7 +128,7 @@ void KinectGrabber::resetBuffers(void){
 void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
     generalState = sgeneralState;
     calibrationState = scalibrationState;
-    resetBuffers();
+//    resetBuffers();
 }
 
 //--------------------------------------------------------------
@@ -154,6 +153,12 @@ void KinectGrabber::threadedFunction(){
             while(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
             } // clear queue
             setMode(sGS, sCS);
+        }
+        ofRectangle newROI;
+        if (ROIchannel.tryReceive(newROI)){
+            while(ROIchannel.tryReceive(newROI)){
+            } // clear queue if needed
+            setKinectROI(newROI);
         }
 
         // If new image in kinect => send to filter thread
@@ -258,21 +263,6 @@ void KinectGrabber::filter()
                             }
                         }
                     }
-//                    if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
-//                    {
-//                        float newFiltered=sPtr[1]/sPtr[0];
-//                        /* Check if the new depth-corrected running mean is outside the previous value's envelope: */
-//                        if(abs(newFiltered-*ofPtr)>=hysteresis)
-//                        {
-//                            /* Set the output pixel value to the depth-corrected running mean: */
-//                            *nofPtr=*ofPtr=newFiltered;
-//                        }
-//                        else
-//                        {
-//                            /* Leave the pixel at its previous value: */
-//                            *nofPtr=*ofPtr;
-//                        }
-//                    }
                     // Check if the pixel is considered "stable": */
                     if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
                     {
@@ -316,12 +306,9 @@ void KinectGrabber::filter()
         
     }
     
-    //    outputframe=newOutputFrame;
-    
     // Update gradient field
     updateGradientField();
     
-    //    return newOutputFrame;
 }
 
 //--------------------------------------------------------------

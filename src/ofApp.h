@@ -59,6 +59,7 @@ public:
     void updateROIFromColorImage();
     void updateROIFromDepthImage();
     void updateROIManualSetup();
+    void updateKinectGrabberROI();
     void autoCalib();
     void updateMode();
 
@@ -128,6 +129,7 @@ private:
 
     // Gui variables
     string                      resultMessage;
+    string                      mainMessage;
     ofColor                     resultMessageColor;
     ofVec2f                     testPoint;
     bool saved;
@@ -141,6 +143,7 @@ private:
     Calibration_state calibrationState, previousCalibrationState;
     ROI_calibration_state ROICalibrationState;
     Autocalib_calibration_state autoCalibState;
+    Initialisation_state initialisationState;
 
     // ROI calibration variables
     ofxCvGrayscaleImage         thresholdedImage;

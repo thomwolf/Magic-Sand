@@ -26,9 +26,6 @@ public:
     void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
-    void setGame(ofPoint smotherRabbit, ofPoint smotherFish, int stype, int splateformSize, bool game);
-    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
-    void setKinectROI(ofRectangle skinectROI);
 
     ofMatrix4x4 getWorldMatrix();
    
@@ -53,12 +50,15 @@ public:
 	ofThreadChannel<ofVec2f*> gradient;
 	ofThreadChannel<General_state> generalStateChannel;
 	ofThreadChannel<Calibration_state> calibrationStateChannel;
+    ofThreadChannel<ofRectangle> ROIchannel;
     
 private:
 	void threadedFunction();
     void filter();
     void applySpaceFilter();
     void updateGradientField();
+    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
+    void setKinectROI(ofRectangle skinectROI);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
     
     // General state flags and variables

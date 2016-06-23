@@ -21,7 +21,8 @@ void ofApp::setup(){
 	calibrationState  = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
     previousCalibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
     ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    autoCalibState = AUTOCALIB_STATE_INIT_ROI;
+    autoCalibState = AUTOCALIB_STATE_INIT_FIRST_PLANE;
+    initialisationState = INITIALISATION_STATE_DONE;
     saved = false;
     loaded = false;
     calibrated = false;
@@ -115,7 +116,12 @@ void ofApp::setup(){
         generalState = GENERAL_STATE_SANDBOX;
         updateMode();
     } else {
-        ofLogVerbose("GreatSand") << "setup(): Calibration could not be loaded " ;
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+        initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
+        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+        updateMode();
+        ofLogVerbose("GreatSand") << "setup(): Calibration could not be loaded, initialisation" ;
     }
     
     //Try to load settings file if possible
@@ -138,7 +144,7 @@ void ofApp::setup(){
     // Setup gradient field
     setupGradientField();
     
-//    setupVehicles();
+    //    setupVehicles();
     
     //    setupGui();
     
@@ -496,6 +502,34 @@ void ofApp::update(){
             }
         }
     }
+    if (initialisationState == INITIALISATION_STATE_ROI_DETERMINATION){
+        mainMessage = "Please wait while sand area is being detected";
+        if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE) {
+            initialisationState = INITIALISATION_STATE_AUTOCALIB;
+            calibrationState = CALIBRATION_STATE_AUTOCALIB;
+            autoCalibState = AUTOCALIB_STATE_INIT_FIRST_PLANE;
+        }
+    } else if (initialisationState ==INITIALISATION_STATE_AUTOCALIB){
+        if (autoCalibState == AUTOCALIB_STATE_DONE){
+            initialisationState = INITIALISATION_STATE_DONE;
+            generalState = GENERAL_STATE_SANDBOX;
+            
+            if (kpt.saveCalibration("calibration.xml"))
+            {
+                ofLogVerbose("GreatSand") << "update(): initialisation: Calibration saved " ;
+                saved = true;
+            } else {
+                ofLogVerbose("GreatSand") << "update(): initialisation: Calibration could not be saved " ;
+            }
+            if (saveSettings("settings.xml"))
+            {
+                ofLogVerbose("GreatSand") << "update(): initialisation: Settings saved " ;
+            } else {
+                ofLogVerbose("GreatSand") << "update(): initialisation: Settings could not be saved " ;
+            }
+            
+        }
+    }
 }
 
 //--------------------------------------------------------------
@@ -550,16 +584,16 @@ void ofApp::draw(){
     ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", xbase, ybase+i*yinc);
     
     if (generalState == GENERAL_STATE_CALIBRATION) {
-        kinectColorImage.draw(0, 0, 640, 480);
-        FilteredDepthImage.draw(650, 0, 320, 240);
-        
-        ofNoFill();
-        ofSetColor(255);
-        ofDrawRectangle(kinectROI);
-        ofFill();
-        
         ofSetColor(0);
         if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
+            kinectColorImage.draw(0, 0, 640, 480);
+            FilteredDepthImage.draw(650, 0, 320, 240);
+            
+            ofNoFill();
+            ofSetColor(255);
+            ofDrawRectangle(kinectROI);
+            ofFill();
+            
             ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
             ofDrawBitmapStringHighlight("The projector should place a green dot on the corresponding point.", 340, 530);
             ofSetColor(255, 0, 0);
@@ -570,12 +604,29 @@ void ofApp::draw(){
             
         } else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
         {
+            kinectColorImage.draw(0, 0, 640, 480);
+            FilteredDepthImage.draw(650, 0, 320, 240);
+            
+            ofNoFill();
+            ofSetColor(255);
+            ofDrawRectangle(kinectROI);
+            ofFill();
             
         } else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION)
         {
             ofSetColor(255);
-            thresholdedImage.draw(650, 0, 320, 240); // Overwrite depth image
+            thresholdedImage.draw(0, 0, 640, 480);
+            //            FilteredDepthImage.draw(650, 0, 320, 240);
+            //
+            ofNoFill();
+            ofSetColor(255);
+            ofDrawRectangle(kinectROI);
+            ofFill();
+            
+            //           ofSetColor(255);
+            //            thresholdedImage.draw(650, 0, 320, 240); // Overwrite depth image
             contourFinder.draw(0, 0);//, 320, 240); // Draw contour finder results
+            large.draw();
         } else if (calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP && ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
             ofNoFill();
             ofSetColor(0,255,0,255);
@@ -613,7 +664,7 @@ void ofApp::draw(){
         contourFinder.draw(0,0);
     }
     
-    drawGui();
+    //    drawGui();
 }
 
 //--------------------------------------------------------------
@@ -867,7 +918,7 @@ void ofApp::drawVehicles()
         
         // Draw rabbit
         r.draw();
-
+        
         ofPopMatrix();
     }
 }
@@ -918,9 +969,9 @@ void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
     // Get vehicule coord
     ofVec2f t = motherRabbit;
     ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
-
+    
     ofPushMatrix();
-
+    
     float sc = 2; // MotherRabbit scale
     
     projectedPoint.x += 5*sc;
@@ -1117,12 +1168,14 @@ void ofApp::findMaxOffset(){
 //--------------------------------------------------------------
 // Autoclibration of the sandbox
 void ofApp::autoCalib(){
-    if (autoCalibState == AUTOCALIB_STATE_INIT_ROI){
+    if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE){
         //        fboProjWindow.begin();
         //        ofBackground(255);
         //        fboProjWindow.end();
-        updateROIAutoSetup();
-        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+        //        updateROIAutoSetup();
+        //        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+        mainMessage = "Please flatten the sand surface carefully and press [SPACE]. This surface will give the sea level.";
+        resultMessage = "Please flatten the sand surface carefully and press [SPACE]. This surface will give the sea level.";
     } else if (autoCalibState == AUTOCALIB_STATE_INIT_POINT){
         if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
             if (kinectROI.getArea() == 0)
@@ -1210,6 +1263,7 @@ void ofApp::autoCalib(){
                 autoCalibState = AUTOCALIB_STATE_COMPUTE;
             } else { // We ask for higher points
                 resultMessage = "Please put a board on the sandbox and press [SPACE]";
+                mainMessage = "Please put a board on the sandbox and press [SPACE]";
             }
         }
     } else if (autoCalibState == AUTOCALIB_STATE_COMPUTE){
@@ -1297,7 +1351,7 @@ void ofApp::updateROIFromColorImage(){
         ofLogVerbose("GreatSand") << "updateROIFromColorImage(): kinectROI : " << kinectROI ;
         // We are finished, set back kinect depth range and update ROI
         ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
-        kinectgrabber.setKinectROI(kinectROI);
+        updateKinectGrabberROI();
         //update the mesh
         setupMesh();
         //        }
@@ -1310,19 +1364,59 @@ void ofApp::updateROIFromColorImage(){
 void ofApp::updateROIFromDepthImage(){
     if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT) {
         // set kinect to max depth range
+        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Set maximal ROI for kinect" ;
         kinectROI = ofRectangle(0, 0, kinectResX, kinectResY);
-        kinectgrabber.setKinectROI(kinectROI);
-        setupMesh();
-        firstImageReady = false; // Waiting for a clean depth frame
+        updateKinectGrabberROI();
         
+        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Wait for kinectgrabber to reset buffers" ;
+        while (kinectgrabber.isFirstImageReady()){
+        } // Wait for kinectgrabber to reset buffers
+        
+        firstImageReady = false; // Now we waite for a clean new depth frame
         ROICalibrationState = ROI_CALIBRATION_STATE_READY_TO_MOVE_UP;
+        
+        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Wait for clean new frame" ;
         
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_READY_TO_MOVE_UP) {
         if (firstImageReady)
         {
-            ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP;
+            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_READY_TO_MOVE_UP: got a stable depth image" ;
+            ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
             large = ofPolyline();
             
+            //            // Find max and min of the filtered depth iamge
+            //            float maxval = FilteredDepthImage.getFloatPixelsRef().getData()[0];
+            //            float minval = FilteredDepthImage.getFloatPixelsRef().getData()[0];
+            //            float xf;
+            //            for (int i = 0; i<640*480; i ++){
+            //                xf = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+            //                if (xf > maxval)
+            //                    maxval = xf;
+            //                if (xf < minval)
+            //                    minval = xf;
+            //            }
+            //            if (maxval > 1500)
+            //                maxval = 1500;
+            //            if (minval < 500)
+            //                minval = 500;
+            //            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): FilteredDepthImage maxval : " << maxval << " thresholdedImage minval : " << minval ;
+            //
+            //            // Compute a scaled grayscale image
+            //            for (int i = 0; i<640*480; i ++){
+            //                thresholdedImage.getPixels().getData()[i] = (int)((FilteredDepthImage.getFloatPixelsRef().getData()[i]-minval)/(maxval-minval)*255.0);
+            //            }
+            //
+            //            //Check values for debug
+            //            maxval = thresholdedImage.getPixels().getData()[0];
+            //            minval = thresholdedImage.getPixels().getData()[0];
+            //            for (int i = 0; i<640*480; i ++){
+            //                xf = thresholdedImage.getPixels().getData()[i];
+            //                if (xf > maxval)
+            //                    maxval = xf;
+            //                if (xf < minval)
+            //                    minval = xf;
+            //            }
+            //            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): thresholdedImage maxval : " << maxval << " temp minval : " << minval ;
             ofxCvFloatImage temp;
             temp.setFromPixels(FilteredDepthImage.getFloatPixelsRef().getData(), kinectResX, kinectResY);
             temp.setNativeScale(FilteredDepthImage.getNativeScaleMin(), FilteredDepthImage.getNativeScaleMax());
@@ -1340,7 +1434,7 @@ void ofApp::updateROIFromDepthImage(){
                 if (xf < minval)
                     minval = xf;
             }
-            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): temp maxval : " << maxval << " temp minval : " << minval ;
+            cout << "temp maxval : " << maxval << " temp minval : " << minval << endl;
             
             thresholdedImage.setFromPixels(temp.getFloatPixelsRef());//kinectColorImage.getPixels());
             
@@ -1355,16 +1449,24 @@ void ofApp::updateROIFromDepthImage(){
                 if (xf < minval)
                     minval = xf;
             }
-            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): thresholdedImage maxval : " << maxval << " thresholdedImage minval : " << minval ;
-            
-            threshold = 0;
+            cout << "thresholdedImage maxval : " << maxval << " thresholdedImage minval : " << minval << endl;
         }
+        threshold = 0; // We go from the higher distance to the kinect (lower position) to the lower distance
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
+        //        if (threshold < 255){
         while (threshold < 255){
-            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): Increasing threshold : " << threshold ;
             //                            thresholdedImage.mirror(verticalMirror, horizontalMirror);
             //cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), highThresh+10, 255, CV_THRESH_TOZERO_INV);
-            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_TOZERO);
+            //        CV_THRESH_BINARY      =0,  /* value = value > threshold ? max_value : 0       */
+            //        CV_THRESH_BINARY_INV  =1,  /* value = value > threshold ? 0 : max_value       */
+            //        CV_THRESH_TRUNC       =2,  /* value = value > threshold ? threshold : value   */
+            //        CV_THRESH_TOZERO      =3,  /* value = value > threshold ? value : 0           */
+            //        CV_THRESH_TOZERO_INV  =4,  /* value = value > threshold ? 0 : value           */
+            //        CV_THRESH_MASK        =7,
+            //        CV_THRESH_OTSU        =8  /* use Otsu algorithm to choose the optimal threshold value;
+            //                                   combine the flag with one of the above CV_THRESH_* values */
+            cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), 255-threshold, 255, CV_THRESH_TOZERO_INV);//CV_THRESH_TOZERO);
+            thresholdedImage.updateTexture();
             
             contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true, false);
             //contourFinder.findContours(thresholdedImage);
@@ -1378,9 +1480,9 @@ void ofApp::updateROIFromDepthImage(){
                     
                     if (poly.inside(kinectResX/2, kinectResY/2))
                     {
-                        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): We found a contour lines surroundings the center of the screen" ;
+                        //                        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): We found a contour lines surroundings the center of the screen" ;
                         if (small.size() == 0 || poly.getArea() < small.getArea()) {
-                            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): We take the smallest contour line surroundings the center of the screen at a given threshold level" ;
+                            //                            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): We take the smallest contour line surroundings the center of the screen at a given threshold level" ;
                             small = poly;
                         }
                     }
@@ -1388,20 +1490,20 @@ void ofApp::updateROIFromDepthImage(){
             }
             if (large.getArea() < small.getArea())
             {
-                ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): We take the largest contour line surroundings the center of the screen at all threshold level" ;
+                //We take the largest contour line surroundings the center of the screen at all threshold level
+                ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): updating ROI" ;
                 large = small;
             }
             threshold+=1;
-        }
+        }// else {
         kinectROI = large.getBoundingBox();
         kinectROI.standardize();
-        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): kinectROI : " << kinectROI ;
+        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): final kinectROI : " << kinectROI ;
         // We are finished, set back kinect depth range and update ROI
         ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
-        kinectgrabber.setKinectROI(kinectROI);
+        updateKinectGrabberROI();
+        //  }
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
-        generalState = GENERAL_STATE_CALIBRATION;
-        calibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
     }
 }
 
@@ -1421,6 +1523,15 @@ void ofApp::updateROIManualSetup(){
     }
 }
 
+//--------------------------------------------------------------
+void ofApp::updateKinectGrabberROI(){
+    // Send the new mode informations to the kinect grabber
+#if __cplusplus>=201103
+    kinectgrabber.ROIchannel.send(std::move(kinectROI));
+#else
+    kinectgrabber.ROIchannel.send(kinectROI);
+#endif
+}
 //--------------------------------------------------------------
 void ofApp::updateMode(){
     if (generalState == GENERAL_STATE_CALIBRATION)
@@ -1450,16 +1561,21 @@ void ofApp::keyPressed(int key){
         {
             ofLogVerbose("GreatSand") << "keyPressed(): Adding point pair" ;
             addPointPair();
-        }
-        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB)
+        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
         {
+            autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
             if (!upframe)
                 upframe = true;
-        }
-        if (generalState == GENERAL_STATE_GAME1)
+        } else if (generalState == GENERAL_STATE_GAME1)
         {
             setupVehicles();
         }
+        //        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_DETERMINATION && ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP)
+        //        {
+        //            ofLogVerbose("GreatSand") << "keyPressed(): Changing threshold : " << threshold ;
+        //            threshold+=1;
+        //        }
     } else if (key=='a') {
         chessboardSize -= 20;
     } else if (key=='z') {
@@ -1528,7 +1644,7 @@ void ofApp::keyPressed(int key){
     } else if (key=='y') {
         generalState = GENERAL_STATE_CALIBRATION;
         calibrationState = CALIBRATION_STATE_AUTOCALIB;
-        autoCalibState = AUTOCALIB_STATE_INIT_ROI;
+        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
         ofLogVerbose("GreatSand") << "keyPressed(): Starting autocalib" ;
     } else if (key=='t') {
         generalState = GENERAL_STATE_CALIBRATION;
@@ -1568,7 +1684,7 @@ void ofApp::keyPressed(int key){
         {
             ofLogVerbose("GreatSand") << "keyPressed(): Settings loaded " ;
             setRangesAndBasePlaneEquation();
-            kinectgrabber.setKinectROI(kinectROI);
+            updateKinectGrabberROI();
         } else {
             ofLogVerbose("GreatSand") << "keyPressed(): Settings could not be loaded " ;
         }
@@ -1632,7 +1748,7 @@ void ofApp::mousePressed(int x, int y, int button){
             kinectROI = kinectROIManualCalib;
             kinectROI.standardize();
             ofLogVerbose("GreatSand") << "mousePressed(): kinectROI : " << kinectROI ;
-            kinectgrabber.setKinectROI(kinectROI);
+            updateKinectGrabberROI();
             //update the mesh
             setupMesh();
         }

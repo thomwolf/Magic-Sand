@@ -10,9 +10,18 @@ namespace states
 {
     enum General_state
     {
-        GENERAL_STATE_CALIBRATION = 0,
-        GENERAL_STATE_SANDBOX = 1,
-        GENERAL_STATE_GAME1 = 2
+//        GENERAL_STATE_INITIALISATION = 0,
+        GENERAL_STATE_CALIBRATION = 1,
+        GENERAL_STATE_SANDBOX = 2,
+        GENERAL_STATE_GAME1 = 3
+    };
+    enum Initialisation_state
+    {
+        INITIALISATION_STATE_ROI_DETERMINATION = 0,
+        INITIALISATION_STATE_ROI_MANUAL_SETUP = 1,
+        INITIALISATION_STATE_AUTOCALIB = 2,
+        INITIALISATION_STATE_MANUAL_CALIBRATION = 3,
+        INITIALISATION_STATE_DONE = 4
     };
     enum Calibration_state
     {
@@ -31,7 +40,7 @@ namespace states
     };
     enum Autocalib_calibration_state
     {
-        AUTOCALIB_STATE_INIT_ROI = 0,
+        AUTOCALIB_STATE_INIT_FIRST_PLANE = 0,
         AUTOCALIB_STATE_INIT_POINT = 1,
         AUTOCALIB_STATE_NEXT_POINT = 2,
         AUTOCALIB_STATE_COMPUTE = 3,

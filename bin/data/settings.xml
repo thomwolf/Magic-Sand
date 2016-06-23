@@ -1,7 +1,7 @@
 <KINECTSETTINGS>
-	<kinectROI>128, 161, 0, 380, 286</kinectROI>
-	<basePlaneNormal>0.0313758, 0.141286, 0.989472</basePlaneNormal>
-	<basePlaneOffset>0, 0, 868.418</basePlaneOffset>
-	<basePlaneEq>0.0313758, 0.141286, 0.989471, -859.275</basePlaneEq>
-	<maxOffset>659.354</maxOffset>
+	<kinectROI>91, 127, 0, 427, 326</kinectROI>
+	<basePlaneNormal>0.0206353, 0.107237, 0.994019</basePlaneNormal>
+	<basePlaneOffset>0, 0, 885.034</basePlaneOffset>
+	<basePlaneEq>0.0206353, 0.107237, 0.994019, -879.741</basePlaneEq>
+	<maxOffset>667.443</maxOffset>
 </KINECTSETTINGS>
