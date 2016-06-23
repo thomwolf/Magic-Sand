@@ -1,25 +1,23 @@
 /***********************************************************************
  ColorMap - Class to map from scalar values to RGBA colors.
- Inspired by Oliver Kreylos Vrui Colormap file
- which is part of the OpenGL Support Library (GLSupport).
+ Inspired by Oliver Kreylos Vrui Colormap file.
  ***********************************************************************/
 
 #include <ColorMap.h>
 using namespace ofxCv;
 using namespace cv;
 
+//--------------------------------------------------------------
 ColorMap::ColorMap(void)
 :numEntries(512){
-	// start the thread as soon as the
-	// class is created, it won't use any CPU
-	// until we send a new frame to be analyzed
-    //	startThread();
 }
 
+//--------------------------------------------------------------
 ColorMap::~ColorMap(void)
 {
 }
 
+//--------------------------------------------------------------
 void ColorMap::changeNumEntries(int amount, bool increase)
 {
     if (increase) {
@@ -30,12 +28,9 @@ void ColorMap::changeNumEntries(int amount, bool increase)
             numEntries = 1;
     }
         updateColormap();
-//        /* Recalculate mapping factors: */
-//        factor=double(numEntries-1)/(max-min);
-//        offset=min*factor;
-//    }
 }
 
+//--------------------------------------------------------------
 bool ColorMap::load(string filename, bool absolute) {
     FileStorage fs(ofToDataPath(filename, absolute), FileStorage::READ);
     FileNode features = fs["ColorMap"];
@@ -62,6 +57,7 @@ bool ColorMap::load(string filename, bool absolute) {
     return updateColormap();
 }
 
+//--------------------------------------------------------------
 bool ColorMap::setKeys(std::vector<ofColor> colorkeys, std::vector<double> heightkeys) {
     heightMapKeys = heightkeys;
     heightMapColors = colorkeys;
@@ -75,6 +71,7 @@ bool ColorMap::setKeys(std::vector<ofColor> colorkeys, std::vector<double> heigh
     return updateColormap();
 }
 
+//--------------------------------------------------------------
 bool ColorMap::updateColormap() {
     if (entries.isAllocated())
         entries.clear();
@@ -117,16 +114,15 @@ bool ColorMap::updateColormap() {
     return true;
 }
 
+//--------------------------------------------------------------
 bool ColorMap::scaleRange(float factor)
 {
     min *= factor;
     max *= factor;
-//    factor=double(numEntries-1)/(max-min);
-//    offset=min*factor;
-
     return true;
 }
 
+//--------------------------------------------------------------
 bool ColorMap::createFile(string filename, bool absolute) {
     std::vector<ofColor> heightMapColors;
     std::vector<double> heightMapKeys;
@@ -173,12 +169,14 @@ bool ColorMap::createFile(string filename, bool absolute) {
     return true;
 }
 
+//--------------------------------------------------------------
 ColorMap::Color ColorMap::operator()(int scalar) const
 {
     ofColor color = entries.getColor(scalar, 0);
     return color;
 }
 
+//--------------------------------------------------------------
 ofTexture ColorMap::getTexture(void)  // return color map
 {
     return tex.getTexture();

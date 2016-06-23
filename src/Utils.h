@@ -1,7 +1,5 @@
 //
-//  ofxCSGUtils.h
-//
-//  Created by lars berg on 3/3/15.
+//  Forked from ofxCSGUtils.h by lars berg on 3/3/15.
 //
 
 #pragma once

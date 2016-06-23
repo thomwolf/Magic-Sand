@@ -4,13 +4,12 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
-#include "ofxImGui.h"
 
 #include "ColorMap.h"
 #include "FrameFilter.h"
 #include "KinectGrabber.h"
 #include "vehicle.h"
-#include "SurfaceRenderer.h"
+//#include "SurfaceRenderer.h"
 #include "Utils.h"
 
 using namespace cv;
@@ -55,6 +54,8 @@ public:
     void computeBasePlane();
     void findMaxOffset();
     ofVec2f computeTransform(ofVec4f vin);
+    ofVec4f getWorldCoord(float x, float y);
+
     void updateROI();
     void updateROIManualSetup();
     void autoCalib();
@@ -71,28 +72,29 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
+    
     bool loadSettings(string path);
     bool saveSettings(string path);
     
     shared_ptr<ofAppBaseWindow> projWindow;
 
     // GUI
-    ofxImGui gui;
-    ImVec4 backgroundColor;
-    bool show_test_window;
-    bool show_another_window;
-    bool doSetTheme;
-    bool doThemeColorsWindow;
-    
-    float floatValue;
-    ofImage imageButtonSource;
-    GLuint imageButtonID;
-    
-    ofPixels pixelsButtonSource;
-    GLuint pixelsButtonID;
-    
-    ofTexture textureSource;
-    GLuint textureSourceID;
+//    ofxImGui gui;
+//    ImVec4 backgroundColor;
+//    bool show_test_window;
+//    bool show_another_window;
+//    bool doSetTheme;
+//    bool doThemeColorsWindow;
+//    
+//    float floatValue;
+//    ofImage imageButtonSource;
+//    GLuint imageButtonID;
+//    
+//    ofPixels pixelsButtonSource;
+//    GLuint pixelsButtonID;
+//    
+//    ofTexture textureSource;
+//    GLuint textureSourceID;
     
 private:
     //kinect interfaces and calibration
@@ -178,9 +180,10 @@ private:
     vector<Rabbit> rabbits;
     int fishNum, rabbitsNum;
     static const int MAX_STEPS = 10;
-    float P;
+    
     ofPoint motherFish, motherRabbit; // Location of fish and rabbit mothers
-    float motherFishPlatformSize, motherRabbitPlatformSize;
+    bool isMother;
+    float motherPlatformSize;
 
     // Colormap, contourmap and heightmap variables
     ColorMap    heightMap;

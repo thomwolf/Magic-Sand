@@ -38,11 +38,6 @@ void vehicle::updateBeachDetection(bool sbeach, float sbeachDist, ofVec2f sbeach
     beachSlope = sbeachSlope;
 }
 
-////--------------------------------------------------------------
-//void vehicle::updateBasePlaneEq(ofVec4f sbasePlaneEq){
-//    basePlaneEq = sbasePlaneEq;
-//}
-
 //--------------------------------------------------------------
 ofPoint vehicle::bordersEffect(){
     ofPoint desired, futureLocation;
@@ -119,31 +114,32 @@ ofPoint vehicle::slopesEffect(){
 
 //--------------------------------------------------------------
 ofPoint vehicle::seekEffect(const ofPoint & target){
-    ofPoint desired;
-    desired = target - location;
-    
-    float d = desired.length();
-    desired.normalize();
-    
-    //If we are closer than XX pixels slow down
-    if (d < 10) {
-        desired *= ofMap(d,0,100,0,topSpeed);
-        mother = true;
-    } else {
-        //Otherwise, proceed at maximum speed.
-        desired *= topSpeed;
-    }
-    
-    ofPoint velocityChange;
-    velocityChange = desired - velocity;
-    velocityChange.limit(maxVelocityChange);
-    
-    //If we are further than XX pixels we don't see the mother
-    if (d > 50) {
-        velocityChange = ofPoint(0);
-    }
-    
-    return velocityChange;
+//    ofPoint desired;
+//    desired = target - location;
+//    
+//    float d = desired.length();
+//    desired.normalize();
+//    
+//    //If we are closer than XX pixels slow down
+//    if (d < 10) {
+//        desired *= ofMap(d,0,100,0,topSpeed);
+//        mother = true;
+//    } else {
+//        //Otherwise, proceed at maximum speed.
+//        desired *= topSpeed;
+//    }
+//    
+//    ofPoint velocityChange;
+//    velocityChange = desired - velocity;
+//    velocityChange.limit(maxVelocityChange);
+//    
+//    //If we are further than XX pixels we don't see the mother
+//    if (d > 50) {
+//        velocityChange = ofPoint(0);
+//    }
+//    
+//    return velocityChange;
+    return ofPoint(0);
 }
 
 //--------------------------------------------------------------

@@ -1,7 +1,6 @@
 /***********************************************************************
  ColorMap - Class to map from scalar values to RGBA colors.
- Inspired by Oliver Kreylos Vrui Colormap file
- which is part of the OpenGL Support Library (GLSupport).
+ Inspired by Oliver Kreylos Vrui Colormap file.
  ***********************************************************************/
 
 #pragma once

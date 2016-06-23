@@ -48,10 +48,10 @@ void ofApp::setup(){
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Vehicles
-    fishNum = 5;
-    rabbitsNum = 5;
-    motherFishPlatformSize = 20;
-    motherRabbitPlatformSize = 20;
+    fishNum = 1;
+    rabbitsNum = 0;
+    isMother = false;
+    motherPlatformSize = 20;
     
     // Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
@@ -141,7 +141,7 @@ void ofApp::setup(){
     
     setupVehicles();
     
-    setupGui();
+    //    setupGui();
     
 	kinectgrabber.startThread(true);
 }
@@ -161,38 +161,38 @@ void ofApp::clearFbos(){
 //--------------------------------------------------------------
 void ofApp::setupGui(){
     //required call
-    gui.setup();
-
-    ImGui::GetIO().MouseDrawCursor = false;
-    //backgroundColor is stored as an ImVec4 type but can handle ofColor
-    backgroundColor = ofColor(114, 144, 154);
-    show_test_window = false;
-    show_another_window = true;
-    floatValue = basePlaneOffset.z;
-
-    //load your own ofImage
-    imageButtonSource.load("of.png");
-    imageButtonID = gui.loadImage(imageButtonSource);
-
-    //or have the loading done for you if you don't need the ofImage reference
-    //imageButtonID = gui.loadImage("of.png");
-
-    //can also use ofPixels in same manner
-    ofLoadImage(pixelsButtonSource, "of_upside_down.png");
-    pixelsButtonID = gui.loadPixels(pixelsButtonSource);
-
-    //and alt method
-    //pixelsButtonID = gui.loadPixels("of_upside_down.png");
-
-    //pass in your own texture reference if you want to keep it
-    textureSourceID = gui.loadTexture(textureSource, "of_upside_down.png");
-
-    //or just pass a path
-    //textureSourceID = gui.loadTexture("of_upside_down.png");
-
-    ofLogVerbose() << "textureSourceID: " << textureSourceID;
-    doSetTheme = false;
-    doThemeColorsWindow = false;
+    //    gui.setup();
+    //
+    //    ImGui::GetIO().MouseDrawCursor = false;
+    //    //backgroundColor is stored as an ImVec4 type but can handle ofColor
+    //    backgroundColor = ofColor(114, 144, 154);
+    //    show_test_window = false;
+    //    show_another_window = true;
+    //    floatValue = basePlaneOffset.z;
+    //
+    //    //load your own ofImage
+    //    imageButtonSource.load("of.png");
+    //    imageButtonID = gui.loadImage(imageButtonSource);
+    //
+    //    //or have the loading done for you if you don't need the ofImage reference
+    //    //imageButtonID = gui.loadImage("of.png");
+    //
+    //    //can also use ofPixels in same manner
+    //    ofLoadImage(pixelsButtonSource, "of_upside_down.png");
+    //    pixelsButtonID = gui.loadPixels(pixelsButtonSource);
+    //
+    //    //and alt method
+    //    //pixelsButtonID = gui.loadPixels("of_upside_down.png");
+    //
+    //    //pass in your own texture reference if you want to keep it
+    //    textureSourceID = gui.loadTexture(textureSource, "of_upside_down.png");
+    //
+    //    //or just pass a path
+    //    //textureSourceID = gui.loadTexture("of_upside_down.png");
+    //
+    //    ofLogVerbose() << "textureSourceID: " << textureSourceID;
+    //    doSetTheme = false;
+    //    doThemeColorsWindow = false;
 }
 
 //--------------------------------------------------------------
@@ -281,32 +281,33 @@ void ofApp::setupGradientField(){
 
 //--------------------------------------------------------------
 void ofApp::setupVehicles(){
-    // setup vehicles
-    fish.resize(fishNum);
-    rabbits.resize(rabbitsNum);
-    for (auto & f : fish){
-        ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-        f.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
-        f.animalCoef = 1;
-    }
-    for (auto & r : rabbits){
-        ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
-        r.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
-        r.animalCoef = -1;
-    }
     
     if (firstImageReady)
     {
+        // setup vehicles
+        fish.resize(fishNum);
+        rabbits.resize(rabbitsNum);
+//        for (auto & f : fish){
+//            ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
+//            f.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+//            f.animalCoef = 1;
+//        }
+//        for (auto & r : rabbits){
+//            ofPoint location(ofRandom(kinectROI.getLeft(),kinectROI.getRight()), ofRandom(kinectROI.getTop(),kinectROI.getBottom()));
+//            r.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
+//            r.animalCoef = -1;
+//        }
         vhcle = FilteredDepthImage;
         float elevation;
         int earth = 0;
         for (int x = kinectROI.getLeft(); x<kinectROI.getRight(); x ++){ // Project on base plane
             for (int y = kinectROI.getTop(); y < kinectROI.getBottom(); y++){
-                ofVec4f wc = ofVec2f(x, y);
-                wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[y*kinectResX+x];
-                wc.w = 1;
-                ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
-                vertexCc.w = 1;
+                //                ofVec4f wc = ofVec2f(x, y);
+                //                wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[y*kinectResX+x];
+                //                wc.w = 1;
+                //                ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
+                //                vertexCc.w = 1;
+                ofVec4f vertexCc = getWorldCoord(x, y);
                 elevation = -basePlaneEq.dot(vertexCc);
                 if (elevation > 0){
                     vhcle.getPixels().getData()[y*kinectResX+x] = 255;
@@ -359,73 +360,83 @@ void ofApp::setupVehicles(){
                 r.setup(location.x, location.y, kinectROI);//, kinectWorldMatrix, basePlaneEq, kinectResX, gradFieldcols, gradFieldrows, gradFieldresolution);
                 r.animalCoef = -1;
             }
+            
             int minborderDist = 40;
             ofRectangle internalBorders = kinectROI;
             internalBorders.scaleFromCenter((kinectROI.width-minborderDist)/kinectROI.width, (kinectROI.height-minborderDist)/kinectROI.height);
             
-            ofPoint close;
-            outsidewater = false;
-            while (!outsidewater) {
-                location = ofPoint(ofRandom(internalBorders.getLeft(),internalBorders.getRight()), ofRandom(internalBorders.getTop(),internalBorders.getBottom()));
-                if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 255)
-                    outsidewater = true;
-            }
-            motherFish = location; // Put the Fish mother outside of the water to be sure the fish cannot reach her without help
-            
-            // move mother Fish plateform location under the sea level
-            float seaLevelDistance = 10; // We want the plateform not exacty at the sea level but a little bit under
-            ofVec4f wc = location;
-            wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[((int)location.y*kinectResX)+(int)location.x];
-            wc.w = 1;
-            ofVec4f vertexCc;
-            insidewater = false;
-            while (!insidewater) {
-                vertexCc = kinectWorldMatrix*wc*wc.z;
-                vertexCc.w = 1;
-                elevation = -basePlaneEq.dot(vertexCc);
-                if (elevation < -seaLevelDistance){
-                    insidewater = true;
-                } else {
-                    wc.z += 1; // Move down the plateform (kinect coordinates are reversed
+            if (isMother){
+                ofPoint close;
+                float seaLevelDistance = 10; // We want the plateform not exacty at the sea level but a little bit under
+                ofVec4f vertexCc, wc;
+
+                if (fishNum > 0) {
+                    outsidewater = false;
+                    while (!outsidewater) {
+                        location = ofPoint(ofRandom(internalBorders.getLeft(),internalBorders.getRight()), ofRandom(internalBorders.getTop(),internalBorders.getBottom()));
+                        if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 255)
+                            outsidewater = true;
+                    }
+                    motherFish = location; // Put the Fish mother outside of the water to be sure the fish cannot reach her without help
+                    
+                    // move mother Fish plateform location under the sea level
+                    wc = location;
+                    wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[((int)location.y*kinectResX)+(int)location.x];
+                    wc.w = 1;
+                    insidewater = false;
+                    while (!insidewater) {
+                        vertexCc = kinectWorldMatrix*wc*wc.z;
+                        vertexCc.w = 1;
+                        elevation = -basePlaneEq.dot(vertexCc);
+                        if (elevation < -seaLevelDistance){
+                            insidewater = true;
+                        } else {
+                            wc.z += 1; // Move down the plateform (kinect coordinates are reversed
+                        }
+                    }
+                    motherFish.z = wc.z;
                 }
-            }
-            motherFish.z = wc.z;
-            
-            insidewater = false;
-            while (!insidewater) {
-                location = ofPoint(ofRandom(internalBorders.getLeft(),internalBorders.getRight()), ofRandom(internalBorders.getTop(),internalBorders.getBottom()));
-                if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 0)
-                    insidewater = true;
-            }
-            motherRabbit = location; // Put the Rabbits mother inside the water to be sure the rabbit cannot reach her without help
-            
-            // move mother Fish plateform location under the sea level
-            seaLevelDistance = 10; // We want the plateform not exacty at the sea level but a little bit under
-            wc = location;
-            wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[((int)location.y*kinectResX)+(int)location.x];
-            wc.w = 1;
-            outsidewater = false;
-            while (!outsidewater) {
-                vertexCc = kinectWorldMatrix*wc*wc.z;
-                vertexCc.w = 1;
-                elevation = -basePlaneEq.dot(vertexCc);
-                if (elevation > seaLevelDistance){
-                    outsidewater = true;
-                } else {
-                    wc.z -= 1; // Move up the plateform (kinect coordinates are reversed
+                if (rabbitsNum > 0){
+                    insidewater = false;
+                    while (!insidewater) {
+                        location = ofPoint(ofRandom(internalBorders.getLeft(),internalBorders.getRight()), ofRandom(internalBorders.getTop(),internalBorders.getBottom()));
+                        if (vhcle.getPixels().getData()[((int)location.y)*kinectResX+(int)location.x] == 0)
+                            insidewater = true;
+                    }
+                    motherRabbit = location; // Put the Rabbits mother inside the water to be sure the rabbit cannot reach her without help
+                    
+                    // move mother Fish plateform location under the sea level
+                    wc = location;
+                    wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[((int)location.y*kinectResX)+(int)location.x];
+                    wc.w = 1;
+                    outsidewater = false;
+                    while (!outsidewater) {
+                        vertexCc = kinectWorldMatrix*wc*wc.z;
+                        vertexCc.w = 1;
+                        elevation = -basePlaneEq.dot(vertexCc);
+                        if (elevation > seaLevelDistance){
+                            outsidewater = true;
+                        } else {
+                            wc.z -= 1; // Move up the plateform (kinect coordinates are reversed
+                        }
+                    }
+                    motherRabbit.z = wc.z;
                 }
+                int type = 0;
+                if (rabbitsNum>0){
+                    type += 1;
+                    if (fishNum >0)
+                        type +=1;
+                }
+                
+                kinectgrabber.setGame(motherRabbit, motherFish, type, motherPlatformSize, true);
             }
-            motherRabbit.z = wc.z;
-            
-            kinectgrabber.framefilter.setGame(motherRabbit, motherFish, 2, motherFishPlatformSize, motherRabbitPlatformSize, true);
-            
             // Clean z for distance measurments
-            motherRabbit.z = 0;
-            motherFish.z = 0;
+            //            motherRabbit.z = 0;
+            //            motherFish.z = 0;
             
-            waitingForFirstImage = false;
         }
-        
+        waitingForFirstImage = false;
     }
 }
 
@@ -436,7 +447,7 @@ void ofApp::update(){
 	if (kinectgrabber.filtered.tryReceive(filteredframe)) {
 		FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectResX, kinectResY);
 		FilteredDepthImage.updateTexture();
-        if (kinectgrabber.framefilter.firstImageReady)
+        if (kinectgrabber.isFirstImageReady())
             firstImageReady = true;
         
         //        //Check values for debug
@@ -455,7 +466,7 @@ void ofApp::update(){
         
         // Update grabber stored frame number
 		kinectgrabber.lock();
-		kinectgrabber.storedframes -= 1;
+		kinectgrabber.decStoredframes();
 		kinectgrabber.unlock();
         
         if (generalState == GENERAL_STATE_CALIBRATION) {
@@ -470,12 +481,12 @@ void ofApp::update(){
                 
                 // Get kinect depth image coord
                 ofVec2f t = ofVec2f(min((float)kinectResX-1,testPoint.x), min((float)kinectResY-1,testPoint.y));
-                ofVec3f worldPoint = ofVec3f(t);
-                worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);// / depthNorm;
-                ofVec4f wc = ofVec4f(worldPoint);
-                wc.w = 1;
-                
-                ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+                //                ofVec3f worldPoint = ofVec3f(t);
+                //                worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//kinectgrabber.kinect.getDistanceAt(t.x, t.y);// / depthNorm;
+                //                ofVec4f wc = ofVec4f(worldPoint);
+                //                wc.w = 1;
+                //
+                ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
                 drawTestingPoint(projectedPoint);
             }
             else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION) {
@@ -857,11 +868,11 @@ void ofApp::drawFlowField()
             }
             // Get kinect depth image coord
             ofVec2f t = ofVec2f((colPos*gradFieldresolution) + gradFieldresolution/2, rowPos*gradFieldresolution  + gradFieldresolution/2);
-            ofVec3f worldPoint = ofVec3f(t);
-            worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);// / depthNorm;
-            ofVec4f wc = ofVec4f(worldPoint);
-            wc.w = 1;
-            ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+            //            ofVec3f worldPoint = ofVec3f(t);
+            //            worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//kinectgrabber.kinect.getDistanceAt(t.x, t.y);// / depthNorm;
+            //            ofVec4f wc = ofVec4f(worldPoint);
+            //            wc.w = 1;
+            ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
             
             ofVec2f v2 = gradField[colPos + (rowPos * gradFieldcols)];
             
@@ -913,11 +924,11 @@ void ofApp::updateVehiclesFutureElevationAndGradient(vehicle& v){
     while (i < 10 && water)
     {
         ofVec4f wc = ofVec3f(futureLocation);
-        wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
-        wc.w = 1;
-        ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
-        vertexCc.w = 1;
-        float elevation = -basePlaneEq.dot(vertexCc);
+        //        wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)futureLocation.x+kinectResX*(int)futureLocation.y];
+        //        wc.w = 1;
+        //        ofVec4f vertexCc = kinectWorldMatrix*wc*wc.z;
+        //        vertexCc.w = 1;
+        float elevation = -basePlaneEq.dot(getWorldCoord(futureLocation.x, futureLocation.y));
         if (v.animalCoef*elevation > 0)
         {
             water = false;
@@ -941,8 +952,8 @@ void ofApp::updateVehiclesFutureElevationAndGradient(vehicle& v){
 //--------------------------------------------------------------
 void ofApp::drawVehicles()
 {
-    drawMotherFish();
-    drawMotherRabbit();
+    //    drawMotherFish();
+    //    drawMotherRabbit();
     for (auto & f : fish){
         drawFish(f);//, forces);
     }
@@ -957,11 +968,11 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     // Get vehicule coord
     ofVec2f t = v.getLocation();
     
-    ofVec3f worldPoint = ofVec3f(t);
-    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    ofVec4f wc = ofVec4f(worldPoint);
-    wc.w = 1;
-    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //    ofVec3f worldPoint = ofVec3f(t);
+    //    worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    ofVec4f wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
     
     //        ofVec2f force = v.getCurrentForce();
     ofVec2f velocity = v.getVelocity();
@@ -1011,7 +1022,7 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
     float fishLength = 2*sc;
     float fishHead = tailSize;
     
-    ofPath fish;
+    ofPolyline fish;
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
     fish.curveTo( ofPoint(-fishLength, 0));
@@ -1031,7 +1042,7 @@ void ofApp::drawFish(Fish& v)//, std::vector<ofVec2f> forces)
         //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
         c.setHsb((int)hsb, 255, 255); // rainbow
         ofFill();
-        fish.setFillColor(c);
+        //        fish.setFillColor(c);
     } else {
         ofNoFill();
     }
@@ -1125,21 +1136,21 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     // Get vehicule coord
     ofVec2f t = v.getLocation();
     
-    ofVec3f worldPoint = ofVec3f(t);
-    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    ofVec4f wc = ofVec4f(worldPoint);
-    wc.w = 1;
-    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //    ofVec3f worldPoint = ofVec3f(t);
+    //    worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    ofVec4f wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
     
     //        ofVec2f force = v.getCurrentForce();
     ofVec2f velocity = v.getVelocity();
     //        std::vector<ofVec2f> forces = v.getForces();
     float angle = v.getAngle(); // angle of the fish
-//    float fact = P+P/2*velocity.length()/3;
-//    
-//    //    fboProjWindow.begin();
-//    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
-//    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
+    //    float fact = P+P/2*velocity.length()/3;
+    //
+    //    //    fboProjWindow.begin();
+    //    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
+    //    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
     
     ofPushMatrix();
     
@@ -1184,7 +1195,7 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
         c1.setHsb((int)hsb, 255, 255); // rainbow
         c2.setHsb(255-(int)hsb, 255, 255);
     }
-
+    
     ofPath body;
     body.curveTo( ofPoint(-2*sc, 5.5*sc));
     body.curveTo( ofPoint(-2*sc, 5.5*sc));
@@ -1201,7 +1212,7 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     
     body.setFillColor(c1);
     body.draw();
-
+    
     ofSetColor(c2);
     ofDrawCircle(-19*sc, 0, 2*sc);
     
@@ -1222,7 +1233,7 @@ void ofApp::drawRabbit(Rabbit& v)//, std::vector<ofVec2f> forces)
     ofSetColor(c2);
     head.setFillColor(c2);
     head.draw();
-
+    
     ofSetColor(c1);
     ofDrawCircle(8.5*sc, 0, 1*sc);
     
@@ -1313,11 +1324,11 @@ void ofApp::drawMotherFish()//, std::vector<ofVec2f> forces)
     // Get vehicule coord
     ofVec2f t = motherFish;
     
-    ofVec3f worldPoint = ofVec3f(t);
-    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    ofVec4f wc = ofVec4f(worldPoint);
-    wc.w = 1;
-    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //    ofVec3f worldPoint = ofVec3f(t);
+    //    worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    ofVec4f wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
     
     //    float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
     float tailangle = 0;//nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
@@ -1362,11 +1373,11 @@ void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
     // Get vehicule coord
     ofVec2f t = motherRabbit;
     
-    ofVec3f worldPoint = ofVec3f(t);
-    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    ofVec4f wc = ofVec4f(worldPoint);
-    wc.w = 1;
-    ofVec2f projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
+    //    ofVec3f worldPoint = ofVec3f(t);
+    //    worldPoint.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//FilteredDepthImage.getFloatPixelsRef().getData()[(int)t.x+kinectResX*(int)t.y];//kinectgrabber.kinect.getDistanceAt(t.x, t.y);
+    //    ofVec4f wc = ofVec4f(worldPoint);
+    //    wc.w = 1;
+    ofVec2f projectedPoint = computeTransform(getWorldCoord(t.x, t.y));//kpt.getProjectedPoint(worldPoint);
     
     //    float nv = 1;//velocity.lengthSquared()/10; // Tail movement amplitude
     //    float footpos = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact*2) % 100) - 50)-25); // Footpos varies between -1 and 1 over time
@@ -1427,76 +1438,76 @@ void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
 //--------------------------------------------------------------
 void ofApp::drawGui(){
     
-    //backgroundColor is stored as an ImVec4 type but is converted to ofColor automatically
-    
-    ofSetBackgroundColor(backgroundColor);
-    
-    //required to call this at beginning
-    gui.begin();
-    
-    //In between gui.begin() and gui.end() you can use ImGui as you would anywhere else
-    
-    // 1. Show a simple window
-    {
-        ImGui::Text("Hello, world!");
-        // Adjust display_format to decorate the value with a prefix or a suffix.
-        //   "%.3f"         1.234
-        //   "%5.2f secs"   01.23 secs
-        //   "Gold: %.0f"   Gold: 1
-//        bool ImGui::SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format, float power)
-        ImGui::SliderFloat("Base plane height", &basePlaneOffset.z, 500, 2000, "%.2f mm from the kinect sensor");
-        
-        //this will change the app background color
-        ImGui::ColorEdit3("Background Color", (float*)&backgroundColor);
-        if(ImGui::Button("Test Window"))
-        {
-            show_test_window = !show_test_window;
-        }
-        
-        if (ImGui::Button("Another Window"))
-        {
-            //bitwise OR
-            show_another_window ^= 1;
-            
-        }
-        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    }
-    // 2. Show another window, this time using an explicit ImGui::Begin and ImGui::End
-    if (show_another_window)
-    {
-        //note: ofVec2f and ImVec2f are interchangeable
-        ImGui::SetNextWindowSize(ofVec2f(200,100), ImGuiSetCond_FirstUseEver);
-        ImGui::Begin("Another Window", &show_another_window);
-        ImGui::Text("Hello");
-        ImGui::End();
-    }
-    
-    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
-    if (show_test_window)
-    {
-        ImGui::SetNextWindowPos(ofVec2f(650, 20), ImGuiSetCond_FirstUseEver);
-        ImGui::ShowTestWindow(&show_test_window);
-    }
-    
-    
-    bool pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)imageButtonID, ImVec2(200, 200));
-    pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)pixelsButtonID, ImVec2(200, 200));
-    pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)textureSourceID, ImVec2(200, 200));
-    
-    
-    if(doThemeColorsWindow)
-    {
-        gui.openThemeColorWindow();
-        
-    }
-    
-    //required to call this at end
-    gui.end();
-    
-    if(textureSource.isAllocated())
-    {
-        //textureSource.draw(ofRandom(200), ofRandom(200));
-    }
+    //    //backgroundColor is stored as an ImVec4 type but is converted to ofColor automatically
+    //
+    //    ofSetBackgroundColor(backgroundColor);
+    //
+    //    //required to call this at beginning
+    //    gui.begin();
+    //
+    //    //In between gui.begin() and gui.end() you can use ImGui as you would anywhere else
+    //
+    //    // 1. Show a simple window
+    //    {
+    //        ImGui::Text("Hello, world!");
+    //        // Adjust display_format to decorate the value with a prefix or a suffix.
+    //        //   "%.3f"         1.234
+    //        //   "%5.2f secs"   01.23 secs
+    //        //   "Gold: %.0f"   Gold: 1
+    ////        bool ImGui::SliderFloat(const char* label, float* v, float v_min, float v_max, const char* display_format, float power)
+    //        ImGui::SliderFloat("Base plane height", &basePlaneOffset.z, 500, 2000, "%.2f mm from the kinect sensor");
+    //
+    //        //this will change the app background color
+    //        ImGui::ColorEdit3("Background Color", (float*)&backgroundColor);
+    //        if(ImGui::Button("Test Window"))
+    //        {
+    //            show_test_window = !show_test_window;
+    //        }
+    //
+    //        if (ImGui::Button("Another Window"))
+    //        {
+    //            //bitwise OR
+    //            show_another_window ^= 1;
+    //
+    //        }
+    //        ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    //    }
+    //    // 2. Show another window, this time using an explicit ImGui::Begin and ImGui::End
+    //    if (show_another_window)
+    //    {
+    //        //note: ofVec2f and ImVec2f are interchangeable
+    //        ImGui::SetNextWindowSize(ofVec2f(200,100), ImGuiSetCond_FirstUseEver);
+    //        ImGui::Begin("Another Window", &show_another_window);
+    //        ImGui::Text("Hello");
+    //        ImGui::End();
+    //    }
+    //
+    //    // 3. Show the ImGui test window. Most of the sample code is in ImGui::ShowTestWindow()
+    //    if (show_test_window)
+    //    {
+    //        ImGui::SetNextWindowPos(ofVec2f(650, 20), ImGuiSetCond_FirstUseEver);
+    //        ImGui::ShowTestWindow(&show_test_window);
+    //    }
+    //
+    //
+    //    bool pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)imageButtonID, ImVec2(200, 200));
+    //    pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)pixelsButtonID, ImVec2(200, 200));
+    //    pressed = ImGui::ImageButton((ImTextureID)(uintptr_t)textureSourceID, ImVec2(200, 200));
+    //
+    //
+    //    if(doThemeColorsWindow)
+    //    {
+    //        gui.openThemeColorWindow();
+    //
+    //    }
+    //
+    //    //required to call this at end
+    //    gui.end();
+    //
+    //    if(textureSource.isAllocated())
+    //    {
+    //        //textureSource.draw(ofRandom(200), ofRandom(200));
+    //    }
 }
 //--------------------------------------------------------------
 void ofApp::addPointPair() {
@@ -1504,12 +1515,12 @@ void ofApp::addPointPair() {
     cout << "Adding point pair in kinect world coordinates" << endl;
     int nDepthPoints = 0;
     for (int i=0; i<cvPoints.size(); i++) {
-        ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(cvPoints[i].x, cvPoints[i].y);
+        ofVec3f worldPoint = getWorldCoord(cvPoints[i].x, cvPoints[i].y);//kinectgrabber.kinect.getWorldCoordinateAt(cvPoints[i].x, cvPoints[i].y);
         if (worldPoint.z > 0)   nDepthPoints++;
     }
     if (nDepthPoints == (chessboardX-1)*(chessboardY-1)) {
         for (int i=0; i<cvPoints.size(); i++) {
-            ofVec3f worldPoint = kinectgrabber.kinect.getWorldCoordinateAt(cvPoints[i].x, cvPoints[i].y);
+            ofVec3f worldPoint = getWorldCoord(cvPoints[i].x, cvPoints[i].y);//kinectgrabber.kinect.getWorldCoordinateAt(cvPoints[i].x, cvPoints[i].y);
             worldPoint.z = worldPoint.z;
             pairsKinect.push_back(worldPoint);
             pairsProjector.push_back(currentProjectorPoints[i]);
@@ -1546,23 +1557,34 @@ void ofApp::addPointPair() {
 }
 
 //--------------------------------------------------------------
-ofVec2f ofApp::computeTransform(ofVec4f vin) // vin is in kinect image depth coordinate with normalized z
+ofVec2f ofApp::computeTransform(ofVec4f vin) // vin is in kinect image depth coordinate
 {
     /* Transform the vertex from depth image space to world space: */
     //    ofVec3f vertexCcxx = kinectgrabber.kinect.getWorldCoordinateAt(vertexDic.x, vertexDic.y, vertexDic.z);
-    ofVec4f vertexCc = kinectWorldMatrix*vin*vin.z;
-    vertexCc.w = 1;
+//    ofVec4f vertexCc = kinectWorldMatrix*vin*vin.z;
+//    vertexCc.w = 1;
     
-    /* Plug camera-space vertex into the base plane equation: */
-    float elevation=basePlaneEq.dot(vertexCc);///vertexCc.w;
-    
-    /* Transform elevation to height color map texture coordinate: */
-    //    heightColorMapTexCoord=elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
+//    /* Plug camera-space vertex into the base plane equation: */
+//    float elevation=basePlaneEq.dot(vertexCc);///vertexCc.w;
+//    
+//    /* Transform elevation to height color map texture coordinate: */
+//    //    heightColorMapTexCoord=elevation*heightColorMapTransformation.x+heightColorMapTransformation.y;
     
     /* Transform vertex to clip coordinates: */
-    ofVec4f screenPos = kinectProjMatrix*vertexCc;
+    ofVec4f screenPos = kinectProjMatrix*vin;//vertexCc;
     ofVec2f projectedPoint(screenPos.x/screenPos.z, screenPos.y/screenPos.z);
     return projectedPoint;
+}
+
+//--------------------------------------------------------------
+ofVec4f ofApp::getWorldCoord(float x, float y) // vin is in kinect image coordinate
+{
+    ofVec4f wc = ofVec2f(x, y);
+    wc.z = FilteredDepthImage.getFloatPixelsRef().getData()[(int)y*kinectResX+(int)x];
+    wc.w = 1;
+    ofVec4f retVal = kinectWorldMatrix*wc*wc.z;
+    retVal.w = 1;
+    return retVal;
 }
 
 //--------------------------------------------------------------
@@ -1592,12 +1614,12 @@ void ofApp::computeBasePlane(){
         for (int y = 0; y<sh; y ++){
             
             // Get kinect depth image coord
-            pt = ofVec4f(x+sl, y+st, 0, 1);
-            pt.z = FilteredDepthImage.getFloatPixelsRef().getData()[x+sl + (y+st)*kinectResX];
+            //            pt = ofVec4f(x+sl, y+st, 0, 1);
+            //            pt.z = FilteredDepthImage.getFloatPixelsRef().getData()[x+sl + (y+st)*kinectResX];
+            //
+            //            ofVec3f vertexCc = ofVec3f(kinectWorldMatrix*pt*pt.z); // Translate kinect coord in world coord
             
-            ofVec3f vertexCc = ofVec3f(kinectWorldMatrix*pt*pt.z); // Translate kinect coord in world coord
-            
-            points[x+y*sw] = vertexCc;
+            points[x+y*sw] = ofVec3f(getWorldCoord(x+sl, y+st));//vertexCc;
         }
     }
     
@@ -1635,12 +1657,12 @@ void ofApp::findMaxOffset(){
         for (int y = 0; y<sh; y ++){
             
             // Get kinect depth image coord
-            pt = ofVec4f(x+sl, y+st, 0, 1);
-            pt.z = FilteredDepthImage.getFloatPixelsRef().getData()[x+sl + (y+st)*kinectResX];
-            
-            ofVec3f vertexCc = ofVec3f(kinectWorldMatrix*pt*pt.z); // Translate kinect coord in world coord
-            
-            points[x+y*sw] = vertexCc;
+            //            pt = ofVec4f(x+sl, y+st, 0, 1);
+            //            pt.z = FilteredDepthImage.getFloatPixelsRef().getData()[x+sl + (y+st)*kinectResX];
+            //
+            //            ofVec3f vertexCc = ofVec3f(kinectWorldMatrix*pt*pt.z); // Translate kinect coord in world coord
+            //
+            points[x+y*sw] = ofVec3f(getWorldCoord(x+sl, y+st));//vertexCcvertexCc;
         }
     }
     
@@ -1911,11 +1933,11 @@ void ofApp::keyPressed(int key){
         cout << "maxOffset" << maxOffset << endl;
         kinectgrabber.setMaxOffset(maxOffset);
     } else if (key=='d') {
-        doThemeColorsWindow = !doThemeColorsWindow;
-        cout << "doThemeColorsWindow: " << doThemeColorsWindow << endl;
+        //        doThemeColorsWindow = !doThemeColorsWindow;
+        //        cout << "doThemeColorsWindow: " << doThemeColorsWindow << endl;
     } else if (key=='f') {
-        doSetTheme = !doSetTheme;
-        cout << "doSetTheme: " << doSetTheme << endl;
+        //        doSetTheme = !doSetTheme;
+        //        cout << "doSetTheme: " << doSetTheme << endl;
     } else if (key=='u') {
         basePlaneNormal.rotate(-1, ofVec3f(1,0,0)); // Rotate the base plane normal
         setRangesAndBasePlaneEquation();
@@ -2021,28 +2043,28 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (generalState == GENERAL_STATE_SANDBOX || (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_CALIBRATION_TEST)) {
-        if (x<kinectResX && y <kinectResY) {
-            testPoint.set(min(x, kinectResX-1), min(y, kinectResY-1));
-            
-            int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
-            cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
-            float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
-            cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
-            cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
-            cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
-        } else if (x > 650 && x < 750 && y > 120 && y < 220) {
-            ofVec2f tmp = testPoint;
-            testPoint.set(tmp.x+(x-700)/5, tmp.y+(y-170)/5);
-            
-            int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
-            cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
-            float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
-            cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
-            cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
-            cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
-        }
-    }
+    //    if (generalState == GENERAL_STATE_SANDBOX || (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_CALIBRATION_TEST)) {
+    //        if (x<kinectResX && y <kinectResY) {
+    //            testPoint.set(min(x, kinectResX-1), min(y, kinectResY-1));
+    //
+    //            int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
+    //            cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
+    //            float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
+    //            cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
+    //            cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
+    //            cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
+    //        } else if (x > 650 && x < 750 && y > 120 && y < 220) {
+    //            ofVec2f tmp = testPoint;
+    //            testPoint.set(tmp.x+(x-700)/5, tmp.y+(y-170)/5);
+    //
+    //            int idx = (int)testPoint.x+kinectResX*(int)testPoint.y;
+    //            cout << "Depth value at point: " << FilteredDepthImage.getFloatPixelsRef().getData()[idx]<< endl;
+    //            float* sPtr=kinectgrabber.framefilter.statBuffer+3*idx;
+    //            cout << " Number of valid samples statBuffer[0]: " << sPtr[0] << endl;
+    //            cout << " Sum of valid samples statBuffer[1]: " << sPtr[1] << endl; //
+    //            cout << " Sum of squares of valid samples statBuffer[2]: " << sPtr[2] << endl; // Sum of squares of valid samples<< endl;
+    //        }
+    //    }
     if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP){
         if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT)
         {
