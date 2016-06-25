@@ -148,7 +148,7 @@ void ofApp::setup(){
     
     //    setupGui();
     
-	kinectgrabber.startThread(true);
+	kinectgrabber.start(); // Start the acquisition
 }
 
 

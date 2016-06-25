@@ -22,6 +22,8 @@ public:
 
 	KinectGrabber();
 	~KinectGrabber();
+    void start();
+    void stop();
     void setup(General_state, Calibration_state);
     void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI);
     void initiateBuffers(void); // Reinitialise buffers
