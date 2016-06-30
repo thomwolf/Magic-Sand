@@ -4,12 +4,11 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
+#include "ofxGui.h"
 
 #include "ColorMap.h"
-//#include "FrameFilter.h"
 #include "KinectGrabber.h"
 #include "vehicle.h"
-//#include "SurfaceRenderer.h"
 #include "Utils.h"
 
 using namespace cv;
@@ -22,7 +21,6 @@ public:
 
     void setup();
     void clearFbos();
-    void setupGui();
     void setupMesh();
     void setRangesAndBasePlaneEquation();
     void setupGradientField();
@@ -47,7 +45,7 @@ public:
     void drawMotherFish();
     void drawMotherRabbit();
     
-    void drawGui();
+//    void drawGui();
 
     void addPointPair();
     void computeBasePlane();
@@ -75,29 +73,13 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
+    void setupGui();
+    
     bool loadSettings(string path);
     bool saveSettings(string path);
     
     shared_ptr<ofAppBaseWindow> projWindow;
 
-    // GUI
-//    ofxImGui gui;
-//    ImVec4 backgroundColor;
-//    bool show_test_window;
-//    bool show_another_window;
-//    bool doSetTheme;
-//    bool doThemeColorsWindow;
-//    
-//    float floatValue;
-//    ofImage imageButtonSource;
-//    GLuint imageButtonID;
-//    
-//    ofPixels pixelsButtonSource;
-//    GLuint pixelsButtonID;
-//    
-//    ofTexture textureSource;
-//    GLuint textureSourceID;
-    
 private:
     //kinect interfaces and calibration
     KinectGrabber               kinectgrabber;
@@ -137,6 +119,25 @@ private:
     bool calibrated;
     bool firstImageReady;
     bool waitingToInitialiseVehicles;
+    
+    // GUI panels
+	ofxPanel calibration, animals, sealevel, display, colors;
+    //Calibration panel
+	ofxButton autocalib, manualROI, manualcalib, calibcheck;
+    //Animals panel
+    ofxButton resetanimallocations, removeanimals;
+	ofxToggle motherfish, motherrabbit;
+	ofxIntSlider fishnumber, rabbitsnumber;
+    //Sea level panel
+    ofxButton resetsealevel;
+    ofxVec2Slider sealeveltilt;
+	ofxFloatSlider sealevelz;
+    //Display panel
+    ofxToggle showcontourlines, followbigchanges, spatialfilter;
+    ofxFloatSlider contourlinesdistance, highestlevel;
+    
+//	ofxColorSlider color;
+//	ofxLabel screenSize;
 
     // States variables
     General_state generalState, previousGeneralState;
@@ -156,7 +157,6 @@ private:
     ofMesh mesh;
     int meshwidth;          //Mesh size
     int meshheight;
-//    ofPlanePrimitive plane;
 
     // Shaders
     ofShader elevationShader;
@@ -183,6 +183,7 @@ private:
     vector<Fish> fish;
     vector<Rabbit> rabbits;
     int fishNum, rabbitsNum;
+    bool motherFish, motherRabbit;
     static const int MAX_STEPS = 10;
     
     ofPoint motherFish, motherRabbit; // Location of fish and rabbit mothers

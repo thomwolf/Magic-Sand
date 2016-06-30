@@ -146,7 +146,7 @@ void ofApp::setup(){
     
     //    setupVehicles();
     
-    //    setupGui();
+    setupGui();
     
 	kinectgrabber.start(); // Start the acquisition
 }
@@ -161,43 +161,6 @@ void ofApp::clearFbos(){
     contourLineFramebufferObject.begin();
     ofClear(0,0,0,255);
     contourLineFramebufferObject.end();
-}
-
-//--------------------------------------------------------------
-void ofApp::setupGui(){
-    //required call
-    //    gui.setup();
-    //
-    //    ImGui::GetIO().MouseDrawCursor = false;
-    //    //backgroundColor is stored as an ImVec4 type but can handle ofColor
-    //    backgroundColor = ofColor(114, 144, 154);
-    //    show_test_window = false;
-    //    show_another_window = true;
-    //    floatValue = basePlaneOffset.z;
-    //
-    //    //load your own ofImage
-    //    imageButtonSource.load("of.png");
-    //    imageButtonID = gui.loadImage(imageButtonSource);
-    //
-    //    //or have the loading done for you if you don't need the ofImage reference
-    //    //imageButtonID = gui.loadImage("of.png");
-    //
-    //    //can also use ofPixels in same manner
-    //    ofLoadImage(pixelsButtonSource, "of_upside_down.png");
-    //    pixelsButtonID = gui.loadPixels(pixelsButtonSource);
-    //
-    //    //and alt method
-    //    //pixelsButtonID = gui.loadPixels("of_upside_down.png");
-    //
-    //    //pass in your own texture reference if you want to keep it
-    //    textureSourceID = gui.loadTexture(textureSource, "of_upside_down.png");
-    //
-    //    //or just pass a path
-    //    //textureSourceID = gui.loadTexture("of_upside_down.png");
-    //
-    //    ofLogVerbose() << "textureSourceID: " << textureSourceID;
-    //    doSetTheme = false;
-    //    doThemeColorsWindow = false;
 }
 
 //--------------------------------------------------------------
@@ -1813,3 +1776,53 @@ bool ofApp::saveSettings(string path){
     xml.setToParent();
     return xml.save(path);
 }
+
+//--------------------------------------------------------------
+void ofApp::setupGui(){
+	// we add this listener before setting up so the initial circle resolution is correct
+	circleResolution.addListener(this, &ofApp::circleResolutionChanged);
+	ringButton.addListener(this, &ofApp::ringButtonPressed);
+    
+    // Calibration panel
+	calibration.setup("Calibration", "GUI_calibration_panel_settings.xml", 10, 10);
+    calibration.add(autocalib.setup("Auto Calibration"));
+    calibration.add(manualROI.setup("Manually define sand region"));
+    calibration.add(manualcalib.setup("Manually calibrate kinect & projector"));
+    calibration.add(calibcheck.setup("Test kinect & projectorcalibration"));
+
+    // Animal panel
+    animals.setup("Animals", "GUI_animals_panel_settings.xml", 110, 10);
+    animals.add(resetanimallocations.setup("Reset animal locations"));
+    animals.add(removeanimals.setup("Remove all animals"));
+	animals.add(motherfish.setup("Mother fish", motherFish));
+    animals.add(motherrabbit.setup("Mother rabbit", motherRabbit));
+	animals.add(fishnumber.setup("Number of fish", 0, 0, 10));
+    animals.add(rabbitsnumber.setup("Number of rabbits", 0, 0, 10));
+    
+    // Sea level panel
+	sealevel.setup("Sea level", "GUI_sealevel_panel_settings.xml", 210, 10);
+    sealevel.add(resetsealevel.setup("Reset sea level location and tilt"));
+    sealevel.add(sealeveltilt.setup("Tilt sea level", ofVec2f(0,0), ofVec2f(-30, -30), ofVec2f(30,30)));
+	sealevel.add(sealevelz.setup("Sea level vertical location", 0, heightMap.getScalarRangeMin(), heightMap.getScalarRangeMax()));
+
+    // Display panel
+	display.setup("Display", "GUI_display_panel_settings.xml", 310, 10);
+    display.add(showcontourlines.setup("Display contourlines", drawContourLines));
+    display.add(followbigchanges.setup("Quick reaction (follow hands)", true));
+    display.add(spatialfilter.setup("Spatial filtering", true));
+    display.add(contourlinesdistance.setup("Contourlines distance", contourLineDistance, 1, 100));
+    display.add(highestlevel.setup("Highest detection level", maxOffset, 0, 100));
+
+	colors.setup("Colors", "GUI_colors_panel_settings.xml", 410, 10);
+    
+    gui.add(filled.setup("fill", true));
+	gui.add(radius.setup("radius", 140, 10, 300));
+	gui.add(center.setup("center", ofVec2f(ofGetWidth()*.5, ofGetHeight()*.5), ofVec2f(0, 0), ofVec2f(ofGetWidth(), ofGetHeight())));
+	gui.add(color.setup("color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+	gui.add(circleResolution.setup("circle res", 5, 3, 90));
+	gui.add(twoCircles.setup("two circles"));
+	gui.add(ringButton.setup("ring"));
+	gui.add(screenSize.setup("screen size", ofToString(ofGetWidth())+"x"+ofToString(ofGetHeight())));
+}
+
+
