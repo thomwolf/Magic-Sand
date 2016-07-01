@@ -5,42 +5,42 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>B2354F3B-8BCB-439E-A91F-9666F4CA5D0B</string>
+	<string>82110DFD-C1CA-40FC-BD5B-DC29DB02E1A3</string>
 	<key>IDESourceControlProjectName</key>
 	<string>GreatSand</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>54C95451-C5D5-4890-BDF6-00826E075A25</key>
-		<string>https://github.com/thomwolf/ofxCv.git</string>
-		<key>AD4FA4B0-1BD3-4C10-B6A2-3BF6FCA9277C</key>
+		<key>A2D412E8-9853-4BC7-AACF-0FCC6D5F561C</key>
 		<string>https://github.com/thomwolf/GreatSand.git</string>
-		<key>D8308C1B-1745-4C56-B36F-94C408DD7BB2</key>
+		<key>C3F83FA0-0867-48E8-9525-169B1036D8F9</key>
 		<string>https://github.com/thomwolf/ofxKinectProjectorToolkit.git</string>
+		<key>C962F462-7045-4A72-96EA-DF7ADD96ABB9</key>
+		<string>https://github.com/thomwolf/ofxCv.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>GreatSand.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>54C95451-C5D5-4890-BDF6-00826E075A25</key>
-		<string>../../../../../addons/ofxCv</string>
-		<key>AD4FA4B0-1BD3-4C10-B6A2-3BF6FCA9277C</key>
+		<key>A2D412E8-9853-4BC7-AACF-0FCC6D5F561C</key>
 		<string>../..</string>
-		<key>D8308C1B-1745-4C56-B36F-94C408DD7BB2</key>
+		<key>C3F83FA0-0867-48E8-9525-169B1036D8F9</key>
 		<string>../../../../../addons/ofxKinectProjectorToolkit</string>
+		<key>C962F462-7045-4A72-96EA-DF7ADD96ABB9</key>
+		<string>../../../../../addons/ofxCv</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/thomwolf/GreatSand.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>AD4FA4B0-1BD3-4C10-B6A2-3BF6FCA9277C</string>
+	<string>A2D412E8-9853-4BC7-AACF-0FCC6D5F561C</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>AD4FA4B0-1BD3-4C10-B6A2-3BF6FCA9277C</string>
+			<string>A2D412E8-9853-4BC7-AACF-0FCC6D5F561C</string>
 			<key>IDESourceControlWCCName</key>
 			<string>GreatSand</string>
 		</dict>
@@ -48,7 +48,7 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>54C95451-C5D5-4890-BDF6-00826E075A25</string>
+			<string>C962F462-7045-4A72-96EA-DF7ADD96ABB9</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxCv</string>
 		</dict>
@@ -56,7 +56,7 @@
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>D8308C1B-1745-4C56-B36F-94C408DD7BB2</string>
+			<string>C3F83FA0-0867-48E8-9525-169B1036D8F9</string>
 			<key>IDESourceControlWCCName</key>
 			<string>ofxKinectProjectorToolkit</string>
 		</dict>

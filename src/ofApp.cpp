@@ -52,6 +52,8 @@ void ofApp::setup(){
     fishNum = 1;
     rabbitsNum = 0;
     isMother = false;
+    showMotherFish = false;
+    showMotherRabbit = false;
     motherPlatformSize = 20;
     
     // Load colormap and set heightmap
@@ -466,7 +468,7 @@ void ofApp::update(){
         }
     }
     if (initialisationState == INITIALISATION_STATE_ROI_DETERMINATION){
-        mainMessage = "Please wait while sand area is being detected";
+        modaltext = "Please wait while sand area is being detected";
         if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE) {
             initialisationState = INITIALISATION_STATE_AUTOCALIB;
             calibrationState = CALIBRATION_STATE_AUTOCALIB;
@@ -497,137 +499,103 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    // Draw the GUI window
-    int ybase = 250;
-    int yinc = 20;
-    int i = 0;
-    int xbase = 650;
-    ofDrawBitmapStringHighlight("Position the chessboard using the mouse.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("[SPACE]: add point pair.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("a & z: inc/dec chessboard size.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("q & s: inc/dec baseplane offset.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("w & x: inc/dec maxOffset.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("d & f: change GUI doThemeColorsWindow & doSetTheme.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("g & h: inc/dec contour line distance.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("u, i, o & p: rotate baseplane normal.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("n: Find and compute base plane in ROI.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("c: compute calibration matrix.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("r: go to find kinect ROI mode.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("m: go to manual ROI setup mode.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("t: go to point test mode.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("y: go to autocalib mode.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("b: go to sandbox mode.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("e: go to game 1 mode.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("v: save calibration.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("l: load calibration.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("j: save settings.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight("k: load setting.", xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight(resultMessage, xbase, ybase+i*yinc);
-    i++;
-    ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", xbase, ybase+i*yinc);
     
-    if (generalState == GENERAL_STATE_CALIBRATION) {
-        ofSetColor(0);
-        if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
-            kinectColorImage.draw(0, 0, 640, 480);
-            FilteredDepthImage.draw(650, 0, 320, 240);
-            
-            ofNoFill();
-            ofSetColor(255);
-            ofDrawRectangle(kinectROI);
-            ofFill();
-            
-            ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
-            ofDrawBitmapStringHighlight("The projector should place a green dot on the corresponding point.", 340, 530);
-            ofSetColor(255, 0, 0);
-            
-            //Draw testing point indicator
-            float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 40);
-            ofDrawCircle(testPoint.x, testPoint.y, ptSize);
-            
-        } else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
-        {
-            kinectColorImage.draw(0, 0, 640, 480);
-            FilteredDepthImage.draw(650, 0, 320, 240);
-            
-            ofNoFill();
-            ofSetColor(255);
-            ofDrawRectangle(kinectROI);
-            ofFill();
-            
-        } else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION)
-        {
-            ofSetColor(255);
-            thresholdedImage.draw(0, 0, 640, 480);
-            //            FilteredDepthImage.draw(650, 0, 320, 240);
-            //
-            ofNoFill();
-            ofSetColor(255);
-            ofDrawRectangle(kinectROI);
-            ofFill();
-            
-            //           ofSetColor(255);
-            //            thresholdedImage.draw(650, 0, 320, 240); // Overwrite depth image
-            contourFinder.draw(0, 0);//, 320, 240); // Draw contour finder results
-            large.draw();
-        } else if (calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP && ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
-            ofNoFill();
-            ofSetColor(0,255,0,255);
-            ofDrawRectangle(kinectROIManualCalib);
-            ofFill();
-        }
-        ofSetColor(255);
-    } else if (generalState == GENERAL_STATE_SANDBOX){
-        fboProjWindow.draw(0, 0, 640, 480);
-        //Draw testing point indicator
-        float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 10);
-        ofDrawCircle(testPoint.x, testPoint.y, ptSize);
-        
-        ofRectangle imgROI;
-        imgROI.setFromCenter(testPoint, 20, 20);
-        kinectColorImage.setROI(imgROI);
-        kinectColorImage.drawROI(650, 10, 100, 100);
-        ofDrawCircle(700, 60, ptSize);
-        
-        if (firstImageReady) {
-            //            FilteredDepthImage.setROI(imgROI);
-            float * roi_ptr = (float*)FilteredDepthImage.getFloatPixelsRef().getData() + ((int)(imgROI.y)*kinectResX) + (int)imgROI.x;
-            ofFloatPixels ROIDpt;
-            ROIDpt.setNumChannels(1);
-            ROIDpt.setFromAlignedPixels(roi_ptr,imgROI.width,imgROI.height,1,kinectResX*4);
-            Dptimg.setFromPixels(ROIDpt);
-            
-            Dptimg.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);
-            Dptimg.contrastStretch();
-            Dptimg.draw(650, 120, 100, 100);
-            ofDrawCircle(700, 170, ptSize);
-        }
-    } else if (generalState == GENERAL_STATE_GAME1) {
-        vhcle.draw(0,0);
-        contourFinder.draw(0,0);
+//    if (generalState == GENERAL_STATE_CALIBRATION) {
+////        ofSetColor(0);
+//        if (calibrationState == CALIBRATION_STATE_CALIBRATION_TEST){
+//            kinectColorImage.draw(0, 0, 640, 480);
+//            FilteredDepthImage.draw(650, 0, 320, 240);
+//            
+////            ofNoFill();
+////            ofSetColor(255);
+////            ofDrawRectangle(kinectROI);
+////            ofFill();
+////            
+////            ofDrawBitmapStringHighlight("Click on the image to test a point in the RGB image.", 340, 510);
+////            ofDrawBitmapStringHighlight("The projector should place a green dot on the corresponding point.", 340, 530);
+////            ofSetColor(255, 0, 0);
+////            
+//            //Draw testing point indicator
+//            float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 40);
+//            ofDrawCircle(testPoint.x, testPoint.y, ptSize);
+//            
+//        } else if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+//        {
+//            kinectColorImage.draw(0, 0, 640, 480);
+//            FilteredDepthImage.draw(650, 0, 320, 240);
+//            
+//            ofNoFill();
+//            ofSetColor(255);
+//            ofDrawRectangle(kinectROI);
+//            ofFill();
+//            
+//        } else if (calibrationState == CALIBRATION_STATE_ROI_DETERMINATION)
+//        {
+//            ofSetColor(255);
+//            thresholdedImage.draw(0, 0, 640, 480);
+//            //            FilteredDepthImage.draw(650, 0, 320, 240);
+//            //
+//            ofNoFill();
+//            ofSetColor(255);
+//            ofDrawRectangle(kinectROI);
+//            ofFill();
+//            
+//            //           ofSetColor(255);
+//            //            thresholdedImage.draw(650, 0, 320, 240); // Overwrite depth image
+//            contourFinder.draw(0, 0);//, 320, 240); // Draw contour finder results
+//            large.draw();
+//        } else if (calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP && ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
+//            ofNoFill();
+//            ofSetColor(0,255,0,255);
+//            ofDrawRectangle(kinectROIManualCalib);
+//            ofFill();
+//        }
+//        ofSetColor(255);
+//    } else if (generalState == GENERAL_STATE_SANDBOX){
+//        fboProjWindow.draw(0, 0, 640, 480);
+//        //Draw testing point indicator
+//        float ptSize = ofMap(cos(ofGetFrameNum()*0.1), -1, 1, 3, 10);
+//        ofDrawCircle(testPoint.x, testPoint.y, ptSize);
+//        
+//        ofRectangle imgROI;
+//        imgROI.setFromCenter(testPoint, 20, 20);
+//        kinectColorImage.setROI(imgROI);
+//        kinectColorImage.drawROI(650, 10, 100, 100);
+//        ofDrawCircle(700, 60, ptSize);
+//        
+//        if (firstImageReady) {
+//            //            FilteredDepthImage.setROI(imgROI);
+//            float * roi_ptr = (float*)FilteredDepthImage.getFloatPixelsRef().getData() + ((int)(imgROI.y)*kinectResX) + (int)imgROI.x;
+//            ofFloatPixels ROIDpt;
+//            ROIDpt.setNumChannels(1);
+//            ROIDpt.setFromAlignedPixels(roi_ptr,imgROI.width,imgROI.height,1,kinectResX*4);
+//            Dptimg.setFromPixels(ROIDpt);
+//            
+//            Dptimg.setNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);
+//            Dptimg.contrastStretch();
+//            Dptimg.draw(650, 120, 100, 100);
+//            ofDrawCircle(700, 170, ptSize);
+//        }
+//    } else if (generalState == GENERAL_STATE_GAME1) {
+//        vhcle.draw(0,0);
+//        contourFinder.draw(0,0);
+//    }
+    
+    fboProjWindow.draw(0, 0, 640, 480);
+    ofNoFill();
+    ofSetColor(255);
+    ofDrawRectangle(kinectROI);
+    ofFill();
+    //    drawTextGui();
+    if (showModal){
+        modal.draw();
+    } else {
+        calibration.draw();
+        animals.draw();
+        sealevel.draw();
+        display.draw();
     }
     
-    //    drawGui();
 }
 
 //--------------------------------------------------------------
@@ -984,8 +952,55 @@ void ofApp::drawMotherRabbit()//, std::vector<ofVec2f> forces)
     ofSetColor(255);
 }
 //--------------------------------------------------------------
-void ofApp::drawGui(){
-    
+void ofApp::drawTextGui(){
+    // Draw the GUI window
+    int ybase = 250;
+    int yinc = 20;
+    int i = 0;
+    int xbase = 650;
+    ofDrawBitmapStringHighlight("Position the chessboard using the mouse.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("[SPACE]: add point pair.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("a & z: inc/dec chessboard size.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("q & s: inc/dec baseplane offset.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("w & x: inc/dec maxOffset.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("d & f: change GUI doThemeColorsWindow & doSetTheme.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("g & h: inc/dec contour line distance.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("u, i, o & p: rotate baseplane normal.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("n: Find and compute base plane in ROI.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("c: compute calibration matrix.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("r: go to find kinect ROI mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("m: go to manual ROI setup mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("t: go to point test mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("y: go to autocalib mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("b: go to sandbox mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("e: go to game 1 mode.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("v: save calibration.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("l: load calibration.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("j: save settings.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight("k: load setting.", xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight(resultMessage, xbase, ybase+i*yinc);
+    i++;
+    ofDrawBitmapStringHighlight(ofToString(pairsKinect.size())+" point pairs collected.", xbase, ybase+i*yinc);
 }
 //--------------------------------------------------------------
 void ofApp::addPointPair() {
@@ -1137,15 +1152,16 @@ void ofApp::autoCalib(){
         //        fboProjWindow.end();
         //        updateROIAutoSetup();
         //        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-        mainMessage = "Please flatten the sand surface carefully and press [SPACE]. This surface will give the sea level.";
-        resultMessage = "Please flatten the sand surface carefully and press [SPACE]. This surface will give the sea level.";
+        modaltext = "Kinect/projector calibration: Please flatten the sand surface carefully before starting the calibration.";
+//        resultMessage = "Please flatten the sand surface carefully and press [SPACE]. This surface will give the sea level.";
     } else if (autoCalibState == AUTOCALIB_STATE_INIT_POINT){
         if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
             if (kinectROI.getArea() == 0)
             {
-                ofLogVerbose("GreatSand") << "autoCalib(): Could not find kinect ROI, stopping autocalib" ;
+                modaltext = "The sand region has not been defined. Please detect or define manually the sand region.";
                 autoCalibState = AUTOCALIB_STATE_DONE;
             } else {
+                modaltext = "Kinect/projector calibration: Computing base plane, please wait.";
                 computeBasePlane(); // Find base plane
                 
                 autoCalibPts = new ofPoint[10];
@@ -1175,6 +1191,7 @@ void ofApp::autoCalib(){
         }
     } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT){
         if (currentCalibPts < 5 || (upframe && currentCalibPts < 10)) {
+            modaltext = "Kinect/projector calibration: Acquiring calibration points, please wait.";
             cvRgbImage = ofxCv::toCv(kinectColorImage.getPixels());
             cv::Size patternSize = cv::Size(chessboardX-1, chessboardY-1);
             int chessFlags = cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_FAST_CHECK;
@@ -1209,6 +1226,7 @@ void ofApp::autoCalib(){
                     ofLogVerbose("GreatSand") << "autoCalib(): Chessboard not found on trial : " << trials ;
                     if (trials >10) {
                         // Move the chessboard closer to the center of the screen
+                        modaltext = "Kinect/projector calibration: Chessboard not found, moving chessboard. Please wait.";
                         ofLogVerbose("GreatSand") << "autoCalib(): Chessboard could not be found moving chessboard closer to center " ;
                         autoCalibPts[currentCalibPts] = 3*autoCalibPts[currentCalibPts]/4;
                         
@@ -1225,8 +1243,8 @@ void ofApp::autoCalib(){
                 findMaxOffset(); // Find max offset
                 autoCalibState = AUTOCALIB_STATE_COMPUTE;
             } else { // We ask for higher points
-                resultMessage = "Please put a board on the sandbox and press [SPACE]";
-                mainMessage = "Please put a board on the sandbox and press [SPACE]";
+//                resultMessage = "Please put a board on the sandbox and press [SPACE]";
+                modaltext = "Please put a board over the sandbox so we can acquire higher calibration points.";
             }
         }
     } else if (autoCalibState == AUTOCALIB_STATE_COMPUTE){
@@ -1237,6 +1255,7 @@ void ofApp::autoCalib(){
             kpt.calibrate(pairsKinect, pairsProjector);
             kinectProjMatrix = kpt.getProjectionMatrix();
             calibrated = true;
+            modaltext = "Kinect/projector calibration: Calibration successfull.";
         }
         autoCalibState = AUTOCALIB_STATE_DONE;
     } else if (autoCalibState == AUTOCALIB_STATE_DONE){
@@ -1326,6 +1345,7 @@ void ofApp::updateROIFromColorImage(){
 // Find kinect ROI of the sandbox from the depth image
 void ofApp::updateROIFromDepthImage(){
     if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT) {
+        modaltext = "Detecting sand area: Please wait...";
         // set kinect to max depth range
         ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Set maximal ROI for kinect" ;
         kinectROI = ofRectangle(0, 0, kinectResX, kinectResY);
@@ -1465,6 +1485,7 @@ void ofApp::updateROIFromDepthImage(){
         // We are finished, set back kinect depth range and update ROI
         ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
         updateKinectGrabberROI();
+        modaltext = "Detecting sand area: Sand area successfully detected.";
         //  }
     } else if (ROICalibrationState == ROI_CALIBRATION_STATE_DONE){
     }
@@ -1779,50 +1800,246 @@ bool ofApp::saveSettings(string path){
 
 //--------------------------------------------------------------
 void ofApp::setupGui(){
-	// we add this listener before setting up so the initial circle resolution is correct
-	circleResolution.addListener(this, &ofApp::circleResolutionChanged);
-	ringButton.addListener(this, &ofApp::ringButtonPressed);
     
-    // Calibration panel
-	calibration.setup("Calibration", "GUI_calibration_panel_settings.xml", 10, 10);
-    calibration.add(autocalib.setup("Auto Calibration"));
-    calibration.add(manualROI.setup("Manually define sand region"));
-    calibration.add(manualcalib.setup("Manually calibrate kinect & projector"));
-    calibration.add(calibcheck.setup("Test kinect & projectorcalibration"));
-
-    // Animal panel
-    animals.setup("Animals", "GUI_animals_panel_settings.xml", 110, 10);
-    animals.add(resetanimallocations.setup("Reset animal locations"));
-    animals.add(removeanimals.setup("Remove all animals"));
-	animals.add(motherfish.setup("Mother fish", motherFish));
-    animals.add(motherrabbit.setup("Mother rabbit", motherRabbit));
-	animals.add(fishnumber.setup("Number of fish", 0, 0, 10));
-    animals.add(rabbitsnumber.setup("Number of rabbits", 0, 0, 10));
+    // instantiate and position the gui //
+    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
-    // Sea level panel
-	sealevel.setup("Sea level", "GUI_sealevel_panel_settings.xml", 210, 10);
-    sealevel.add(resetsealevel.setup("Reset sea level location and tilt"));
-    sealevel.add(sealeveltilt.setup("Tilt sea level", ofVec2f(0,0), ofVec2f(-30, -30), ofVec2f(30,30)));
-	sealevel.add(sealevelz.setup("Sea level vertical location", 0, heightMap.getScalarRangeMin(), heightMap.getScalarRangeMax()));
-
-    // Display panel
-	display.setup("Display", "GUI_display_panel_settings.xml", 310, 10);
-    display.add(showcontourlines.setup("Display contourlines", drawContourLines));
-    display.add(followbigchanges.setup("Quick reaction (follow hands)", true));
-    display.add(spatialfilter.setup("Spatial filtering", true));
-    display.add(contourlinesdistance.setup("Contourlines distance", contourLineDistance, 1, 100));
-    display.add(highestlevel.setup("Highest detection level", maxOffset, 0, 100));
-
-	colors.setup("Colors", "GUI_colors_panel_settings.xml", 410, 10);
+    // add some components //
+//    gui->addTextInput("message", "# open frameworks #");
     
-    gui.add(filled.setup("fill", true));
-	gui.add(radius.setup("radius", 140, 10, 300));
-	gui.add(center.setup("center", ofVec2f(ofGetWidth()*.5, ofGetHeight()*.5), ofVec2f(0, 0), ofVec2f(ofGetWidth(), ofGetHeight())));
-	gui.add(color.setup("color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
-	gui.add(circleResolution.setup("circle res", 5, 3, 90));
-	gui.add(twoCircles.setup("two circles"));
-	gui.add(ringButton.setup("ring"));
-	gui.add(screenSize.setup("screen size", ofToString(ofGetWidth())+"x"+ofToString(ofGetHeight())));
+    gui->addFRM();
+    gui->addBreak();
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::white);
+    calibrationFolder->addButton("Full Calibration");
+    calibrationFolder->addButton("Automatically detect sand region");
+    calibrationFolder->addButton("Manually define sand region");
+    calibrationFolder->addButton("Automatically calibrate kinect & projector");
+    calibrationFolder->addButton("Manually calibrate kinect & projector");
+    calibrationFolder->addButton("Test kinect & projectorcalibration");
+    // let's have it open by default. note: call this only after you're done adding items //
+    calibrationFolder->expand();
+    
+    gui->addBreak();
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level settings", ofColor::white);
+    sealevelFolder->addSlider("Tilt X", 0, -30, 30);
+    sealevelFolder->addSlider("Tilt Y", 0, -30, 30);
+    sealevelFolder->addSlider("Vertical offset", 0, heightMap.getScalarRangeMin(), heightMap.getScalarRangeMax());
+    sealevelFolder->addButton("Reset sea level");
+    sealevelFolder->expand();
+
+    gui->addBreak();
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* displayFolder = gui->addFolder("Display settings", ofColor::white);
+    displayFolder->addToggle("Quick reaction (follow hands)", true);
+    displayFolder->addToggle("Spatial filtering", true);
+    displayFolder->addToggle("Display contourlines", drawContourLines);
+    displayFolder->addSlider("Contourlines distance", contourLineDistance, 1, 100);
+    displayFolder->addSlider("Highest detection level", maxOffset, 0, 100);
+    displayFolder->expand();
+
+    gui->addBreak();
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* animalFolder = gui->addFolder("Animals settings", ofColor::white);
+    animalFolder->addSlider("Number of fish", 0, 0, 10);
+    animalFolder->addSlider("Number of rabbits", 0, 0, 10);
+    animalFolder->addToggle("Mother fish", showMotherFish);
+    animalFolder->addToggle("Mother rabbit", showMotherRabbit);
+    animalFolder->addButton("Reset animal locations");
+    animalFolder->addButton("Remove all animals");
+    
+    // adding the optional header allows you to drag the gui around //
+    gui->addHeader(":: Settings ::");
+    
+    // adding the optional footer allows you to collapse/expand the gui //
+    gui->addFooter();
+    
+    // once the gui has been assembled, register callbacks to listen for component specific events //
+    gui->onButtonEvent(this, &ofApp::onButtonEvent);
+    gui->onToggleEvent(this, &ofApp::onToggleEvent);
+    gui->onSliderEvent(this, &ofApp::onSliderEvent);
+//    gui->onTextInputEvent(this, &ofApp::onTextInputEvent);
+//    gui->on2dPadEvent(this, &ofApp::on2dPadEvent);
+//    gui->onDropdownEvent(this, &ofApp::onDropdownEvent);
+//    gui->onColorPickerEvent(this, &ofApp::onColorPickerEvent);
+//    gui->onMatrixEvent(this, &ofApp::onMatrixEvent);
+    
+//    gui->setOpacity(gui->getSlider("datgui opacity")->getScale());
+    //  gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    
+//    // finally let's load up the stock themes, press spacebar to cycle through them //
+//    themes = {  new ofxDatGuiTheme(true),
+//        new ofxDatGuiThemeSmoke(),
+//        new ofxDatGuiThemeWireframe(),
+//        new ofxDatGuiThemeMidnight(),
+//        new ofxDatGuiThemeAqua(),
+//        new ofxDatGuiThemeCharcoal(),
+//        new ofxDatGuiThemeAutumn(),
+//        new ofxDatGuiThemeCandy()};
+//    tIndex = 0;
+    
+//    // launch the app //
+//    mFullscreen = true;
+//    refreshWindow();
+
+//    ofxGuiSetDefaultWidth(200);
+//    ofxGuiSetBackgroundColor(ofColor(10,10,10,100));
+//    ofxGuiSetTextColor(ofColor(240,10,10,100));
+//    ofxGuiSetHeaderColor(ofColor(10,240,10,100));
+//    //ofxGuiSetFont();
+//    
+//    // Calibration panel
+//	calibration.setup("Calibration", "GUI_calibration_panel_settings.xml", 10, 10);
+//    initialisation.addListener(this, &ofApp::startInitialisation);
+//    autocalib.addListener(this, &ofApp::startAutocalib);
+//    autoROI.addListener(this, &ofApp::startAutoROI);
+//    manualROI.addListener(this, &ofApp::startManualROI);
+//    manualcalib.addListener(this, &ofApp::startManualcalibr);
+//    calibcheck.addListener(this, &ofApp::startCalibcheck);
+//
+//    // Sea level panel
+//	sealevel.setup("Sea level", "GUI_sealevel_panel_settings.xml", 650, calibration.getHeight()+20);
+//
+//    // Display panel
+//	display.setup("Display", "GUI_display_panel_settings.xml", 650, sealevel.getPosition().y+sealevel.getHeight()+10);
+//
+//    // Animal panel
+//    animals.setup("Animals", "GUI_animals_panel_settings.xml", 650, display.getPosition().y+display.getHeight()+10);
+//
+//    //Modal panel
+//    modal.setup("", "", ofGetWidth()*.5, ofGetHeight()*.5);
+//    modal.add(modaltext.setup("Modal text", ""));
+//    modal.add(okmodal.setup("Ok"));
+//    modal.add(cancelmodal.setup("Cancel"));
+//    showModal = false;
+//    okmodal.addListener(this, &ofApp::okModal);
+//    cancelmodal.addListener(this, &ofApp::cancelModal);
+
+
+//	colors.setup("Colors", "GUI_colors_panel_settings.xml", 410, 10);
+    
+//    gui.add(filled.setup("fill", true));
+//	gui.add(radius.setup("radius", 140, 10, 300));
+//	gui.add(center.setup("center", ofVec2f(ofGetWidth()*.5, ofGetHeight()*.5), ofVec2f(0, 0), ofVec2f(ofGetWidth(), ofGetHeight())));
+//	gui.add(color.setup("color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+//	gui.add(circleResolution.setup("circle res", 5, 3, 90));
+//	gui.add(twoCircles.setup("two circles"));
+//	gui.add(ringButton.setup("ring"));
+//	gui.add(screenSize.setup("screen size", ofToString(ofGetWidth())+"x"+ofToString(ofGetHeight())));
 }
+
+//--------------------------------------------------------------
+void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
+    if (e.target->is("toggle fullscreen")) toggleFullscreen();
+    cout << "onToggleEvent: " << e.target->getLabel() << " " << e.checked << endl;
+}
+
+//--------------------------------------------------------------
+void ofApp::onToggleEvent(ofxDatGuiButtonEvent e){
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::onSliderEvent(ofxDatGuiButtonEvent e){
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::startInitialisation(){
+    generalState = GENERAL_STATE_CALIBRATION;
+    calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+    initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
+    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+    ofLogVerbose("GreatSand") << "startInitialisation(): Starting initialisation" ;
+    showModal = true;
+    updateMode();
+}
+
+//--------------------------------------------------------------
+void ofApp::startAutocalib(){
+    generalState = GENERAL_STATE_CALIBRATION;
+    calibrationState = CALIBRATION_STATE_AUTOCALIB;
+    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+    ofLogVerbose("GreatSand") << "startAutocalib(): Starting autocalib" ;
+    showModal = true;
+    updateMode();
+}
+
+//--------------------------------------------------------------
+void ofApp::startAutoROI(){
+    generalState = GENERAL_STATE_CALIBRATION;
+    calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+    ofLogVerbose("GreatSand") << "startAutoROI(): Finding ROI" ;
+    showModal = true;
+    updateMode();
+}
+
+//--------------------------------------------------------------
+void ofApp::startManualROI(){
+    generalState = GENERAL_STATE_CALIBRATION;
+    calibrationState = CALIBRATION_STATE_ROI_MANUAL_SETUP;
+    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+    ofLogVerbose("GreatSand") << "startManualROI(): Updating ROI Manually" ;
+    showModal = true;
+    updateMode();
+}
+
+//--------------------------------------------------------------
+void ofApp::startManualcalibr(){
+    generalState = GENERAL_STATE_CALIBRATION;
+    calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+    ofLogVerbose("GreatSand") << "startManualcalibr(): Manual calibration" ;
+    showModal = true;
+    updateMode();
+}
+
+//--------------------------------------------------------------
+void ofApp::startCalibcheck(){
+    generalState = GENERAL_STATE_CALIBRATION;
+    calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
+    ofLogVerbose("GreatSand") << "startCalibcheck(): Texting calibration" ;
+    showModal = true;
+    updateMode();
+}
+
+//--------------------------------------------------------------
+void ofApp::okModal(){
+    if (generalState == GENERAL_STATE_CALIBRATION){
+        if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+        {
+            addPointPair();
+        } else if (calibrationState == CALIBRATION_STATE_AUTOCALIB){
+            if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
+            {
+                autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+            } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
+                if (!upframe)
+                    upframe = true;
+            } else if (autoCalibState == AUTOCALIB_STATE_DONE){
+                showModal = false;
+            }
+        }
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::cancelModal(){
+    if (calibrated){
+        generalState = GENERAL_STATE_SANDBOX;
+    } else {
+        generalState = GENERAL_STATE_NO_CALIBRATION;
+    }
+    ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
+    showModal = false;
+    updateMode();
+}
+
 
 

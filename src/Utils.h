@@ -13,7 +13,8 @@ namespace states
 //        GENERAL_STATE_INITIALISATION = 0,
         GENERAL_STATE_CALIBRATION = 1,
         GENERAL_STATE_SANDBOX = 2,
-        GENERAL_STATE_GAME1 = 3
+        GENERAL_STATE_GAME1 = 3,
+        GENERAL_STATE_NO_CALIBRATION = 4
     };
     enum Initialisation_state
     {

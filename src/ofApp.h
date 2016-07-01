@@ -4,7 +4,7 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
-#include "ofxGui.h"
+#include "ofxDatGui.h"
 
 #include "ColorMap.h"
 #include "KinectGrabber.h"
@@ -45,7 +45,7 @@ public:
     void drawMotherFish();
     void drawMotherRabbit();
     
-//    void drawGui();
+    void drawTextGui();
 
     void addPointPair();
     void computeBasePlane();
@@ -74,6 +74,9 @@ public:
     void gotMessage(ofMessage msg);
     
     void setupGui();
+    void onButtonEvent(ofxDatGuiButtonEvent e);
+    void onToggleEvent(ofxDatGuiButtonEvent e);
+    void onSliderEvent(ofxDatGuiButtonEvent e);
     
     bool loadSettings(string path);
     bool saveSettings(string path);
@@ -121,20 +124,27 @@ private:
     bool waitingToInitialiseVehicles;
     
     // GUI panels
-	ofxPanel calibration, animals, sealevel, display, colors;
-    //Calibration panel
-	ofxButton autocalib, manualROI, manualcalib, calibcheck;
-    //Animals panel
-    ofxButton resetanimallocations, removeanimals;
-	ofxToggle motherfish, motherrabbit;
-	ofxIntSlider fishnumber, rabbitsnumber;
-    //Sea level panel
-    ofxButton resetsealevel;
-    ofxVec2Slider sealeveltilt;
-	ofxFloatSlider sealevelz;
-    //Display panel
-    ofxToggle showcontourlines, followbigchanges, spatialfilter;
-    ofxFloatSlider contourlinesdistance, highestlevel;
+//	ofxPanel calibration, animals, sealevel, display, colors, modal;
+//    //Calibration panel
+//	ofxButton initialisation, autocalib, autoROI, manualROI, manualcalib, calibcheck;
+//    //Animals panel
+//    ofxButton resetanimallocations, removeanimals;
+//	ofxToggle motherfish, motherrabbit;
+//	ofxIntSlider fishnumber, rabbitsnumber;
+//    //Sea level panel
+//    ofxButton resetsealevel;
+//    ofxVec2Slider sealeveltilt;
+//	ofxFloatSlider sealevelz;
+//    //Display panel
+//    ofxToggle showcontourlines, followbigchanges, spatialfilter;
+//    ofxFloatSlider contourlinesdistance, highestlevel;
+    // Main panel
+    ofxDatGui* gui;
+    // Modal panel
+    ofxDatGui* modal;
+    bool showModal;
+//    ofxLabel modaltext;
+//    ofxButton okmodal, cancelmodal;
     
 //	ofxColorSlider color;
 //	ofxLabel screenSize;
@@ -183,7 +193,7 @@ private:
     vector<Fish> fish;
     vector<Rabbit> rabbits;
     int fishNum, rabbitsNum;
-    bool motherFish, motherRabbit;
+    bool showMotherFish, showMotherRabbit;
     static const int MAX_STEPS = 10;
     
     ofPoint motherFish, motherRabbit; // Location of fish and rabbit mothers
