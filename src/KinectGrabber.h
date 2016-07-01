@@ -46,22 +46,30 @@ public:
     void setMaxOffset(float newMaxOffset){
         maxOffset = newMaxOffset;
     }
-    
+    void setSpatialFiltering(bool newspatialFilter){
+        spatialFilter = newspatialFilter;
+    }
+    void setFollowBigChange(bool newfollowBigChange){
+        followBigChange = newfollowBigChange;
+    }
+
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
 	ofThreadChannel<ofVec2f*> gradient;
 	ofThreadChannel<General_state> generalStateChannel;
 	ofThreadChannel<Calibration_state> calibrationStateChannel;
     ofThreadChannel<ofRectangle> ROIchannel;
+    ofThreadChannel<int> numAveragingSlotschannel;
     
 private:
-	void threadedFunction();
+	void threadedFunction() override;
     void filter();
     void applySpaceFilter();
     void updateGradientField();
     void setMode(General_state sgeneralState, Calibration_state scalibrationState);
     void setKinectROI(ofRectangle skinectROI);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
+    void updateAveragingSlotsNumber(int snumAveragingSlots);
     
     // General state flags and variables
     General_state generalState;
@@ -100,6 +108,7 @@ private:
 	float maxVariance; // Maximum variance to consider a pixel stable
     float unvalidValue;
 	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update the display
+    bool followBigChange;
     float bigChange; // Amount of change over which the averaging slot is reset to new value
 	float instableValue; // Value to assign to instable pixels if retainValids is false
 	bool spatialFilter; // Flag whether to apply a spatial filter to time-averaged depth values

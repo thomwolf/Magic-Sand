@@ -13,9 +13,9 @@ KinectGrabber::KinectGrabber()
 
 //--------------------------------------------------------------
 KinectGrabber::~KinectGrabber(){
-//    stop();
+    //    stop();
     waitForThread(true);
-//	waitForThread(true);
+    //	waitForThread(true);
 }
 
 //--------------------------------------------------------------
@@ -37,9 +37,9 @@ void KinectGrabber::start(){
 /// unlocks the mutex which ensures that we'll only call
 /// stop and notify here once the condition is waiting
 void KinectGrabber::stop(){
-//    std::unique_lock<std::mutex> lck(mutex);
+    //    std::unique_lock<std::mutex> lck(mutex);
     stopThread();
-//    condition.notify_all();
+    //    condition.notify_all();
 }
 
 //--------------------------------------------------------------
@@ -83,6 +83,7 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
     maxgradfield = 1000;
     unvalidValue = 4000;
     spatialFilter = true;
+    followBigChange = true;
     minInitFrame = 60;
     
     maxOffset =newMaxOffset;
@@ -149,7 +150,7 @@ void KinectGrabber::resetBuffers(void){
 void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
     generalState = sgeneralState;
     calibrationState = scalibrationState;
-//    resetBuffers();
+    //    resetBuffers();
 }
 
 //--------------------------------------------------------------
@@ -164,7 +165,7 @@ ofMatrix4x4 KinectGrabber::getWorldMatrix(){
 }
 
 //--------------------------------------------------------------
-void KinectGrabber::threadedFunction(){
+void KinectGrabber::threadedFunction() {
 	while(isThreadRunning()) {
         
         //Update state of kinect if needed
@@ -181,7 +182,13 @@ void KinectGrabber::threadedFunction(){
             } // clear queue if needed
             setKinectROI(newROI);
         }
-
+        int newnumAveragingSlots;
+        if (numAveragingSlotschannel.tryReceive(newnumAveragingSlots)){
+            while(numAveragingSlotschannel.tryReceive(newnumAveragingSlots)){
+            } // clear queue if needed
+            updateAveragingSlotsNumber(newnumAveragingSlots);
+        }
+        
         // If new image in kinect => send to filter thread
         kinect.update();
         
@@ -210,7 +217,7 @@ void KinectGrabber::threadedFunction(){
             storedframes += 1;
             unlock();
         }
-
+        
     }
     kinect.close();
     delete[] averagingBuffer;
@@ -260,20 +267,35 @@ void KinectGrabber::filter()
                         float oldFiltered = newVal;
                         if (sPtr[0] > 0)
                             oldFiltered =sPtr[1]/sPtr[0];
-                        if(abs(oldFiltered-newVal)>=bigChange)
-                        {
-                            float* aabPtr;
-                            // update all averaging slots
-                            for (int i = 0; i < numAveragingSlots; i++){
-                                aabPtr=averagingBuffer+i*height*width+y*width+x;
-                                *aabPtr =newVal;
+                        if (followBigChange){
+                            if(abs(oldFiltered-newVal)>=bigChange)
+                            {
+                                float* aabPtr;
+                                // update all averaging slots
+                                for (int i = 0; i < numAveragingSlots; i++){
+                                    aabPtr=averagingBuffer+i*height*width+y*width+x;
+                                    *aabPtr =newVal;
+                                }
+                                //Update statistics
+                                sPtr[0] = numAveragingSlots;
+                                sPtr[1] = newVal*numAveragingSlots;
+                                sPtr[2] = newVal*newVal*numAveragingSlots;
+                            } else {
+                                
+                                /* Update the pixel's statistics: */
+                                ++sPtr[0]; // Number of valid samples
+                                sPtr[1]+=newVal; // Sum of valid samples
+                                sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
+                                
+                                /* Check if the previous value in the averaging buffer was valid: */
+                                if(oldVal!= unvalidValue)
+                                {
+                                    --sPtr[0]; // Number of valid samples
+                                    sPtr[1]-=oldVal; // Sum of valid samples
+                                    sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
+                                }
                             }
-                            //Update statistics
-                            sPtr[0] = numAveragingSlots;
-                            sPtr[1] = newVal*numAveragingSlots;
-                            sPtr[2] = newVal*newVal*numAveragingSlots;
                         } else {
-                        
                             /* Update the pixel's statistics: */
                             ++sPtr[0]; // Number of valid samples
                             sPtr[1]+=newVal; // Sum of valid samples
@@ -286,6 +308,7 @@ void KinectGrabber::filter()
                                 sPtr[1]-=oldVal; // Sum of valid samples
                                 sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
                             }
+                            
                         }
                     }
                     // Check if the pixel is considered "stable": */
@@ -451,6 +474,21 @@ bool KinectGrabber::isInsideROI(int x, int y){
         result = false;
     return result;
 }
+
+//--------------------------------------------------------------
+void KinectGrabber::updateAveragingSlotsNumber(int snumAveragingSlots){
+    if (bufferInitiated){
+            bufferInitiated = false;
+            delete[] averagingBuffer;
+            delete[] statBuffer;
+            delete[] validBuffer;
+            delete[] gradField;
+        }
+    numAveragingSlots = snumAveragingSlots;
+    minNumSamples=(numAveragingSlots+1)/2;
+    initiateBuffers();
+}
+
 
 
 

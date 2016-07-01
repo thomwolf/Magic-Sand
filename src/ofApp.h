@@ -84,6 +84,9 @@ public:
     bool saveSettings(string path);
     
     shared_ptr<ofAppBaseWindow> projWindow;
+    
+    ofxCvFloatImage FilteredDepthImage;
+    ofVec2f* gradField;
 
 private:
     //kinect interfaces and calibration
@@ -91,7 +94,6 @@ private:
     ofxKinectProjectorToolkit   kpt;
 
     //Images and cv matrixes
-    ofxCvFloatImage             FilteredDepthImage;
     ofxCvColorImage             kinectColorImage;
     cv::Mat                     cvRgbImage;
     ofxCvFloatImage             Dptimg;
@@ -99,7 +101,6 @@ private:
     ofxCvFloatImage vhcle;
     
     //Gradient field variables
-    ofVec2f* gradField;
     int gradFieldcols, gradFieldrows;
     double gradFieldresolution;
     float arrowLength;
@@ -159,8 +160,8 @@ private:
     ofFbo   contourLineFramebufferObject;
 
     // Base plane
-    ofVec3f basePlaneNormal;
-    ofVec3f basePlaneOffset;
+    ofVec3f basePlaneNormal, basePlaneNormalBack;
+    ofVec3f basePlaneOffset, basePlaneOffsetBack;
     ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
     float maxOffset, maxOffsetSafeRange;
     

@@ -27,7 +27,7 @@ uniform vec4 basePlaneEq; // Base plane equation
 
 void main()
 {
-    vec4 position =ftransform();
+    vec4 position =gl_Vertex;
     vec2 texcoord = gl_MultiTexCoord0.xy;
     // copy position so we can work with it.
     vec4 pos = position;
@@ -72,7 +72,7 @@ void main()
 //	// finally set the pos to be that actual position rendered
     //texel0 = vec4(bug, 0.0, 1.0, 1.0);
     
-	gl_Position = modelViewProjectionMatrix * projectedPoint;
+	gl_Position = gl_ModelViewProjectionMatrix * projectedPoint;
 }
 
 //uniform sampler2DRect depthSampler; // Sampler for the depth image-space elevation texture

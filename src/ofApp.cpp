@@ -39,13 +39,15 @@ void ofApp::setup(){
     arrowLength = 25;
 	
     // Setup sandbox boundaries, base plane and kinect clip planes
-	basePlaneNormal = ofVec3f(0,0,1);
-	basePlaneOffset= ofVec3f(0,0,870);
+	basePlaneNormalBack = ofVec3f(0,0,1); // This is our default baseplane normal
+    basePlaneNormal = basePlaneNormalBack;
+	basePlaneOffsetBack= ofVec3f(0,0,870); // This is our default baseplane offset
+    basePlaneOffset = basePlaneOffsetBack;
     maxOffset = 0;
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
     
     // Sandbox contourlines
-    drawContourLines = false; // Flag if topographic contour lines are enabled
+    drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Vehicles
@@ -1778,8 +1780,10 @@ bool ofApp::loadSettings(string path){
         return false;
     xml.setTo("KINECTSETTINGS");
     kinectROI = xml.getValue<ofRectangle>("kinectROI");
-    basePlaneNormal = xml.getValue<ofVec3f>("basePlaneNormal");
-    basePlaneOffset = xml.getValue<ofVec3f>("basePlaneOffset");
+    basePlaneNormalBack = xml.getValue<ofVec3f>("basePlaneNormal");
+    basePlaneNormal = basePlaneNormalBack;
+    basePlaneOffsetBack = xml.getValue<ofVec3f>("basePlaneOffset");
+    basePlaneOffset = basePlaneOffsetBack;
     basePlaneEq = xml.getValue<ofVec4f>("basePlaneEq");
     maxOffset = xml.getValue<float>("maxOffset");
     
@@ -1824,8 +1828,40 @@ void ofApp::setupGui(){
     gui->addFRM();
     gui->addBreak();
     
+    
     // add a folder to group a few components together //
-    ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::white);
+    ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level settings", ofColor::blueSteel);
+    sealevelFolder->addSlider("Tilt X", -30, 30, 0);
+    sealevelFolder->addSlider("Tilt Y", -30, 30, 0);
+    sealevelFolder->addSlider("Vertical offset", heightMap.getScalarRangeMin()*.5, heightMap.getScalarRangeMax()*.5, 0);
+    sealevelFolder->addButton("Reset sea level");
+    sealevelFolder->expand();
+
+    gui->addBreak();
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* displayFolder = gui->addFolder("Display settings", ofColor::orangeRed);
+    displayFolder->addToggle("Display contourlines", drawContourLines);
+    displayFolder->addSlider("Contourlines\ndistance", 1, 100, contourLineDistance);
+    displayFolder->addSlider("Highest detection\nlevel", 0, 100, maxOffset);
+    displayFolder->addToggle("Spatial filtering", true);
+    displayFolder->addToggle("Quick reaction (follow hands)", true);
+    displayFolder->addSlider("# of averaging slots", 0, 40, 30)->setPrecision(0);
+    displayFolder->expand();
+
+    gui->addBreak();
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* animalFolder = gui->addFolder("Animals settings", ofColor::greenYellow);
+    animalFolder->addSlider("# of fish", 0, 10, 0)->setPrecision(0);
+    animalFolder->addSlider("# of rabbits", 0, 10, 0)->setPrecision(0);
+    animalFolder->addToggle("Mother fish", showMotherFish);
+    animalFolder->addToggle("Mother rabbit", showMotherRabbit);
+    animalFolder->addButton("Reset animal locations");
+    animalFolder->addButton("Remove all animals");
+    
+    // add a folder to group a few components together //
+    ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::purple);
     calibrationFolder->addButton("Full Calibration");
     calibrationFolder->addButton("Automatically detect sand region");
     calibrationFolder->addButton("Manually define sand region");
@@ -1833,40 +1869,10 @@ void ofApp::setupGui(){
     calibrationFolder->addButton("Manually calibrate kinect & projector");
     calibrationFolder->addButton("Test kinect & projector calibration");
     // let's have it open by default. note: call this only after you're done adding items //
-    calibrationFolder->expand();
+    //    calibrationFolder->expand();
     
     gui->addBreak();
-    
-    // add a folder to group a few components together //
-    ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level settings", ofColor::white);
-    sealevelFolder->addSlider("Tilt X", 0, -30, 30);
-    sealevelFolder->addSlider("Tilt Y", 0, -30, 30);
-    sealevelFolder->addSlider("Vertical offset", 0, heightMap.getScalarRangeMin(), heightMap.getScalarRangeMax());
-    sealevelFolder->addButton("Reset sea level");
-    sealevelFolder->expand();
 
-    gui->addBreak();
-    
-    // add a folder to group a few components together //
-    ofxDatGuiFolder* displayFolder = gui->addFolder("Display settings", ofColor::white);
-    displayFolder->addToggle("Quick reaction (follow hands)", true);
-    displayFolder->addToggle("Spatial filtering", true);
-    displayFolder->addToggle("Display contourlines", drawContourLines);
-    displayFolder->addSlider("Contourlines distance", contourLineDistance, 1, 100);
-    displayFolder->addSlider("Highest detection level", maxOffset, 0, 100);
-    displayFolder->expand();
-
-    gui->addBreak();
-    
-    // add a folder to group a few components together //
-    ofxDatGuiFolder* animalFolder = gui->addFolder("Animals settings", ofColor::white);
-    animalFolder->addSlider("Number of fish", 0, 0, 10);
-    animalFolder->addSlider("Number of rabbits", 0, 0, 10);
-    animalFolder->addToggle("Mother fish", showMotherFish);
-    animalFolder->addToggle("Mother rabbit", showMotherRabbit);
-    animalFolder->addButton("Reset animal locations");
-    animalFolder->addButton("Remove all animals");
-    
     // adding the optional header allows you to drag the gui around //
     gui->addHeader(":: Settings ::");
     
@@ -1878,7 +1884,7 @@ void ofApp::setupGui(){
     gui->onToggleEvent(this, &ofApp::onToggleEvent);
     gui->onSliderEvent(this, &ofApp::onSliderEvent);
     
-    gui->setTheme(new ofxDatGuiThemeSmoke());
+//    gui->setTheme(new ofxDatGuiThemeSmoke());
     
 //    gui->onTextInputEvent(this, &ofApp::onTextInputEvent);
 //    gui->on2dPadEvent(this, &ofApp::on2dPadEvent);
@@ -1891,6 +1897,7 @@ void ofApp::setupGui(){
 
     // finally let's load up the stock themes, press spacebar to cycle through them //
     themes = {  new ofxDatGuiTheme(true),
+        new ofxDatGuiThemeCalib(),
         new ofxDatGuiThemeSmoke(),
         new ofxDatGuiThemeWireframe(),
         new ofxDatGuiThemeMidnight(),
@@ -1979,17 +1986,52 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
         ofLogVerbose("GreatSand") << "onButtonEvent(): Texting calibration" ;
 //        showModal = true;
         updateMode();
+    } else if (e.target->is("Reset sea level")){
+        basePlaneNormal = basePlaneNormalBack;
+        basePlaneOffset.z = basePlaneOffsetBack.z;
+        gui->getSlider("Tilt X")->setValue(0);
+        gui->getSlider("Tilt Y")->setValue(0);
+        gui->getSlider("Vertical offset")->setValue(0);
+        setRangesAndBasePlaneEquation();
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e){
-    
+    if (e.target->is("Display contourlines")) {
+        drawContourLines = e.checked;
+    } else if (e.target->is("Spatial filtering")) {
+        kinectgrabber.setSpatialFiltering(e.checked);
+    }else if (e.target->is("Quick reaction (follow hands)")) {
+        kinectgrabber.setFollowBigChange(e.checked);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
+    if (e.target->is("Tilt X") || e.target->is("Tilt Y")) {
+        basePlaneNormal = basePlaneNormalBack.getRotated(gui->getSlider("Tilt X")->getValue(), ofVec3f(1,0,0));
+        basePlaneNormal.rotate(gui->getSlider("Tilt Y")->getValue(), ofVec3f(0,1,0));
+        setRangesAndBasePlaneEquation();
+    } else if (e.target->is("Vertical offset")) {
+        basePlaneOffset.z = basePlaneOffsetBack.z + e.value;
+        setRangesAndBasePlaneEquation();
+    } else if (e.target->is("Highest detection\nlevel")){
+        maxOffset = e.value;
+        ofLogVerbose("GreatSand") << "onSliderEvent(): maxOffset" << maxOffset ;
+        kinectgrabber.setMaxOffset(maxOffset);
+    } else if (e.target->is("Contourlines\ndistance")){
+        contourLineDistance = e.value;
+        setRangesAndBasePlaneEquation();
+    } else if(e.target->is("# of averaging slots")){
+#if __cplusplus>=201103
+        kinectgrabber.numAveragingSlotschannel.send(std::move(e.value));
+#else
+        kinectgrabber.numAveragingSlotschannel.send(e.value);
+#endif
+    }
     
+   
 }
 
 
