@@ -45,7 +45,7 @@ void ofApp::setup(){
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
     
     // Sandbox contourlines
-    drawContourLines = true; // Flag if topographic contour lines are enabled
+    drawContourLines = false; // Flag if topographic contour lines are enabled
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Vehicles
@@ -580,21 +580,21 @@ void ofApp::draw(){
 //        vhcle.draw(0,0);
 //        contourFinder.draw(0,0);
 //    }
-    
+//    
     fboProjWindow.draw(0, 0, 640, 480);
     ofNoFill();
     ofSetColor(255);
     ofDrawRectangle(kinectROI);
     ofFill();
     //    drawTextGui();
-    if (showModal){
-        modal.draw();
-    } else {
-        calibration.draw();
-        animals.draw();
-        sealevel.draw();
-        display.draw();
-    }
+//    if (showModal){
+//        modal.draw();
+//    } else {
+//        calibration.draw();
+//        animals.draw();
+//        sealevel.draw();
+//        display.draw();
+//    }
     
 }
 
@@ -1541,20 +1541,22 @@ void ofApp::updateMode(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     if (key==' '){
-        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
-        {
-            ofLogVerbose("GreatSand") << "keyPressed(): Adding point pair" ;
-            addPointPair();
-        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
-        {
-            autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
-            if (!upframe)
-                upframe = true;
-        } else if (generalState == GENERAL_STATE_GAME1)
-        {
-            setupVehicles();
-        }
+            tIndex = tIndex < themes.size()-1 ? tIndex+1 : 0;
+            gui->setTheme(themes[tIndex]);
+ //        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+//        {
+//            ofLogVerbose("GreatSand") << "keyPressed(): Adding point pair" ;
+//            addPointPair();
+//        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
+//        {
+//            autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+//        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
+//            if (!upframe)
+//                upframe = true;
+//        } else if (generalState == GENERAL_STATE_GAME1)
+//        {
+//            setupVehicles();
+//        }
         //        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_DETERMINATION && ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP)
         //        {
         //            ofLogVerbose("GreatSand") << "keyPressed(): Changing threshold : " << threshold ;
@@ -1801,6 +1803,18 @@ bool ofApp::saveSettings(string path){
 //--------------------------------------------------------------
 void ofApp::setupGui(){
     
+    // instantiate the modal window //
+    modal = make_shared<ofxModalAlert>();
+    modal->addListener(this, &ofApp::onModalEvent);
+//    modal = new ofxDatGui(ofxDatGuiAnchor::TOP_LEFT );
+//    modal->addLabel(modaltext);
+//    modal->addButton("Ok");
+//    modal->addButton("Cancel");
+//    // hide the modal box //
+//    showModal = false;
+//    modal->setVisible(showModal);
+//    modal->onButtonEvent(this, &ofApp::onModalButtonEvent);
+    
     // instantiate and position the gui //
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
     
@@ -1817,7 +1831,7 @@ void ofApp::setupGui(){
     calibrationFolder->addButton("Manually define sand region");
     calibrationFolder->addButton("Automatically calibrate kinect & projector");
     calibrationFolder->addButton("Manually calibrate kinect & projector");
-    calibrationFolder->addButton("Test kinect & projectorcalibration");
+    calibrationFolder->addButton("Test kinect & projector calibration");
     // let's have it open by default. note: call this only after you're done adding items //
     calibrationFolder->expand();
     
@@ -1863,182 +1877,119 @@ void ofApp::setupGui(){
     gui->onButtonEvent(this, &ofApp::onButtonEvent);
     gui->onToggleEvent(this, &ofApp::onToggleEvent);
     gui->onSliderEvent(this, &ofApp::onSliderEvent);
+    
+    gui->setTheme(new ofxDatGuiThemeSmoke());
+    
 //    gui->onTextInputEvent(this, &ofApp::onTextInputEvent);
 //    gui->on2dPadEvent(this, &ofApp::on2dPadEvent);
 //    gui->onDropdownEvent(this, &ofApp::onDropdownEvent);
 //    gui->onColorPickerEvent(this, &ofApp::onColorPickerEvent);
 //    gui->onMatrixEvent(this, &ofApp::onMatrixEvent);
-    
+
 //    gui->setOpacity(gui->getSlider("datgui opacity")->getScale());
-    //  gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-    
-//    // finally let's load up the stock themes, press spacebar to cycle through them //
-//    themes = {  new ofxDatGuiTheme(true),
-//        new ofxDatGuiThemeSmoke(),
-//        new ofxDatGuiThemeWireframe(),
-//        new ofxDatGuiThemeMidnight(),
-//        new ofxDatGuiThemeAqua(),
-//        new ofxDatGuiThemeCharcoal(),
-//        new ofxDatGuiThemeAutumn(),
-//        new ofxDatGuiThemeCandy()};
-//    tIndex = 0;
-    
-//    // launch the app //
-//    mFullscreen = true;
-//    refreshWindow();
+    gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 
-//    ofxGuiSetDefaultWidth(200);
-//    ofxGuiSetBackgroundColor(ofColor(10,10,10,100));
-//    ofxGuiSetTextColor(ofColor(240,10,10,100));
-//    ofxGuiSetHeaderColor(ofColor(10,240,10,100));
-//    //ofxGuiSetFont();
-//    
-//    // Calibration panel
-//	calibration.setup("Calibration", "GUI_calibration_panel_settings.xml", 10, 10);
-//    initialisation.addListener(this, &ofApp::startInitialisation);
-//    autocalib.addListener(this, &ofApp::startAutocalib);
-//    autoROI.addListener(this, &ofApp::startAutoROI);
-//    manualROI.addListener(this, &ofApp::startManualROI);
-//    manualcalib.addListener(this, &ofApp::startManualcalibr);
-//    calibcheck.addListener(this, &ofApp::startCalibcheck);
-//
-//    // Sea level panel
-//	sealevel.setup("Sea level", "GUI_sealevel_panel_settings.xml", 650, calibration.getHeight()+20);
-//
-//    // Display panel
-//	display.setup("Display", "GUI_display_panel_settings.xml", 650, sealevel.getPosition().y+sealevel.getHeight()+10);
-//
-//    // Animal panel
-//    animals.setup("Animals", "GUI_animals_panel_settings.xml", 650, display.getPosition().y+display.getHeight()+10);
-//
-//    //Modal panel
-//    modal.setup("", "", ofGetWidth()*.5, ofGetHeight()*.5);
-//    modal.add(modaltext.setup("Modal text", ""));
-//    modal.add(okmodal.setup("Ok"));
-//    modal.add(cancelmodal.setup("Cancel"));
-//    showModal = false;
-//    okmodal.addListener(this, &ofApp::okModal);
-//    cancelmodal.addListener(this, &ofApp::cancelModal);
-
-
-//	colors.setup("Colors", "GUI_colors_panel_settings.xml", 410, 10);
-    
-//    gui.add(filled.setup("fill", true));
-//	gui.add(radius.setup("radius", 140, 10, 300));
-//	gui.add(center.setup("center", ofVec2f(ofGetWidth()*.5, ofGetHeight()*.5), ofVec2f(0, 0), ofVec2f(ofGetWidth(), ofGetHeight())));
-//	gui.add(color.setup("color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
-//	gui.add(circleResolution.setup("circle res", 5, 3, 90));
-//	gui.add(twoCircles.setup("two circles"));
-//	gui.add(ringButton.setup("ring"));
-//	gui.add(screenSize.setup("screen size", ofToString(ofGetWidth())+"x"+ofToString(ofGetHeight())));
+    // finally let's load up the stock themes, press spacebar to cycle through them //
+    themes = {  new ofxDatGuiTheme(true),
+        new ofxDatGuiThemeSmoke(),
+        new ofxDatGuiThemeWireframe(),
+        new ofxDatGuiThemeMidnight(),
+        new ofxDatGuiThemeAqua(),
+        new ofxDatGuiThemeCharcoal(),
+        new ofxDatGuiThemeAutumn(),
+        new ofxDatGuiThemeCandy()};
+    tIndex = 0;
+}
+//--------------------------------------------------------------
+void ofApp::onModalEvent(ofxModalEvent e){
+    if (e.type == ofxModalEvent::SHOWN){
+        cout << "modal window is open" << endl;
+    }   else if (e.type == ofxModalEvent::HIDDEN){
+        cout << "modal window is closed" << endl;
+    }   else if (e.type == ofxModalEvent::CANCEL){
+        if (calibrated){
+            generalState = GENERAL_STATE_SANDBOX;
+        } else {
+            generalState = GENERAL_STATE_NO_CALIBRATION;
+        }
+        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
+        updateMode();
+        cout << "cancel button was selected" << endl;
+    }   else if (e.type == ofxModalEvent::CONFIRM){
+        if (generalState == GENERAL_STATE_CALIBRATION){
+            if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+            {
+                addPointPair();
+            } else if (calibrationState == CALIBRATION_STATE_AUTOCALIB){
+                if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
+                {
+                    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+                } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
+                    if (!upframe)
+                        upframe = true;
+                } else if (autoCalibState == AUTOCALIB_STATE_DONE){
+                }
+            }
+        }
+        cout << "confirm button was selected" << endl;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
-    if (e.target->is("toggle fullscreen")) toggleFullscreen();
-    cout << "onToggleEvent: " << e.target->getLabel() << " " << e.checked << endl;
-}
-
-//--------------------------------------------------------------
-void ofApp::onToggleEvent(ofxDatGuiButtonEvent e){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::onSliderEvent(ofxDatGuiButtonEvent e){
-    
-}
-
-//--------------------------------------------------------------
-void ofApp::startInitialisation(){
-    generalState = GENERAL_STATE_CALIBRATION;
-    calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
-    initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
-    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    ofLogVerbose("GreatSand") << "startInitialisation(): Starting initialisation" ;
-    showModal = true;
-    updateMode();
-}
-
-//--------------------------------------------------------------
-void ofApp::startAutocalib(){
-    generalState = GENERAL_STATE_CALIBRATION;
-    calibrationState = CALIBRATION_STATE_AUTOCALIB;
-    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-    ofLogVerbose("GreatSand") << "startAutocalib(): Starting autocalib" ;
-    showModal = true;
-    updateMode();
-}
-
-//--------------------------------------------------------------
-void ofApp::startAutoROI(){
-    generalState = GENERAL_STATE_CALIBRATION;
-    calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
-    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    ofLogVerbose("GreatSand") << "startAutoROI(): Finding ROI" ;
-    showModal = true;
-    updateMode();
-}
-
-//--------------------------------------------------------------
-void ofApp::startManualROI(){
-    generalState = GENERAL_STATE_CALIBRATION;
-    calibrationState = CALIBRATION_STATE_ROI_MANUAL_SETUP;
-    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    ofLogVerbose("GreatSand") << "startManualROI(): Updating ROI Manually" ;
-    showModal = true;
-    updateMode();
-}
-
-//--------------------------------------------------------------
-void ofApp::startManualcalibr(){
-    generalState = GENERAL_STATE_CALIBRATION;
-    calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
-    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    ofLogVerbose("GreatSand") << "startManualcalibr(): Manual calibration" ;
-    showModal = true;
-    updateMode();
-}
-
-//--------------------------------------------------------------
-void ofApp::startCalibcheck(){
-    generalState = GENERAL_STATE_CALIBRATION;
-    calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
-    ofLogVerbose("GreatSand") << "startCalibcheck(): Texting calibration" ;
-    showModal = true;
-    updateMode();
-}
-
-//--------------------------------------------------------------
-void ofApp::okModal(){
-    if (generalState == GENERAL_STATE_CALIBRATION){
-        if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
-        {
-            addPointPair();
-        } else if (calibrationState == CALIBRATION_STATE_AUTOCALIB){
-            if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
-            {
-                autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-            } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
-                if (!upframe)
-                    upframe = true;
-            } else if (autoCalibState == AUTOCALIB_STATE_DONE){
-                showModal = false;
-            }
-        }
+    if (e.target->is("Full Calibration")) {
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+        initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
+        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+        ofLogVerbose("GreatSand") << "onButtonEvent(): Starting initialisation" ;
+//        showModal = true;
+        updateMode();
+    } else if (e.target->is("Automatically detect sand region")) {
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+        ofLogVerbose("GreatSand") << "onButtonEvent(): Finding ROI" ;
+//        showModal = true;
+        updateMode();
+    } else if (e.target->is("Manually define sand region")){
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_ROI_MANUAL_SETUP;
+        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+        ofLogVerbose("GreatSand") << "onButtonEvent(): Updating ROI Manually" ;
+//        showModal = true;
+        updateMode();
+    } else if (e.target->is("Automatically calibrate kinect & projector")){
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_AUTOCALIB;
+        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+        ofLogVerbose("GreatSand") << "onButtonEvent(): Starting autocalib" ;
+//        showModal = true;
+        updateMode();
+    } else if (e.target->is("Manually calibrate kinect & projector")) {
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
+        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+        ofLogVerbose("GreatSand") << "onButtonEvent(): Manual calibration" ;
+//        showModal = true;
+        updateMode();
+    } else if (e.target->is("Test kinect & projector calibration")) {
+        generalState = GENERAL_STATE_CALIBRATION;
+        calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
+        ofLogVerbose("GreatSand") << "onButtonEvent(): Texting calibration" ;
+//        showModal = true;
+        updateMode();
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::cancelModal(){
-    if (calibrated){
-        generalState = GENERAL_STATE_SANDBOX;
-    } else {
-        generalState = GENERAL_STATE_NO_CALIBRATION;
-    }
-    ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
-    showModal = false;
-    updateMode();
+void ofApp::onToggleEvent(ofxDatGuiToggleEvent e){
+    
+}
+
+//--------------------------------------------------------------
+void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
+    
 }
 
 

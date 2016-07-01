@@ -2,5 +2,7 @@ ofxCv
 ofxDatGui
 ofxKinect
 ofxKinectProjectorToolkit
+ofxModal
 ofxOpenCv
+ofxParagraph
 ofxXmlSettings

@@ -5,6 +5,7 @@
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
 #include "ofxDatGui.h"
+#include "ofxModal.h"
 
 #include "ColorMap.h"
 #include "KinectGrabber.h"
@@ -75,8 +76,9 @@ public:
     
     void setupGui();
     void onButtonEvent(ofxDatGuiButtonEvent e);
-    void onToggleEvent(ofxDatGuiButtonEvent e);
-    void onSliderEvent(ofxDatGuiButtonEvent e);
+    void onToggleEvent(ofxDatGuiToggleEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
+    void onModalEvent(ofxModalEvent e);
     
     bool loadSettings(string path);
     bool saveSettings(string path);
@@ -114,7 +116,7 @@ private:
 
     // Gui variables
     string                      resultMessage;
-    string                      mainMessage;
+    string                      modaltext;
     ofColor                     resultMessageColor;
     ofVec2f                     testPoint;
     bool saved;
@@ -122,32 +124,12 @@ private:
     bool calibrated;
     bool firstImageReady;
     bool waitingToInitialiseVehicles;
-    
-    // GUI panels
-//	ofxPanel calibration, animals, sealevel, display, colors, modal;
-//    //Calibration panel
-//	ofxButton initialisation, autocalib, autoROI, manualROI, manualcalib, calibcheck;
-//    //Animals panel
-//    ofxButton resetanimallocations, removeanimals;
-//	ofxToggle motherfish, motherrabbit;
-//	ofxIntSlider fishnumber, rabbitsnumber;
-//    //Sea level panel
-//    ofxButton resetsealevel;
-//    ofxVec2Slider sealeveltilt;
-//	ofxFloatSlider sealevelz;
-//    //Display panel
-//    ofxToggle showcontourlines, followbigchanges, spatialfilter;
-//    ofxFloatSlider contourlinesdistance, highestlevel;
-    // Main panel
+    // GUI
     ofxDatGui* gui;
-    // Modal panel
-    ofxDatGui* modal;
-    bool showModal;
-//    ofxLabel modaltext;
-//    ofxButton okmodal, cancelmodal;
-    
-//	ofxColorSlider color;
-//	ofxLabel screenSize;
+    // Modal window
+    shared_ptr<ofxModalAlert> modal;
+    uint tIndex;
+    vector<ofxDatGuiTheme*> themes;
 
     // States variables
     General_state generalState, previousGeneralState;
