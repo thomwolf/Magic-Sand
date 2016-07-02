@@ -13,7 +13,7 @@
 //#include <Geometry/Matrix.h>
 //#include <Geometry/ProjectiveTransformation.h>
 
-using namespace states;
+//using namespace states;
 
 class KinectGrabber: public ofThread {
 public:
@@ -72,8 +72,8 @@ private:
     void updateAveragingSlotsNumber(int snumAveragingSlots);
     
     // General state flags and variables
-    General_state generalState;
-    Calibration_state calibrationState;
+//    General_state generalState;
+//    Calibration_state calibrationState;
 	bool newFrame;
     bool bufferInitiated;
     bool firstImageReady;

@@ -1,7 +1,7 @@
 #include "vehicle.h"
 
 //--------------------------------------------------------------
-void vehicle::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWorldMatrix, ofVec4f sbasePlaneEq, int skinectResX, int sgradFieldcols, int sgradFieldrows, double sgradFieldresolution)*/{
+void vehicle::setup(int x, int y, ofRectangle sborders){
     globalVelocityChange.set(0, 0);
     velocity.set(0.0, 0.0);
     angle = 0;
@@ -9,13 +9,6 @@ void vehicle::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWo
     currentStraightPathLength = 0;
     mother = false;
     location.set(x,y);
-    
-    //    kinectWorldMatrix = skinectWorldMatrix;
-    //    basePlaneEq = sbasePlaneEq;
-    //    kinectResX = skinectResX;
-    //    gradFieldcols = sgradFieldcols;
-    //    gradFieldrows = sgradFieldrows;
-    //    gradFieldresolution = sgradFieldresolution;
     
     borders = sborders;
     minborderDist = 12;

@@ -36,6 +36,8 @@
 		A81AF6FC4B1FD63D16781582 /* unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751648C5D0FFBBB967F90216 /* unicode.cpp */; };
 		ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBD37876A11E46E4D7069B3 /* cameras.c */; };
 		B6840996567E78436F7ECFAB /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B047FF96258DC01792B272DB /* ETF.cpp */; };
+		B7BDD85F1D286D7E007744C5 /* KinectProjector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7BDD85D1D286D7E007744C5 /* KinectProjector.cpp */; };
+		B7BDD8621D2870AD007744C5 /* SandSurfaceRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7BDD8601D2870AD007744C5 /* SandSurfaceRenderer.cpp */; };
 		C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE75A3FBA2C2D87D14F06FE6 /* ObjectFinder.cpp */; };
 		C9466C434D1CF8AB968D298D /* ofxDatGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26490D7CC31EF7D6ED5F925A /* ofxDatGui.cpp */; };
 		D31F5C1B140C59B2AF1533A8 /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 71958293AC5292DE4B7C619D /* registration.c */; };
@@ -331,6 +333,10 @@
 		B63997467445FAA179E2DFC7 /* ofxModalWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxModalWindow.cpp; path = ../../../addons/ofxModal/src/ofxModalWindow.cpp; sourceTree = SOURCE_ROOT; };
 		B6ACE4E71F252C17A5D4890B /* ofxModalConfirm.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxModalConfirm.h; path = ../../../addons/ofxModal/src/ofxModalConfirm.h; sourceTree = SOURCE_ROOT; };
 		B7BDD85B1D26C7EA007744C5 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = bin/data; sourceTree = SOURCE_ROOT; };
+		B7BDD85D1D286D7E007744C5 /* KinectProjector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectProjector.cpp; sourceTree = "<group>"; };
+		B7BDD85E1D286D7E007744C5 /* KinectProjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinectProjector.h; sourceTree = "<group>"; };
+		B7BDD8601D2870AD007744C5 /* SandSurfaceRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SandSurfaceRenderer.cpp; sourceTree = "<group>"; };
+		B7BDD8611D2870AD007744C5 /* SandSurfaceRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SandSurfaceRenderer.h; sourceTree = "<group>"; };
 		B7BF51E8E757FF8A162D3662 /* lsh_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/lsh_index.h; sourceTree = SOURCE_ROOT; };
 		B7FFF828FB3FC4CB1D215EE2 /* remover.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = remover.h; path = ../../../addons/ofxKinectProjectorToolkit/libs/dlib/interfaces/remover.h; sourceTree = SOURCE_ROOT; };
 		B8427966039B53A0FE69C1F0 /* cxcore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxcore.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cxcore.h; sourceTree = SOURCE_ROOT; };
@@ -1336,6 +1342,10 @@
 				EB949E8B2AFDF445E37C4E8B /* ColorMap.h */,
 				2ED1543D4F626F41F20F57C9 /* KinectGrabber.cpp */,
 				20B9A504295C77AEF65EAB2C /* KinectGrabber.h */,
+				B7BDD85D1D286D7E007744C5 /* KinectProjector.cpp */,
+				B7BDD85E1D286D7E007744C5 /* KinectProjector.h */,
+				B7BDD8601D2870AD007744C5 /* SandSurfaceRenderer.cpp */,
+				B7BDD8611D2870AD007744C5 /* SandSurfaceRenderer.h */,
 				2F711619107E8D547B8D902F /* Utils.h */,
 				90B7407A12B0FC9A41936FE5 /* vehicle.cpp */,
 				1C46BA18D11295D3BDC59E49 /* vehicle.h */,
@@ -1556,6 +1566,7 @@
 				9CF4130A7E6DA19A3DC42B9A /* ofxSmartFont.cpp in Sources */,
 				C9466C434D1CF8AB968D298D /* ofxDatGui.cpp in Sources */,
 				7ADB04AF67C568EAFAEBA546 /* ofxKinectExtras.cpp in Sources */,
+				B7BDD8621D2870AD007744C5 /* SandSurfaceRenderer.cpp in Sources */,
 				686B0DF6249B52E1A85B39EC /* ofxKinect.cpp in Sources */,
 				0F8F016776681D468C0D0949 /* audio.c in Sources */,
 				ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */,
@@ -1576,6 +1587,7 @@
 				E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */,
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
+				B7BDD85F1D286D7E007744C5 /* KinectProjector.cpp in Sources */,
 				85EEBF281BD3B965FFF08547 /* ofxParagraph.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,

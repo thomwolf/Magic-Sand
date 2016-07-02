@@ -43,13 +43,11 @@ void KinectGrabber::stop(){
 }
 
 //--------------------------------------------------------------
-void KinectGrabber::setup(General_state sGS, Calibration_state sCS){
+void KinectGrabber::setup(){
     
 	// settings and defaults
 	storedframes = 0;
-    generalState = sGS;
-    calibrationState = sCS;
-    
+
     kinect.init();
     kinect.setRegistration(true); // So we have correspondance between RGB and depth images
     kinect.open();
@@ -146,13 +144,13 @@ void KinectGrabber::resetBuffers(void){
     initiateBuffers();
 }
 
-//--------------------------------------------------------------
-void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
-    generalState = sgeneralState;
-    calibrationState = scalibrationState;
-    //    resetBuffers();
-}
-
+////--------------------------------------------------------------
+//void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
+//    generalState = sgeneralState;
+//    calibrationState = scalibrationState;
+//    //    resetBuffers();
+//}
+//
 //--------------------------------------------------------------
 ofMatrix4x4 KinectGrabber::getWorldMatrix(){
     ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);//*depthNorm; // Trick to access kinect internal parameters without having to modify ofxKinect
@@ -168,14 +166,14 @@ ofMatrix4x4 KinectGrabber::getWorldMatrix(){
 void KinectGrabber::threadedFunction() {
 	while(isThreadRunning()) {
         
-        //Update state of kinect if needed
-        General_state sGS;
-        Calibration_state sCS;
-        if(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
-            while(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
-            } // clear queue
-            setMode(sGS, sCS);
-        }
+//        //Update state of kinect if needed
+//        General_state sGS;
+//        Calibration_state sCS;
+//        if(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
+//            while(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
+//            } // clear queue
+//            setMode(sGS, sCS);
+//        }
         ofRectangle newROI;
         if (ROIchannel.tryReceive(newROI)){
             while(ROIchannel.tryReceive(newROI)){
@@ -202,9 +200,9 @@ void KinectGrabber::threadedFunction() {
         {
 #if __cplusplus>=201103
             filtered.send(std::move(filteredframe));
-            if (generalState == GENERAL_STATE_GAME1)
+//            if (generalState == GENERAL_STATE_GAME1)
                 gradient.send(std::move(gradField));
-            if (generalState == GENERAL_STATE_CALIBRATION)
+//            if (generalState == GENERAL_STATE_CALIBRATION)
                 colored.send(std::move(kinectColorImage.getPixels()));
 #else
             filtered.send(filteredframe);
