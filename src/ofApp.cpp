@@ -16,12 +16,14 @@ void ofApp::setup(){
     ofSetLogLevel("ofThread", OF_LOG_WARNING);
     
     // Get projector size
-    projRexX = projWindow->getWidth();
+    projResX = projWindow->getWidth();
     projResY = projWindow->getHeight();
     
-    std::shared_ptr<KinectProjector> kinectProjector = std::make_shared<KinectProjector>();
+    kinectProjector = std::make_shared<KinectProjector>();
     
-    kinectProjector.setup(projRexX, projRexY);
+    kinectProjector->setup(projResX, projResY);
+    
+    sandSurfaceRendererer = new SandSurfaceRenderer(kinectProjector);
     
 	// settings and defaults
 	generalState = GENERAL_STATE_CALIBRATION;
@@ -61,23 +63,23 @@ void ofApp::setupVehicles(){
     waitingToInitialiseVehicles = false;
     
     // Check the relative earth and water ratio in the map
-    vhcle = FilteredDepthImage;
-    float elevation;
-    int earth = 0;
-    for (int x = kinectROI.getLeft(); x<kinectROI.getRight(); x ++){ // Project on base plane
-        for (int y = kinectROI.getTop(); y < kinectROI.getBottom(); y++){
-            ofVec4f vertexCc = getWorldCoord(x, y);
-            elevation = -basePlaneEq.dot(vertexCc);
-            if (elevation > 0){
-                vhcle.getPixels().getData()[y*kinectResX+x] = 255;
-                earth ++;
-            } else {
-                vhcle.getPixels().getData()[y*kinectResX+x] = 0;
-            }
-        }
-    }
-    float rapprt = (float)earth/(kinectROI.width*kinectROI.height);
-    ofLogVerbose("GreatSand") << "setupVehicles(): Earth/water ratio: "<< rapprt ;
+//    vhcle = FilteredDepthImage;
+//    float elevation;
+//    int earth = 0;
+//    for (int x = kinectROI.getLeft(); x<kinectROI.getRight(); x ++){ // Project on base plane
+//        for (int y = kinectROI.getTop(); y < kinectROI.getBottom(); y++){
+//            ofVec4f vertexCc = getWorldCoord(x, y);
+//            elevation = -basePlaneEq.dot(vertexCc);
+//            if (elevation > 0){
+//                vhcle.getPixels().getData()[y*kinectResX+x] = 255;
+//                earth ++;
+//            } else {
+//                vhcle.getPixels().getData()[y*kinectResX+x] = 0;
+//            }
+//        }
+//    }
+//    float rapprt = (float)earth/(kinectROI.width*kinectROI.height);
+//    ofLogVerbose("GreatSand") << "setupVehicles(): Earth/water ratio: "<< rapprt ;
     
     ofPoint location;
     bool outsidewater = false;
@@ -817,18 +819,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 //--------------------------------------------------------------
 void ofApp::setupGui(){
-    
-    // instantiate the modal window //
-    modal = make_shared<ofxModalAlert>();
-    modal->addListener(this, &ofApp::onModalEvent);
-//    modal = new ofxDatGui(ofxDatGuiAnchor::TOP_LEFT );
-//    modal->addLabel(modaltext);
-//    modal->addButton("Ok");
-//    modal->addButton("Cancel");
-//    // hide the modal box //
-//    showModal = false;
-//    modal->setVisible(showModal);
-//    modal->onButtonEvent(this, &ofApp::onModalButtonEvent);
     
     // instantiate and position the gui //
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );

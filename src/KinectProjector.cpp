@@ -9,12 +9,35 @@
 #include "KinectProjector.h"
 
 using namespace states;
+using namespace ofxCSG;
+
 //--------------------------------------------------------------
 void KinectProjector::setup(int sprojResX, int sprojResY){
+	// settings and defaults
+	generalState = GENERAL_STATE_CALIBRATION;
+    previousGeneralState = GENERAL_STATE_CALIBRATION;
+	calibrationState  = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
+    previousCalibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
+    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
+    autoCalibState = AUTOCALIB_STATE_INIT_FIRST_PLANE;
+    initialisationState = INITIALISATION_STATE_DONE;
+
     saved = false;
     loaded = false;
     calibrated = false;
     firstImageReady = false;
+
+    // instantiate the modal window //
+    modal = make_shared<ofxModalAlert>();
+    modal->addListener(this, &KinectProjector::onModalEvent);
+    //    modal = new ofxDatGui(ofxDatGuiAnchor::TOP_LEFT );
+    //    modal->addLabel(modaltext);
+    //    modal->addButton("Ok");
+    //    modal->addButton("Cancel");
+    //    // hide the modal box //
+    //    showModal = false;
+    //    modal->setVisible(showModal);
+    //    modal->onButtonEvent(this, &ofApp::onModalButtonEvent);
 
     // calibration chessboard config
 	chessboardSize = 300;
@@ -732,6 +755,7 @@ bool KinectProjector::saveSettings(string path){
     xml.setToParent();
     return xml.save(path);
 }
+
 
 
 

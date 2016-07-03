@@ -15,6 +15,7 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
+#include "ofxModal.h"
 
 #include "Utils.h"
 
@@ -53,6 +54,7 @@ public:
     
     bool loadSettings(string path);
     bool saveSettings(string path);
+    void onModalEvent(ofxModalEvent e);
     
     ofRectangle getKinectROI(){
         return kinectROI;
@@ -63,16 +65,26 @@ public:
     ofTexture & getTexture(){
         return FilteredDepthImage.getTexture();
     }
+    ofMatrix4x4 getTransposedKinectWorldMatrix(){
+        return kinectWorldMatrix.getTransposedOf(kinectWorldMatrix);
+    }
+    ofMatrix4x4 getTransposedKinectProjMatrix(){
+        return kinectProjMatrix.getTransposedOf(kinectProjMatrix);
+    }
     
 private:
-	// settings and defaults
-	generalState = GENERAL_STATE_CALIBRATION;
-    previousGeneralState = GENERAL_STATE_CALIBRATION;
-	calibrationState  = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
-    previousCalibrationState = CALIBRATION_STATE_PROJ_KINECT_CALIBRATION;
-    ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-    autoCalibState = AUTOCALIB_STATE_INIT_FIRST_PLANE;
-    initialisationState = INITIALISATION_STATE_DONE;
+    // States variables
+    General_state generalState, previousGeneralState;
+    Calibration_state calibrationState, previousCalibrationState;
+    ROI_calibration_state ROICalibrationState;
+    Autocalib_calibration_state autoCalibState;
+    Initialisation_state initialisationState;
+
+    // GUI Modal window
+    shared_ptr<ofxModalAlert>   modal;
+    string                      resultMessage;
+    string                      modaltext;
+    ofColor                     resultMessageColor;
 
     bool saved;
     bool loaded;

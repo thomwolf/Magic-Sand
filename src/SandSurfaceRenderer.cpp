@@ -8,6 +8,8 @@
 
 #include "SandSurfaceRenderer.h"
 
+using namespace ofxCSG;
+
 void SandSurfaceRenderer::setup(int sprojResX, int sprojResY){
     // Setup sandbox boundaries, base plane and kinect clip planes
 	basePlaneNormalBack = ofVec3f(0,0,1); // This is our default baseplane normal
@@ -170,8 +172,8 @@ void SandSurfaceRenderer::drawSandbox() {
     kinectProjector.getTexture().bind();
     heightMapShader.begin();
     
-    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix.getTransposedOf(kinectProjMatrix)); // We transpose matrices since OpenGL is row-major order and OpenFrameworks is column-major order
-    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix.getTransposedOf(kinectWorldMatrix));
+    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjector.getTransposedKinectProjMatrix()); // We transpose matrices since OpenGL is row-major order and OpenFrameworks is column-major order
+    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectProjector.getTransposedKinectWorldMatrix());
     heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
     heightMapShader.setUniform2f("depthTransformation",ofVec2f(FilteredDepthScale,FilteredDepthOffset));
     heightMapShader.setUniform4f("basePlaneEq", basePlaneEq);
@@ -197,8 +199,8 @@ void SandSurfaceRenderer::prepareContourLines()
     FilteredDepthImage.getTexture().bind();
 	elevationShader.begin();
     
-    elevationShader.setUniformMatrix4f("kinectProjMatrix",kinectProjMatrix.getTransposedOf(kinectProjMatrix)); // Transpose since OpenGL is row-major order
-    elevationShader.setUniformMatrix4f("kinectWorldMatrix",kinectWorldMatrix.getTransposedOf(kinectWorldMatrix));
+    elevationShader.setUniformMatrix4f("kinectProjMatrix",kinectProjector.getTransposedKinectProjMatrix()); // Transpose since OpenGL is row-major order
+    elevationShader.setUniformMatrix4f("kinectWorldMatrix",kinectProjector.getTransposedKinectWorldMatrix());
     elevationShader.setUniform2f("contourLineFboTransformation",ofVec2f(contourLineFboScale,contourLineFboOffset));
     elevationShader.setUniform2f("depthTransformation",ofVec2f(FilteredDepthScale,FilteredDepthOffset));
     elevationShader.setUniform4f("basePlaneEq", basePlaneEq);

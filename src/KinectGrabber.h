@@ -24,7 +24,7 @@ public:
 	~KinectGrabber();
     void start();
     void stop();
-    void setup(General_state, Calibration_state);
+    void setup();//General_state, Calibration_state);
     void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
@@ -56,8 +56,8 @@ public:
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
 	ofThreadChannel<ofVec2f*> gradient;
-	ofThreadChannel<General_state> generalStateChannel;
-	ofThreadChannel<Calibration_state> calibrationStateChannel;
+//	ofThreadChannel<General_state> generalStateChannel;
+//	ofThreadChannel<Calibration_state> calibrationStateChannel;
     ofThreadChannel<ofRectangle> ROIchannel;
     ofThreadChannel<int> numAveragingSlotschannel;
     
@@ -66,7 +66,7 @@ private:
     void filter();
     void applySpaceFilter();
     void updateGradientField();
-    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
+//    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
     void setKinectROI(ofRectangle skinectROI);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
     void updateAveragingSlotsNumber(int snumAveragingSlots);

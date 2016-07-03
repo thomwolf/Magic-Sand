@@ -2,7 +2,6 @@
 
 #include "ofMain.h"
 #include "ofxDatGui.h"
-#include "ofxModal.h"
 
 #include "KinectProjector.h"
 #include "SandSurfaceRenderer.h"
@@ -47,25 +46,23 @@ public:
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
-    void onModalEvent(ofxModalEvent e);
     
     shared_ptr<ofAppBaseWindow> projWindow;
     
 private:
+    
+    std::shared_ptr<KinectProjector> kinectProjector;
+    SandSurfaceRenderer* sandSurfaceRendererer;
+    
     ofxCvFloatImage vhcle;
     // Projector variables
     int projResX;
     int projResY;
     
     // Gui variables
-    string                      resultMessage;
-    string                      modaltext;
-    ofColor                     resultMessageColor;
     bool waitingToInitialiseVehicles;
     // GUI
     ofxDatGui* gui;
-    // Modal window
-    shared_ptr<ofxModalAlert> modal;
     uint tIndex;
     vector<ofxDatGuiTheme*> themes;
 
