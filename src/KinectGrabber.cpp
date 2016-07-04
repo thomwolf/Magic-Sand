@@ -5,26 +5,22 @@
 #include "KinectGrabber.h"
 #include "ofConstants.h"
 
-//--------------------------------------------------------------
 KinectGrabber::KinectGrabber()
 :newFrame(true), bufferInitiated(false)
 {
 }
 
-//--------------------------------------------------------------
 KinectGrabber::~KinectGrabber(){
     //    stop();
     waitForThread(true);
     //	waitForThread(true);
 }
 
-//--------------------------------------------------------------
 /// Start the thread.
 void KinectGrabber::start(){
     startThread(true);
 }
 
-//--------------------------------------------------------------
 /// Signal the thread to stop.  After calling this method,
 /// isThreadRunning() will return false and the while loop will stop
 /// next time it has the chance to.
@@ -42,9 +38,7 @@ void KinectGrabber::stop(){
     //    condition.notify_all();
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::setup(){
-    
 	// settings and defaults
 	storedframes = 0;
 
@@ -61,7 +55,6 @@ void KinectGrabber::setup(){
     kinectColorImage.setUseTexture(false);
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffset, ofRectangle ROI) {
     gradFieldresolution = sgradFieldresolution;
     ofLogVerbose("kinectGrabber") << "setupFramefilter(): Gradient Field resolution: " << gradFieldresolution;
@@ -70,21 +63,19 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
     gradFieldrows = height / gradFieldresolution;
     ofLogVerbose("kinectGrabber") << "setupFramefilter(): Height: " << height << " Gradient Field Rows: " << gradFieldrows;
     
-	
 	//Framefilter parameters
     numAveragingSlots = 30;
-    minNumSamples=(numAveragingSlots+1)/2;
-    maxVariance = 4 ;/// depthNorm/depthNorm;
-    hysteresis = 0.5f ;/// depthNorm;
-    bigChange = 10.0f ;/// depthNorm;
+    minNumSamples = (numAveragingSlots+1)/2;
+    maxVariance = 4 ;
+    hysteresis = 0.5f ;
+    bigChange = 10.0f ;
 	instableValue=0.0;
     maxgradfield = 1000;
     unvalidValue = 4000;
     spatialFilter = true;
     followBigChange = true;
     minInitFrame = 60;
-    
-    maxOffset =newMaxOffset;
+    maxOffset = newMaxOffset;
     
     //Setup ROI
     setKinectROI(ROI);
@@ -93,7 +84,6 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
 	initiateBuffers();
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::initiateBuffers(void){
     
     averagingBuffer=new float[numAveragingSlots*height*width];
@@ -132,7 +122,6 @@ void KinectGrabber::initiateBuffers(void){
     firstImageReady = false;
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::resetBuffers(void){
     if (bufferInitiated){
         bufferInitiated = false;
@@ -144,36 +133,18 @@ void KinectGrabber::resetBuffers(void){
     initiateBuffers();
 }
 
-////--------------------------------------------------------------
-//void KinectGrabber::setMode(General_state sgeneralState, Calibration_state scalibrationState){
-//    generalState = sgeneralState;
-//    calibrationState = scalibrationState;
-//    //    resetBuffers();
-//}
-//
-//--------------------------------------------------------------
 ofMatrix4x4 KinectGrabber::getWorldMatrix(){
-    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);//*depthNorm; // Trick to access kinect internal parameters without having to modify ofxKinect
-    ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);//*depthNorm;
+    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);// Trick to access kinect internal parameters without having to modify ofxKinect
+    ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
     ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
     return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
                        0,       b.y-a.y,    0,  a.y,
-                       0,       0,          0,  1/*depthNorm*/,
+                       0,       0,          0,  1,
                        0,       0,          0,  1);
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::threadedFunction() {
 	while(isThreadRunning()) {
-        
-//        //Update state of kinect if needed
-//        General_state sGS;
-//        Calibration_state sCS;
-//        if(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
-//            while(generalStateChannel.tryReceive(sGS) || calibrationStateChannel.tryReceive(sCS)) {
-//            } // clear queue
-//            setMode(sGS, sCS);
-//        }
         ofRectangle newROI;
         if (ROIchannel.tryReceive(newROI)){
             while(ROIchannel.tryReceive(newROI)){
@@ -224,7 +195,6 @@ void KinectGrabber::threadedFunction() {
     delete[] gradField;
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::filter()
 {
     if (bufferInitiated)
@@ -248,7 +218,7 @@ void KinectGrabber::filter()
                 {
                     RawDepth newValRD = *ifPtr;
                     float oldVal=*abPtr;
-                    float newVal = (float) newValRD;///depthNorm;
+                    float newVal = (float) newValRD;
                     
                     /* Plug the depth-corrected new value into the minimum and maximum plane equations to determine its validity: */
                     point[0] = px;
@@ -351,14 +321,10 @@ void KinectGrabber::filter()
         }
         
     }
-    
-    // Update gradient field
     updateGradientField();
-    
 }
 
-//--------------------------------------------------------------
-void KinectGrabber::applySpaceFilter()//ofFloatPixels& newOutputFrame)
+void KinectGrabber::applySpaceFilter()
 {
     for(int filterPass=0;filterPass<2;++filterPass)
     {
@@ -409,7 +375,6 @@ void KinectGrabber::applySpaceFilter()//ofFloatPixels& newOutputFrame)
     }
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::updateGradientField()
 {
     //Compute gradient field
@@ -454,7 +419,6 @@ void KinectGrabber::updateGradientField()
     }
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::setKinectROI(ofRectangle ROI){
     minX = (int) ROI.getMinX();
     maxX = (int) ROI.getMaxX();
@@ -465,7 +429,6 @@ void KinectGrabber::setKinectROI(ofRectangle ROI){
     resetBuffers();
 }
 
-//--------------------------------------------------------------
 bool KinectGrabber::isInsideROI(int x, int y){
     bool result = true;
     if (x<minX||x>maxX||y<minY||y>maxY)
@@ -473,7 +436,6 @@ bool KinectGrabber::isInsideROI(int x, int y){
     return result;
 }
 
-//--------------------------------------------------------------
 void KinectGrabber::updateAveragingSlotsNumber(int snumAveragingSlots){
     if (bufferInitiated){
             bufferInitiated = false;

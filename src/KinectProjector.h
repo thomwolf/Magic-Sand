@@ -21,75 +21,147 @@
 
 #endif /* defined(__GreatSand__KinectProjector__) */
 
-using namespace states;
-
 class KinectProjector {
 
 public:
-    void setup(int sprojResX, int sprojResY);
+    void setup(ofVec2f sprojRes);
     void setupGradientField();
-    void updateNativeScale(float scaleMin, float scaleMax);
-    void clearFbos();
-
+    
     void update();
-//    const std::vector<double>& x() const { return x_; }
-   
+    void updateCalibration();
+    void updateFullAutoCalibration();
+    void updateROIAutoCalibration();
+    void updateROIFromColorImage();
+    void updateROIFromDepthImage();
+    void updateROIManualCalibration();
+    void updateKinectGrabberROI();
+    void updateProjKinectAutoCalibration();
+    void updateProjKinectManualCalibration();
+    void addPointPair();
+    void updateMaxOffset();
+    void updateBasePlane();
+    
+    void drawProjectorWindow();
+    void drawMainWindow();
     void drawChessboard(int x, int y, int chessboardSize);
-    void drawTestingPoint(ofVec2f projectedPoint);
     void drawFlowField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
 
-    void addPointPair();
-    void findMaxOffset();
-    ofVec2f computeTransform(ofVec4f vin);
-    ofVec4f getWorldCoord(float x, float y);
+    ofVec2f worldCoordToProjCoord(ofVec3f vin);
+    ofVec2f kinectCoordToProjCoord(float x, float y);
+    ofVec3f kinectCoordToWorldCoord(float x, float y);
+    float elevationAtKinectCoord(float x, float y);
+    float elevationToKinectDepth(float elevation, float x, float y);
+    ofVec2f gradientAtKinectCoord(float x, float y);
     
-    void updateROIAutoSetup();
-    void updateROIFromColorImage();
-    void updateROIFromDepthImage();
-    void updateROIManualSetup();
-    void updateKinectGrabberROI();
-    void autoCalib();
     void updateMode();
+    void updateNativeScale(float scaleMin, float scaleMax);
     
+    void saveCalibrationAndSettings();
     bool loadSettings(string path);
     bool saveSettings(string path);
+    
     void onModalEvent(ofxModalEvent e);
     
     ofRectangle getKinectROI(){
         return kinectROI;
     }
     ofVec2f getKinectRes(){
-        return ofVec2f(kinectResX, kinectResY);
+        return kinectRes;
     }
     ofTexture & getTexture(){
         return FilteredDepthImage.getTexture();
     }
     ofMatrix4x4 getTransposedKinectWorldMatrix(){
         return kinectWorldMatrix.getTransposedOf(kinectWorldMatrix);
-    }
+    } // For shaders: OpenGL is row-major order and OF is column-major order
     ofMatrix4x4 getTransposedKinectProjMatrix(){
         return kinectProjMatrix.getTransposedOf(kinectProjMatrix);
+    } // For shaders: OpenGL is row-major order and OF is column-major order
+    ofVec4f getBasePlaneEq(){
+        return basePlaneEq;
+    }
+    ofVec3f getBasePlaneNormal(){
+        return basePlaneNormal;
+    }
+    ofVec3f getBasePlaneOffset(){
+        return basePlaneOffset;
+    }
+    bool isCalibrating(){
+        return calibrating;
+    }
+    bool isCalibrated(){
+        return calibrated;
+    }
+    bool isImageStabilized(){
+        return imageStabilized;
+    }
+    bool isBaseplaneUpdated(){ // Can be called only once after update
+        if (baseplaneUpdated){
+            baseplaneUpdated = false;
+            return true;
+        } else{
+            return false;
+        }
+    }
+    bool isROIUpdated(){ // Can be called only once after update
+        if (ROIUpdated){
+            ROIUpdated = false;
+            return true;
+        } else{
+            return false;
+        }
     }
     
 private:
+    enum Calibration_state
+    {
+        CALIBRATION_STATE_FULL_AUTO_CALIBRATION,
+        CALIBRATION_STATE_ROI_AUTO_DETERMINATION,
+        CALIBRATION_STATE_ROI_MANUAL_DETERMINATION,
+        CALIBRATION_STATE_PROJ_KINECT_AUTO_CALIBRATION,
+        CALIBRATION_STATE_PROJ_KINECT_MANUAL_CALIBRATION
+    };
+    enum Full_Calibration_state
+    {
+        FULL_CALIBRATION_STATE_ROI_DETERMINATION,
+        FULL_CALIBRATION_STATE_AUTOCALIB,
+        FULL_CALIBRATION_STATE_DONE
+    };
+    enum ROI_calibration_state
+    {
+        ROI_CALIBRATION_STATE_INIT,
+        ROI_CALIBRATION_STATE_READY_TO_MOVE_UP,
+        ROI_CALIBRATION_STATE_MOVE_UP,
+        ROI_CALIBRATION_STATE_DONE
+    };
+    enum Auto_calibration_state
+    {
+        AUTOCALIB_STATE_INIT_FIRST_PLANE,
+        AUTOCALIB_STATE_INIT_POINT,
+        AUTOCALIB_STATE_NEXT_POINT,
+        AUTOCALIB_STATE_COMPUTE,
+        AUTOCALIB_STATE_DONE
+    };
+
     // States variables
-    General_state generalState, previousGeneralState;
-    Calibration_state calibrationState, previousCalibrationState;
-    ROI_calibration_state ROICalibrationState;
-    Autocalib_calibration_state autoCalibState;
-    Initialisation_state initialisationState;
+    bool calibrated;
+    bool calibrating;
+    bool baseplaneUpdated;
+    bool ROIUpdated;
+    bool imageStabilized;
+    Calibration_state calibrationState;
+    ROI_calibration_state ROICalibState;
+    Auto_calibration_state autoCalibState;
+    Full_Calibration_state fullCalibState;
 
     // GUI Modal window
     shared_ptr<ofxModalAlert>   modal;
     string                      resultMessage;
     string                      modaltext;
     ofColor                     resultMessageColor;
-
-    bool saved;
-    bool loaded;
-    bool calibrated;
-    bool firstImageReady;
+    // GUI Main interface
+    ofxDatGui* gui;
 
     //kinect interfaces and calibration
     KinectGrabber               kinectgrabber;
@@ -98,10 +170,11 @@ private:
     ofVec2f* gradField;
     
     // Projector and kinect variables
-    int projResX;
-    int projResY;
-    int kinectResX;
-    int kinectResY;
+    ofVec2f projRes;
+    ofVec2f kinectRes;
+
+    // FBos
+    ofFbo fboProjWindow;
 
     //Images and cv matrixes
     ofxCvColorImage             kinectColorImage;
@@ -126,6 +199,11 @@ private:
     float threshold;
     ofPolyline large;
     ofRectangle                 kinectROI, kinectROIManualCalib;
+    
+    // Base plane
+    ofVec3f basePlaneNormal, basePlaneNormalBack;
+    ofVec3f basePlaneOffset, basePlaneOffsetBack;
+    ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
     
     // Conversion matrices
     ofMatrix4x4                 kinectProjMatrix;

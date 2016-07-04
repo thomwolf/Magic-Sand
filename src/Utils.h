@@ -6,58 +6,8 @@
 
 #include "ofMain.h"
 
-namespace states
-{
-    enum General_state
-    {
-//        GENERAL_STATE_INITIALISATION = 0,
-        GENERAL_STATE_CALIBRATION = 1,
-        GENERAL_STATE_SANDBOX = 2,
-        GENERAL_STATE_GAME1 = 3,
-        GENERAL_STATE_NO_CALIBRATION = 4
-    };
-    enum Initialisation_state
-    {
-        INITIALISATION_STATE_ROI_DETERMINATION = 0,
-        INITIALISATION_STATE_ROI_MANUAL_SETUP = 1,
-        INITIALISATION_STATE_AUTOCALIB = 2,
-        INITIALISATION_STATE_MANUAL_CALIBRATION = 3,
-        INITIALISATION_STATE_DONE = 4
-    };
-    enum Calibration_state
-    {
-        CALIBRATION_STATE_ROI_DETERMINATION = 0,
-        CALIBRATION_STATE_PROJ_KINECT_CALIBRATION = 1,
-        CALIBRATION_STATE_CALIBRATION_TEST = 2,
-        CALIBRATION_STATE_AUTOCALIB = 3,
-        CALIBRATION_STATE_ROI_MANUAL_SETUP = 4,
-    };
-    enum ROI_calibration_state
-    {
-        ROI_CALIBRATION_STATE_INIT = 0,
-        ROI_CALIBRATION_STATE_READY_TO_MOVE_UP = 1,
-        ROI_CALIBRATION_STATE_MOVE_UP = 2,
-        ROI_CALIBRATION_STATE_DONE = 3
-    };
-    enum Autocalib_calibration_state
-    {
-        AUTOCALIB_STATE_INIT_FIRST_PLANE = 0,
-        AUTOCALIB_STATE_INIT_POINT = 1,
-        AUTOCALIB_STATE_NEXT_POINT = 2,
-        AUTOCALIB_STATE_COMPUTE = 3,
-        AUTOCALIB_STATE_DONE = 4
-    };
-    enum Update_kinectgrabber_state
-    {
-        UPDATE_ROI = 0,
-        UPDATE_GENERAL_STATE = 1,
-        UPDATE_CALIBRATION_STATE = 2,
-        UPDATE_GAME_PARAMETERS = 3,
-    };
-}
 namespace ofxCSG
 {
-	
 	//STATIC VARS
 	static float EPSILON = 1e-5;
 	static float ONE_PLUS_EPSILON = EPSILON + 1;

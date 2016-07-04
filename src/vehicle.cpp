@@ -1,20 +1,23 @@
 #include "vehicle.h"
 
-//--------------------------------------------------------------
-void vehicle::setup(int x, int y, ofRectangle sborders){
+Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater) {
+    kinectProjector = k;
+    liveInWater = sliveInWater;
+    location = slocation;
+    borders = sborders;
     globalVelocityChange.set(0, 0);
     velocity.set(0.0, 0.0);
     angle = 0;
     wandertheta = 0;
     currentStraightPathLength = 0;
     mother = false;
-    location.set(x,y);
-    
-    borders = sborders;
+}
+
+//--------------------------------------------------------------
+void Vehicle::setup(){
     minborderDist = 12;
-    internalBorders = sborders;
-    internalBorders.scaleFromCenter((sborders.width-minborderDist)/sborders.width, (sborders.height-minborderDist)/sborders.height);
-    
+    internalBorders = borders;
+    internalBorders.scaleFromCenter((borders.width-minborderDist)/borders.width, (borders.height-minborderDist)/borders.height);
     r = 12;
     desiredseparation = 24;
     maxVelocityChange = 1;
@@ -25,14 +28,33 @@ void vehicle::setup(int x, int y, ofRectangle sborders){
 }
 
 //--------------------------------------------------------------
-void vehicle::updateBeachDetection(bool sbeach, float sbeachDist, ofVec2f sbeachSlope){
-    beach = sbeach;
-    beachDist = sbeachDist;
-    beachSlope = sbeachSlope;
+void Vehicle::updateBeachDetection(){
+    // Find sandbox gradients and elevations in the max 10 next steps of vehicle v, update vehicle variables
+    ofPoint futureLocation;
+    futureLocation = location;
+    int i = 1;
+    float beachDist = 1;
+    
+    ofVec2f beachSlope(0);
+    bool water = true;
+    while (i < 10 && water)
+    {
+        bool overwater = kinectProjector->elevationAtKinectCoord(futureLocation.x, futureLocation.y) > 0;
+        if ((overwater && liveInWater) || (!overwater && !liveInWater))
+        {
+            water = false;
+            beachDist = i;
+            beachSlope = kinectProjector->gradientAtKinectCoord(futureLocation.x,futureLocation.y);
+            if (liveInWater)
+                beachSlope *= -1;
+        }
+        futureLocation += velocity; // Go to next future location step
+        i++;
+    }
 }
 
 //--------------------------------------------------------------
-ofPoint vehicle::bordersEffect(){
+ofPoint Vehicle::bordersEffect(){
     ofPoint desired, futureLocation;
     
     // Predict location 10 (arbitrary choice) frames ahead
@@ -63,7 +85,7 @@ ofPoint vehicle::bordersEffect(){
     return velocityChange;
 }
 //--------------------------------------------------------------
-ofPoint vehicle::wanderEffect(){
+ofPoint Vehicle::wanderEffect(){
     
     ofPoint velocityChange, desired;
     
@@ -90,7 +112,7 @@ ofPoint vehicle::wanderEffect(){
 }
 
 //--------------------------------------------------------------
-ofPoint vehicle::slopesEffect(){
+ofPoint Vehicle::slopesEffect(){
     ofPoint desired, velocityChange;
     
     desired = beachSlope;
@@ -106,7 +128,7 @@ ofPoint vehicle::slopesEffect(){
 }
 
 //--------------------------------------------------------------
-ofPoint vehicle::seekEffect(const ofPoint & target){
+ofPoint Vehicle::seekEffect(const ofPoint & target){
 //    ofPoint desired;
 //    desired = target - location;
 //    
@@ -136,7 +158,7 @@ ofPoint vehicle::seekEffect(const ofPoint & target){
 }
 
 //--------------------------------------------------------------
-//ofPoint vehicle::separateEffect(vector<vehicle> vehicles){
+//ofPoint Vehicle::separateEffect(vector<vehicle> vehicles){
 ////    float desiredseparation = r*2;
 //    ofPoint velocityChange;
 //    int count = 0;
@@ -164,7 +186,7 @@ ofPoint vehicle::seekEffect(const ofPoint & target){
 //}
 
 //--------------------------------------------------------------
-std::vector<ofVec2f> vehicle::getForces(void)
+std::vector<ofVec2f> Vehicle::getForces(void)
 {
     std::vector<ofVec2f> Forces;
     Forces.push_back( separateF);
@@ -176,12 +198,12 @@ std::vector<ofVec2f> vehicle::getForces(void)
 }
 
 //--------------------------------------------------------------
-void vehicle::applyVelocityChange(const ofPoint & velocityChange){
+void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
     globalVelocityChange += velocityChange;
 }
 
 //--------------------------------------------------------------
-void vehicle::update(){
+void Vehicle::update(){
     if (!mother || velocity.lengthSquared() != 0)
     {
         velocity += globalVelocityChange;
@@ -233,28 +255,10 @@ ofPoint Fish::wanderEffect(){
 }
 
 //--------------------------------------------------------------
-void Fish::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWorldMatrix, ofVec4f sbasePlaneEq, int skinectResX, int sgradFieldcols, int sgradFieldrows, double sgradFieldresolution)*/{
-    globalVelocityChange.set(0, 0);
-    velocity.set(0.0, 0.0);
-    angle = 0;
-    wandertheta = 0;
-    beach = false;
-    border = false;
-    mother = false;
-    currentStraightPathLength = 0;
-    location.set(x,y);
-    
-    //    kinectWorldMatrix = skinectWorldMatrix;
-    //    basePlaneEq = sbasePlaneEq;
-    //    kinectResX = skinectResX;
-    //    gradFieldcols = sgradFieldcols;
-    //    gradFieldrows = sgradFieldrows;
-    //    gradFieldresolution = sgradFieldresolution;
-    
-    borders = sborders;
+void Fish::setup(){
     minborderDist = 50;
-    internalBorders = sborders;
-    internalBorders.scaleFromCenter((sborders.width-minborderDist)/sborders.width, (sborders.height-minborderDist)/sborders.height);
+    internalBorders = borders;
+    internalBorders.scaleFromCenter((borders.width-minborderDist)/borders.width, (borders.height-minborderDist)/borders.height);
     
     wanderR = 10;         // Radius for our "wander circle"
     wanderD = 80;         // Distance for our "wander circle"
@@ -271,6 +275,7 @@ void Fish::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWorld
 }
 //--------------------------------------------------------------
 void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
+    updateBeachDetection();
     
     //    separateF = separateEffect(vehicles);
     seekF = seekEffect(target);
@@ -302,6 +307,10 @@ void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
 //--------------------------------------------------------------
 void Fish::draw()
 {
+    ofPushMatrix();
+    ofTranslate(kinectProjector->worldCoordToProjCoord(location));
+    ofRotate(angle);
+    
     // Compute tail angle
     float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
     float fact = 50+250*velocity.length()/topSpeed;
@@ -312,9 +321,8 @@ void Fish::draw()
     fact = 50;
     float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
     
-    ofVec2f frc = ofVec2f(100, 0);
-    float sc = 7; // Fish scale
-    
+    // Fish scale
+    float sc = 7;
     float tailSize = 1*sc;
     float fishLength = 2*sc;
     float fishHead = tailSize;
@@ -330,119 +338,25 @@ void Fish::draw()
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
     fish.close();
-    ofSetLineWidth(2.0);  // Line widths apply to polylines
-    
+    ofSetLineWidth(2.0);
     ofColor c = ofColor(255);
     ofSetColor(c);
     if (mother)
     {
-        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
         c.setHsb((int)hsb, 255, 255); // rainbow
         ofFill();
-        //        fish.setFillColor(c);
     } else {
         ofNoFill();
     }
     fish.draw();
-    
     if (mother)
     {
-        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
         c.setHsb(255-(int)hsb, 255, 255); // rainbow
         ofSetColor(c);
     }
     ofDrawCircle(0, 0, sc*0.5);
-    
     ofNoFill();
-    
-    // Draw forces applied to the vehicle
-    //    frc.rotate(angle);
-    //    ofDrawLine(0, 0, frc.x, frc.y);
-    //    ofDrawRectangle(frc.x, frc.y, 5, 5);
-    //
-    //    for (int i=0; i<forces.size(); i++){
-    //        ofColor c = ofColor(0); // c is black
-    //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
-    //        c.setHsb((int)hsb, 255, 255); // rainbow
-    //
-    //        frc = forces[i];
-    //        frc.normalize();
-    //        frc *= 100;
-    //
-    //        ofSetColor(c);
-    //        ofDrawLine(0, 0, frc.x, frc.y);
-    //        ofDrawCircle(frc.x, frc.y, 5);
-    //    }
-    //
-    // Display tail movement indication
-    //    t = ofPoint(kinectResX/2, kinectResY/2);
-    //    ofPoint front = velocity;
-    //    front.normalize();
-    //    front *= v.wanderD;
-    //    ofPoint circleloc = t;
-    //
-    //    worldPoint = ofVec3f(circleloc);
-    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    //    wc = ofVec4f(worldPoint);
-    //    wc.w = 1;
-    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-    //
-    //    ofPushMatrix();
-    //    ofTranslate(projectedPoint);
-    //    ofDrawCircle(0, 0, v.wanderR);
-    //    ofPopMatrix();
-    //
-    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
-    //    ofPoint circleOffSet = ofPoint(v.wanderR*cos(tailangle),v.wanderR*sin(tailangle));
-    //    ofPoint target = circleloc + circleOffSet;
-    //
-    //    worldPoint = ofVec3f(target);
-    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    //    wc = ofVec4f(worldPoint);
-    //    wc.w = 1;
-    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-    //
-    //    ofPushMatrix();
-    //    ofTranslate(projectedPoint);
-    //    ofSetColor(255, 0, 0, 255);
-    //    ofDrawCircle(0, 0, 5);
-    //    ofPopMatrix();
-    
-    // Display wandering circle
-    //    ofPoint front = velocity;
-    //    front.normalize();
-    //    front *= v.wanderD;
-    //    ofPoint circleloc = t + front;
-    //
-    //    worldPoint = ofVec3f(circleloc);
-    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    //    wc = ofVec4f(worldPoint);
-    //    wc.w = 1;
-    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-    //
-    //    ofPushMatrix();
-    //    ofTranslate(projectedPoint);
-    //    ofDrawCircle(0, 0, v.wanderR);
-    //    ofPopMatrix();
-    //
-    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
-    //    ofPoint circleOffSet = ofPoint(v.wanderR*cos(v.wandertheta+h),v.wanderR*sin(v.wandertheta+h));
-    //    ofPoint target = circleloc + circleOffSet;
-    //
-    //    worldPoint = ofVec3f(target);
-    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    //    wc = ofVec4f(worldPoint);
-    //    wc.w = 1;
-    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-    //
-    //    ofPushMatrix();
-    //    ofTranslate(projectedPoint);
-    //    ofSetColor(255, 0, 0, 255);
-    //    ofDrawCircle(0, 0, 5);
-    //    ofPopMatrix();
-    
-    
-    //    fboProjWindow.end();
+    ofPopMatrix();
 }
 
 //==============================================================
@@ -450,29 +364,10 @@ void Fish::draw()
 //==============================================================
 
 //--------------------------------------------------------------
-void Rabbit::setup(int x, int y, ofRectangle sborders)/*, ofMatrix4x4 skinectWorldMatrix, ofVec4f sbasePlaneEq, int skinectResX, int sgradFieldcols, int sgradFieldrows, double sgradFieldresolution)*/{
-    globalVelocityChange.set(0, 0);
-    velocity.set(0.0, 0.0);
-    angle = 0;
-    wandertheta = 0;
-    currentStraightPathLength = 0;
-    beach = false;
-    border = false;
-    setWait = false;
-    mother = false;
-    location.set(x,y);
-    
-    //    kinectWorldMatrix = skinectWorldMatrix;
-    //    basePlaneEq = sbasePlaneEq;
-    //    kinectResX = skinectResX;
-    //    gradFieldcols = sgradFieldcols;
-    //    gradFieldrows = sgradFieldrows;
-    //    gradFieldresolution = sgradFieldresolution;
-    
-    borders = sborders;
+void Rabbit::setup(){
     minborderDist = 50;
-    internalBorders = sborders;
-    internalBorders.scaleFromCenter((sborders.width-minborderDist)/sborders.width, (sborders.height-minborderDist)/sborders.height);
+    internalBorders = borders;
+    internalBorders.scaleFromCenter((borders.width-minborderDist)/borders.width, (borders.height-minborderDist)/borders.height);
     
     wanderR = 50;         // Radius for our "wander circle"
     wanderD = 0;         // Distance for our "wander circle"
@@ -520,6 +415,8 @@ ofPoint Rabbit::wanderEffect(){
 }
 //--------------------------------------------------------------
 void Rabbit::applyBehaviours(ofPoint target){
+    updateBeachDetection();
+    
     //    separateF = separateEffect(vehicles);
     seekF = seekEffect(target);
     bordersF = bordersEffect();
@@ -591,9 +488,12 @@ void Rabbit::applyBehaviours(ofPoint target){
 //--------------------------------------------------------------
 void Rabbit::draw()//, std::vector<ofVec2f> forces)
 {
-    ofVec2f frc = ofVec2f(100, 0);
+    ofPushMatrix();
+    ofTranslate(kinectProjector->worldCoordToProjCoord(location));
+    ofRotate(angle);
     
-    float sc = 1; // Rabbit scale
+    // Rabbit scale
+    float sc = 1;
     
     ofFill();
     ofSetLineWidth(1.0);  // Line widths apply to polylines
@@ -606,7 +506,6 @@ void Rabbit::draw()//, std::vector<ofVec2f> forces)
         int fact = 50;
         float et = ofGetElapsedTimef();
         float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
-        //        float hsb = ((float)i)/((float)forces.size()-1.0)*255.0;
         c1.setHsb((int)hsb, 255, 255); // rainbow
         c2.setHsb(255-(int)hsb, 255, 255);
     }
@@ -621,16 +520,13 @@ void Rabbit::draw()//, std::vector<ofVec2f> forces)
     body.curveTo( ofPoint(4*sc, 0*sc));
     body.curveTo( ofPoint(4*sc, 0*sc));
     body.close();
-    //    ofSetLineWidth(2.0);  // Line widths apply to polylines
-    
     ofSetColor(c1);
-    
     body.setFillColor(c1);
     body.draw();
     
     ofSetColor(c2);
     ofDrawCircle(-19*sc, 0, 2*sc);
-    
+
     ofPath head;
     head.curveTo( ofPoint(0, 1.5*sc));
     head.curveTo( ofPoint(0, 1.5*sc));
@@ -644,7 +540,6 @@ void Rabbit::draw()//, std::vector<ofVec2f> forces)
     head.curveTo( ofPoint(0, -1.5*sc));
     head.curveTo( ofPoint(0, -1.5*sc));
     head.close();
-    
     ofSetColor(c2);
     head.setFillColor(c2);
     head.draw();
@@ -655,83 +550,7 @@ void Rabbit::draw()//, std::vector<ofVec2f> forces)
     ofSetColor(255);
     ofNoFill();
 
-    //    ofPolyline foot;
-    //    foot.curveTo( ofPoint(6*sc, -3.5*sc));
-    //    foot.curveTo( ofPoint(6*sc, -3.5*sc));
-    //    foot.curveTo( ofPoint((10+footpos*4)*sc, -4.5*sc));
-    //    foot.curveTo( ofPoint((7+footpos*1)*sc, (-5.75-footpos*0.25)*sc));
-    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, -5*sc));
-    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, -5*sc));
-    //    //    body.close();
-    //    foot.draw();
-    //
-    //    foot.clear();
-    //    foot.curveTo( ofPoint(6*sc, 3.5*sc));
-    //    foot.curveTo( ofPoint(6*sc, 3.5*sc));
-    //    foot.curveTo( ofPoint((10+footpos*4)*sc, 4.5*sc));
-    //    foot.curveTo( ofPoint((7+footpos*1)*sc, (5.75+footpos*0.25)*sc));
-    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, 5*sc));
-    //    foot.curveTo( ofPoint((2+footpos*0.5)*sc, 5*sc));
-    //    //    body.close();
-    //    foot.draw();
-    //
-    //    foot.clear();
-    //    foot.curveTo( ofPoint(-13*sc, -6*sc));
-    //    foot.curveTo( ofPoint(-13*sc, -6*sc));
-    //    foot.curveTo( ofPoint((-16-footpos*1)*sc, (-6.75-footpos*0.25)*sc));
-    //    foot.curveTo( ofPoint((-19-footpos*3)*sc, -5.5*sc));
-    //    foot.curveTo( ofPoint((-16.5-footpos*1.5)*sc, -4*sc));
-    //    foot.curveTo( ofPoint(-15*sc, -4*sc));
-    //    foot.curveTo( ofPoint(-15*sc, -4*sc));
-    //    //    body.close();
-    //    foot.draw();
-    //
-    //    foot.clear();
-    //    foot.curveTo( ofPoint(-13*sc, 6*sc));
-    //    foot.curveTo( ofPoint(-13*sc, 6*sc));
-    //    foot.curveTo( ofPoint((-16-footpos*1)*sc, (6.75+footpos*0.25)*sc));
-    //    foot.curveTo( ofPoint((-19-footpos*3)*sc, 5.5*sc));
-    //    foot.curveTo( ofPoint((-16.5-footpos*1.5)*sc, 4*sc));
-    //    foot.curveTo( ofPoint(-15*sc, 4*sc));
-    //    foot.curveTo( ofPoint(-15*sc, 4*sc));
-    //    //    body.close();
-    //    foot.draw();
-    
-    
-    // Display wandering circle
-    //    ofPoint front = velocity;
-    //    front.normalize();
-    //    front *= v.wanderD;
-    //    ofPoint circleloc = t + front;
-    //
-    //    worldPoint = ofVec3f(circleloc);
-    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    //    wc = ofVec4f(worldPoint);
-    //    wc.w = 1;
-    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-    //
-    //    ofPushMatrix();
-    //    ofTranslate(projectedPoint);
-    //    ofDrawCircle(0, 0, v.wanderR);
-    //    ofPopMatrix();
-    //
-    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
-    //    ofPoint circleOffSet = ofPoint(v.wanderR*cos(v.wandertheta+h),v.wanderR*sin(v.wandertheta+h));
-    //    ofPoint target = circleloc + circleOffSet;
-    //
-    //    worldPoint = ofVec3f(target);
-    //    worldPoint.z = kinectgrabber.kinect.getDistanceAt(t.x, t.y);
-    //    wc = ofVec4f(worldPoint);
-    //    wc.w = 1;
-    //    projectedPoint = computeTransform(wc);//kpt.getProjectedPoint(worldPoint);
-    //
-    //    ofPushMatrix();
-    //    ofTranslate(projectedPoint);
-    //    ofSetColor(255, 0, 0, 255);
-    //    ofDrawCircle(0, 0, 5);
-    //    ofPopMatrix();
-    
-    //    fboProjWindow.end();
+    ofPopMatrix();
 }
 
 

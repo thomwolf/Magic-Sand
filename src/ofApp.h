@@ -9,23 +9,24 @@
 #include "Utils.h"
 
 using namespace cv;
-using namespace states;
-
 
 class ofApp : public ofBaseApp{
 
 public:
 
     void setup();
-    void clearFbos();
     void setupVehicles();
+    void addNewFish();
+    void addNewRabbit();
+    void addMotherFish();
+    void addMotherRabbit();
+    ofVec2f findRandomVehicleLocation(ofRectangle area, bool liveInWater);
     
     void update();
     
     void draw();
     void drawProjWindow(ofEventArgs& args);
     
-    void updateVehiclesFutureElevationAndGradient(vehicle& v);
     void drawVehicles();
     void drawMotherFish();
     void drawMotherRabbit();
@@ -50,41 +51,35 @@ public:
     shared_ptr<ofAppBaseWindow> projWindow;
     
 private:
-    
     std::shared_ptr<KinectProjector> kinectProjector;
-    SandSurfaceRenderer* sandSurfaceRendererer;
+    SandSurfaceRenderer* sandSurfaceRenderer;
     
-    ofxCvFloatImage vhcle;
-    // Projector variables
-    int projResX;
-    int projResY;
+    // Projector and kinect variables
+    ofVec2f projRes;
+    ofVec2f kinectRes;
+    ofRectangle kinectROI;
     
-    // Gui variables
+    // FBos
+    ofFbo fboProjWindow;
+
+    // Fish and Rabbits
+    vector<Fish> fish;
+    vector<Rabbit> rabbits;
+    int fishNum;
+    int rabbitsNum;
+    
+    // Fish and Rabbits mothers
+    ofPoint motherFish;
+    ofPoint motherRabbit;
+    bool showMotherFish;
+    bool showMotherRabbit;
+    float motherPlatformSize;
+
     bool waitingToInitialiseVehicles;
+    
     // GUI
     ofxDatGui* gui;
     uint tIndex;
     vector<ofxDatGuiTheme*> themes;
-
-    // States variables
-    General_state generalState, previousGeneralState;
-    Calibration_state calibrationState, previousCalibrationState;
-    ROI_calibration_state ROICalibrationState;
-    Autocalib_calibration_state autoCalibState;
-    Initialisation_state initialisationState;
-
-    // FBos
-    ofFbo fboProjWindow;
-
-    // vehicules
-    vector<Fish> fish;
-    vector<Rabbit> rabbits;
-    int fishNum, rabbitsNum;
-    bool showMotherFish, showMotherRabbit;
-    static const int MAX_STEPS = 10;
     
-    ofPoint motherFish, motherRabbit; // Location of fish and rabbit mothers
-    bool isMother;
-    float motherPlatformSize;
-
 };

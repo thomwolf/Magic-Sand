@@ -26,13 +26,11 @@ public:
     void setup(int sprojResX, int sprojResY);
     void setupMesh();
     void setRangesAndBasePlaneEquation();
-    void computeBasePlane();
-  
     void update();
-    
     void draw();
     void drawSandbox();
-    void prepareContourLines();
+    void prepareContourLinesFbo();
+    
 private:
     std::shared_ptr<KinectProjector> kinectProjector;
     
@@ -49,6 +47,7 @@ private:
     ofShader heightMapShader;
     
     // FBos
+    ofFbo fboProjWindow;    
     ofFbo   contourLineFramebufferObject;
 
     // Base plane

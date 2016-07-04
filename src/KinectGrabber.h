@@ -1,19 +1,10 @@
 #pragma once
 #include "ofMain.h"
-
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinect.h"
 
-//#include "FrameFilter.h"
 #include "Utils.h"
-
-//#include <Geometry/HVector.h>
-//#include <Geometry/Plane.h>
-//#include <Geometry/Matrix.h>
-//#include <Geometry/ProjectiveTransformation.h>
-
-//using namespace states;
 
 class KinectGrabber: public ofThread {
 public:
@@ -34,7 +25,7 @@ public:
     void decStoredframes(){
         storedframes -= 1;
     }
-    bool isFirstImageReady(){
+    bool isImageStabilized(){
         return firstImageReady;
     }
     bool isFrameNew(){
@@ -66,14 +57,10 @@ private:
     void filter();
     void applySpaceFilter();
     void updateGradientField();
-//    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
     void setKinectROI(ofRectangle skinectROI);
     bool isInsideROI(int x, int y); // test is x, y is inside ROI
     void updateAveragingSlotsNumber(int snumAveragingSlots);
     
-    // General state flags and variables
-//    General_state generalState;
-//    Calibration_state calibrationState;
 	bool newFrame;
     bool bufferInitiated;
     bool firstImageReady;
