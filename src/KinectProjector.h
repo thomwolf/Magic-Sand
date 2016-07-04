@@ -19,8 +19,6 @@
 
 #include "Utils.h"
 
-#endif /* defined(__GreatSand__KinectProjector__) */
-
 class KinectProjector {
 
 public:
@@ -61,6 +59,10 @@ public:
     bool loadSettings(string path);
     bool saveSettings(string path);
     
+    void setupGui();
+    void onButtonEvent(ofxDatGuiButtonEvent e);
+    void onToggleEvent(ofxDatGuiToggleEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
     void onModalEvent(ofxModalEvent e);
     
     ofRectangle getKinectROI(){
@@ -96,9 +98,9 @@ public:
     bool isImageStabilized(){
         return imageStabilized;
     }
-    bool isBaseplaneUpdated(){ // Can be called only once after update
-        if (baseplaneUpdated){
-            baseplaneUpdated = false;
+    bool isBasePlaneUpdated(){ // Can be called only once after update
+        if (basePlaneUpdated){
+            basePlaneUpdated = false;
             return true;
         } else{
             return false;
@@ -147,7 +149,7 @@ private:
     // States variables
     bool calibrated;
     bool calibrating;
-    bool baseplaneUpdated;
+    bool basePlaneUpdated;
     bool ROIUpdated;
     bool imageStabilized;
     Calibration_state calibrationState;
@@ -224,3 +226,7 @@ private:
     int   chessboardX;
     int   chessboardY;
 };
+
+#endif /* defined(__GreatSand__KinectProjector__) */
+
+

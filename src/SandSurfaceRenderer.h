@@ -23,9 +23,9 @@ public:
         kinectProjector = k;
     }
     
-    void setup(int sprojResX, int sprojResY);
+    void setup(ofVec2f sprojRes);
     void setupMesh();
-    void setRangesAndBasePlaneEquation();
+    void updateRangesAndBasePlane();
     void update();
     void draw();
     void drawSandbox();

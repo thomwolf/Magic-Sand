@@ -26,22 +26,22 @@ void ofApp::setup(){
     kinectROI = kinectProjector->getKinectROI();
     
     sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector);
+    sandSurfaceRenderer->setup(projRes);
     
     fboProjWindow.allocate(projRes.x, projRes.y, GL_RGBA);
     fboProjWindow.begin();
     ofClear(0,0,0,255);
     fboProjWindow.end();
     
+    setupGui();
+
     // Vehicles
     fishNum = 1;
     rabbitsNum = 0;
     showMotherFish = false;
     showMotherRabbit = false;
     motherPlatformSize = 20;
-    
-    setupVehicles();
-    
-    setupGui();
+    waitingToInitialiseVehicles = true;
 }
 
 void ofApp::setupVehicles(){
@@ -55,6 +55,8 @@ void ofApp::setupVehicles(){
         addMotherFish();
     if (showMotherRabbit)
         addMotherRabbit();
+    
+    waitingToInitialiseVehicles = false;
 }
 
 void ofApp::addNewFish(){
@@ -125,6 +127,11 @@ void ofApp::update(){
             r.update();
         }
     }
+    
+    if (kinectProjector->isROIUpdated())
+        sandSurfaceRenderer->setupMesh();
+    if (kinectProjector->isBasePlaneUpdated())
+        sandSurfaceRenderer->updateRangesAndBasePlane();
 }
 
 void ofApp::draw(){
@@ -397,24 +404,24 @@ void ofApp::mouseDragged(int x, int y, int button){
 }
 
 void ofApp::mousePressed(int x, int y, int button){
-    if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP){
-        // Manual ROI calibration
-        if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT)
-        {
-            kinectROIManualCalib.setPosition(x, y);
-            ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
-        } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
-            kinectROIManualCalib.setSize(x-kinectROIManualCalib.x, y-kinectROIManualCalib.y);
-            ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
-            
-            kinectROI = kinectROIManualCalib;
-            kinectROI.standardize();
-            ofLogVerbose("GreatSand") << "mousePressed(): kinectROI : " << kinectROI ;
-            updateKinectGrabberROI();
-            //update the mesh
-            setupMesh();
-        }
-    }
+//    if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP){
+//        // Manual ROI calibration
+//        if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT)
+//        {
+//            kinectROIManualCalib.setPosition(x, y);
+//            ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
+//        } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
+//            kinectROIManualCalib.setSize(x-kinectROIManualCalib.x, y-kinectROIManualCalib.y);
+//            ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
+//            
+//            kinectROI = kinectROIManualCalib;
+//            kinectROI.standardize();
+//            ofLogVerbose("GreatSand") << "mousePressed(): kinectROI : " << kinectROI ;
+//            updateKinectGrabberROI();
+//            //update the mesh
+//            setupMesh();
+//        }
+//    }
 }
 
 void ofApp::mouseReleased(int x, int y, int button){
@@ -485,17 +492,17 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
         fish.clear();
         rabbits.clear();
         fishNum = 0;
-        rabbitNum = 0;
+        rabbitsNum = 0;
     }
 }
 
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Mother fish")) {
-        if (showMotherFish = false)
+        if (!showMotherFish)
             addMotherFish();
         showMotherFish = e.checked;
     } else if (e.target->is("Mother rabbit")) {
-        if (showMotherRabbit = false)
+        if (!showMotherRabbit)
             addMotherRabbit();
         showMotherRabbit = e.checked;
     }

@@ -74,7 +74,6 @@ private:
     bool showMotherFish;
     bool showMotherRabbit;
     float motherPlatformSize;
-
     bool waitingToInitialiseVehicles;
     
     // GUI

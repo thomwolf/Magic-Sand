@@ -10,14 +10,14 @@
 
 using namespace ofxCSG;
 
-void SandSurfaceRenderer::setup(int sprojResX, int sprojResY){
+void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     // Sandbox contourlines
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Initialize the fbos and images
-    projResX = sprojResX;
-    projResY = sprojResY;
+    projResX = sprojRes.x;
+    projResY = sprojRes.y;
     contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
     contourLineFramebufferObject.begin();
     ofClear(0,0,0,255);
@@ -59,11 +59,11 @@ void SandSurfaceRenderer::setup(int sprojResX, int sprojResY){
     fboProjWindow.end();
 
     // Setup elevation ranges and base plane equation
-    setRangesAndBasePlaneEquation();
+    updateRangesAndBasePlane();
 }
 
 //--------------------------------------------------------------
-void SandSurfaceRenderer::setRangesAndBasePlaneEquation(){
+void SandSurfaceRenderer::updateRangesAndBasePlane(){
     basePlaneEq = kinectProjector->getBasePlaneEq();
     basePlaneNormal = kinectProjector->getBasePlaneNormal();
     basePlaneOffset = kinectProjector->getBasePlaneOffset();

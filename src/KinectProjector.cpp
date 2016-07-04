@@ -14,7 +14,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
 	// settings and defaults
     calibrated = false;
     calibrating = false;
-    baseplaneUpdated = false;
+    basePlaneUpdated = false;
     ROIUpdated = false;
     imageStabilized = false;
 
@@ -101,6 +101,8 @@ void KinectProjector::setup(ofVec2f sprojRes){
     fboProjWindow.begin();
     ofClear(0,0,0,255);
     fboProjWindow.end();
+    
+    setupGui();
     
     kinectgrabber.start(); // Start the acquisition
 }
@@ -231,7 +233,7 @@ void KinectProjector::updateROIFromDepthImage(){
         modaltext = "Detecting sand area: Please wait...";
         ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Set maximal ROI for kinect & Wait for kinectgrabber to reset buffers" ;
         
-        while (kinectgrabber.isFirstImageReady()){
+        while (kinectgrabber.isImageStabilized()){
         } // Wait for kinectgrabber to reset buffers
         
         imageStabilized = false; // Now we waite for a clean new depth frame
@@ -285,7 +287,7 @@ void KinectProjector::updateROIFromDepthImage(){
     } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
     }
 }
-
+//TODO: Fix manual ROI calibration
 void KinectProjector::updateROIManualCalibration(){
     fboProjWindow.begin();
     ofBackground(255);
@@ -344,7 +346,7 @@ void KinectProjector::updateProjKinectAutoCalibration(){
                 autoCalibState = AUTOCALIB_STATE_NEXT_POINT;
             }
         } else {
-            updateROIAutoSetup();
+            updateROIAutoCalibration();
         }
     } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT){
         if (currentCalibPts < 5 || (upframe && currentCalibPts < 10)) {
@@ -417,7 +419,7 @@ void KinectProjector::updateProjKinectAutoCalibration(){
     } else if (autoCalibState == AUTOCALIB_STATE_DONE){
     }
 }
-
+//TODO: Fix manual Prj Kinect calibration
 void KinectProjector::updateProjKinectManualCalibration(){
     // Draw a Chessboard
     drawChessboard(ofGetMouseX(), ofGetMouseY(), chessboardSize);
@@ -636,7 +638,7 @@ float KinectProjector::elevationToKinectDepth(float elevation, float x, float y)
     return kinectDepth;
 }
 
-ofVec2f gradientAtKinectCoord(float x, float y){
+ofVec2f KinectProjector::gradientAtKinectCoord(float x, float y){
     return gradField[(int)(x/gradFieldresolution+gradFieldcols*y/gradFieldresolution)];
 }
 
@@ -654,7 +656,7 @@ void KinectProjector::setupGui(){
     ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level", ofColor::blueSteel);
     sealevelFolder->addSlider("Tilt X", -30, 30, 0);
     sealevelFolder->addSlider("Tilt Y", -30, 30, 0);
-    sealevelFolder->addSlider("Vertical offset", heightMap.getScalarRangeMin()*.5, heightMap.getScalarRangeMax()*.5, 0);
+    sealevelFolder->addSlider("Vertical offset", -100, 100, 0);
     sealevelFolder->addButton("Reset sea level");
     sealevelFolder->expand();
     
@@ -665,7 +667,7 @@ void KinectProjector::setupGui(){
     displayFolder->addSlider("Highest detection\nlevel", 0, 100, maxOffset);
     displayFolder->addToggle("Spatial filtering", true);
     displayFolder->addToggle("Quick reaction (follow hands)", true);
-    displayFolder->addSlider("# of averaging slots", 0, 40, 30)->setPrecision(0);
+    displayFolder->addSlider("# of averaging slots", 1, 40, 30)->setPrecision(0);
     displayFolder->expand();
     
     gui->addBreak();
@@ -674,9 +676,9 @@ void KinectProjector::setupGui(){
     ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::purple);
     calibrationFolder->addButton("Full Calibration");
     calibrationFolder->addButton("Automatically detect sand region");
-    calibrationFolder->addButton("Manually define sand region");
+//    calibrationFolder->addButton("Manually define sand region");
     calibrationFolder->addButton("Automatically calibrate kinect & projector");
-    calibrationFolder->addButton("Manually calibrate kinect & projector");
+//    calibrationFolder->addButton("Manually calibrate kinect & projector");
     calibrationFolder->expand();
     
     gui->addBreak();
@@ -704,49 +706,49 @@ void KinectProjector::setupGui(){
     gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     
     // finally let's load up the stock themes, press spacebar to cycle through them //
-    themes = {  new ofxDatGuiTheme(true),
-        new ofxDatGuiThemeCalib(),
-        new ofxDatGuiThemeSmoke(),
-        new ofxDatGuiThemeWireframe(),
-        new ofxDatGuiThemeMidnight(),
-        new ofxDatGuiThemeAqua(),
-        new ofxDatGuiThemeCharcoal(),
-        new ofxDatGuiThemeAutumn(),
-        new ofxDatGuiThemeCandy()};
-    tIndex = 0;
+//    themes = {  new ofxDatGuiTheme(true),
+//        new ofxDatGuiThemeCalib(),
+//        new ofxDatGuiThemeSmoke(),
+//        new ofxDatGuiThemeWireframe(),
+//        new ofxDatGuiThemeMidnight(),
+//        new ofxDatGuiThemeAqua(),
+//        new ofxDatGuiThemeCharcoal(),
+//        new ofxDatGuiThemeAutumn(),
+//        new ofxDatGuiThemeCandy()};
+//    tIndex = 0;
 }
 void KinectProjector::onModalEvent(ofxModalEvent e){
-    if (e.type == ofxModalEvent::SHOWN){
-        cout << "modal window is open" << endl;
-    }   else if (e.type == ofxModalEvent::HIDDEN){
-        cout << "modal window is closed" << endl;
-    }   else if (e.type == ofxModalEvent::CANCEL){
-        if (calibrated){
-            generalState = GENERAL_STATE_SANDBOX;
-        } else {
-            generalState = GENERAL_STATE_NO_CALIBRATION;
-        }
-        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
-        updateMode();
-        cout << "cancel button was selected" << endl;
-    }   else if (e.type == ofxModalEvent::CONFIRM){
-        if (generalState == GENERAL_STATE_CALIBRATION){
-            if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
-            {
-                addPointPair();
-            } else if (calibrationState == CALIBRATION_STATE_AUTOCALIB){
-                if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
-                {
-                    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-                } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
-                    if (!upframe)
-                        upframe = true;
-                } else if (autoCalibState == AUTOCALIB_STATE_DONE){
-                }
-            }
-        }
-        cout << "confirm button was selected" << endl;
-    }
+//    if (e.type == ofxModalEvent::SHOWN){
+//        cout << "modal window is open" << endl;
+//    }   else if (e.type == ofxModalEvent::HIDDEN){
+//        cout << "modal window is closed" << endl;
+//    }   else if (e.type == ofxModalEvent::CANCEL){
+//        if (calibrated){
+//            generalState = GENERAL_STATE_SANDBOX;
+//        } else {
+//            generalState = GENERAL_STATE_NO_CALIBRATION;
+//        }
+//        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
+//        updateMode();
+//        cout << "cancel button was selected" << endl;
+//    }   else if (e.type == ofxModalEvent::CONFIRM){
+//        if (generalState == GENERAL_STATE_CALIBRATION){
+//            if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
+//            {
+//                addPointPair();
+//            } else if (calibrationState == CALIBRATION_STATE_AUTOCALIB){
+//                if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
+//                {
+//                    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+//                } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
+//                    if (!upframe)
+//                        upframe = true;
+//                } else if (autoCalibState == AUTOCALIB_STATE_DONE){
+//                }
+//            }
+//        }
+//        cout << "confirm button was selected" << endl;
+//    }
 }
 
 void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
@@ -775,7 +777,6 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         autoCalibState = AUTOCALIB_STATE_INIT_POINT;
         ofLogVerbose("GreatSand") << "onButtonEvent(): Starting autocalib" ;
         //        showModal = true;
-        //TODO: Fix manual calibration
     } else if (e.target->is("Manually calibrate kinect & projector")) {
         calibrating = true;
         calibrationState = CALIBRATION_STATE_PROJ_KINECT_MANUAL_CALIBRATION;
@@ -788,7 +789,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         gui->getSlider("Tilt X")->setValue(0);
         gui->getSlider("Tilt Y")->setValue(0);
         gui->getSlider("Vertical offset")->setValue(0);
-        setRangesAndBasePlaneEquation();
+        basePlaneUpdated = true;
     }
 }
 
@@ -804,10 +805,10 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
     if (e.target->is("Tilt X") || e.target->is("Tilt Y")) {
         basePlaneNormal = basePlaneNormalBack.getRotated(gui->getSlider("Tilt X")->getValue(), ofVec3f(1,0,0));
         basePlaneNormal.rotate(gui->getSlider("Tilt Y")->getValue(), ofVec3f(0,1,0));
-        baseplaneUpdated = true;
+        basePlaneUpdated = true;
     } else if (e.target->is("Vertical offset")) {
         basePlaneOffset.z = basePlaneOffsetBack.z + e.value;
-        baseplaneUpdated = true;
+        basePlaneUpdated = true;
     } else if (e.target->is("Highest detection\nlevel")){
         maxOffset = e.value;
         ofLogVerbose("GreatSand") << "onSliderEvent(): maxOffset" << maxOffset ;
@@ -827,7 +828,6 @@ void KinectProjector::saveCalibrationAndSettings(){
     if (kpt.saveCalibration("calibration.xml"))
     {
         ofLogVerbose("GreatSand") << "update(): initialisation: Calibration saved " ;
-        saved = true;
     } else {
         ofLogVerbose("GreatSand") << "update(): initialisation: Calibration could not be saved " ;
     }
