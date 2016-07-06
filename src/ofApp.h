@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxDatGui.h"
 
+#include "KinectGrabber.h"
 #include "KinectProjector.h"
 #include "SandSurfaceRenderer.h"
 #include "vehicle.h"

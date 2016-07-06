@@ -26,6 +26,19 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     // Load colormap and set heightmap
     heightMap.load("HeightColorMap.yml");
     
+    //Set elevation Min and Max
+    elevationMin = -heightMap.getScalarRangeMin();
+    elevationMax = -heightMap.getScalarRangeMax();
+    
+    // Calculate the  height map elevation scaling and offset coefficients
+	heightMapScale = (heightMap.getNumEntries()-1)/((elevationMax-elevationMin));
+	heightMapOffset = 0.5/heightMap.getNumEntries()-heightMapScale*elevationMin;
+    
+    // Calculate the contourline fbo scaling and offset coefficients
+	contourLineFboScale = elevationMin-elevationMax;
+	contourLineFboOffset = elevationMax;
+    contourLineFactor = contourLineFboScale/(contourLineDistance);
+    
     //setup the mesh
     setupMesh();
     
@@ -53,40 +66,34 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
         ofLogError("GreatSand") << "setup(): shader not loaded" ;
     }
     
+    //Prepare fbo
     fboProjWindow.allocate(projResX, projResY, GL_RGBA);
     fboProjWindow.begin();
     ofClear(0,0,0,255);
     fboProjWindow.end();
-
-    // Setup elevation ranges and base plane equation
+    
+    // Setup range, base plane and conversion matrices
+    updateConversionMatrices();
     updateRangesAndBasePlane();
 }
 
-//--------------------------------------------------------------
+void SandSurfaceRenderer::updateConversionMatrices(){
+    // Get conversion matrices
+    transposedKinectProjMatrix = kinectProjector->getTransposedKinectProjMatrix();
+    transposedKinectWorldMatrix = kinectProjector->getTransposedKinectWorldMatrix();
+}
+
 void SandSurfaceRenderer::updateRangesAndBasePlane(){
     basePlaneEq = kinectProjector->getBasePlaneEq();
     basePlaneNormal = kinectProjector->getBasePlaneNormal();
     basePlaneOffset = kinectProjector->getBasePlaneOffset();
 
-    //Set elevation Min and Max
-    elevationMin = -heightMap.getScalarRangeMin();
-    elevationMax = -heightMap.getScalarRangeMax();
-    
     // Set the FilteredDepthImage native scale - converted to 0..1 when send to the shader
     kinectProjector->updateNativeScale(basePlaneOffset.z+elevationMax, basePlaneOffset.z+elevationMin);
-    
-    // Calculate the  height map elevation scaling and offset coefficients
-	heightMapScale = (heightMap.getNumEntries()-1)/((elevationMax-elevationMin));
-	heightMapOffset = 0.5/heightMap.getNumEntries()-heightMapScale*elevationMin;
     
     // Calculate the  FilteredDepthImage scaling and offset coefficients
 	FilteredDepthScale = elevationMin-elevationMax;
 	FilteredDepthOffset = basePlaneOffset.z+elevationMax;
-    
-    // Calculate the contourline fbo scaling and offset coefficients
-	contourLineFboScale = elevationMin-elevationMax;
-	contourLineFboOffset = elevationMax;
-    contourLineFactor = contourLineFboScale/(contourLineDistance);
     
     ofLogVerbose("GreatSand") << "setRangesAndBasePlaneEquation(): basePlaneOffset: " << basePlaneOffset ;
     ofLogVerbose("GreatSand") << "setRangesAndBasePlaneEquation(): basePlaneNormal: " << basePlaneNormal ;
@@ -97,7 +104,6 @@ void SandSurfaceRenderer::updateRangesAndBasePlane(){
     ofLogVerbose("GreatSand") << "setRangesAndBasePlaneEquation(): contourLineDistance: " << contourLineDistance ;
 }
 
-//--------------------------------------------------------------
 void SandSurfaceRenderer::setupMesh(){
     // Initialise mesh
     //    float planeScale = 1;
@@ -140,10 +146,10 @@ void SandSurfaceRenderer::draw(){
 void SandSurfaceRenderer::drawSandbox() {
     fboProjWindow.begin();
     ofBackground(0);
-    kinectProjector->getTexture().bind();
+    kinectProjector->bind();
     heightMapShader.begin();
-    heightMapShader.setUniformMatrix4f("kinectProjMatrix",kinectProjector->getTransposedKinectProjMatrix());
-    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",kinectProjector->getTransposedKinectWorldMatrix());
+    heightMapShader.setUniformMatrix4f("kinectProjMatrix",transposedKinectProjMatrix);
+    heightMapShader.setUniformMatrix4f("kinectWorldMatrix",transposedKinectWorldMatrix);
     heightMapShader.setUniform2f("heightColorMapTransformation",ofVec2f(heightMapScale,heightMapOffset));
     heightMapShader.setUniform2f("depthTransformation",ofVec2f(FilteredDepthScale,FilteredDepthOffset));
     heightMapShader.setUniform4f("basePlaneEq", basePlaneEq);
@@ -153,7 +159,7 @@ void SandSurfaceRenderer::drawSandbox() {
     heightMapShader.setUniform1i("drawContourLines", drawContourLines);
     mesh.draw();
     heightMapShader.end();
-    kinectProjector->getTexture().unbind();
+    kinectProjector->unbind();
     fboProjWindow.end();
 }
 
@@ -161,16 +167,16 @@ void SandSurfaceRenderer::prepareContourLinesFbo()
 {
     contourLineFramebufferObject.begin();
     ofClear(255,255,255, 0);
-    kinectProjector->getTexture().bind();
+    kinectProjector->bind();
 	elevationShader.begin();
-    elevationShader.setUniformMatrix4f("kinectProjMatrix",kinectProjector->getTransposedKinectProjMatrix());
-    elevationShader.setUniformMatrix4f("kinectWorldMatrix",kinectProjector->getTransposedKinectWorldMatrix());
+    elevationShader.setUniformMatrix4f("kinectProjMatrix",transposedKinectProjMatrix);
+    elevationShader.setUniformMatrix4f("kinectWorldMatrix",transposedKinectWorldMatrix);
     elevationShader.setUniform2f("contourLineFboTransformation",ofVec2f(contourLineFboScale,contourLineFboOffset));
     elevationShader.setUniform2f("depthTransformation",ofVec2f(FilteredDepthScale,FilteredDepthOffset));
     elevationShader.setUniform4f("basePlaneEq", basePlaneEq);
     mesh.draw();
     elevationShader.end();
-    kinectProjector->getTexture().unbind();
+    kinectProjector->unbind();
     contourLineFramebufferObject.end();
 }
 

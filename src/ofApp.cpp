@@ -9,7 +9,6 @@ void ofApp::setup(){
     // OF basics
     ofSetFrameRate(60);
     ofBackground(0);
-    //    ofSetBackgroundAuto(false); // Avoid autoclear on draw
 	ofSetVerticalSync(true);
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetLogLevel("ofThread", OF_LOG_WARNING);
@@ -132,6 +131,8 @@ void ofApp::update(){
         sandSurfaceRenderer->setupMesh();
     if (kinectProjector->isBasePlaneUpdated())
         sandSurfaceRenderer->updateRangesAndBasePlane();
+    if (kinectProjector->isCalibrationUpdated())
+        sandSurfaceRenderer->updateConversionMatrices();
 }
 
 void ofApp::draw(){
@@ -141,11 +142,6 @@ void ofApp::draw(){
         sandSurfaceRenderer->draw();
         drawVehicles();
     }
-//    fboProjWindow.draw(0, 0, 640, 480);
-//    ofNoFill();
-//    ofSetColor(255);
-//    ofDrawRectangle(kinectROI);
-//    ofFill();
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args){
@@ -248,147 +244,6 @@ void ofApp::drawMotherRabbit()
     ofSetColor(255);
 }
 void ofApp::keyPressed(int key){
-    if (key==' '){
-            tIndex = tIndex < themes.size()-1 ? tIndex+1 : 0;
-            gui->setTheme(themes[tIndex]);
-    }
- //        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
-//        {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Adding point pair" ;
-//            addPointPair();
-//        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
-//        {
-//            autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-//        } else if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_AUTOCALIB && autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
-//            if (!upframe)
-//                upframe = true;
-//        } else if (generalState == GENERAL_STATE_GAME1)
-//        {
-//            setupVehicles();
-//        }
-        //        if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_DETERMINATION && ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP)
-        //        {
-        //            ofLogVerbose("GreatSand") << "keyPressed(): Changing threshold : " << threshold ;
-        //            threshold+=1;
-        //        }
-//    } else if (key=='a') {
-//        chessboardSize -= 20;
-//    } else if (key=='z') {
-//        chessboardSize += 20;
-//    } else if (key=='q') {
-//        basePlaneOffset.z += 0.5;
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='s') {
-//        basePlaneOffset.z -= 0.5;
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='g') {
-//        contourLineDistance += 1.0;
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='h') {
-//        contourLineDistance -= 1.0;
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='w') {
-//        maxOffset += 0.5;
-//        ofLogVerbose("GreatSand") << "keyPressed(): maxOffset" << maxOffset ;
-//        kinectgrabber.setMaxOffset(maxOffset);
-//    } else if (key=='x') {
-//        maxOffset -= 0.5;
-//        ofLogVerbose("GreatSand") << "keyPressed(): maxOffset" << maxOffset ;
-//        kinectgrabber.setMaxOffset(maxOffset);
-//    } else if (key=='d') {
-//        //        doThemeColorsWindow = !doThemeColorsWindow;
-//        //        ofLogVerbose("GreatSand") << "doThemeColorsWindow: " << doThemeColorsWindow ;
-//    } else if (key=='f') {
-//        //        doSetTheme = !doSetTheme;
-//        //        ofLogVerbose("GreatSand") << "doSetTheme: " << doSetTheme ;
-//    } else if (key=='u') {
-//        basePlaneNormal.rotate(-1, ofVec3f(1,0,0)); // Rotate the base plane normal
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='i') {
-//        basePlaneNormal.rotate(1, ofVec3f(1,0,0)); // Rotate the base plane normal
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='o') {
-//        basePlaneNormal.rotate(-1, ofVec3f(0,1,0)); // Rotate the base plane normal
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='p') {
-//        basePlaneNormal.rotate(1, ofVec3f(0,1,0)); // Rotate the base plane normal
-//        setRangesAndBasePlaneEquation();
-//    } else if (key=='n') {
-//        computeBasePlane();
-//    } else if (key=='c') {
-//        if (pairsKinect.size() == 0) {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Cannot calibrate: No points acquired !!" ;
-//        } else {
-//            ofLogVerbose("GreatSand") << "keyPressed(): calibrating" ;
-//            kpt.calibrate(pairsKinect, pairsProjector);
-//            kinectProjMatrix = kpt.getProjectionMatrix();
-//            saved = false;
-//            loaded = false;
-//            calibrated = true;
-//        }
-//    } else if (key=='r') {
-//        generalState = GENERAL_STATE_CALIBRATION;
-//        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
-//        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-//        ofLogVerbose("GreatSand") << "keyPressed(): Finding ROI" ;
-//    } else if (key=='m') {
-//        generalState = GENERAL_STATE_CALIBRATION;
-//        calibrationState = CALIBRATION_STATE_ROI_MANUAL_SETUP;
-//        ROICalibrationState = ROI_CALIBRATION_STATE_INIT;
-//        ofLogVerbose("GreatSand") << "keyPressed(): Updating ROI Manually" ;
-//    } else if (key=='y') {
-//        generalState = GENERAL_STATE_CALIBRATION;
-//        calibrationState = CALIBRATION_STATE_AUTOCALIB;
-//        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-//        ofLogVerbose("GreatSand") << "keyPressed(): Starting autocalib" ;
-//    } else if (key=='t') {
-//        generalState = GENERAL_STATE_CALIBRATION;
-//        calibrationState = CALIBRATION_STATE_CALIBRATION_TEST;
-//    } else if (key=='b') {
-//        generalState = GENERAL_STATE_SANDBOX;
-//    }else if (key=='e') {
-//        waitingToInitialiseVehicles = true;
-//        generalState = GENERAL_STATE_GAME1;
-//    } else if (key=='v') {
-//        if (kpt.saveCalibration("calibration.xml"))
-//        {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Calibration saved " ;
-//            saved = true;
-//        } else {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Calibration could not be saved " ;
-//        }
-//    } else if (key=='l') {
-//        if (kpt.loadCalibration("calibration.xml"))
-//        {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Calibration loaded " ;
-//            kinectProjMatrix = kpt.getProjectionMatrix();
-//            loaded = true;
-//            calibrated = true;
-//        } else {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Calibration could not be loaded " ;
-//        }
-//    } else if (key=='j') {
-//        if (saveSettings("settings.xml"))
-//        {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Settings saved " ;
-//        } else {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Settings could not be saved " ;
-//        }
-//    } else if (key=='k') {
-//        if (loadSettings("settings.xml"))
-//        {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Settings loaded " ;
-//            setRangesAndBasePlaneEquation();
-//            updateKinectGrabberROI();
-//        } else {
-//            ofLogVerbose("GreatSand") << "keyPressed(): Settings could not be loaded " ;
-//        }
-//    }
-//    
-//    if (key=='r'|| key== 'm' || key== 'y'|| key=='t' || key=='b' || key == 'e') {
-//        firstImageReady = false;
-//        updateMode();
-//    }
 }
 
 void ofApp::keyReleased(int key){
@@ -450,7 +305,7 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 void ofApp::setupGui(){
     // instantiate and position the gui //
-    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
+    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
     
     // add some components //
 //    gui->addTextInput("message", "# open frameworks #");

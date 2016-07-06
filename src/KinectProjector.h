@@ -11,13 +11,20 @@
 
 #include <iostream>
 #include "ofMain.h"
-#include "KinectGrabber.h"
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinectProjectorToolkit.h"
+#include "KinectGrabber.h"
 #include "ofxModal.h"
 
 #include "Utils.h"
+
+class ofxModalThemeProjKinect : public ofxModalTheme {
+public:
+    struct {
+        float speed = 0.1f;
+    } animation;
+};
 
 class KinectProjector {
 
@@ -32,12 +39,14 @@ public:
     void updateROIFromColorImage();
     void updateROIFromDepthImage();
     void updateROIManualCalibration();
+    void setNewKinectROI();
     void updateKinectGrabberROI();
     void updateProjKinectAutoCalibration();
     void updateProjKinectManualCalibration();
     void addPointPair();
     void updateMaxOffset();
     void updateBasePlane();
+    void askToFlattenSand();
     
     void drawProjectorWindow();
     void drawMainWindow();
@@ -63,8 +72,15 @@ public:
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
-    void onModalEvent(ofxModalEvent e);
+    void onConfirmModalEvent(ofxModalEvent e);
+    void onCalibModalEvent(ofxModalEvent e);
     
+    void bind(){
+        FilteredDepthImage.getTexture().bind();
+    }
+    void unbind(){
+        FilteredDepthImage.getTexture().unbind();
+    }
     ofRectangle getKinectROI(){
         return kinectROI;
     }
@@ -93,7 +109,7 @@ public:
         return calibrating;
     }
     bool isCalibrated(){
-        return calibrated;
+        return projKinectCalibrated;
     }
     bool isImageStabilized(){
         return imageStabilized;
@@ -109,6 +125,14 @@ public:
     bool isROIUpdated(){ // Can be called only once after update
         if (ROIUpdated){
             ROIUpdated = false;
+            return true;
+        } else{
+            return false;
+        }
+    }
+    bool isCalibrationUpdated(){ // Can be called only once after update
+        if (projKinectCalibrationUpdated){
+            projKinectCalibrationUpdated = false;
             return true;
         } else{
             return false;
@@ -147,23 +171,18 @@ private:
     };
 
     // States variables
-    bool calibrated;
+    bool ROIcalibrated;
+    bool projKinectCalibrated;
     bool calibrating;
-    bool basePlaneUpdated;
     bool ROIUpdated;
+    bool projKinectCalibrationUpdated;
+    bool basePlaneUpdated;
     bool imageStabilized;
+    bool waitingForFlattenSand;
     Calibration_state calibrationState;
     ROI_calibration_state ROICalibState;
     Auto_calibration_state autoCalibState;
     Full_Calibration_state fullCalibState;
-
-    // GUI Modal window
-    shared_ptr<ofxModalAlert>   modal;
-    string                      resultMessage;
-    string                      modaltext;
-    ofColor                     resultMessageColor;
-    // GUI Main interface
-    ofxDatGui* gui;
 
     //kinect interfaces and calibration
     KinectGrabber               kinectgrabber;
@@ -212,7 +231,9 @@ private:
     ofMatrix4x4                 kinectWorldMatrix;
     
     // Max offset for keeping kinect points
-    float maxOffset, maxOffsetSafeRange;
+    float maxOffset;
+    float maxOffsetSafeRange;
+    float maxOffsetBack;
     
     // Autocalib points
     ofPoint* autoCalibPts; // Center of autocalib chess boards
@@ -225,7 +246,16 @@ private:
     int   chessboardSize;
     int   chessboardX;
     int   chessboardY;
+
+    // GUI Modal window
+    shared_ptr<ofxModalAlert>   calibModal;
+    string                      resultMessage;
+    string                      modaltext;
+    ofColor                     resultMessageColor;
+    // GUI Main interface
+    ofxDatGui* gui;
 };
+
 
 #endif /* defined(__GreatSand__KinectProjector__) */
 

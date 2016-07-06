@@ -25,6 +25,7 @@ public:
     
     void setup(ofVec2f sprojRes);
     void setupMesh();
+    void updateConversionMatrices();
     void updateRangesAndBasePlane();
     void update();
     void draw();
@@ -37,6 +38,10 @@ private:
     // Projector Resolution
     int projResX, projResY;
     
+    // Conversion matrices
+    ofMatrix4x4                 transposedKinectProjMatrix;
+    ofMatrix4x4                 transposedKinectWorldMatrix;
+
     // Mesh
     ofMesh mesh;
     int meshwidth;          //Mesh size

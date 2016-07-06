@@ -12,23 +12,19 @@ using namespace ofxCSG;
 
 void KinectProjector::setup(ofVec2f sprojRes){
 	// settings and defaults
-    calibrated = false;
+    ROIcalibrated = false;
+    projKinectCalibrated = false;
     calibrating = false;
     basePlaneUpdated = false;
+    projKinectCalibrationUpdated = false;
     ROIUpdated = false;
     imageStabilized = false;
+    waitingForFlattenSand = false;
 
-    // instantiate the modal window //
-    modal = make_shared<ofxModalAlert>();
-    modal->addListener(this, &KinectProjector::onModalEvent);
-    //    modal = new ofxDatGui(ofxDatGuiAnchor::TOP_LEFT );
-    //    modal->addLabel(modaltext);
-    //    modal->addButton("Ok");
-    //    modal->addButton("Cancel");
-    //    // hide the modal box //
-    //    showModal = false;
-    //    modal->setVisible(showModal);
-    //    modal->onButtonEvent(this, &ofApp::onModalButtonEvent);
+    // instantiate the modal windows //
+    calibModal = make_shared<ofxModalAlert>();
+    calibModal->setTheme(make_shared<ofxModalThemeProjKinect>());
+    calibModal->addListener(this, &KinectProjector::onCalibModalEvent);
 
     // calibration chessboard config
 	chessboardSize = 300;
@@ -45,7 +41,8 @@ void KinectProjector::setup(ofVec2f sprojRes){
     basePlaneNormal = basePlaneNormalBack;
     basePlaneOffset = basePlaneOffsetBack;
     basePlaneEq=getPlaneEquation(basePlaneOffset,basePlaneNormal);
-    maxOffset = 0;
+    maxOffsetBack = basePlaneOffset.z-300;
+    maxOffset = maxOffsetBack;
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
 
     // kinectgrabber: start
@@ -68,7 +65,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
         ofLogVerbose("GreatSand") << "setup(): Calibration loaded " ;
         kinectProjMatrix = kpt.getProjectionMatrix();
         ofLogVerbose("GreatSand") << "setup(): kinectProjMatrix: " << kinectProjMatrix ;
-        calibrated = true;
+        projKinectCalibrated = true;
 //        generalState = GENERAL_STATE_SANDBOX;
 //        updateMode();
     } else {
@@ -84,7 +81,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
     if (loadSettings("settings.xml"))
     {
         ofLogVerbose("GreatSand") << "setup(): Settings loaded " ;
-        ROICalibState = ROI_CALIBRATION_STATE_DONE;
+        ROIcalibrated = true;
     } else {
         ofLogVerbose("GreatSand") << "setup(): Settings could not be loaded " ;
     }
@@ -139,7 +136,7 @@ void KinectProjector::update(){
         // Is the depth image stabilized
         if (kinectgrabber.isImageStabilized())
             imageStabilized = true;
-        if (calibrating)
+        if (calibrating && !waitingForFlattenSand)
             updateCalibration();
     }
 }
@@ -164,8 +161,7 @@ void KinectProjector::updateFullAutoCalibration(){
         if (ROICalibState == ROI_CALIBRATION_STATE_DONE) {
             fullCalibState = FULL_CALIBRATION_STATE_AUTOCALIB;
             autoCalibState = AUTOCALIB_STATE_INIT_FIRST_PLANE;
-            calibrated = false;
-            calibrating = true;
+            calibrating = true; // We are still calibrating
         }
     } else if (fullCalibState == FULL_CALIBRATION_STATE_AUTOCALIB){
         updateProjKinectAutoCalibration();
@@ -179,7 +175,7 @@ void KinectProjector::updateROIAutoCalibration(){
     //updateROIFromColorImage();
     updateROIFromDepthImage();
 }
-
+//TODO: update color image ROI acquisition to use calibration modal
 void KinectProjector::updateROIFromColorImage(){
     fboProjWindow.begin();
     ofBackground(255);
@@ -221,7 +217,7 @@ void KinectProjector::updateROIFromColorImage(){
         kinectROI.standardize();
         ofLogVerbose("GreatSand") << "updateROIFromColorImage(): kinectROI : " << kinectROI ;
         ROICalibState = ROI_CALIBRATION_STATE_DONE;
-        updateKinectGrabberROI();
+        setNewKinectROI();
     } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
     }
 }
@@ -230,7 +226,8 @@ void KinectProjector::updateROIFromDepthImage(){
     if (ROICalibState == ROI_CALIBRATION_STATE_INIT) {
         kinectROI = ofRectangle(0, 0, kinectRes.x, kinectRes.y);
         updateKinectGrabberROI();
-        modaltext = "Detecting sand area: Please wait...";
+        calibModal->setTitle("Detecting sand area...");
+        calibModal->setMessage("Enlarging acquisition area & resetting buffers.\nPlease wait...");
         ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Set maximal ROI for kinect & Wait for kinectgrabber to reset buffers" ;
         
         while (kinectgrabber.isImageStabilized()){
@@ -238,11 +235,12 @@ void KinectProjector::updateROIFromDepthImage(){
         
         imageStabilized = false; // Now we waite for a clean new depth frame
         ROICalibState = ROI_CALIBRATION_STATE_READY_TO_MOVE_UP;
+        calibModal->setMessage("Stabilizing acquisition.\nPlease wait...");
         ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_INIT: Wait for clean new frame" ;
-        
     } else if (ROICalibState == ROI_CALIBRATION_STATE_READY_TO_MOVE_UP) {
         if (imageStabilized)
         {
+            calibModal->setMessage("Scanning depth field to find sandbox walls.\nPlease wait...");
             ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_READY_TO_MOVE_UP: got a stable depth image" ;
             ROICalibState = ROI_CALIBRATION_STATE_MOVE_UP;
             large = ofPolyline();
@@ -278,12 +276,21 @@ void KinectProjector::updateROIFromDepthImage(){
             }
             threshold+=1;
         }
-        kinectROI = large.getBoundingBox();
-        kinectROI.standardize();
-        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): final kinectROI : " << kinectROI ;
+        if (large.getArea() == 0)
+        {
+            calibModal->hide();
+            confirmModal->setTitle("Calibration failed");
+            confirmModal->setMessage("The sandbox walls could not be found.");
+            confirmModal->show();
+            calibrating = false;
+        } else {
+            kinectROI = large.getBoundingBox();
+            kinectROI.standardize();
+            calibModal->setMessage("Sand area successfully detected");
+            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): final kinectROI : " << kinectROI ;
+            setNewKinectROI();
+        }
         ROICalibState = ROI_CALIBRATION_STATE_DONE;
-        updateKinectGrabberROI();
-        modaltext = "Detecting sand area: Sand area successfully detected.";
     } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
     }
 }
@@ -306,51 +313,66 @@ void KinectProjector::updateROIManualCalibration(){
     }
 }
 
+void KinectProjector::setNewKinectROI(){
+    saveCalibrationAndSettings();
+    ROIcalibrated = true; // Update states variables
+    ROIUpdated = true;
+    calibrating = false;
+    calibModal->hide();
+    updateKinectGrabberROI();
+}
+
+void KinectProjector::updateKinectGrabberROI(){
+#if __cplusplus>=201103
+    kinectgrabber.ROIchannel.send(std::move(kinectROI));
+#else
+    kinectgrabber.ROIchannel.send(kinectROI);
+#endif
+}
+
 void KinectProjector::updateProjKinectAutoCalibration(){
     if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE){
-        fboProjWindow.begin();
-        ofBackground(255);
-        fboProjWindow.end();
-        updateROIAutoCalibration();
+        if (!ROIcalibrated)
+            updateROIAutoCalibration();
         autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-        modaltext = "Kinect/projector calibration: Please flatten the sand surface carefully before starting the calibration.";
+        calibModal->setTitle("Automatic calibration of projector and kinect");
     } else if (autoCalibState == AUTOCALIB_STATE_INIT_POINT){
         if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
-            if (kinectROI.getArea() == 0)
-            {
-                modaltext = "The sand region has not been defined. Please detect or define manually the sand region.";
-                autoCalibState = AUTOCALIB_STATE_DONE;
-            } else {
-                modaltext = "Kinect/projector calibration: Computing base plane, please wait.";
-                updateBasePlane(); // Find base plane
-                autoCalibPts = new ofPoint[10];
-                float cs = 2*chessboardSize/3;
-                float css = 3*chessboardSize/4;
-                ofPoint sc = ofPoint(projRes.x/2,projRes.y/2);
-                
-                // Prepare 10 locations for the calibration chessboard
-                autoCalibPts[0] = ofPoint(cs,cs)-sc;
-                autoCalibPts[1] = ofPoint(projRes.x-cs,cs)-sc;
-                autoCalibPts[2] = ofPoint(projRes.x-cs,projRes.y-cs)-sc;
-                autoCalibPts[3] = ofPoint(cs,projRes.y-cs)-sc;
-                autoCalibPts[4] = ofPoint(projRes.x/2+cs,projRes.y/2)-sc;
-                autoCalibPts[5] = ofPoint(css,css)-sc;
-                autoCalibPts[6] = ofPoint(projRes.x-css,css)-sc;
-                autoCalibPts[7] = ofPoint(projRes.x-css,projRes.y-css)-sc;
-                autoCalibPts[8] = ofPoint(css,projRes.y-css)-sc;
-                autoCalibPts[9] = ofPoint(projRes.x/2-cs,projRes.y/2)-sc;
-                currentCalibPts = 0;
-                cleared = false;
-                upframe = false;
-                trials = 0;
-                autoCalibState = AUTOCALIB_STATE_NEXT_POINT;
-            }
+            calibModal->setMessage("Acquiring sea level plane.\nPlease wait.");
+            updateBasePlane(); // Find base plane
+            autoCalibPts = new ofPoint[10];
+            float cs = 2*chessboardSize/3;
+            float css = 3*chessboardSize/4;
+            ofPoint sc = ofPoint(projRes.x/2,projRes.y/2);
+            
+            // Prepare 10 locations for the calibration chessboard
+            autoCalibPts[0] = ofPoint(cs,cs)-sc;
+            autoCalibPts[1] = ofPoint(projRes.x-cs,cs)-sc;
+            autoCalibPts[2] = ofPoint(projRes.x-cs,projRes.y-cs)-sc;
+            autoCalibPts[3] = ofPoint(cs,projRes.y-cs)-sc;
+            autoCalibPts[4] = ofPoint(projRes.x/2+cs,projRes.y/2)-sc;
+            autoCalibPts[5] = ofPoint(css,css)-sc;
+            autoCalibPts[6] = ofPoint(projRes.x-css,css)-sc;
+            autoCalibPts[7] = ofPoint(projRes.x-css,projRes.y-css)-sc;
+            autoCalibPts[8] = ofPoint(css,projRes.y-css)-sc;
+            autoCalibPts[9] = ofPoint(projRes.x/2-cs,projRes.y/2)-sc;
+            currentCalibPts = 0;
+            cleared = false;
+            upframe = false;
+            trials = 0;
+            autoCalibState = AUTOCALIB_STATE_NEXT_POINT;
         } else {
             updateROIAutoCalibration();
         }
     } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT){
         if (currentCalibPts < 5 || (upframe && currentCalibPts < 10)) {
-            modaltext = "Kinect/projector calibration: Acquiring calibration points, please wait.";
+            if (!upframe){
+                string mess = "Acquiring low level calibration point "+std::to_string(currentCalibPts+1)+"/5 .\nPlease wait.";
+                calibModal->setMessage(mess);
+            } else {
+                string mess = "Acquiring high level calibration point "+std::to_string(currentCalibPts-4)+"/5 .\nPlease wait.";
+                calibModal->setMessage(mess);
+            }
             cvRgbImage = ofxCv::toCv(kinectColorImage.getPixels());
             cv::Size patternSize = cv::Size(chessboardX-1, chessboardY-1);
             int chessFlags = cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_FAST_CHECK;
@@ -385,7 +407,6 @@ void KinectProjector::updateProjKinectAutoCalibration(){
                     ofLogVerbose("GreatSand") << "autoCalib(): Chessboard not found on trial : " << trials ;
                     if (trials >10) {
                         // Move the chessboard closer to the center of the screen
-                        modaltext = "Kinect/projector calibration: Chessboard not found, moving chessboard. Please wait.";
                         ofLogVerbose("GreatSand") << "autoCalib(): Chessboard could not be found moving chessboard closer to center " ;
                         autoCalibPts[currentCalibPts] = 3*autoCalibPts[currentCalibPts]/4;
                         fboProjWindow.begin(); // Clear projector
@@ -398,21 +419,33 @@ void KinectProjector::updateProjKinectAutoCalibration(){
             }
         } else {
             if (upframe) { // We are done
+                calibModal->setMessage("Updating acquision ceiling.\nPlease wait.");
                 updateMaxOffset(); // Find max offset
                 autoCalibState = AUTOCALIB_STATE_COMPUTE;
             } else { // We ask for higher points
-                modaltext = "Please put a board over the sandbox so we can acquire higher calibration points.";
+                calibModal->hide();
+                confirmModal->show();
+                confirmModal->setTitle("Automatic calibration of projector and kinect");
+                confirmModal->setMessage("Please put a board over the sandbox so we can acquire high level calibration points.");
             }
         }
     } else if (autoCalibState == AUTOCALIB_STATE_COMPUTE){
         if (pairsKinect.size() == 0) {
             ofLogVerbose("GreatSand") << "autoCalib(): Error: No points acquired !!" ;
+            calibModal->hide();
+            confirmModal->setTitle("Calibration failed");
+            confirmModal->setMessage("No point could be acquired. ");
+            confirmModal->show();
+            calibrating = false;
         } else {
             ofLogVerbose("GreatSand") << "autoCalib(): Calibrating" ;
             kpt.calibrate(pairsKinect, pairsProjector);
             kinectProjMatrix = kpt.getProjectionMatrix();
-            calibrated = true;
-            modaltext = "Kinect/projector calibration: Calibration successfull.";
+            projKinectCalibrated = true; // Update states variables
+            projKinectCalibrationUpdated = true;
+            calibrating = false;
+            calibModal->hide();
+            calibModal->setMessage("Calibration successfull.");
             saveCalibrationAndSettings();
         }
         autoCalibState = AUTOCALIB_STATE_DONE;
@@ -463,6 +496,8 @@ void KinectProjector::updateBasePlane(){
     basePlaneEq = plane_from_points(points, sw*sh);
     basePlaneNormal = ofVec3f(basePlaneEq);
     basePlaneOffset = ofVec3f(0,0,-basePlaneEq.w);
+    basePlaneNormalBack = basePlaneNormal;
+    basePlaneOffsetBack = basePlaneOffset;
     basePlaneUpdated = true;
 }
 
@@ -491,6 +526,7 @@ void KinectProjector::updateMaxOffset(){
     ofLogVerbose("GreatSand") << "updateMaxOffset(): Computing plane from points" ;
     ofVec4f eqoff = plane_from_points(points, sw*sh);
     maxOffset = -eqoff.w-maxOffsetSafeRange;
+    maxOffsetBack = maxOffset;
     // Update max Offset
     ofLogVerbose("GreatSand") << "updateMaxOffset(): maxOffset" << maxOffset ;
     kinectgrabber.setMaxOffset(maxOffset);
@@ -519,14 +555,15 @@ void KinectProjector::addPointPair() {
     ofLogVerbose("GreatSand") << resultMessage ;
 }
 
-void KinectProjector::updateKinectGrabberROI(){
-    saveCalibrationAndSettings();
-    ROIUpdated = true;
-#if __cplusplus>=201103
-    kinectgrabber.ROIchannel.send(std::move(kinectROI));
-#else
-    kinectgrabber.ROIchannel.send(kinectROI);
-#endif
+void KinectProjector::askToFlattenSand(){
+    fboProjWindow.begin();
+    ofBackground(255);
+    fboProjWindow.end();
+    
+    confirmModal->setMessage("Please flatten the sand surface.");
+    confirmModal->show();
+    
+    waitingForFlattenSand = true;
 }
 
 void KinectProjector::drawProjectorWindow(){
@@ -664,7 +701,7 @@ void KinectProjector::setupGui(){
     
     // add a folder to group a few components together //
     ofxDatGuiFolder* displayFolder = gui->addFolder("Depth frame filtering", ofColor::orangeRed);
-    displayFolder->addSlider("Highest detection\nlevel", 0, 100, maxOffset);
+    displayFolder->addSlider("Ceiling", -300, 300, 0);
     displayFolder->addToggle("Spatial filtering", true);
     displayFolder->addToggle("Quick reaction (follow hands)", true);
     displayFolder->addSlider("# of averaging slots", 1, 40, 30)->setPrecision(0);
@@ -717,39 +754,6 @@ void KinectProjector::setupGui(){
 //        new ofxDatGuiThemeCandy()};
 //    tIndex = 0;
 }
-void KinectProjector::onModalEvent(ofxModalEvent e){
-//    if (e.type == ofxModalEvent::SHOWN){
-//        cout << "modal window is open" << endl;
-//    }   else if (e.type == ofxModalEvent::HIDDEN){
-//        cout << "modal window is closed" << endl;
-//    }   else if (e.type == ofxModalEvent::CANCEL){
-//        if (calibrated){
-//            generalState = GENERAL_STATE_SANDBOX;
-//        } else {
-//            generalState = GENERAL_STATE_NO_CALIBRATION;
-//        }
-//        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
-//        updateMode();
-//        cout << "cancel button was selected" << endl;
-//    }   else if (e.type == ofxModalEvent::CONFIRM){
-//        if (generalState == GENERAL_STATE_CALIBRATION){
-//            if (calibrationState == CALIBRATION_STATE_PROJ_KINECT_CALIBRATION)
-//            {
-//                addPointPair();
-//            } else if (calibrationState == CALIBRATION_STATE_AUTOCALIB){
-//                if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
-//                {
-//                    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-//                } else if (autoCalibState == AUTOCALIB_STATE_NEXT_POINT) {
-//                    if (!upframe)
-//                        upframe = true;
-//                } else if (autoCalibState == AUTOCALIB_STATE_DONE){
-//                }
-//            }
-//        }
-//        cout << "confirm button was selected" << endl;
-//    }
-}
 
 void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
     if (e.target->is("Full Calibration")) {
@@ -757,6 +761,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         calibrationState = CALIBRATION_STATE_FULL_AUTO_CALIBRATION;
         fullCalibState = FULL_CALIBRATION_STATE_ROI_DETERMINATION;
         ROICalibState = ROI_CALIBRATION_STATE_INIT;
+        askToFlattenSand();
         ofLogVerbose("GreatSand") << "onButtonEvent(): Starting full calibration" ;
         //        showModal = true;
     } else if (e.target->is("Automatically detect sand region")) {
@@ -764,6 +769,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         calibrationState = CALIBRATION_STATE_ROI_AUTO_DETERMINATION;
         ROICalibState = ROI_CALIBRATION_STATE_INIT;
         ofLogVerbose("GreatSand") << "onButtonEvent(): Finding ROI" ;
+        askToFlattenSand();
         //        showModal = true;
     } else if (e.target->is("Manually define sand region")){
         calibrating = true;
@@ -775,6 +781,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         calibrating = true;
         calibrationState = CALIBRATION_STATE_PROJ_KINECT_AUTO_CALIBRATION;
         autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+        askToFlattenSand();
         ofLogVerbose("GreatSand") << "onButtonEvent(): Starting autocalib" ;
         //        showModal = true;
     } else if (e.target->is("Manually calibrate kinect & projector")) {
@@ -784,11 +791,12 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         ofLogVerbose("GreatSand") << "onButtonEvent(): Manual calibration -- Not working now" ;
         //        showModal = true;
     } else if (e.target->is("Reset sea level")){
-        basePlaneNormal = basePlaneNormalBack;
-        basePlaneOffset.z = basePlaneOffsetBack.z;
         gui->getSlider("Tilt X")->setValue(0);
         gui->getSlider("Tilt Y")->setValue(0);
         gui->getSlider("Vertical offset")->setValue(0);
+        basePlaneNormal = basePlaneNormalBack;
+        basePlaneOffset.z = basePlaneOffsetBack.z;
+        basePlaneEq = getPlaneEquation(basePlaneOffset,basePlaneNormal);
         basePlaneUpdated = true;
     }
 }
@@ -805,12 +813,14 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
     if (e.target->is("Tilt X") || e.target->is("Tilt Y")) {
         basePlaneNormal = basePlaneNormalBack.getRotated(gui->getSlider("Tilt X")->getValue(), ofVec3f(1,0,0));
         basePlaneNormal.rotate(gui->getSlider("Tilt Y")->getValue(), ofVec3f(0,1,0));
+        basePlaneEq = getPlaneEquation(basePlaneOffset,basePlaneNormal);
         basePlaneUpdated = true;
     } else if (e.target->is("Vertical offset")) {
         basePlaneOffset.z = basePlaneOffsetBack.z + e.value;
+        basePlaneEq = getPlaneEquation(basePlaneOffset,basePlaneNormal);
         basePlaneUpdated = true;
-    } else if (e.target->is("Highest detection\nlevel")){
-        maxOffset = e.value;
+    } else if (e.target->is("Ceiling")){
+        maxOffset = maxOffsetBack-e.value;
         ofLogVerbose("GreatSand") << "onSliderEvent(): maxOffset" << maxOffset ;
         kinectgrabber.setMaxOffset(maxOffset);
     } else if(e.target->is("# of averaging slots")){
@@ -820,8 +830,30 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
         kinectgrabber.numAveragingSlotschannel.send(e.value);
 #endif
     }
-    
-    
+}
+
+//TODO: Check this
+void KinectProjector::onCalibModalEvent(ofxModalEvent e){
+    if (e.type == ofxModalEvent::SHOWN){
+        cout << "calib modal window is open" << endl;
+    }   else if (e.type == ofxModalEvent::HIDDEN){
+        cout << "calib modal window is closed" << endl;
+    }   else if (e.type == ofxModalEvent::CONFIRM){
+        if (calibrating){
+            if (waitingForFlattenSand){
+                waitingForFlattenSand = false;
+                //                calibModal->show();
+            }  else if ((calibrationState == CALIBRATION_STATE_PROJ_KINECT_AUTO_CALIBRATION || (calibrationState == CALIBRATION_STATE_FULL_AUTO_CALIBRATION && fullCalibState == FULL_CALIBRATION_STATE_AUTOCALIB))
+                        && autoCalibState == AUTOCALIB_STATE_NEXT_POINT){
+                if (!upframe){
+                    upframe = true;
+                    //                    calibModal->show();
+                }
+            }
+        }
+        calibrating = false;
+        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
+    }
 }
 
 void KinectProjector::saveCalibrationAndSettings(){
@@ -838,6 +870,7 @@ void KinectProjector::saveCalibrationAndSettings(){
         ofLogVerbose("GreatSand") << "update(): initialisation: Settings could not be saved " ;
     }
 }
+//TODO: Save additionnal settings
 
 bool KinectProjector::loadSettings(string path){
     ofXml xml;
