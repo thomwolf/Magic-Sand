@@ -64,7 +64,7 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
     ofLogVerbose("kinectGrabber") << "setupFramefilter(): Height: " << height << " Gradient Field Rows: " << gradFieldrows;
     
 	//Framefilter parameters
-    numAveragingSlots = 30;
+    numAveragingSlots = 15;
     minNumSamples = (numAveragingSlots+1)/2;
     maxVariance = 4 ;
     hysteresis = 0.5f ;
@@ -72,6 +72,7 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
 	instableValue=0.0;
     maxgradfield = 1000;
     unvalidValue = 4000;
+    outsideROIValue = 3999; // Debug
     spatialFilter = true;
     followBigChange = true;
     minInitFrame = 60;
@@ -131,16 +132,6 @@ void KinectGrabber::resetBuffers(void){
         delete[] gradField;
     }
     initiateBuffers();
-}
-
-ofMatrix4x4 KinectGrabber::getWorldMatrix(){
-    ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);// Trick to access kinect internal parameters without having to modify ofxKinect
-    ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
-    ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
-    return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
-                       0,       b.y-a.y,    0,  a.y,
-                       0,       0,          0,  1,
-                       0,       0,          0,  1);
 }
 
 void KinectGrabber::threadedFunction() {
@@ -214,7 +205,7 @@ void KinectGrabber::filter()
             for(unsigned int x=0;x<width;++x,++ifPtr,++abPtr,sPtr+=3,++ofPtr,++nofPtr)
             {
                 float px=float(x)+0.5f;
-                if(isInsideROI(x, y)) // Check if pixel is inside ROI
+                if(x>minX && x<maxX && y>minY && y<maxY) // Check if pixel is inside ROI
                 {
                     RawDepth newValRD = *ifPtr;
                     float oldVal=*abPtr;
@@ -225,18 +216,14 @@ void KinectGrabber::filter()
                     point[1] = py;
                     point[2] = newVal;
                     
-                    if(newVal>maxOffset)//we are under the max offset plane (to avoid taking into account the hands of operators
-                        //           if(newVal != 0 && newVal != 255) // Pixel depth not clipped => inside valide range
+                    if(newVal > maxOffset)//we are under the max offset plane (to avoid taking into account the hands of operators
                     {
                         /* Store the new input value: */
                         *abPtr=newVal;
-                        
-                        //Check if there is a big change
-                        float oldFiltered = newVal;
-                        if (sPtr[0] > 0)
-                            oldFiltered =sPtr[1]/sPtr[0];
-                        if (followBigChange){
-                            if(abs(oldFiltered-newVal)>=bigChange)
+                        if (followBigChange && sPtr[0] > 0){
+                            //Check if there is a big change
+                            float oldFiltered = sPtr[1]/sPtr[0];
+                            if(oldFiltered-newVal >= bigChange || newVal-oldFiltered >= bigChange)
                             {
                                 float* aabPtr;
                                 // update all averaging slots
@@ -248,58 +235,38 @@ void KinectGrabber::filter()
                                 sPtr[0] = numAveragingSlots;
                                 sPtr[1] = newVal*numAveragingSlots;
                                 sPtr[2] = newVal*newVal*numAveragingSlots;
-                            } else {
-                                
-                                /* Update the pixel's statistics: */
-                                ++sPtr[0]; // Number of valid samples
-                                sPtr[1]+=newVal; // Sum of valid samples
-                                sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
-                                
-                                /* Check if the previous value in the averaging buffer was valid: */
-                                if(oldVal!= unvalidValue)
-                                {
-                                    --sPtr[0]; // Number of valid samples
-                                    sPtr[1]-=oldVal; // Sum of valid samples
-                                    sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
-                                }
                             }
-                        } else {
-                            /* Update the pixel's statistics: */
-                            ++sPtr[0]; // Number of valid samples
-                            sPtr[1]+=newVal; // Sum of valid samples
-                            sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
-                            
-                            /* Check if the previous value in the averaging buffer was valid: */
-                            if(oldVal!= unvalidValue)
-                            {
-                                --sPtr[0]; // Number of valid samples
-                                sPtr[1]-=oldVal; // Sum of valid samples
-                                sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
-                            }
-                            
+                        }
+                        /* Update the pixel's statistics: */
+                        ++sPtr[0]; // Number of valid samples
+                        sPtr[1]+=newVal; // Sum of valid samples
+                        sPtr[2]+=newVal*newVal; // Sum of squares of valid samples
+                        
+                        /* Check if the previous value in the averaging buffer was valid: */
+                        if(oldVal != unvalidValue)
+                        {
+                            --sPtr[0]; // Number of valid samples
+                            sPtr[1]-=oldVal; // Sum of valid samples
+                            sPtr[2]-=oldVal*oldVal; // Sum of squares of valid samples
                         }
                     }
-                    // Check if the pixel is considered "stable": */
+                    // Check if the pixel is "stable": */
                     if(sPtr[0]>=minNumSamples && sPtr[2]*sPtr[0]<=maxVariance*sPtr[0]*sPtr[0]+sPtr[1]*sPtr[1])
                     {
                         /* Check if the new depth-corrected running mean is outside the previous value's envelope: */
-                        float newFiltered=float(sPtr[1])/float(sPtr[0]);
+                        float newFiltered = float(sPtr[1])/float(sPtr[0]);
                         if(abs(newFiltered-*ofPtr)>=hysteresis)
                         {
                             /* Set the output pixel value to the depth-corrected running mean: */
-                            *nofPtr=*ofPtr=newFiltered;
-                        }
-                        else
-                        {
+                            *nofPtr = *ofPtr = newFiltered;
+                        } else {
                             /* Leave the pixel at its previous value: */
-                            *nofPtr=*ofPtr;
+                            *nofPtr = *ofPtr;
                         }
                     }
-                    *nofPtr=*ofPtr;
-                }
-                else
-                {
-                    *nofPtr=unvalidValue;
+                        *nofPtr=*ofPtr;
+                } else {
+                    *nofPtr=outsideROIValue;
                 }
             }
         }
@@ -387,9 +354,6 @@ void KinectGrabber::updateGradientField()
     for(unsigned int y=0;y<gradFieldrows;++y) {
         for(unsigned int x=0;x<gradFieldcols;++x) {
             if (isInsideROI(x*gradFieldresolution, y*gradFieldresolution) && isInsideROI((x+1)*gradFieldresolution, (y+1)*gradFieldresolution) ){
-                if (y == gradFieldrows/2 && x == gradFieldcols/2){
-                    
-                }
                 gx = 0;
                 gvx = 0;
                 gy = 0;
@@ -430,10 +394,9 @@ void KinectGrabber::setKinectROI(ofRectangle ROI){
 }
 
 bool KinectGrabber::isInsideROI(int x, int y){
-    bool result = true;
     if (x<minX||x>maxX||y<minY||y>maxY)
-        result = false;
-    return result;
+        return false;
+    return true;
 }
 
 void KinectGrabber::updateAveragingSlotsNumber(int snumAveragingSlots){

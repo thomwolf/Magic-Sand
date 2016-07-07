@@ -106,6 +106,7 @@ ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
         float y = ofRandom(area.getTop(),area.getBottom());
         bool insideWater = kinectProjector->elevationAtKinectCoord(x, y) < 0;
         if ((insideWater && liveInWater) || (!insideWater && !liveInWater))
+            location = ofVec2f(x, y);
             okwater = true;
     }
     return location;
@@ -139,7 +140,8 @@ void ofApp::draw(){
     if (kinectProjector->isCalibrating()){
         kinectProjector->drawMainWindow();
     } else {
-        sandSurfaceRenderer->draw();
+//        sandSurfaceRenderer->draw();
+        kinectProjector->getTexture().draw(0,0);
         drawVehicles();
     }
 }
@@ -346,8 +348,8 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
     } else if (e.target->is("Remove all animals")) {
         fish.clear();
         rabbits.clear();
-        fishNum = 0;
-        rabbitsNum = 0;
+//        fishNum = 0;
+//        rabbitsNum = 0;
     }
 }
 
@@ -365,27 +367,27 @@ void ofApp::onToggleEvent(ofxDatGuiToggleEvent e){
 
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
     if (e.target->is("# of fish")) {
-        if (e.value > fishNum)
-            while (e.value > fishNum){
+        if (e.value > fish.size())
+            while (e.value > fish.size()){
                 addNewFish();
-                fishNum++;
+//                fishNum++;
             }
-        if (e.value < fishNum)
-            while (e.value < fishNum){
+        if (e.value < fish.size())
+            while (e.value < fish.size()){
                 fish.pop_back();
-                fishNum--;
+//                fishNum--;
             }
 
     } else if (e.target->is("# of rabbits")) {
-        if (e.value > rabbitsNum)
-            while (e.value > rabbitsNum){
+        if (e.value > rabbits.size())
+            while (e.value > rabbits.size()){
                 addNewRabbit();
-                rabbitsNum++;
+//                rabbitsNum++;
             }
-        if (e.value < rabbitsNum)
-            while (e.value < rabbitsNum){
+        if (e.value < rabbits.size())
+            while (e.value < rabbits.size()){
                 rabbits.pop_back();
-                rabbitsNum--;
+//                rabbitsNum--;
             }
     }
 }

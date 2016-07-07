@@ -204,6 +204,7 @@ void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
 
 //--------------------------------------------------------------
 void Vehicle::update(){
+    projectorCoord = kinectProjector->kinectCoordToProjCoord(location.x, location.y);
     if (!mother || velocity.lengthSquared() != 0)
     {
         velocity += globalVelocityChange;
@@ -308,7 +309,7 @@ void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
 void Fish::draw()
 {
     ofPushMatrix();
-    ofTranslate(kinectProjector->worldCoordToProjCoord(location));
+    ofTranslate(projectorCoord);
     ofRotate(angle);
     
     // Compute tail angle
@@ -489,7 +490,7 @@ void Rabbit::applyBehaviours(ofPoint target){
 void Rabbit::draw()//, std::vector<ofVec2f> forces)
 {
     ofPushMatrix();
-    ofTranslate(kinectProjector->worldCoordToProjCoord(location));
+    ofTranslate(projectorCoord);
     ofRotate(angle);
     
     // Rabbit scale

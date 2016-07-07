@@ -20,26 +20,44 @@ public:
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
 
-    ofMatrix4x4 getWorldMatrix();
-   
     void decStoredframes(){
         storedframes -= 1;
     }
+    
     bool isImageStabilized(){
         return firstImageReady;
     }
+    
     bool isFrameNew(){
         return newFrame;
     }
+    
     ofVec2f getKinectSize(){
         return ofVec2f(width, height);
     }
+    
+    float getRawDepthAt(int x, int y){
+        return kinectDepthImage.getData()[(int)(y*width+x)];
+    }
+    
+    ofMatrix4x4 getWorldMatrix(){
+        ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);// Trick to access kinect internal parameters without having to modify ofxKinect
+        ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
+        ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
+        return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
+                           0,       b.y-a.y,    0,  a.y,
+                           0,       0,          0,  1,
+                           0,       0,          0,  1);
+    }
+    
     void setMaxOffset(float newMaxOffset){
         maxOffset = newMaxOffset;
     }
+    
     void setSpatialFiltering(bool newspatialFilter){
         spatialFilter = newspatialFilter;
     }
+    
     void setFollowBigChange(bool newfollowBigChange){
         followBigChange = newfollowBigChange;
     }
@@ -68,7 +86,7 @@ private:
     
     // Kinect parameters
     ofxKinect               kinect;
-    unsigned int width, height; // Width and height of frames
+    unsigned int width, height; // Width and height of kinect frames
     int minX, maxX, ROIwidth; // ROI definition
     int minY, maxY, ROIheight;
     
@@ -93,7 +111,7 @@ private:
 	int averagingSlotIndex; // Index of averaging slot in which to store the next frame's depth values
 	unsigned int minNumSamples; // Minimum number of valid samples needed to consider a pixel stable
 	float maxVariance; // Maximum variance to consider a pixel stable
-    float unvalidValue;
+    float unvalidValue, outsideROIValue;
 	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update the display
     bool followBigChange;
     float bigChange; // Amount of change over which the averaging slot is reset to new value

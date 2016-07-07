@@ -21,9 +21,12 @@
 
 class ofxModalThemeProjKinect : public ofxModalTheme {
 public:
-    struct {
-        float speed = 0.1f;
-    } animation;
+    ofxModalThemeProjKinect()
+    {
+        animation.speed = 0.1f;
+        fonts.title = ofxSmartFont::add("ofxbraitsch/fonts/HelveticaNeueLTStd-Md.otf", 20, "modal-title");
+        fonts.message = ofxSmartFont::add("ofxbraitsch/fonts/Roboto-Regular.ttf", 16, "modal-message");
+    }
 };
 
 class KinectProjector {
@@ -35,17 +38,21 @@ public:
     void update();
     void updateCalibration();
     void updateFullAutoCalibration();
+    
     void updateROIAutoCalibration();
     void updateROIFromColorImage();
     void updateROIFromDepthImage();
     void updateROIManualCalibration();
+    void setMaxKinectGrabberROI();
     void setNewKinectROI();
-    void updateKinectGrabberROI();
+    void updateKinectGrabberROI(ofRectangle ROI);
+    
     void updateProjKinectAutoCalibration();
     void updateProjKinectManualCalibration();
-    void addPointPair();
+    bool addPointPair();
     void updateMaxOffset();
     void updateBasePlane();
+    
     void askToFlattenSand();
     
     void drawProjectorWindow();
@@ -57,6 +64,7 @@ public:
     ofVec2f worldCoordToProjCoord(ofVec3f vin);
     ofVec2f kinectCoordToProjCoord(float x, float y);
     ofVec3f kinectCoordToWorldCoord(float x, float y);
+    ofVec3f RawKinectCoordToWorldCoord(float x, float y);
     float elevationAtKinectCoord(float x, float y);
     float elevationToKinectDepth(float elevation, float x, float y);
     ofVec2f gradientAtKinectCoord(float x, float y);
@@ -184,9 +192,8 @@ private:
     Auto_calibration_state autoCalibState;
     Full_Calibration_state fullCalibState;
 
-    //kinect interfaces and calibration
+    //kinect interfaces
     KinectGrabber               kinectgrabber;
-    ofxKinectProjectorToolkit   kpt;
     ofxCvFloatImage FilteredDepthImage;
     ofVec2f* gradField;
     
@@ -196,6 +203,7 @@ private:
 
     // FBos
     ofFbo fboProjWindow;
+    ofFbo fboMainWindow;
 
     //Images and cv matrixes
     ofxCvColorImage             kinectColorImage;
@@ -208,11 +216,11 @@ private:
     float arrowLength;
     
     // Calibration variables
+    ofxKinectProjectorToolkit   kpt;
     vector<ofVec2f>             currentProjectorPoints;
     vector<cv::Point2f>         cvPoints;
     vector<ofVec3f>             pairsKinect;
     vector<ofVec2f>             pairsProjector;
-    ofVec2f                     testPoint;
 
     // ROI calibration variables
     ofxCvGrayscaleImage         thresholdedImage;
@@ -248,6 +256,7 @@ private:
     int   chessboardY;
 
     // GUI Modal window
+    shared_ptr<ofxModalConfirm>   confirmModal;
     shared_ptr<ofxModalAlert>   calibModal;
     string                      resultMessage;
     string                      modaltext;

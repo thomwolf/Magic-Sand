@@ -76,7 +76,7 @@ protected:
     
     bool liveInWater; // true for fish who want to stay in the water, false for rabbits who want to stay on the ground
     
-//    const ofVec2f gradient;
+    ofVec2f projectorCoord;
     ofRectangle borders, internalBorders;
 //    float topSpeed;
     float maxVelocityChange;
