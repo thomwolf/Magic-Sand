@@ -258,9 +258,9 @@ private:
     // GUI Modal window
     shared_ptr<ofxModalConfirm>   confirmModal;
     shared_ptr<ofxModalAlert>   calibModal;
-    string                      resultMessage;
-    string                      modaltext;
-    ofColor                     resultMessageColor;
+//    string                      resultMessage;
+//    string                      modaltext;
+//    ofColor                     resultMessageColor;
     // GUI Main interface
     ofxDatGui* gui;
 };

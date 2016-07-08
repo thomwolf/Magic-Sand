@@ -302,21 +302,21 @@ void KinectProjector::updateROIFromDepthImage(){
 }
 //TODO: Fix manual ROI calibration
 void KinectProjector::updateROIManualCalibration(){
-    fboProjWindow.begin();
-    ofBackground(255);
-    fboProjWindow.end();
-    
-    if (ROICalibState == ROI_CALIBRATION_STATE_MOVE_UP) {
-        kinectROIManualCalib.setSize(ofGetMouseX()-kinectROIManualCalib.x,ofGetMouseY()-kinectROIManualCalib.y);
-    }
-    
-    if (ROICalibState == ROI_CALIBRATION_STATE_INIT) {
-        resultMessage = "Please click on first ROI corner";
-    } else if (ROICalibState == ROI_CALIBRATION_STATE_MOVE_UP) {
-        resultMessage = "Please click on second ROI corner";
-    } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
-        resultMessage = "Manual ROI update done";
-    }
+//    fboProjWindow.begin();
+//    ofBackground(255);
+//    fboProjWindow.end();
+//    
+//    if (ROICalibState == ROI_CALIBRATION_STATE_MOVE_UP) {
+//        kinectROIManualCalib.setSize(ofGetMouseX()-kinectROIManualCalib.x,ofGetMouseY()-kinectROIManualCalib.y);
+//    }
+//    
+//    if (ROICalibState == ROI_CALIBRATION_STATE_INIT) {
+//        resultMessage = "Please click on first ROI corner";
+//    } else if (ROICalibState == ROI_CALIBRATION_STATE_MOVE_UP) {
+//        resultMessage = "Please click on second ROI corner";
+//    } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
+//        resultMessage = "Manual ROI update done";
+//    }
 }
 
 void KinectProjector::setMaxKinectGrabberROI(){
@@ -570,6 +570,7 @@ void KinectProjector::updateMaxOffset(){
 
 bool KinectProjector::addPointPair() {
     bool okchess = true;
+    string resultMessage;
     ofLogVerbose("GreatSand") << "addPointPair(): Adding point pair in kinect world coordinates" ;
     int nDepthPoints = 0;
     for (int i=0; i<cvPoints.size(); i++) {
@@ -584,10 +585,8 @@ bool KinectProjector::addPointPair() {
             pairsProjector.push_back(currentProjectorPoints[i]);
         }
         resultMessage = "addPointPair(): Added " + ofToString((chessboardX-1)*(chessboardY-1)) + " points pairs.";
-        resultMessageColor = ofColor(0, 255, 0);
     } else {
         resultMessage = "addPointPair(): Points not added because not all chessboard\npoints' depth known. Try re-positionining.";
-        resultMessageColor = ofColor(255, 0, 0);
         okchess = false;
     }
     ofLogVerbose("GreatSand") << resultMessage ;

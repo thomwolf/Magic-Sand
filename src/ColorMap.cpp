@@ -4,20 +4,17 @@
  ***********************************************************************/
 
 #include <ColorMap.h>
-using namespace ofxCv;
-using namespace cv;
+//using namespace ofxCv;
+//using namespace cv;
 
-//--------------------------------------------------------------
 ColorMap::ColorMap(void)
 :numEntries(512){
 }
 
-//--------------------------------------------------------------
 ColorMap::~ColorMap(void)
 {
 }
 
-//--------------------------------------------------------------
 void ColorMap::changeNumEntries(int amount, bool increase)
 {
     if (increase) {
@@ -27,51 +24,9 @@ void ColorMap::changeNumEntries(int amount, bool increase)
         if (numEntries < 1)
             numEntries = 1;
     }
-        updateColormap();
+    updateColormap();
 }
 
-//--------------------------------------------------------------
-bool ColorMap::load(string filename, bool absolute) {
-    FileStorage fs(ofToDataPath(filename, absolute), FileStorage::READ);
-    FileNode features = fs["ColorMap"];
-    FileNodeIterator it = features.begin(), it_end = features.end();
-    int idx = 0;
-    std::vector<uchar> lbpval;
-    
-    // iterate through a sequence using FileNodeIterator
-    for( ; it != it_end; ++it, idx++ )
-    {
-//        cout << "color #" << idx << ": ";
-//        cout << "z=" << (double)(*it)["z"] << ", color=" << (int)(*it)["color"] << endl;
-        heightMapKeys.push_back((double)(*it)["z"]);
-        heightMapColors.push_back(ofColor::fromHex((int)(*it)["color"]));
-    }
-    fs.release();
-
-    /* Create entry array: */
-    numKeys = heightMapKeys.size();
-    
-    min = heightMapKeys[0];
-    max = heightMapKeys[numKeys-1];
-    
-    return updateColormap();
-}
-
-//--------------------------------------------------------------
-bool ColorMap::setKeys(std::vector<ofColor> colorkeys, std::vector<double> heightkeys) {
-    heightMapKeys = heightkeys;
-    heightMapColors = colorkeys;
-
-    /* Create entry array: */
-    numKeys = heightMapKeys.size();
-    
-    min = heightMapKeys[0];
-    max = heightMapKeys[numKeys-1];
-    
-    return updateColormap();
-}
-
-//--------------------------------------------------------------
 bool ColorMap::updateColormap() {
     if (entries.isAllocated())
         entries.clear();
@@ -81,16 +36,16 @@ bool ColorMap::updateColormap() {
     for(int i=0;i<numEntries;++i)
     {
         /* Calculate the key value for this color map entry: */
-        double val=double(i)*(heightMapKeys[numKeys-1]-heightMapKeys[0])/double(numEntries-1)+heightMapKeys[0];
+        double val=double(i)*(heightMapKeys.back().height-heightMapKeys.front().height)/double(numEntries-1)+heightMapKeys.front().height;
 
         /* Find the piecewise linear segment of the color function containing the key value using binary search: */
         int l=0;
-        int r=numKeys;
+        int r=heightMapKeys.size();
         while(r-l>1)
         {
             /* Enforce the invariant keys[l]<=val<keys[r]: */
-            int m=(l+r)>>1;
-            if(heightMapKeys[m]<=val)
+            int m = (l+r)>>1;
+            if(heightMapKeys[m].height<=val)
                 l=m;
             else
                 r=m;
@@ -100,85 +55,154 @@ bool ColorMap::updateColormap() {
         if(r<numEntries)
         {
             /* Interpolate linearly: */
-            float w=float((val-heightMapKeys[l])/(heightMapKeys[r]-heightMapKeys[l]));
-            ofColor tempcol = heightMapColors[l]*(1.0f-w)+heightMapColors[r]*w;
+            float w=float((val-heightMapKeys[l].height)/(heightMapKeys[r].height-heightMapKeys[l].height));
+            ofColor tempcol = heightMapKeys[l].color*(1.0f-w)+heightMapKeys[r].color*w;
             entries.setColor(i,0,tempcol);
         }
         else
         {
             /* There is nothing to the right of the last key, so no need to interpolate: */
-            entries.setColor(i,0,heightMapColors[numKeys-1]);
+            entries.setColor(i,0,heightMapKeys.back().color);
         }
     }
     tex.setFromPixels(entries);
     return true;
 }
 
-//--------------------------------------------------------------
 bool ColorMap::scaleRange(float factor)
 {
+    for (auto k : heightMapKeys)
+        k.height *= factor;
     min *= factor;
     max *= factor;
     return true;
 }
 
-//--------------------------------------------------------------
-bool ColorMap::createFile(string filename, bool absolute) {
-    std::vector<ofColor> heightMapColors;
-    std::vector<double> heightMapKeys;
-    int numKeys;
-    {
-    heightMapColors.push_back( ofColor(0, 0,  80));
-    heightMapColors.push_back( ofColor(0,  30, 100));
-    heightMapColors.push_back( ofColor(0,  50, 102));
-    heightMapColors.push_back( ofColor(19, 108, 160));
-    heightMapColors.push_back( ofColor(24, 140, 205));
-    heightMapColors.push_back( ofColor(135, 206, 250));
-    heightMapColors.push_back( ofColor(176, 226, 255));
-    heightMapColors.push_back( ofColor(0,  97,  71));
-    heightMapColors.push_back( ofColor(16, 122,  47));
-    heightMapColors.push_back( ofColor(232, 215, 125));
-    heightMapColors.push_back( ofColor(161,  67,   0));
-    heightMapColors.push_back( ofColor(130,  30,  30));
-    heightMapColors.push_back( ofColor(161, 161, 161));
-    heightMapColors.push_back( ofColor(206, 206, 206));
-    heightMapColors.push_back( ofColor(255, 255, 255));
-    heightMapKeys.push_back(-40.0);
-    heightMapKeys.push_back(-30.0);
-    heightMapKeys.push_back(-20.0);
-    heightMapKeys.push_back(-12.5);
-    heightMapKeys.push_back(-0.75);
-    heightMapKeys.push_back(-0.25);
-    heightMapKeys.push_back(-0.05);
-    heightMapKeys.push_back(0.0);
-    heightMapKeys.push_back(0.25);
-    heightMapKeys.push_back(2.5);
-    heightMapKeys.push_back(6);
-    heightMapKeys.push_back(9);
-    heightMapKeys.push_back(14);
-    heightMapKeys.push_back(20);
-    heightMapKeys.push_back(25);
-    }
-    FileStorage fs(ofToDataPath(filename, absolute), FileStorage::WRITE);
-    fs << "ColorMap" << "[";
-    for( int i = 0; i < heightMapColors.size(); i++ )
-    {
-        fs << "{:" << "z" << heightMapKeys[i] << "color" << heightMapColors[i].getHex() << "}";
-    }
-    fs << "]";
-    return true;
+bool ColorMap::setColorKey(int key, ofColor color){
+    heightMapKeys[key].color = color;
+    return updateColormap();
 }
 
-//--------------------------------------------------------------
-ColorMap::Color ColorMap::operator()(int scalar) const
+bool ColorMap::setHeightKey(int key, float height){
+    heightMapKeys[key].height = height;
+    
+    std::sort(heightMapKeys.begin(), heightMapKeys.end());
+    
+    min = heightMapKeys.front().height;
+    max = heightMapKeys.back().height;
+    return updateColormap();
+}
+
+// TODO: AddKey function, sorting list ;
+bool ColorMap::addKey(ofColor color, float height){
+    
+}
+
+ofColor ColorMap::operator()(int scalar) const
 {
     ofColor color = entries.getColor(scalar, 0);
     return color;
 }
 
-//--------------------------------------------------------------
 ofTexture ColorMap::getTexture(void)  // return color map
 {
     return tex.getTexture();
 }
 
+bool ColorMap::loadFile(string filename) {
+    ofxXmlSettings settings;
+    if(settings.loadFile(filename)){
+        settings.pushTag("keys");
+        int numberOfSavedPoints = settings.getNumTags("key");
+        for(int i = 0; i < numberOfSavedPoints; i++){
+            settings.pushTag("key", i);
+            
+            ofPoint p;
+            float h = settings.getValue("height", 0);
+            char r = settings.getValue("color-r", 0);
+            char g = settings.getValue("color-g", 0);
+            char b = settings.getValue("color-b", 0);
+            ofColor c = ofColor(r, g, b);
+            heightMapKeys.push_back(HeightMapKey(h, c));
+            settings.popTag();
+        }
+        
+        settings.popTag(); //pop position
+    }
+    else{
+        ofLogError("HightMapKey file did not load!");
+        return false;
+    }
+
+    min = heightMapKeys.front().height;
+    max = heightMapKeys.back().height;
+    
+    return updateColormap();
+}
+
+void ColorMap::saveFile(string filename) {
+    ofxXmlSettings positions;
+    positions.addTag("keys");
+    positions.pushTag("keys");
+    //points is a vector<ofPoint> that we want to save to a file
+    for(int i = 0; i < heightMapKeys.size(); i++){
+        //each position tag represents one point
+        positions.addTag("key");
+        positions.pushTag("key",i);
+        //so set the three values in the file
+        positions.addValue("height", heightMapKeys[i].height);
+        positions.addValue("color-r", heightMapKeys[i].color.r);
+        positions.addValue("color-g", heightMapKeys[i].color.g);
+        positions.addValue("color-b", heightMapKeys[i].color.b);
+        positions.popTag();//pop position
+    }
+    positions.popTag(); //pop position
+    positions.saveFile(filename);
+}
+
+bool ColorMap::createFile(string filename) {
+    heightMapKeys.clear();
+    
+    int numKeys;
+    {
+        heightMapKeys.push_back( HeightMapKey(-220.0,ofColor(0, 0,  0)));
+        heightMapKeys.push_back( HeightMapKey(-200.0,ofColor(0, 0,  80)));
+        heightMapKeys.push_back( HeightMapKey(-170.0,ofColor(0,  30, 100)));
+        heightMapKeys.push_back( HeightMapKey(-150.0,ofColor(0,  50, 102)));
+        heightMapKeys.push_back( HeightMapKey(-125,ofColor(19, 108, 160)));
+        heightMapKeys.push_back( HeightMapKey(-7.5,ofColor(24, 140, 205)));
+        heightMapKeys.push_back( HeightMapKey(-2.5,ofColor(135, 206, 250)));
+        heightMapKeys.push_back( HeightMapKey(-0.5,ofColor(176, 226, 255)));
+        heightMapKeys.push_back( HeightMapKey(0.0,ofColor(0,  97,  71)));
+        heightMapKeys.push_back( HeightMapKey(2.5,ofColor(16, 122,  47)));
+        heightMapKeys.push_back( HeightMapKey(25,ofColor(232, 215, 125)));
+        heightMapKeys.push_back( HeightMapKey(60,ofColor(161,  67,   0)));
+        heightMapKeys.push_back( HeightMapKey(90,ofColor(130,  30,  30)));
+        heightMapKeys.push_back( HeightMapKey(140,ofColor(161, 161, 161)));
+        heightMapKeys.push_back( HeightMapKey(200,ofColor(206, 206, 206)));
+        heightMapKeys.push_back( HeightMapKey(220,ofColor(255, 255, 255)));
+    }
+
+    ofxXmlSettings positions;
+    positions.addTag("keys");
+    positions.pushTag("keys");
+    //points is a vector<ofPoint> that we want to save to a file
+    for(int i = 0; i < heightMapKeys.size(); i++){
+        //each position tag represents one point
+        positions.addTag("key");
+        positions.pushTag("key",i);
+        //so set the three values in the file
+        positions.addValue("height", heightMapKeys[i].height);
+        positions.addValue("color-r", heightMapKeys[i].color.r);
+        positions.addValue("color-g", heightMapKeys[i].color.g);
+        positions.addValue("color-b", heightMapKeys[i].color.b);
+        positions.popTag();//pop position
+    }
+    positions.popTag(); //pop position
+    positions.saveFile(filename);
+    
+    min = heightMapKeys.front().height;
+    max = heightMapKeys.back().height;
+    
+    return updateColormap();
+}

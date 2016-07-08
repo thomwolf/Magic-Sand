@@ -32,6 +32,13 @@ public:
     void drawSandbox();
     void prepareContourLinesFbo();
     
+    void setupGui();
+    void onButtonEvent(ofxDatGuiButtonEvent e);
+    void onToggleEvent(ofxDatGuiToggleEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
+    void onColorPickerEvent(ofxDatGuiColorPickerEvent e);
+    void onScrollViewEvent(ofxDatGuiScrollViewEvent e);
+    
 private:
     std::shared_ptr<KinectProjector> kinectProjector;
     
@@ -52,7 +59,7 @@ private:
     ofShader heightMapShader;
     
     // FBos
-    ofFbo fboProjWindow;    
+    ofFbo   fboProjWindow;    
     ofFbo   contourLineFramebufferObject;
 
     // Base plane
@@ -60,8 +67,10 @@ private:
     ofVec3f basePlaneOffset, basePlaneOffsetBack;
     ofVec4f basePlaneEq; // Base plane equation in GLSL-compatible format
 
-    // Colormap, contourmap and heightmap variables
+    // Colormap
     ColorMap    heightMap;
+    std::vector<ColorMap::HeightMapKey> heightMapKeys;
+    
 	float heightMapScale,heightMapOffset; // Scale and offset values to convert from elevation to height color map texture coordinates
     float contourLineFboScale, contourLineFboOffset; // Scale and offset values to convert depth from contourline shader values to real values
 	float FilteredDepthScale,FilteredDepthOffset; // Scale and offset values to convert depth from normalized shader values to real values
@@ -71,4 +80,8 @@ private:
     bool drawContourLines; // Flag if topographic contour lines are enabled
     
     float elevationMin, elevationMax;
+    
+    // GUI Main interface
+    ofxDatGui* gui;
+    ofxDatGuiScrollView* colorList;
 };

@@ -24,7 +24,10 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     contourLineFramebufferObject.end();
 
     // Load colormap and set heightmap
-    heightMap.load("HeightColorMap.yml");
+    if (!heightMap.loadFile("HeightColorMap.xml"))
+        heightMap.createFile("HeightColorMap.xml");
+    
+    heightMapKeys = heightMap.getKeys();
     
     //Set elevation Min and Max
     elevationMin = -heightMap.getScalarRangeMin();
@@ -71,6 +74,8 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     fboProjWindow.begin();
     ofClear(0,0,0,255);
     fboProjWindow.end();
+    
+    setupGui();
     
     // Setup range, base plane and conversion matrices
     updateConversionMatrices();
@@ -179,5 +184,98 @@ void SandSurfaceRenderer::prepareContourLinesFbo()
     kinectProjector->unbind();
     contourLineFramebufferObject.end();
 }
+
+void SandSurfaceRenderer::setupGui(){
+    // instantiate and position the gui //
+    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
+    
+    gui->addToggle("Contour lines", drawContourLines);
+    gui->addSlider("Contour lines distance", -30, 30, 0);
+    gui->addBreak();
+    gui->addButton("Add new color");
+    gui->addColorPicker("Color", ofColor::black);
+    gui->addSlider("height", -300, 300, 0);
+    gui->addButton("Remove color");
+    gui->addButton("Reset colors");
+    gui->expand();
+    gui->addHeader(":: Display ::");
+    gui->addFooter();
+    gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    
+    // once the gui has been assembled, register callbacks to listen for component specific events //
+    gui->onButtonEvent(this, &SandSurfaceRenderer::onButtonEvent);
+    gui->onToggleEvent(this, &SandSurfaceRenderer::onToggleEvent);
+    gui->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
+    gui->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
+    
+    // add a scroll view to list colors //
+    colorList = new ofxDatGuiScrollView("Colors", 5);
+    colorList->setPosition(gui->getPosition().x, gui->getPosition().y + gui->getHeight() + 1);
+    colorList->onScrollViewEvent(this, &SandSurfaceRenderer::onScrollViewEvent);
+    
+    for (unsigned i = 0; i < heightMapKeys.size(); ++i){
+        colorList->add("Color "+ofToString(i+1));
+        colorList->get(i)->setBackgroundColor(heightMapKeys[i].color);
+        colorList->get(i)->setLabel("Height: "+ofToString(heightMapKeys[i].height));
+    }
+}
+
+void SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e){
+    if (e.target->is("Reset colors")) {
+    } else if (e.target->is("Reorder colors")){
+        std::sort(heightMapKeys.begin(), heightMapKeys.end());
+        for (unsigned i = 0; i < heightMapKeys.size(); ++i){
+            string col = "Color "+std::to_string(i);
+            string hgt = "Height"+std::to_string(i);
+            gui->getColorPicker(col)->setColor(heightMapKeys[i].color);
+            gui->getSlider(hgt)->setValue(heightMapKeys[i].height);
+        }
+    } else if (e.target->is("Add new color")){
+    
+    } else {
+        for (unsigned i = 0; i < heightMapKeys.size(); ++i){
+            string rmv = "Remove"+std::to_string(i);
+//            if (e.target->is(col)){
+//                heightMap.setColorKey(i, e.color);
+//                heightMapKeys[i].color = e.color;
+//            }
+        }
+    }
+
+}
+
+void SandSurfaceRenderer::onToggleEvent(ofxDatGuiToggleEvent e){
+    if (e.target->is("Contour lines")) {
+    }
+}
+
+void SandSurfaceRenderer::onColorPickerEvent(ofxDatGuiColorPickerEvent e){
+    for (unsigned i = 0; i < heightMapKeys.size(); ++i){
+        string col = "Color "+std::to_string(i);
+        if (e.target->is(col)){
+            heightMap.setColorKey(i, e.color);
+            heightMapKeys[i].color = e.color;
+        }
+    }
+}
+
+void SandSurfaceRenderer::onSliderEvent(ofxDatGuiSliderEvent e){
+    if (e.target->is("Contour lines distance")) {
+    } else {
+        for (unsigned i = 0; i < heightMapKeys.size(); ++i){
+            string hgt = "Height"+std::to_string(i);
+            if (e.target->is(hgt)){
+                heightMap.setHeightKey(i, e.value);
+                heightMapKeys[i].height = e.value;
+            }
+        }
+    }
+}
+
+void SandSurfaceRenderer::onScrollViewEvent(ofxDatGuiScrollViewEvent e){
+    
+}
+
+
 
 
