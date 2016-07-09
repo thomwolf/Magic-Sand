@@ -28,11 +28,13 @@ public:
     void updateConversionMatrices();
     void updateRangesAndBasePlane();
     void update();
-    void draw();
+    void drawMainWindow();
+    void drawProjectorWindow();
     void drawSandbox();
     void prepareContourLinesFbo();
     
     void setupGui();
+    void updateColorListColor(int i, int j);
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
@@ -84,4 +86,5 @@ private:
     // GUI Main interface
     ofxDatGui* gui;
     ofxDatGuiScrollView* colorList;
+    int selectedColor;
 };

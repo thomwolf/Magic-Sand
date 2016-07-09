@@ -151,6 +151,15 @@ void KinectProjector::update(){
         
         // Is the depth image stabilized
         imageStabilized = kinectgrabber.isImageStabilized();
+        
+        fboMainWindow.begin();
+        FilteredDepthImage.draw(0, 0);
+        ofNoFill();
+//        insideROIPoly.draw();
+        ofDrawRectangle(kinectROI);
+        fboMainWindow.end();
+        
+        // Are we calibrating ?
         if (calibrating && !waitingForFlattenSand)
             updateCalibration();
     }
@@ -287,6 +296,7 @@ void KinectProjector::updateROIFromDepthImage(){
             calibrating = false;
         } else {
             kinectROI = large.getBoundingBox();
+//            insideROIPoly = large.getResampledBySpacing(10);
             kinectROI.standardize();
             calibModal->setMessage("Sand area successfully detected");
             ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): final kinectROI : " << kinectROI ;
@@ -738,33 +748,33 @@ void KinectProjector::setupGui(){
     gui->addBreak();
     
     // add a folder to group a few components together //
-    ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level", ofColor::blueSteel);
-    sealevelFolder->addSlider("Tilt X", -30, 30, 0);
-    sealevelFolder->addSlider("Tilt Y", -30, 30, 0);
-    sealevelFolder->addSlider("Vertical offset", -100, 100, 0);
-    sealevelFolder->addButton("Reset sea level");
-    sealevelFolder->expand();
+//    ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level", ofColor::blueSteel);
+    gui->addSlider("Tilt X", -30, 30, 0);
+    gui->addSlider("Tilt Y", -30, 30, 0);
+    gui->addSlider("Vertical offset", -100, 100, 0);
+    gui->addButton("Reset sea level");
+//    sealevelFolder->expand();
     
     gui->addBreak();
     
     // add a folder to group a few components together //
-    ofxDatGuiFolder* displayFolder = gui->addFolder("Depth frame filtering", ofColor::orangeRed);
-    displayFolder->addSlider("Ceiling", -300, 300, 0);
-    displayFolder->addToggle("Spatial filtering", true);
-    displayFolder->addToggle("Quick reaction", true);
-    displayFolder->addSlider("Averaging", 1, 40, 15)->setPrecision(0);
-    displayFolder->expand();
+//    ofxDatGuiFolder* displayFolder = gui->addFolder("Depth frame filtering", ofColor::orangeRed);
+    gui->addSlider("Ceiling", -300, 300, 0);
+    gui->addToggle("Spatial filtering", true);
+    gui->addToggle("Quick reaction", true);
+    gui->addSlider("Averaging", 1, 40, 15)->setPrecision(0);
+//    displayFolder->expand();
     
     gui->addBreak();
     
     // add a folder to group a few components together //
-    ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::purple);
-    calibrationFolder->addButton("Full Calibration");
-    calibrationFolder->addButton("Automatically detect sand region");
+//    ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::purple);
+    gui->addButton("Full Calibration");
+    gui->addButton("Automatically detect sand region");
 //    calibrationFolder->addButton("Manually define sand region");
-    calibrationFolder->addButton("Automatically calibrate kinect & projector");
+    gui->addButton("Automatically calibrate kinect & projector");
 //    calibrationFolder->addButton("Manually calibrate kinect & projector");
-    calibrationFolder->expand();
+//    calibrationFolder->expand();
     
     gui->addBreak();
     
@@ -858,7 +868,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
 void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Spatial filtering")) {
         kinectgrabber.setSpatialFiltering(e.checked);
-    }else if (e.target->is("Quick reaction (follow hands)")) {
+    }else if (e.target->is("Quick reaction")) {
         kinectgrabber.setFollowBigChange(e.checked);
     }
 }
@@ -966,10 +976,3 @@ bool KinectProjector::saveSettings(string path){
     xml.setToParent();
     return xml.save(path);
 }
-
-
-
-
-
-
-

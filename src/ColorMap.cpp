@@ -95,13 +95,32 @@ bool ColorMap::setHeightKey(int key, float height){
 
 // TODO: AddKey function, sorting list ;
 bool ColorMap::addKey(ofColor color, float height){
+    heightMapKeys.push_back(HeightMapKey(height,color));
     
+    std::sort(heightMapKeys.begin(), heightMapKeys.end());
+    
+    min = heightMapKeys.front().height;
+    max = heightMapKeys.back().height;
+    return updateColormap();
 }
 
-ofColor ColorMap::operator()(int scalar) const
+bool ColorMap::removeKey(int key){
+    heightMapKeys.erase(heightMapKeys.begin()+key);
+    min = heightMapKeys.front().height;
+    max = heightMapKeys.back().height;
+    return updateColormap();
+}
+
+bool ColorMap::swapKeys(int k1, int k2){
+    ofColor tmp = heightMapKeys[k1].color;
+    heightMapKeys[k1].color = heightMapKeys[k2].color;
+    heightMapKeys[k2].color = tmp;
+    return updateColormap();
+}
+
+ColorMap::HeightMapKey ColorMap::operator[](int scalar) const
 {
-    ofColor color = entries.getColor(scalar, 0);
-    return color;
+    return heightMapKeys[scalar];
 }
 
 ofTexture ColorMap::getTexture(void)  // return color map
@@ -109,7 +128,13 @@ ofTexture ColorMap::getTexture(void)  // return color map
     return tex.getTexture();
 }
 
+int ColorMap::size() const
+{
+    return heightMapKeys.size();
+}
+
 bool ColorMap::loadFile(string filename) {
+    heightMapKeys.clear();
     ofxXmlSettings settings;
     if(settings.loadFile(filename)){
         settings.pushTag("keys");

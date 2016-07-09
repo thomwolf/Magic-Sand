@@ -225,8 +225,9 @@ private:
     // ROI calibration variables
     ofxCvGrayscaleImage         thresholdedImage;
     ofxCvContourFinder          contourFinder;
-    float threshold;
-    ofPolyline large;
+    float                       threshold;
+    ofPolyline                  large;
+//    ofPolyline                  insideROIPoly;
     ofRectangle                 kinectROI, kinectROIManualCalib;
     
     // Base plane

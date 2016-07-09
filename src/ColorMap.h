@@ -45,10 +45,13 @@ public:
     bool setColorKey(int key, ofColor color);
     bool setHeightKey(int key, float height);
     bool addKey(ofColor color, float height);
+    bool removeKey(int key);
+    bool swapKeys(int k1, int k2);
     bool loadFile(string path);
     void saveFile(string filename);
     bool createFile(string filename); //create a sample colormap file
-    ofColor operator()(int scalar) const; // Return the color for a scalar value using linear interpolation
+    HeightMapKey operator[](int scalar) const; // Return a key
+    int size() const;
     ofTexture getTexture(); // return color map texture
 
     // Utilities

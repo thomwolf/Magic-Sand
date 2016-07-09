@@ -1,6 +1,6 @@
 #include "vehicle.h"
 
-Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater) {
+Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f smotherLocation) {
     kinectProjector = k;
     liveInWater = sliveInWater;
     location = slocation;
@@ -11,6 +11,8 @@ Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, o
     wandertheta = 0;
     currentStraightPathLength = 0;
     mother = false;
+    motherLocation = smotherLocation;
+    setWait = false;
 }
 
 //--------------------------------------------------------------
@@ -32,17 +34,15 @@ void Vehicle::updateBeachDetection(){
     // Find sandbox gradients and elevations in the max 10 next steps of vehicle v, update vehicle variables
     ofPoint futureLocation;
     futureLocation = location;
+    beachSlope = ofVec2f(0);
+    beach = false;
     int i = 1;
-    float beachDist = 1;
-    
-    ofVec2f beachSlope(0);
-    bool water = true;
-    while (i < 10 && water)
+    while (i < 10 && !beach)
     {
         bool overwater = kinectProjector->elevationAtKinectCoord(futureLocation.x, futureLocation.y) > 0;
         if ((overwater && liveInWater) || (!overwater && !liveInWater))
         {
-            water = false;
+            beach = true;
             beachDist = i;
             beachSlope = kinectProjector->gradientAtKinectCoord(futureLocation.x,futureLocation.y);
             if (liveInWater)
@@ -128,33 +128,32 @@ ofPoint Vehicle::slopesEffect(){
 }
 
 //--------------------------------------------------------------
-ofPoint Vehicle::seekEffect(const ofPoint & target){
-//    ofPoint desired;
-//    desired = target - location;
-//    
-//    float d = desired.length();
-//    desired.normalize();
-//    
-//    //If we are closer than XX pixels slow down
-//    if (d < 10) {
-//        desired *= ofMap(d,0,100,0,topSpeed);
-//        mother = true;
-//    } else {
-//        //Otherwise, proceed at maximum speed.
-//        desired *= topSpeed;
-//    }
-//    
-//    ofPoint velocityChange;
-//    velocityChange = desired - velocity;
-//    velocityChange.limit(maxVelocityChange);
-//    
-//    //If we are further than XX pixels we don't see the mother
-//    if (d > 50) {
-//        velocityChange = ofPoint(0);
-//    }
-//    
-//    return velocityChange;
-    return ofPoint(0);
+ofPoint Vehicle::seekEffect(){
+    ofPoint desired;
+    desired = motherLocation - location;
+    
+    float d = desired.length();
+    desired.normalize();
+    
+    //If we are closer than XX pixels slow down
+    if (d < 10) {
+        desired *= ofMap(d,0,100,0,topSpeed);
+        mother = true;
+    } else {
+        //Otherwise, proceed at maximum speed.
+        desired *= topSpeed;
+    }
+    
+    ofPoint velocityChange;
+    velocityChange = desired - velocity;
+    velocityChange.limit(maxVelocityChange);
+    
+    //If we are further than XX pixels we don't see the mother
+    if (d > 50) {
+        velocityChange = ofPoint(0);
+    }
+    
+    return velocityChange;
 }
 
 //--------------------------------------------------------------
@@ -275,11 +274,13 @@ void Fish::setup(){
     minVelocity = 0;
 }
 //--------------------------------------------------------------
-void Fish::applyBehaviours(/*vector<vehicle> vehicles, */ofPoint target){
+void Fish::applyBehaviours(bool seekMother){
     updateBeachDetection();
     
     //    separateF = separateEffect(vehicles);
-    seekF = seekEffect(target);
+    seekF = ofVec2f(0);
+    if (seekMother)
+        seekF = seekEffect();
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();
@@ -415,11 +416,13 @@ ofPoint Rabbit::wanderEffect(){
     return velocityChange;
 }
 //--------------------------------------------------------------
-void Rabbit::applyBehaviours(ofPoint target){
+void Rabbit::applyBehaviours(bool seekMother){
     updateBeachDetection();
     
     //    separateF = separateEffect(vehicles);
-    seekF = seekEffect(target);
+    seekF = ofVec2f(0);
+    if (seekMother)
+        seekF = seekEffect();
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();
@@ -476,7 +479,7 @@ void Rabbit::applyBehaviours(ofPoint target){
                 applyVelocityChange(-oldDir); // Just deccelerate
             } else {
                 velocity = ofPoint(0);
-                setWait=true;
+                setWait = true;
                 waitCounter = 0;
                 waitTime = ofRandom(minWaitingTime, maxWaitingTime);
                 if (beach)

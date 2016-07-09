@@ -27,7 +27,7 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     if (!heightMap.loadFile("HeightColorMap.xml"))
         heightMap.createFile("HeightColorMap.xml");
     
-    heightMapKeys = heightMap.getKeys();
+//    heightMap = heightMap.getKeys();
     
     //Set elevation Min and Max
     elevationMin = -heightMap.getScalarRangeMin();
@@ -40,7 +40,7 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     // Calculate the contourline fbo scaling and offset coefficients
 	contourLineFboScale = elevationMin-elevationMax;
 	contourLineFboOffset = elevationMax;
-    contourLineFactor = contourLineFboScale/(contourLineDistance);
+    contourLineFactor = contourLineFboScale/contourLineDistance;
     
     //setup the mesh
     setupMesh();
@@ -142,9 +142,15 @@ void SandSurfaceRenderer::update(){
     if (drawContourLines)
         prepareContourLinesFbo();
     drawSandbox();
+    colorList->update();
 }
 
-void SandSurfaceRenderer::draw(){
+void SandSurfaceRenderer::drawMainWindow(){
+    fboProjWindow.draw(0,0);
+    colorList->draw();
+}
+
+void SandSurfaceRenderer::drawProjectorWindow(){
     fboProjWindow.draw(0,0);
 }
 
@@ -190,11 +196,14 @@ void SandSurfaceRenderer::setupGui(){
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
     
     gui->addToggle("Contour lines", drawContourLines);
-    gui->addSlider("Contour lines distance", -30, 30, 0);
+    gui->addSlider("Contour lines distance", 1, 30, contourLineDistance);
     gui->addBreak();
-    gui->addButton("Add new color");
+    gui->addButton("Color #1")->setName("ColorName");
+    gui->addSlider("Height", -300, 300, 0);
     gui->addColorPicker("Color", ofColor::black);
-    gui->addSlider("height", -300, 300, 0);
+    gui->addButton("Move up");
+    gui->addButton("Move down");
+    gui->addButton("Insert new color after current color");
     gui->addButton("Remove color");
     gui->addButton("Reset colors");
     gui->expand();
@@ -209,71 +218,193 @@ void SandSurfaceRenderer::setupGui(){
     gui->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
     
     // add a scroll view to list colors //
-    colorList = new ofxDatGuiScrollView("Colors", 5);
-    colorList->setPosition(gui->getPosition().x, gui->getPosition().y + gui->getHeight() + 1);
+    colorList = new ofxDatGuiScrollView("Colors", 8);
+    colorList->setPosition(gui->getPosition().x, gui->getPosition().y+gui->getHeight());
     colorList->onScrollViewEvent(this, &SandSurfaceRenderer::onScrollViewEvent);
     
-    for (unsigned i = 0; i < heightMapKeys.size(); ++i){
-        colorList->add("Color "+ofToString(i+1));
-        colorList->get(i)->setBackgroundColor(heightMapKeys[i].color);
-        colorList->get(i)->setLabel("Height: "+ofToString(heightMapKeys[i].height));
+    for (int i = 0 ; i < heightMap.size() ; i++){ // Reverse order so we have highest color on the top of the list
+        int j = heightMap.size()-1-i;
+        colorList->add("color");
+        updateColorListColor(i, j);
+        colorList->get(i)->setLabel("Height: "+ofToString(heightMap[j].height));
     }
+    
+    //Initiate color controls
+    selectedColor = 0;
+    int j = heightMap.size()-1;
+    gui->getColorPicker("Color")->setColor(heightMap[j].color);
+    gui->getSlider("Height")->setValue(heightMap[j].height);
+    gui->getSlider("Height")->setMax(heightMap[j].height+100);
+    gui->getSlider("Height")->setMin(heightMap[j-1].height);
+    colorList->get(0)->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+}
+
+void SandSurfaceRenderer::updateColorListColor(int i, int j){
+    ofColor kc = heightMap[j].color;
+    ofColor kb = kc;
+    float st = (kc.getSaturation() > 10) ? kc.getSaturation()-10 : 0;
+    float bt = (kc.getBrightness() < 245) ? kc.getBrightness()+10 : 255;
+    kb.setSaturation(st);
+    kb.setBrightness(bt);
+    colorList->get(i)->setBackgroundColors(kc, kb, kb);
+    colorList->get(i)->setLabelColor(kc.getInverted());
 }
 
 void SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e){
     if (e.target->is("Reset colors")) {
-    } else if (e.target->is("Reorder colors")){
-        std::sort(heightMapKeys.begin(), heightMapKeys.end());
-        for (unsigned i = 0; i < heightMapKeys.size(); ++i){
-            string col = "Color "+std::to_string(i);
-            string hgt = "Height"+std::to_string(i);
-            gui->getColorPicker(col)->setColor(heightMapKeys[i].color);
-            gui->getSlider(hgt)->setValue(heightMapKeys[i].height);
+        if (!heightMap.loadFile("HeightColorMap.xml"))
+            heightMap.createFile("HeightColorMap.xml");
+        colorList->clear();
+        for (int i = 0 ; i < heightMap.size() ; i++){
+            int j = heightMap.size()-1-i;
+            colorList->add("color");
+            updateColorListColor(i, j);
+            colorList->get(i)->setLabel("Height: "+ofToString(heightMap[j].height));
         }
-    } else if (e.target->is("Add new color")){
-    
-    } else {
-        for (unsigned i = 0; i < heightMapKeys.size(); ++i){
-            string rmv = "Remove"+std::to_string(i);
-//            if (e.target->is(col)){
-//                heightMap.setColorKey(i, e.color);
-//                heightMapKeys[i].color = e.color;
-//            }
+        //Initiate color controls
+        selectedColor = 0;
+        int j = heightMap.size()-1;
+        gui->getColorPicker("Color")->setColor(heightMap[j].color);
+        gui->getSlider("Height")->setValue(heightMap[j].height);
+        gui->getSlider("Height")->setMax(heightMap[j].height+100);
+        gui->getSlider("Height")->setMin(heightMap[j-1].height);
+        colorList->get(0)->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    } else if (e.target->is("Insert new color after current color")){
+        int i = heightMap.size();
+        int j = heightMap.size()-1-selectedColor;
+        float newheight = (j < heightMap.size()-1) ? (heightMap[j+1].height+heightMap[j].height)/2 : heightMap[j].height+1;
+        colorList->add("color");
+        updateColorListColor(i, j);
+        colorList->get(i)->setLabel("Height: "+ofToString(newheight));
+        colorList->move(i,selectedColor+1);
+        heightMap.addKey(heightMap[j].color, newheight);
+    } else if (e.target->is("Remove color")){
+        if (heightMap.size() > 1){
+            int j = heightMap.size()-1-selectedColor;
+            heightMap.removeKey(j);
+            colorList->remove(selectedColor);
+
+            int i = selectedColor;
+            if (i > heightMap.size()-1){
+                i -=1;
+                selectedColor = i;
+            }
+            j = heightMap.size()-1-i;
+            colorList->get(i)->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+            gui->getButton("ColorName")->setLabel("Color #"+ofToString(i+1));
+            gui->getColorPicker("Color")->setColor(heightMap[j].color);
+            ofxDatGuiSlider* hgt = gui->getSlider("Height");
+            hgt->setMin(heightMap.getScalarRangeMin());
+            hgt->setMax(heightMap.getScalarRangeMax());
+            float nmax = (j < heightMap.size()-1) ? heightMap[j+1].height : heightMap[j].height+100;
+            hgt->setMax(nmax);
+            float nmin = (j > 0) ? heightMap[j-1].height : heightMap[j].height-100;
+            hgt->setMin(nmin);
+            hgt->setValue(heightMap[j].height);
+        }
+    } else if (e.target->is("Move up")){
+        int i = selectedColor;
+        int j = heightMap.size()-1-i;
+        if (i>0){
+            heightMap.swapKeys(j, j+1);
+            updateColorListColor(i, j);
+            updateColorListColor(i-1, j+1);
+            
+            colorList->get(i-1)->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+            colorList->get(i)->setLabelAlignment(ofxDatGuiAlignment::LEFT);
+            
+            gui->getButton("ColorName")->setLabel("Color #"+ofToString(i));
+            
+            ofxDatGuiSlider* hgt = gui->getSlider("Height");
+            hgt->setMin(heightMap.getScalarRangeMin());
+            hgt->setMax(heightMap.getScalarRangeMax());
+            
+            selectedColor -= 1;
+            j += 1;
+            float nmax = (j < heightMap.size()-1) ? heightMap[j+1].height : heightMap[j].height+100;
+            hgt->setMax(nmax);
+            float nmin = (j > 0) ? heightMap[j-1].height : heightMap[j].height-100;
+            hgt->setMin(nmin);
+            hgt->setValue(heightMap[j].height);
+       }
+    } else if (e.target->is("Move down")){
+        int i = selectedColor;
+        int j = heightMap.size()-1-i;
+        if (j>0){
+            heightMap.swapKeys(j, j-1);
+            updateColorListColor(i, j);
+            updateColorListColor(i+1, j-1);
+            
+            colorList->get(i+1)->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+            colorList->get(i)->setLabelAlignment(ofxDatGuiAlignment::LEFT);
+            
+            gui->getButton("ColorName")->setLabel("Color #"+ofToString(i+2));
+            
+            ofxDatGuiSlider* hgt = gui->getSlider("Height");
+            hgt->setMin(heightMap.getScalarRangeMin());
+            hgt->setMax(heightMap.getScalarRangeMax());
+            
+            selectedColor += 1;
+            j -= 1;
+            float nmax = (j < heightMap.size()-1) ? heightMap[j+1].height : heightMap[j].height+100;
+            hgt->setMax(nmax);
+            float nmin = (j > 0) ? heightMap[j-1].height : heightMap[j].height-100;
+            hgt->setMin(nmin);
+            hgt->setValue(heightMap[j].height);
         }
     }
-
 }
 
 void SandSurfaceRenderer::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Contour lines")) {
+        drawContourLines = e.checked;
     }
 }
 
 void SandSurfaceRenderer::onColorPickerEvent(ofxDatGuiColorPickerEvent e){
-    for (unsigned i = 0; i < heightMapKeys.size(); ++i){
-        string col = "Color "+std::to_string(i);
-        if (e.target->is(col)){
-            heightMap.setColorKey(i, e.color);
-            heightMapKeys[i].color = e.color;
-        }
+    if (e.target->is("Color")) {
+        int i = selectedColor;
+        int j = heightMap.size()-1-i;
+        heightMap.setColorKey(j, e.color);
+        updateColorListColor(i, j);
     }
 }
 
 void SandSurfaceRenderer::onSliderEvent(ofxDatGuiSliderEvent e){
     if (e.target->is("Contour lines distance")) {
-    } else {
-        for (unsigned i = 0; i < heightMapKeys.size(); ++i){
-            string hgt = "Height"+std::to_string(i);
-            if (e.target->is(hgt)){
-                heightMap.setHeightKey(i, e.value);
-                heightMapKeys[i].height = e.value;
-            }
-        }
+        contourLineDistance = e.value;
+        contourLineFactor = contourLineFboScale/contourLineDistance;        
+    } else if (e.target->is("Height")) {
+        int i = selectedColor;
+        int j = heightMap.size()-1-i;
+        heightMap.setHeightKey(j, e.value);
+        colorList->get(i)->setLabel("Height: "+ofToString(e.value));
     }
 }
 
 void SandSurfaceRenderer::onScrollViewEvent(ofxDatGuiScrollViewEvent e){
-    
+    int i = e.index;
+    if (i != selectedColor){
+        int j = heightMap.size()-1-i;
+        
+        e.target->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+        colorList->get(selectedColor)->setLabelAlignment(ofxDatGuiAlignment::LEFT);
+        
+        gui->getButton("ColorName")->setLabel("Color #"+ofToString(i+1));
+        
+        gui->getColorPicker("Color")->setColor(heightMap[j].color);
+        
+        ofxDatGuiSlider* hgt = gui->getSlider("Height");
+        hgt->setMin(heightMap.getScalarRangeMin());
+        hgt->setMax(heightMap.getScalarRangeMax());
+        float nmax = (j < heightMap.size()-1) ? heightMap[j+1].height : heightMap[j].height+100;
+        hgt->setMax(nmax);
+        float nmin = (j > 0) ? heightMap[j-1].height : heightMap[j].height-100;
+        hgt->setMin(nmin);
+        hgt->setValue(heightMap[j].height);
+        
+        selectedColor = i;
+    }
 }
 
 

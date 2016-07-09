@@ -16,7 +16,7 @@ class ofApp : public ofBaseApp{
 public:
 
     void setup();
-    void setupVehicles();
+//    void setupVehicles();
     void addNewFish();
     void addNewRabbit();
     void addMotherFish();

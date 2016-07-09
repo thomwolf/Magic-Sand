@@ -35,33 +35,15 @@ void ofApp::setup(){
     setupGui();
 
     // Vehicles
-    fishNum = 1;
-    rabbitsNum = 0;
     showMotherFish = false;
     showMotherRabbit = false;
     motherPlatformSize = 20;
-    waitingToInitialiseVehicles = true;
-}
-
-void ofApp::setupVehicles(){
-    for (int i=0; i< fishNum; i++){
-        addNewFish();
-    }
-    for (int i=0; i< rabbitsNum; i++){
-        addNewRabbit();
-    }
-    if (showMotherFish)
-        addMotherFish();
-    if (showMotherRabbit)
-        addMotherRabbit();
-    
-    waitingToInitialiseVehicles = false;
 }
 
 void ofApp::addNewFish(){
     ofVec2f location;
     location = findRandomVehicleLocation(kinectROI, true);
-    auto f = Fish(kinectProjector, location, kinectROI, true);
+    auto f = Fish(kinectProjector, location, kinectROI, motherFish);
     f.setup();
     fish.push_back(f);
 }
@@ -69,7 +51,7 @@ void ofApp::addNewFish(){
 void ofApp::addNewRabbit(){
     ofVec2f location;
     location = findRandomVehicleLocation(kinectROI, false);
-    auto r = Rabbit(kinectProjector, location, kinectROI, false);
+    auto r = Rabbit(kinectProjector, location, kinectROI, motherRabbit);
     r.setup();
     rabbits.push_back(r);
 }
@@ -84,6 +66,10 @@ void ofApp::addMotherFish(){
     
     // Set the mother Fish plateform location under the sea level
     motherFish.z = kinectProjector->elevationToKinectDepth(-10, motherFish.x, motherFish.y);
+    for (auto & f : fish){
+        f.setMotherLocation(motherFish);
+    }
+    showMotherFish = true;
 }
 
 void ofApp::addMotherRabbit(){
@@ -96,6 +82,11 @@ void ofApp::addMotherRabbit(){
     
     // Set the mother Rabbit plateform location over the sea level
     motherRabbit.z = kinectProjector->elevationToKinectDepth(10, motherRabbit.x, motherRabbit.y);
+    
+    for (auto & r: rabbits){
+        r.setMotherLocation(motherRabbit);
+    }
+    showMotherRabbit = true;
 }
 
 ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
@@ -105,9 +96,10 @@ ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
         float x = ofRandom(area.getLeft(),area.getRight());
         float y = ofRandom(area.getTop(),area.getBottom());
         bool insideWater = kinectProjector->elevationAtKinectCoord(x, y) < 0;
-        if ((insideWater && liveInWater) || (!insideWater && !liveInWater))
+        if ((insideWater && liveInWater) || (!insideWater && !liveInWater)){
             location = ofVec2f(x, y);
             okwater = true;
+        }
     }
     return location;
 }
@@ -116,14 +108,14 @@ void ofApp::update(){
     kinectProjector->update();
     sandSurfaceRenderer->update();
     if (kinectProjector->isImageStabilized()) {
-        if (waitingToInitialiseVehicles)
-            setupVehicles();
+//        if (waitingToInitialiseVehicles)
+//            setupVehicles();
         for (auto & f : fish){
-            f.applyBehaviours(motherFish);
+            f.applyBehaviours(showMotherFish);
             f.update();
         }
         for (auto & r : rabbits){
-            r.applyBehaviours(motherRabbit);
+            r.applyBehaviours(showMotherRabbit);
             r.update();
         }
     }
@@ -140,8 +132,9 @@ void ofApp::draw(){
     if (kinectProjector->isCalibrating()){
         kinectProjector->drawMainWindow();
     } else {
-//        sandSurfaceRenderer->draw();
-        kinectProjector->getTexture().draw(0,0);
+        sandSurfaceRenderer->drawMainWindow();
+//        kinectProjector->drawMainWindow();
+//        kinectProjector->getTexture().draw(0,0);
         drawVehicles();
     }
 }
@@ -150,7 +143,7 @@ void ofApp::drawProjWindow(ofEventArgs &args){
     if (kinectProjector->isCalibrating()){
         kinectProjector->drawProjectorWindow();
     } else {
-        sandSurfaceRenderer->draw();
+        sandSurfaceRenderer->drawProjectorWindow();
         drawVehicles();
     }
 }
@@ -178,9 +171,14 @@ void ofApp::drawMotherFish()
     float fishHead = tailSize;
     float tailangle = 0;//nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
     
-    ofNoFill();
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherFish.x+tailSize, motherFish.y));
+    
+    ofFill();
+    ofSetColor(ofColor::blueSteel);
+    ofDrawCircle(0, 0, motherPlatformSize);
+
+    ofNoFill();
     ofSetColor(255);
     ofPolyline fish;
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
@@ -205,6 +203,11 @@ void ofApp::drawMotherRabbit()
     float sc = 2; // MotherRabbit scale
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherRabbit.x+5*sc, motherRabbit.y));
+    
+    ofFill();
+    ofSetColor(ofColor::yellow);
+    ofDrawCircle(0, 0, motherPlatformSize);
+
     ofFill();
     ofSetLineWidth(1.0);
     ofPath body;
@@ -307,17 +310,16 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 
 void ofApp::setupGui(){
     // instantiate and position the gui //
-    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
+    gui = new ofxDatGui();
     
     // add some components //
 //    gui->addTextInput("message", "# open frameworks #");
     
     // add a folder to group a few components together //
-    gui->addSlider("# of fish", 0, 10, 0)->setPrecision(0);
-    gui->addSlider("# of rabbits", 0, 10, 0)->setPrecision(0);
+    gui->addSlider("# of fish", 0, 10, fish.size())->setPrecision(0);
+    gui->addSlider("# of rabbits", 0, 10, rabbits.size())->setPrecision(0);
     gui->addToggle("Mother fish", showMotherFish);
     gui->addToggle("Mother rabbit", showMotherRabbit);
-    gui->addButton("Reset animal locations");
     gui->addButton("Remove all animals");
     gui->addBreak();
     gui->addHeader(":: Game ::");
@@ -328,6 +330,8 @@ void ofApp::setupGui(){
     gui->onToggleEvent(this, &ofApp::onToggleEvent);
     gui->onSliderEvent(this, &ofApp::onSliderEvent);
     gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    
+    gui->setPosition(ofxDatGuiAnchor::BOTTOM_RIGHT); // You have to do it at the end
 
     // finally let's load up the stock themes, press spacebar to cycle through them //
     themes = {  new ofxDatGuiTheme(true),
@@ -343,13 +347,15 @@ void ofApp::setupGui(){
 }
 
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
-    if (e.target->is("Reset animal locations")) {
-        setupVehicles();
-    } else if (e.target->is("Remove all animals")) {
+    if (e.target->is("Remove all animals")) {
         fish.clear();
         rabbits.clear();
-//        fishNum = 0;
-//        rabbitsNum = 0;
+        showMotherFish = false;
+        showMotherRabbit = false;
+        gui->getSlider("# of fish")->setValue(0);
+        gui->getSlider("# of rabbits")->setValue(0);
+        gui->getToggle("Mother fish")->setChecked(false);
+        gui->getToggle("Mother rabbit")->setChecked(false);
     }
 }
 
@@ -370,24 +376,20 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
         if (e.value > fish.size())
             while (e.value > fish.size()){
                 addNewFish();
-//                fishNum++;
             }
         if (e.value < fish.size())
             while (e.value < fish.size()){
                 fish.pop_back();
-//                fishNum--;
             }
 
     } else if (e.target->is("# of rabbits")) {
         if (e.value > rabbits.size())
             while (e.value > rabbits.size()){
                 addNewRabbit();
-//                rabbitsNum++;
             }
         if (e.value < rabbits.size())
             while (e.value < rabbits.size()){
                 rabbits.pop_back();
-//                rabbitsNum--;
             }
     }
 }

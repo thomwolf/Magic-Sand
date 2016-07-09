@@ -8,12 +8,12 @@
 class Vehicle{
 
 public:
-    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater);
+    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f motherLocation);
     
     virtual void setup();
     void updateBeachDetection();
 
-    ofPoint seekEffect(const ofPoint & target);
+    ofPoint seekEffect();
     ofPoint bordersEffect();
     ofPoint slopesEffect();
     virtual ofPoint wanderEffect();
@@ -44,6 +44,10 @@ public:
         return mother;
     }
     
+    void setMotherLocation(ofVec2f loc){
+        motherLocation = loc;
+    }
+    
     std::vector<ofVec2f> getForces(void);
 
 protected:
@@ -68,8 +72,14 @@ protected:
     bool beach;
     bool border;
     bool setWait;
+    int waitCounter;
+    int waitTime;
+    int maxWaitingTime;
+    int minWaitingTime;
+    
     bool mother;
-    int waitCounter, waitTime, maxWaitingTime, minWaitingTime;
+    ofVec2f motherLocation;
+    
     // For slope effect
     float beachDist;
     ofVec2f beachSlope;
@@ -92,23 +102,23 @@ protected:
 
 class Fish : public Vehicle {
 public:
-    Fish(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater) : Vehicle(k, slocation, sborders, sliveInWater){}
+    Fish(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, true, motherLocation){}
 
     void setup();
     ofPoint wanderEffect();
     //    ofPoint separateEffect(vector<vehicle> vehicles);
-    void applyBehaviours(ofPoint target);
+    void applyBehaviours(bool seekMother);
     void draw();
 };
 
 class Rabbit : public Vehicle {
 public:
-    Rabbit(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater) : Vehicle(k, slocation, sborders, sliveInWater){}
+    Rabbit(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, false, motherLocation){}
     
     void setup();
     ofPoint wanderEffect();
     //    ofPoint separateEffect(vector<vehicle> vehicles);
-    void applyBehaviours(ofPoint target);
+    void applyBehaviours(bool seekMother);
     void draw();
 };
 
