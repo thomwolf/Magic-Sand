@@ -27,10 +27,10 @@ void ofApp::setup(){
     sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector);
     sandSurfaceRenderer->setup(projRes);
     
-    fboProjWindow.allocate(projRes.x, projRes.y, GL_RGBA);
-    fboProjWindow.begin();
+    fboVehiclesMainWindow.allocate(projRes.x, projRes.y, GL_RGBA);
+    fboVehiclesMainWindow.begin();
     ofClear(0,0,0,255);
-    fboProjWindow.end();
+    fboVehiclesMainWindow.end();
     
     setupGui();
 
@@ -106,10 +106,14 @@ ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
 
 void ofApp::update(){
     kinectProjector->update();
+    if (kinectProjector->isROIUpdated())
+        sandSurfaceRenderer->setupMesh();
+    if (kinectProjector->isBasePlaneUpdated())
+        sandSurfaceRenderer->updateRangesAndBasePlane();
+    if (kinectProjector->isCalibrationUpdated())
+        sandSurfaceRenderer->updateConversionMatrices();
     sandSurfaceRenderer->update();
     if (kinectProjector->isImageStabilized()) {
-//        if (waitingToInitialiseVehicles)
-//            setupVehicles();
         for (auto & f : fish){
             f.applyBehaviours(showMotherFish);
             f.update();
@@ -119,24 +123,12 @@ void ofApp::update(){
             r.update();
         }
     }
-    
-    if (kinectProjector->isROIUpdated())
-        sandSurfaceRenderer->setupMesh();
-    if (kinectProjector->isBasePlaneUpdated())
-        sandSurfaceRenderer->updateRangesAndBasePlane();
-    if (kinectProjector->isCalibrationUpdated())
-        sandSurfaceRenderer->updateConversionMatrices();
 }
 
 void ofApp::draw(){
-    if (kinectProjector->isCalibrating()){
-        kinectProjector->drawMainWindow();
-    } else {
-        sandSurfaceRenderer->drawMainWindow();
-//        kinectProjector->drawMainWindow();
-//        kinectProjector->getTexture().draw(0,0);
-        drawVehicles();
-    }
+        sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);
+        drawVehicles(); // Draw Vehicles on the fbo
+        kinectProjector->drawMainWindow(300, 30, 600, 450);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args){
@@ -150,6 +142,8 @@ void ofApp::drawProjWindow(ofEventArgs &args){
 
 void ofApp::drawVehicles()
 {
+    fboVehiclesMainWindow.begin();
+    ofClear(255,255,255, 0);
     for (auto & f : fish){
         f.draw();
     }
@@ -160,6 +154,8 @@ void ofApp::drawVehicles()
         drawMotherFish();
     if (showMotherRabbit)
         drawMotherRabbit();
+    fboVehiclesMainWindow.end();
+    fboVehiclesMainWindow.draw(300, 30, 600, 450); // Reduce
 }
 
 void ofApp::drawMotherFish()
@@ -322,8 +318,8 @@ void ofApp::setupGui(){
     gui->addToggle("Mother rabbit", showMotherRabbit);
     gui->addButton("Remove all animals");
     gui->addBreak();
-    gui->addHeader(":: Game ::");
-    gui->addFooter();
+    gui->addHeader(":: Game ::", false);
+//    gui->addFooter();
     
     // once the gui has been assembled, register callbacks to listen for component specific events //
     gui->onButtonEvent(this, &ofApp::onButtonEvent);
@@ -335,7 +331,7 @@ void ofApp::setupGui(){
 
     // finally let's load up the stock themes, press spacebar to cycle through them //
     themes = {  new ofxDatGuiTheme(true),
-        new ofxDatGuiThemeCalib(),
+        new ofxDatGuiThemeCandy(),
         new ofxDatGuiThemeSmoke(),
         new ofxDatGuiThemeWireframe(),
         new ofxDatGuiThemeMidnight(),

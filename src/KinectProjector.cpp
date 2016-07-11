@@ -68,11 +68,11 @@ void KinectProjector::setup(ofVec2f sprojRes){
     Dptimg.allocate(20, 20); // Small detailed ROI
     
     //Try to load calibration file if possible
-    if (kpt.loadCalibration("calibration.xml"))
+    if (kpt.loadCalibration("settings/calibration.xml"))
     {
-        ofLogVerbose("GreatSand") << "setup(): Calibration loaded " ;
+        ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Calibration loaded " ;
         kinectProjMatrix = kpt.getProjectionMatrix();
-        ofLogVerbose("GreatSand") << "setup(): kinectProjMatrix: " << kinectProjMatrix ;
+        ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectProjMatrix: " << kinectProjMatrix ;
         projKinectCalibrated = true;
 //        generalState = GENERAL_STATE_SANDBOX;
 //        updateMode();
@@ -82,22 +82,22 @@ void KinectProjector::setup(ofVec2f sprojRes){
 //        initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
 //        ROICalibState = ROI_CALIBRATION_STATE_INIT;
 //        updateMode();
-        ofLogVerbose("GreatSand") << "setup(): Calibration could not be loaded" ;
+        ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Calibration could not be loaded" ;
     }
     
     //Try to load settings file if possible
-    if (loadSettings("settings.xml"))
+    if (loadSettings("settings/kinectProjectorSettings.xml"))
     {
-        ofLogVerbose("GreatSand") << "setup(): Settings loaded " ;
+        ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Settings loaded " ;
         ROIcalibrated = true;
     } else {
-        ofLogVerbose("GreatSand") << "setup(): Settings could not be loaded " ;
+        ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Settings could not be loaded " ;
     }
     
 	// finish kinectgrabber setup and start the grabber
     kinectgrabber.setupFramefilter(gradFieldresolution, maxOffset, kinectROI);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
-    ofLogVerbose("GreatSand") << "setup(): kinectWorldMatrix: " << kinectWorldMatrix ;
+    ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectWorldMatrix: " << kinectWorldMatrix ;
     
     // Setup gradient field
     setupGradientField();
@@ -143,6 +143,7 @@ void KinectProjector::update(){
         
         // Get gradient field from kinect grabber
         kinectgrabber.gradient.tryReceive(gradField);
+        drawGradField();
         
         // Update grabber stored frame number
         kinectgrabber.lock();
@@ -152,13 +153,12 @@ void KinectProjector::update(){
         // Is the depth image stabilized
         imageStabilized = kinectgrabber.isImageStabilized();
         
-        fboMainWindow.begin();
-        FilteredDepthImage.draw(0, 0);
-        ofNoFill();
-//        insideROIPoly.draw();
-        ofDrawRectangle(kinectROI);
-        fboMainWindow.end();
-        
+//        fboMainWindow.begin();
+//        FilteredDepthImage.draw(0, 0);
+//        ofNoFill();
+//        ofDrawRectangle(kinectROI);
+//        fboMainWindow.end();
+//        
         // Are we calibrating ?
         if (calibrating && !waitingForFlattenSand)
             updateCalibration();
@@ -227,18 +227,18 @@ void KinectProjector::updateROIFromColorImage(){
                     }
                 }
             }
-            ofLogVerbose("GreatSand") << "updateROIFromColorImage(): small.getArea(): " << small.getArea() ;
-            ofLogVerbose("GreatSand") << "updateROIFromColorImage(): large.getArea(): " << large.getArea() ;
+            ofLogVerbose("KinectProjector") << "KinectProjector.updateROIFromColorImage(): small.getArea(): " << small.getArea() ;
+            ofLogVerbose("KinectProjector") << "KinectProjector.updateROIFromColorImage(): large.getArea(): " << large.getArea() ;
             if (large.getArea() < small.getArea())
             {
-                ofLogVerbose("GreatSand") << "updateROIFromColorImage(): We take the largest contour line surroundings the center of the screen at all threshold level" ;
+                ofLogVerbose("KinectProjector") << "updateROIFromColorImage(): We take the largest contour line surroundings the center of the screen at all threshold level" ;
                 large = small;
             }
             threshold+=1;
         }
         kinectROI = large.getBoundingBox();
         kinectROI.standardize();
-        ofLogVerbose("GreatSand") << "updateROIFromColorImage(): kinectROI : " << kinectROI ;
+        ofLogVerbose("KinectProjector") << "updateROIFromColorImage(): kinectROI : " << kinectROI ;
         ROICalibState = ROI_CALIBRATION_STATE_DONE;
         setNewKinectROI();
     } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
@@ -253,7 +253,7 @@ void KinectProjector::updateROIFromDepthImage(){
         ROICalibState = ROI_CALIBRATION_STATE_READY_TO_MOVE_UP;
     } else if (ROICalibState == ROI_CALIBRATION_STATE_READY_TO_MOVE_UP && imageStabilized) {
         calibModal->setMessage("Scanning depth field to find sandbox walls.");
-        ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_READY_TO_MOVE_UP: got a stable depth image" ;
+        ofLogVerbose("KinectProjector") << "updateROIFromDepthImage(): ROI_CALIBRATION_STATE_READY_TO_MOVE_UP: got a stable depth image" ;
         ROICalibState = ROI_CALIBRATION_STATE_MOVE_UP;
         large = ofPolyline();
         ofxCvFloatImage temp;
@@ -282,7 +282,7 @@ void KinectProjector::updateROIFromDepthImage(){
             }
             if (large.getArea() < small.getArea())
             {
-                ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): updating ROI" ;
+                ofLogVerbose("KinectProjector") << "updateROIFromDepthImage(): updating ROI" ;
                 large = small;
             }
             threshold+=1;
@@ -299,7 +299,7 @@ void KinectProjector::updateROIFromDepthImage(){
 //            insideROIPoly = large.getResampledBySpacing(10);
             kinectROI.standardize();
             calibModal->setMessage("Sand area successfully detected");
-            ofLogVerbose("GreatSand") << "updateROIFromDepthImage(): final kinectROI : " << kinectROI ;
+            ofLogVerbose("KinectProjector") << "updateROIFromDepthImage(): final kinectROI : " << kinectROI ;
             setNewKinectROI();
             if (calibrationState == CALIBRATION_STATE_ROI_AUTO_DETERMINATION){
                 calibrating = false;
@@ -413,7 +413,7 @@ void KinectProjector::updateProjKinectAutoCalibration(){
                     kinectColorImage.draw(0,0);
                     fboMainWindow.end();
                     
-                    ofLogVerbose("GreatSand") << "autoCalib(): Chessboard found for point :" << currentCalibPts ;
+                    ofLogVerbose("KinectProjector") << "autoCalib(): Chessboard found for point :" << currentCalibPts ;
                     bool okchess = addPointPair();
                     
                     if (okchess) {
@@ -426,10 +426,10 @@ void KinectProjector::updateProjKinectAutoCalibration(){
                     } else {
                         // We cannot get all depth points for the chessboard
                         trials++;
-                        ofLogVerbose("GreatSand") << "autoCalib(): Depth points of chessboard not allfound on trial : " << trials ;
+                        ofLogVerbose("KinectProjector") << "autoCalib(): Depth points of chessboard not allfound on trial : " << trials ;
                         if (trials >10) {
                             // Move the chessboard closer to the center of the screen
-                            ofLogVerbose("GreatSand") << "autoCalib(): Chessboard could not be found moving chessboard closer to center " ;
+                            ofLogVerbose("KinectProjector") << "autoCalib(): Chessboard could not be found moving chessboard closer to center " ;
                             autoCalibPts[currentCalibPts] = 4*autoCalibPts[currentCalibPts]/5;
                             fboProjWindow.begin(); // Clear projector
                             ofBackground(255);
@@ -441,17 +441,17 @@ void KinectProjector::updateProjKinectAutoCalibration(){
                 }
             } else {
                 if (cleared == false) {
-                    ofLogVerbose("GreatSand") << "autoCalib(): Clear screen found, drawing next chessboard" ;
+                    ofLogVerbose("KinectProjector") << "autoCalib(): Clear screen found, drawing next chessboard" ;
                     cleared = true; // The cleared fbo screen was seen by the kinect
                     ofPoint dispPt = ofPoint(projRes.x/2,projRes.y/2)+autoCalibPts[currentCalibPts]; // Compute next chessboard position
                     drawChessboard(dispPt.x, dispPt.y, chessboardSize); // We can now draw the next chess board
                 } else {
                     // We cannot find the chessboard
                     trials++;
-                    ofLogVerbose("GreatSand") << "autoCalib(): Chessboard not found on trial : " << trials ;
+                    ofLogVerbose("KinectProjector") << "autoCalib(): Chessboard not found on trial : " << trials ;
                     if (trials >10) {
                         // Move the chessboard closer to the center of the screen
-                        ofLogVerbose("GreatSand") << "autoCalib(): Chessboard could not be found moving chessboard closer to center " ;
+                        ofLogVerbose("KinectProjector") << "autoCalib(): Chessboard could not be found moving chessboard closer to center " ;
                         autoCalibPts[currentCalibPts] = 3*autoCalibPts[currentCalibPts]/4;
                         fboProjWindow.begin(); // Clear projector
                         ofBackground(255);
@@ -476,14 +476,14 @@ void KinectProjector::updateProjKinectAutoCalibration(){
         updateKinectGrabberROI(kinectROI); // Goes back to kinectROI and maxoffset
         kinectgrabber.setMaxOffset(maxOffset);
         if (pairsKinect.size() == 0) {
-            ofLogVerbose("GreatSand") << "autoCalib(): Error: No points acquired !!" ;
+            ofLogVerbose("KinectProjector") << "autoCalib(): Error: No points acquired !!" ;
             calibModal->hide();
             confirmModal->setTitle("Calibration failed");
             confirmModal->setMessage("No point could be acquired. ");
             confirmModal->show();
             calibrating = false;
         } else {
-            ofLogVerbose("GreatSand") << "autoCalib(): Calibrating" ;
+            ofLogVerbose("KinectProjector") << "autoCalib(): Calibrating" ;
             kpt.calibrate(pairsKinect, pairsProjector);
             kinectProjMatrix = kpt.getProjectionMatrix();
             
@@ -519,26 +519,26 @@ void KinectProjector::updateProjKinectManualCalibration(){
 void KinectProjector::updateBasePlane(){
     ofRectangle smallROI = kinectROI;
     smallROI.scaleFromCenter(0.75); // Reduce ROI to avoid problems with borders
-    ofLogVerbose("GreatSand") << "updateBasePlane(): smallROI: " << smallROI ;
+    ofLogVerbose("KinectProjector") << "updateBasePlane(): smallROI: " << smallROI ;
     int sw = static_cast<int>(smallROI.width);
     int sh = static_cast<int>(smallROI.height);
     int sl = static_cast<int>(smallROI.getLeft());
     int st = static_cast<int>(smallROI.getTop());
-    ofLogVerbose("GreatSand") << "updateBasePlane(): sw: " << sw << " sh : " << sh << " sl : " << sl << " st : " << st << " sw*sh : " << sw*sh ;
+    ofLogVerbose("KinectProjector") << "updateBasePlane(): sw: " << sw << " sh : " << sh << " sl : " << sl << " st : " << st << " sw*sh : " << sw*sh ;
     if (sw*sh == 0) {
-        ofLogVerbose("GreatSand") << "updateBasePlane(): smallROI is null, cannot compute base plane normal" ;
+        ofLogVerbose("KinectProjector") << "updateBasePlane(): smallROI is null, cannot compute base plane normal" ;
         return;
     }
     ofVec4f pt;
     ofVec3f* points;
     points = new ofVec3f[sw*sh];
-    ofLogVerbose("GreatSand") << "updateBasePlane(): Computing points in smallROI : " << sw*sh ;
+    ofLogVerbose("KinectProjector") << "updateBasePlane(): Computing points in smallROI : " << sw*sh ;
     for (int x = 0; x<sw; x++){
         for (int y = 0; y<sh; y ++){
             points[x+y*sw] = kinectCoordToWorldCoord(x+sl, y+st);
         }
     }
-    ofLogVerbose("GreatSand") << "updateBasePlane(): Computing plane from points" ;
+    ofLogVerbose("KinectProjector") << "updateBasePlane(): Computing plane from points" ;
     basePlaneEq = plane_from_points(points, sw*sh);
     basePlaneNormal = ofVec3f(basePlaneEq);
     basePlaneOffset = ofVec3f(0,0,-basePlaneEq.w);
@@ -550,38 +550,38 @@ void KinectProjector::updateBasePlane(){
 void KinectProjector::updateMaxOffset(){
     ofRectangle smallROI = kinectROI;
     smallROI.scaleFromCenter(0.75); // Reduce ROI to avoid problems with borders
-    ofLogVerbose("GreatSand") << "updateMaxOffset(): smallROI: " << smallROI ;
+    ofLogVerbose("KinectProjector") << "updateMaxOffset(): smallROI: " << smallROI ;
     int sw = static_cast<int>(smallROI.width);
     int sh = static_cast<int>(smallROI.height);
     int sl = static_cast<int>(smallROI.getLeft());
     int st = static_cast<int>(smallROI.getTop());
-    ofLogVerbose("GreatSand") << "updateMaxOffset(): sw: " << sw << " sh : " << sh << " sl : " << sl << " st : " << st << " sw*sh : " << sw*sh ;
+    ofLogVerbose("KinectProjector") << "updateMaxOffset(): sw: " << sw << " sh : " << sh << " sl : " << sl << " st : " << st << " sw*sh : " << sw*sh ;
     if (sw*sh == 0) {
-        ofLogVerbose("GreatSand") << "updateMaxOffset(): smallROI is null, cannot compute base plane normal" ;
+        ofLogVerbose("KinectProjector") << "updateMaxOffset(): smallROI is null, cannot compute base plane normal" ;
         return;
     }
     ofVec4f pt;
     ofVec3f* points;
     points = new ofVec3f[sw*sh];
-    ofLogVerbose("GreatSand") << "updateMaxOffset(): Computing points in smallROI : " << sw*sh ;
+    ofLogVerbose("KinectProjector") << "updateMaxOffset(): Computing points in smallROI : " << sw*sh ;
     for (int x = 0; x<sw; x++){
         for (int y = 0; y<sh; y ++){
             points[x+y*sw] = kinectCoordToWorldCoord(x+sl, y+st);//vertexCcvertexCc;
         }
     }
-    ofLogVerbose("GreatSand") << "updateMaxOffset(): Computing plane from points" ;
+    ofLogVerbose("KinectProjector") << "updateMaxOffset(): Computing plane from points" ;
     ofVec4f eqoff = plane_from_points(points, sw*sh);
     maxOffset = -eqoff.w-maxOffsetSafeRange;
     maxOffsetBack = maxOffset;
     // Update max Offset
-    ofLogVerbose("GreatSand") << "updateMaxOffset(): maxOffset" << maxOffset ;
+    ofLogVerbose("KinectProjector") << "updateMaxOffset(): maxOffset" << maxOffset ;
     kinectgrabber.setMaxOffset(maxOffset);
 }
 
 bool KinectProjector::addPointPair() {
     bool okchess = true;
     string resultMessage;
-    ofLogVerbose("GreatSand") << "addPointPair(): Adding point pair in kinect world coordinates" ;
+    ofLogVerbose("KinectProjector") << "addPointPair(): Adding point pair in kinect world coordinates" ;
     int nDepthPoints = 0;
     for (int i=0; i<cvPoints.size(); i++) {
         ofVec3f worldPoint = kinectCoordToWorldCoord(cvPoints[i].x, cvPoints[i].y);
@@ -599,7 +599,7 @@ bool KinectProjector::addPointPair() {
         resultMessage = "addPointPair(): Points not added because not all chessboard\npoints' depth known. Try re-positionining.";
         okchess = false;
     }
-    ofLogVerbose("GreatSand") << resultMessage ;
+    ofLogVerbose("KinectProjector") << resultMessage ;
     return okchess;
 }
 
@@ -616,8 +616,8 @@ void KinectProjector::drawProjectorWindow(){
     fboProjWindow.draw(0,0);
 }
 
-void KinectProjector::drawMainWindow(){
-    fboMainWindow.draw(0,0);
+void KinectProjector::drawMainWindow(float x, float y, float width, float height){
+    fboMainWindow.draw(x, y, width, height);
 }
 
 void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
@@ -649,8 +649,10 @@ void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
     fboProjWindow.end();
 }
 
-void KinectProjector::drawFlowField()
+void KinectProjector::drawGradField()
 {
+    fboMainWindow.begin();
+    ofClear(255, 0);
     float maxsize = 0;
     for(int rowPos=0; rowPos< gradFieldrows ; rowPos++)
     {
@@ -666,6 +668,7 @@ void KinectProjector::drawFlowField()
             drawArrow(projectedPoint, v2);
         }
     }
+    fboMainWindow.end();
 }
 
 void KinectProjector::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
@@ -779,10 +782,10 @@ void KinectProjector::setupGui(){
     gui->addBreak();
     
     // adding the optional header allows you to drag the gui around //
-    gui->addHeader(":: Settings ::");
+    gui->addHeader(":: Settings ::", false);
     
     // adding the optional footer allows you to collapse/expand the gui //
-    gui->addFooter();
+//    gui->addFooter();
     
     // once the gui has been assembled, register callbacks to listen for component specific events //
     gui->onButtonEvent(this, &KinectProjector::onButtonEvent);
@@ -798,7 +801,7 @@ void KinectProjector::setupGui(){
     //    gui->onMatrixEvent(this, &ofApp::onMatrixEvent);
     
     //    gui->setOpacity(gui->getSlider("datgui opacity")->getScale());
-    gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+//    gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     
     // finally let's load up the stock themes, press spacebar to cycle through them //
 //    themes = {  new ofxDatGuiTheme(true),
@@ -822,13 +825,13 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         confirmModal->setTitle("Full calibration");
         calibModal->setTitle("Full calibration");
         askToFlattenSand();
-        ofLogVerbose("GreatSand") << "onButtonEvent(): Starting full calibration" ;
+        ofLogVerbose("KinectProjector") << "onButtonEvent(): Starting full calibration" ;
         //        showModal = true;
     } else if (e.target->is("Automatically detect sand region")) {
         calibrating = true;
         calibrationState = CALIBRATION_STATE_ROI_AUTO_DETERMINATION;
         ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        ofLogVerbose("GreatSand") << "onButtonEvent(): Finding ROI" ;
+        ofLogVerbose("KinectProjector") << "onButtonEvent(): Finding ROI" ;
         confirmModal->setTitle("Detect sand region");
         calibModal->setTitle("Detect sand region");
         askToFlattenSand();
@@ -837,7 +840,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         calibrating = true;
         calibrationState = CALIBRATION_STATE_ROI_MANUAL_DETERMINATION;
         ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        ofLogVerbose("GreatSand") << "onButtonEvent(): Updating ROI Manually" ;
+        ofLogVerbose("KinectProjector") << "onButtonEvent(): Updating ROI Manually" ;
         //        showModal = true;
     } else if (e.target->is("Automatically calibrate kinect & projector")){
         calibrating = true;
@@ -846,13 +849,13 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         confirmModal->setTitle("Calibrate projector");
         calibModal->setTitle("Calibrate projector");
         askToFlattenSand();
-        ofLogVerbose("GreatSand") << "onButtonEvent(): Starting autocalib" ;
+        ofLogVerbose("KinectProjector") << "onButtonEvent(): Starting autocalib" ;
         //        showModal = true;
     } else if (e.target->is("Manually calibrate kinect & projector")) {
         calibrating = true;
         calibrationState = CALIBRATION_STATE_PROJ_KINECT_MANUAL_CALIBRATION;
         ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        ofLogVerbose("GreatSand") << "onButtonEvent(): Manual calibration -- Not working now" ;
+        ofLogVerbose("KinectProjector") << "onButtonEvent(): Manual calibration -- Not working now" ;
         //        showModal = true;
     } else if (e.target->is("Reset sea level")){
         gui->getSlider("Tilt X")->setValue(0);
@@ -885,9 +888,9 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
         basePlaneUpdated = true;
     } else if (e.target->is("Ceiling")){
         maxOffset = maxOffsetBack-e.value;
-        ofLogVerbose("GreatSand") << "onSliderEvent(): maxOffset" << maxOffset ;
+        ofLogVerbose("KinectProjector") << "onSliderEvent(): maxOffset" << maxOffset ;
         kinectgrabber.setMaxOffset(maxOffset);
-    } else if(e.target->is("# of averaging slots")){
+    } else if(e.target->is("Averaging")){
 #if __cplusplus>=201103
         kinectgrabber.numAveragingSlotschannel.send(std::move(e.value));
 #else
@@ -905,7 +908,7 @@ void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
         cout << "confirm modal window is closed" << endl;
     }   else if (e.type == ofxModalEvent::CANCEL){
         calibrating = false;
-        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
+        ofLogVerbose("KinectProjector") << "Modal cancel button pressed: Aborting" ;
     }   else if (e.type == ofxModalEvent::CONFIRM){
         if (calibrating){
             if (waitingForFlattenSand){
@@ -917,7 +920,7 @@ void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
                 }
             }
         }
-        ofLogVerbose("GreatSand") << "Modal confirm button pressed" ;
+        ofLogVerbose("KinectProjector") << "Modal confirm button pressed" ;
     }
 }
 
@@ -928,22 +931,22 @@ void KinectProjector::onCalibModalEvent(ofxModalEvent e){
         cout << "calib modal window is closed" << endl;
     }   else if (e.type == ofxModalEvent::CONFIRM){
         calibrating = false;
-        ofLogVerbose("GreatSand") << "Modal cancel button pressed: Aborting" ;
+        ofLogVerbose("KinectProjector") << "Modal cancel button pressed: Aborting" ;
     }
 }
 
 void KinectProjector::saveCalibrationAndSettings(){
-    if (kpt.saveCalibration("calibration.xml"))
+    if (kpt.saveCalibration("settings/calibration.xml"))
     {
-        ofLogVerbose("GreatSand") << "update(): initialisation: Calibration saved " ;
+        ofLogVerbose("KinectProjector") << "update(): initialisation: Calibration saved " ;
     } else {
-        ofLogVerbose("GreatSand") << "update(): initialisation: Calibration could not be saved " ;
+        ofLogVerbose("KinectProjector") << "update(): initialisation: Calibration could not be saved " ;
     }
-    if (saveSettings("settings.xml"))
+    if (saveSettings("settings/kinectProjectorSettings.xml"))
     {
-        ofLogVerbose("GreatSand") << "update(): initialisation: Settings saved " ;
+        ofLogVerbose("KinectProjector") << "update(): initialisation: Settings saved " ;
     } else {
-        ofLogVerbose("GreatSand") << "update(): initialisation: Settings could not be saved " ;
+        ofLogVerbose("KinectProjector") << "update(): initialisation: Settings could not be saved " ;
     }
 }
 //TODO: Save additionnal settings

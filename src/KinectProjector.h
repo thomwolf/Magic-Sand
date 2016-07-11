@@ -56,9 +56,9 @@ public:
     void askToFlattenSand();
     
     void drawProjectorWindow();
-    void drawMainWindow();
+    void drawMainWindow(float x, float y, float width, float height);
     void drawChessboard(int x, int y, int chessboardSize);
-    void drawFlowField();
+    void drawGradField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
 
     ofVec2f worldCoordToProjCoord(ofVec3f vin);
@@ -72,16 +72,16 @@ public:
     void updateMode();
     void updateNativeScale(float scaleMin, float scaleMax);
     
-    void saveCalibrationAndSettings();
-    bool loadSettings(string path);
-    bool saveSettings(string path);
-    
     void setupGui();
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     void onConfirmModalEvent(ofxModalEvent e);
     void onCalibModalEvent(ofxModalEvent e);
+    
+    void saveCalibrationAndSettings();
+    bool loadSettings(string path);
+    bool saveSettings(string path);
     
     void bind(){
         FilteredDepthImage.getTexture().bind();

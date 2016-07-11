@@ -1,0 +1,5 @@
+<SURFACERENDERERSETTINGS>
+	<colorMapFile>HeightColorMap.xml</colorMapFile>
+	<drawContourLines>1</drawContourLines>
+	<contourLineDistance>10</contourLineDistance>
+</SURFACERENDERERSETTINGS>

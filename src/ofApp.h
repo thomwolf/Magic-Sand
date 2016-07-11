@@ -61,7 +61,7 @@ private:
     ofRectangle kinectROI;
     
     // FBos
-    ofFbo fboProjWindow;
+    ofFbo fboVehiclesMainWindow;
 
     // Fish and Rabbits
     vector<Fish> fish;
