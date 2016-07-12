@@ -138,11 +138,6 @@ void SandSurfaceRenderer::updateRangesAndBasePlane(){
     
     ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): basePlaneOffset: " << basePlaneOffset ;
     ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): basePlaneNormal: " << basePlaneNormal ;
-    ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): basePlaneEq: " << basePlaneEq ;
-    ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): elevationMin: " << elevationMin ;
-    ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): elevationMax: " << elevationMax ;
-    ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): heightMap.getNumEntries(): " << heightMap.getNumEntries() ;
-    ofLogVerbose("SandSurfaceRenderer") << "setRangesAndBasePlaneEquation(): contourLineDistance: " << contourLineDistance ;
 }
 
 void SandSurfaceRenderer::setupMesh(){
@@ -240,7 +235,7 @@ void SandSurfaceRenderer::setupGui(){
     gui->addBreak();
     gui->addButton("Color #1")->setName("ColorName");
     gui->addSlider("Height", -300, 300, 0);
-    gui->addColorPicker("Color", ofColor::black);
+    gui->addColorPicker("ColorPicker", ofColor::black);
     gui->addButton("Move up");
     gui->addButton("Move down");
     gui->addButton("Insert new color after current color");
@@ -287,7 +282,7 @@ void SandSurfaceRenderer::populateColorList(){
     //Initiate color controls
     selectedColor = 0;
     int j = heightMap.size()-1;
-    gui->getColorPicker("Color")->setColor(heightMap[j].color);
+    gui->getColorPicker("ColorPicker")->setColor(heightMap[j].color);
     gui->getSlider("Height")->setValue(heightMap[j].height);
     gui->getSlider("Height")->setMax(heightMap[j].height+100);
     gui->getSlider("Height")->setMin(heightMap[j-1].height);
@@ -349,7 +344,7 @@ void SandSurfaceRenderer::onToggleEvent(ofxDatGuiToggleEvent e){
 }
 
 void SandSurfaceRenderer::onColorPickerEvent(ofxDatGuiColorPickerEvent e){
-    if (e.target->is("Color")) {
+    if (e.target->is("ColorPicker")) {
         int i = selectedColor;
         int j = heightMap.size()-1-i;
         heightMap.setColorKey(j, e.color);
@@ -382,7 +377,7 @@ void SandSurfaceRenderer::onScrollViewEvent(ofxDatGuiScrollViewEvent e){
         e.target->setLabelAlignment(ofxDatGuiAlignment::CENTER);
         colorList->get(selectedColor)->setLabelAlignment(ofxDatGuiAlignment::LEFT);
         gui->getButton("ColorName")->setLabel("Color #"+ofToString(i+1));
-        gui->getColorPicker("Color")->setColor(heightMap[j].color);
+        gui->getColorPicker("ColorPicker")->setColor(heightMap[j].color);
         ofxDatGuiSlider* hgt = gui->getSlider("Height");
         hgt->setMin(heightMap.getScalarRangeMin());
         hgt->setMax(heightMap.getScalarRangeMax());

@@ -19,7 +19,9 @@ public:
     void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
-
+    ofVec3f getStatBuffer(int x, int y);
+    float getAveragingBuffer(int x, int y, int slotNum);
+    
     void decStoredframes(){
         storedframes -= 1;
     }
@@ -48,6 +50,10 @@ public:
                            0,       b.y-a.y,    0,  a.y,
                            0,       0,          0,  1,
                            0,       0,          0,  1);
+    }
+    
+    int getNumAveragingSlots(){
+        return numAveragingSlots;
     }
     
     void setMaxOffset(float newMaxOffset){

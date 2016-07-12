@@ -42,6 +42,7 @@ public:
     string getTextInput(){
         return textInput->getText();
     }
+
 private:
     ofxDatGuiTextInput* textInput;
 };

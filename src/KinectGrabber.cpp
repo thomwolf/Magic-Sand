@@ -412,6 +412,15 @@ void KinectGrabber::updateAveragingSlotsNumber(int snumAveragingSlots){
     initiateBuffers();
 }
 
+ofVec3f KinectGrabber::getStatBuffer(int x, int y){
+    float* sPtr = statBuffer+3*(x + y*width);
+    return ofVec3f(sPtr[0], sPtr[1], sPtr[2]);
+}
+
+float KinectGrabber::getAveragingBuffer(int x, int y, int slotNum){
+    float* abPtr = averagingBuffer + slotNum*height*width + (x + y*width);
+    return *abPtr;
+}
 
 
 

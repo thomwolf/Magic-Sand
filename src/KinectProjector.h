@@ -70,6 +70,7 @@ public:
     ofVec2f gradientAtKinectCoord(float x, float y);
     
     void updateMode();
+    void dispBuffers(int x, int y);
     void updateNativeScale(float scaleMin, float scaleMax);
     
     void setupGui();
@@ -214,6 +215,7 @@ private:
     int gradFieldcols, gradFieldrows;
     double gradFieldresolution;
     float arrowLength;
+    int fishInd;
     
     // Calibration variables
     ofxKinectProjectorToolkit   kpt;

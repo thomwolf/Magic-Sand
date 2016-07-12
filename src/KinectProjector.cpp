@@ -39,7 +39,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
 	chessboardX = 5;
     chessboardY = 4;
     
-    // 	gradFieldresolution
+    // 	Gradient Field
 	gradFieldresolution = 10;
     arrowLength = 25;
 	
@@ -107,7 +107,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
     ofClear(0,0,0,255);
     fboProjWindow.end();
     
-    fboMainWindow.allocate(kinectRes.x, kinectRes.y, GL_RGBA);
+    fboMainWindow.allocate(projRes.x, projRes.y, GL_RGBA);
     fboMainWindow.begin();
     ofClear(0,0,0,255);
     fboMainWindow.end();
@@ -143,7 +143,7 @@ void KinectProjector::update(){
         
         // Get gradient field from kinect grabber
         kinectgrabber.gradient.tryReceive(gradField);
-        drawGradField();
+//        drawGradField();
         
         // Update grabber stored frame number
         kinectgrabber.lock();
@@ -617,7 +617,8 @@ void KinectProjector::drawProjectorWindow(){
 }
 
 void KinectProjector::drawMainWindow(float x, float y, float width, float height){
-    fboMainWindow.draw(x, y, width, height);
+    if (calibrating)
+        fboMainWindow.draw(x, y, width, height);
 }
 
 void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
@@ -653,7 +654,6 @@ void KinectProjector::drawGradField()
 {
     fboMainWindow.begin();
     ofClear(255, 0);
-    float maxsize = 0;
     for(int rowPos=0; rowPos< gradFieldrows ; rowPos++)
     {
         for(int colPos=0; colPos< gradFieldcols ; colPos++)
@@ -661,10 +661,14 @@ void KinectProjector::drawGradField()
             float x = colPos*gradFieldresolution + gradFieldresolution/2;
             float y = rowPos*gradFieldresolution  + gradFieldresolution/2;
             ofVec2f projectedPoint = kinectCoordToProjCoord(x, y);
-            ofVec2f v2 = gradField[colPos + rowPos * gradFieldcols];
-            if (v2.length() > maxsize)
-                maxsize = v2.length();
+            int ind = colPos + rowPos * gradFieldcols;
+            ofVec2f v2 = gradField[ind];
             v2 *= arrowLength;
+
+            ofSetColor(255,0,0,255);
+            if (ind == fishInd)
+                ofSetColor(0,255,0,255);
+            
             drawArrow(projectedPoint, v2);
         }
     }
@@ -673,13 +677,29 @@ void KinectProjector::drawGradField()
 
 void KinectProjector::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
 {
+//    ofFill();
+//    ofPushMatrix();
+//    ofTranslate(projectedPoint);
+//    ofDrawLine(0, 0, v1.x, v1.y);
+//    ofDrawCircle(v1.x, v1.y, 5);
+//    ofPopMatrix();
+    float angle = ofRadToDeg(atan2(v1.y,v1.x));
+    float length = v1.length();
     ofFill();
     ofPushMatrix();
     ofTranslate(projectedPoint);
+    ofRotate(angle);
     ofSetColor(255,0,0,255);
-    ofDrawLine(0, 0, v1.x, v1.y);
-    ofDrawCircle(v1.x, v1.y, 5);
+    ofDrawLine(0, 0, length, 0);
+    ofDrawLine(length, 0, length-7, 5);
+    ofDrawLine(length, 0, length-7, -5);
     ofPopMatrix();
+}
+
+void KinectProjector::dispBuffers(int x, int y){
+    ofLogVerbose("KinectProjector") << "dispBuffers(): stat: " << kinectgrabber.getStatBuffer(x, y);
+    for (int i=0; i< kinectgrabber.getNumAveragingSlots(); i++)
+        ofLogVerbose("KinectProjector") << "dispBuffers(): average #" << i << " :" << kinectgrabber.getAveragingBuffer(x, y, i);
 }
 
 void KinectProjector::updateNativeScale(float scaleMin, float scaleMax){
@@ -736,7 +756,8 @@ float KinectProjector::elevationToKinectDepth(float elevation, float x, float y)
 }
 
 ofVec2f KinectProjector::gradientAtKinectCoord(float x, float y){
-    int ind = static_cast<int>(x)/gradFieldresolution + gradFieldcols*static_cast<int>(y)/gradFieldresolution;
+    int ind = static_cast<int>(floor(x/gradFieldresolution)) + gradFieldcols*static_cast<int>(floor(y/gradFieldresolution));
+    fishInd = ind;
     return gradField[ind];
 }
 

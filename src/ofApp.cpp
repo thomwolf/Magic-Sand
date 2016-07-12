@@ -27,17 +27,17 @@ void ofApp::setup(){
     sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector);
     sandSurfaceRenderer->setup(projRes);
     
-    fboVehiclesMainWindow.allocate(projRes.x, projRes.y, GL_RGBA);
-    fboVehiclesMainWindow.begin();
+    fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
+    fboVehicles.begin();
     ofClear(0,0,0,255);
-    fboVehiclesMainWindow.end();
+    fboVehicles.end();
     
     setupGui();
 
     // Vehicles
     showMotherFish = false;
     showMotherRabbit = false;
-    motherPlatformSize = 20;
+    motherPlatformSize = 30;
 }
 
 void ofApp::addNewFish(){
@@ -122,13 +122,14 @@ void ofApp::update(){
             r.applyBehaviours(showMotherRabbit);
             r.update();
         }
+        drawVehicles();
     }
 }
 
 void ofApp::draw(){
-        sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);
-        drawVehicles(); // Draw Vehicles on the fbo
-        kinectProjector->drawMainWindow(300, 30, 600, 450);
+    sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);
+    kinectProjector->drawMainWindow(300, 30, 600, 450);
+    fboVehicles.draw(300, 30, 600, 450);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args){
@@ -136,13 +137,13 @@ void ofApp::drawProjWindow(ofEventArgs &args){
         kinectProjector->drawProjectorWindow();
     } else {
         sandSurfaceRenderer->drawProjectorWindow();
-        drawVehicles();
+        fboVehicles.draw(0,0);
     }
 }
 
 void ofApp::drawVehicles()
 {
-    fboVehiclesMainWindow.begin();
+    fboVehicles.begin();
     ofClear(255,255,255, 0);
     for (auto & f : fish){
         f.draw();
@@ -154,8 +155,7 @@ void ofApp::drawVehicles()
         drawMotherFish();
     if (showMotherRabbit)
         drawMotherRabbit();
-    fboVehiclesMainWindow.end();
-    fboVehiclesMainWindow.draw(300, 30, 600, 450); // Reduce
+    fboVehicles.end();
 }
 
 void ofApp::drawMotherFish()
@@ -170,9 +170,9 @@ void ofApp::drawMotherFish()
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherFish.x+tailSize, motherFish.y));
     
-    ofFill();
-    ofSetColor(ofColor::blueSteel);
-    ofDrawCircle(0, 0, motherPlatformSize);
+    ofNoFill();
+    ofSetColor(255);//ofColor::blueSteel);
+    ofDrawCircle(-0.5*sc, 0, motherPlatformSize);
 
     ofNoFill();
     ofSetColor(255);
@@ -200,9 +200,9 @@ void ofApp::drawMotherRabbit()
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherRabbit.x+5*sc, motherRabbit.y));
     
-    ofFill();
-    ofSetColor(ofColor::yellow);
-    ofDrawCircle(0, 0, motherPlatformSize);
+    ofNoFill();
+    ofSetColor(255);//ofColor::yellow);
+    ofDrawCircle(-5*sc, 0, motherPlatformSize);
 
     ofFill();
     ofSetLineWidth(1.0);
@@ -260,6 +260,8 @@ void ofApp::mouseDragged(int x, int y, int button){
 }
 
 void ofApp::mousePressed(int x, int y, int button){
+    if (x>300 && x<900 && y > 30 && y < 480)
+        kinectProjector->dispBuffers(x, y);
 //    if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP){
 //        // Manual ROI calibration
 //        if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT)

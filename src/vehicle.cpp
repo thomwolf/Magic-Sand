@@ -149,7 +149,7 @@ ofPoint Vehicle::seekEffect(){
     velocityChange.limit(maxVelocityChange);
     
     //If we are further than XX pixels we don't see the mother
-    if (d > 50) {
+    if (d > 100) {
         velocityChange = ofPoint(0);
     }
     
@@ -439,6 +439,8 @@ void Rabbit::applyBehaviours(bool seekMother){
     float currDir = ofDegToRad(angle);
     ofPoint oldDir = ofVec2f(cos(currDir), sin(currDir));
     oldDir.scale(velocityIncreaseStep);
+    if (beach)
+        oldDir.scale(velocityIncreaseStep/beachDist);
     
     if (setWait){
         waitCounter++;
