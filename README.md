@@ -51,7 +51,40 @@ The autocalibration process comprises the following steps:
 Magic Sand is based on the [openframeworks](https://openframeworks.cc/) framework.
 
 The source code was designed to be easily extendable so that additional games can be easily developed on its basis.
-All the calibration and geometrical computations are contained in a `KinectProjector` class wich can be created as a `shared_ptr`
-and passed in the various class of the software.
+All the calibration and geometrical computations are contained in a `KinectProjector` class wich can be created as a `shared_ptr` to which you give a pointer to the projector windows on construction
+```
+std::shared_ptr<ofAppBaseWindow> projWindow;
+std::shared_ptr<KinectProjector> kinectProjector;
+
+kinectProjector = std::make_shared<KinectProjector>(projWindow);
+kinectProjector->setup(true);
+```
+Here, `setup(true)` indicates that the GUI of the `kinectProjector` should be displayed.
+The `KinectProjector` class take care of the communication with the kinect, the filtering and processing of the depth frames and the calibration of the kinect/projector system. It contains all the function to get the depth of the sand at a given location, the slope of the sand at a given location, to convert coordinates between kinect, world and projector space or to bind a texture containing the depth frame to an openGL shader for instance.
+
+The kinectProjector pointer can be shared among the various classes of the software, for instance shared with a SandSurfaceRenderer element (which compute the color image to be projected on the sand):
+```
+SandSurfaceRenderer* sandSurfaceRenderer;
+
+sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
+sandSurfaceRenderer->setup(true);
+```
+Here again, `setup(true)` indicates that the GUI of the `sandSurfaceRenderer` should be displayed.
+The kinectProjector need to be updated in the update() function and drawn in the projector draw() function:
+```
+void ofApp::update(){
+  kinectProjector->update();
+  sandSurfaceRenderer->update();
+}
+void ofApp::drawProjWindow(ofEventArgs &args){
+  kinectProjector->drawProjectorWindow();
+    
+  if (!kinectProjector->isCalibrating()){
+      sandSurfaceRenderer->drawProjectorWindow();
+      fboVehicles.draw(0,0);
+  }
+}
+```
+Since the kinectProjector need to have control on the projector for the calibration process, you should be careful not to draw things on projector while a calibration is perfomed (hence the `if (!kinectProjector->isCalibrating())`).
 
 Magic Sand itself forms a simple example on how to use the main `KinectProjector` class to make a simple game.
