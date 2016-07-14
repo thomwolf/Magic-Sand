@@ -17,7 +17,7 @@ body {
 body {
     font-family: 'Questrial','Helvetica Neue',Arial,sans-serif;
     background-color: #282828;
-    color: #d3d3d3;
+    color: #222222;
     webkit-tap-highlight-color: #222;
 }
 
@@ -34,7 +34,7 @@ hr.light {
 }
 
 a {
-    color: #9c27b0;
+    color: #00519e;
     -webkit-transition: all .35s;
     -moz-transition: all .35s;
     transition: all .35s;
@@ -42,7 +42,7 @@ a {
 
 a:hover,
 a:focus {
-    color: #9c27c1;
+    color: #005eb8;
     outline: 0;
 }
 
@@ -88,7 +88,7 @@ p {
 }
 
 .text-primary {
-    color: #9c27b0;
+    color: #00519e;
 }
 
 .modal-content {
@@ -122,7 +122,7 @@ footer {
 
 .navbar-header > .navbar-brand {
     font-family: 'Questrial','Helvetica Neue',Arial,sans-serif;
-    color: #9c27b0;
+    color: #00519e;
     padding: 15px;
     -webkit-transition: padding .2s ease-in;
     -moz-transition: padding .2s ease-in;
@@ -151,12 +151,12 @@ footer {
 
 .navbar-default .nav > li>a:hover,
 .navbar-default .nav>li>a:focus:hover {
-    color: #9c27b0;
+    color: #00519e;
 }
 
 .navbar-default .nav > li.active>a,
 .navbar-default .nav>li.active>a:focus {
-    color: #9c27b0 !important;
+    color: #00519e !important;
     background-color: transparent;
 }
 
@@ -204,7 +204,7 @@ footer {
 
     .navbar-default.affix .navbar-header .navbar-brand {
         font-size: 15px;
-        color: #9c27b0;
+        color: #00519e;
         padding: 20px;
         letter-spacing: 1px;
     }
@@ -222,7 +222,7 @@ footer {
 
     .navbar-default.affix .nav > li>a:hover,
     .navbar-default.affix .nav>li>a:focus:hover {
-        color: #9c27b0;
+        color: #00519e;
     }
 }
 
