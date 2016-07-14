@@ -245,6 +245,9 @@ void ofApp::drawMotherRabbit()
     ofSetColor(255);
 }
 void ofApp::keyPressed(int key){
+    if (key == ' '){
+        kinectProjector->block(ofGetMouseX() - 300, ofGetMouseY()-30);
+    }
 }
 
 void ofApp::keyReleased(int key){
@@ -260,8 +263,8 @@ void ofApp::mouseDragged(int x, int y, int button){
 }
 
 void ofApp::mousePressed(int x, int y, int button){
-    if (x>300 && x<900 && y > 30 && y < 480)
-        kinectProjector->dispBuffers(x, y);
+//    if (x>300 && x<940 && y > 30 && y < 510)
+//        kinectProjector->dispBuffers(x-300, y-30);
 //    if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP){
 //        // Manual ROI calibration
 //        if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT)

@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.h"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "getBasePlaneOffset()"
             landmarkType = "5">
          </BreakpointContent>
@@ -26,71 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489539725.488021"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "KinectProjector::setup(ofVec2f sprojRes)"
-            landmarkType = "5">
-            <Locations>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "KinectProjector::setup(ofVec2f)"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/KinectProjector.cpp"
-                  timestampString = "489499454.048262"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "26"
-                  endingLineNumber = "26"
-                  offsetFromSymbolStart = "478">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "KinectProjector::setup(ofVec2f)"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/KinectProjector.cpp"
-                  timestampString = "489499454.049003"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "26"
-                  endingLineNumber = "26"
-                  offsetFromSymbolStart = "518">
-               </Location>
-               <Location
-                  shouldBeEnabled = "No"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "KinectProjector::setup(ofVec2f)"
-                  moduleName = "GreatSandDebug"
-                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/GreatSand/src/KinectProjector.cpp"
-                  timestampString = "489499454.049665"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "26"
-                  endingLineNumber = "26"
-                  offsetFromSymbolStart = "649">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/KinectProjector.cpp"
-            timestampString = "489539725.488021"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "133"
-            endingLineNumber = "133"
+            startingLineNumber = "148"
+            endingLineNumber = "148"
             landmarkName = "KinectProjector::update()"
             landmarkType = "5">
          </BreakpointContent>
@@ -102,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "581"
-            endingLineNumber = "581">
+            startingLineNumber = "600"
+            endingLineNumber = "600">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -116,27 +56,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "867"
-            endingLineNumber = "867"
-            landmarkName = "KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "169"
-            endingLineNumber = "169"
+            startingLineNumber = "184"
+            endingLineNumber = "184"
             landmarkName = "KinectProjector::updateCalibration()"
             landmarkType = "5">
          </BreakpointContent>
@@ -148,11 +72,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "584"
-            endingLineNumber = "584"
+            startingLineNumber = "603"
+            endingLineNumber = "603"
             landmarkName = "KinectProjector::addPointPair()"
             landmarkType = "5">
          </BreakpointContent>
@@ -164,11 +88,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "590"
-            endingLineNumber = "590"
+            startingLineNumber = "609"
+            endingLineNumber = "609"
             landmarkName = "KinectProjector::addPointPair()"
             landmarkType = "5">
          </BreakpointContent>
@@ -180,11 +104,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "486"
-            endingLineNumber = "486"
+            startingLineNumber = "503"
+            endingLineNumber = "503"
             landmarkName = "KinectProjector::updateProjKinectAutoCalibration()"
             landmarkType = "5">
          </BreakpointContent>
@@ -196,11 +120,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "487"
-            endingLineNumber = "487"
+            startingLineNumber = "504"
+            endingLineNumber = "504"
             landmarkName = "KinectProjector::updateProjKinectAutoCalibration()"
             landmarkType = "5">
          </BreakpointContent>
@@ -212,11 +136,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "588"
-            endingLineNumber = "588"
+            startingLineNumber = "607"
+            endingLineNumber = "607"
             landmarkName = "KinectProjector::addPointPair()"
             landmarkType = "5">
          </BreakpointContent>
@@ -228,11 +152,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489703365.394071"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "587"
-            endingLineNumber = "587"
+            startingLineNumber = "606"
+            endingLineNumber = "606"
             landmarkName = "KinectProjector::addPointPair()"
             landmarkType = "5">
             <Locations>
@@ -316,11 +240,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "729"
-            endingLineNumber = "729"
+            startingLineNumber = "755"
+            endingLineNumber = "755"
             landmarkName = "KinectProjector::kinectCoordToWorldCoord(float x, float y)"
             landmarkType = "5">
             <Locations>
@@ -362,11 +286,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "730"
-            endingLineNumber = "730"
+            startingLineNumber = "756"
+            endingLineNumber = "756"
             landmarkName = "KinectProjector::kinectCoordToWorldCoord(float x, float y)"
             landmarkType = "5">
          </BreakpointContent>
@@ -378,11 +302,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "736"
-            endingLineNumber = "736"
+            startingLineNumber = "762"
+            endingLineNumber = "762"
             landmarkName = "KinectProjector::RawKinectCoordToWorldCoord(float x, float y)"
             landmarkType = "5">
          </BreakpointContent>
@@ -394,11 +318,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "737"
-            endingLineNumber = "737"
+            startingLineNumber = "763"
+            endingLineNumber = "763"
             landmarkName = "KinectProjector::RawKinectCoordToWorldCoord(float x, float y)"
             landmarkType = "5">
             <Locations>
@@ -440,11 +364,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490026007.172875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "373"
-            endingLineNumber = "373"
+            startingLineNumber = "376"
+            endingLineNumber = "376"
             landmarkName = "ofApp::onSliderEvent(ofxDatGuiSliderEvent e)"
             landmarkType = "5">
             <Locations>
@@ -486,11 +410,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490026007.172875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "375"
-            endingLineNumber = "375"
+            startingLineNumber = "378"
+            endingLineNumber = "378"
             landmarkName = "ofApp::onSliderEvent(ofxDatGuiSliderEvent e)"
             landmarkType = "5">
             <Locations>
@@ -695,45 +619,13 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/KinectGrabber.cpp"
-            timestampString = "489542272.872779"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
-            landmarkName = "KinectGrabber::filter()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "711"
-            endingLineNumber = "711"
+            startingLineNumber = "737"
+            endingLineNumber = "737"
             landmarkName = "KinectProjector::kinectCoordToProjCoord(float x, float y)"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/KinectGrabber.cpp"
-            timestampString = "489542699.123307"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "269"
-            endingLineNumber = "269"
-            landmarkName = "KinectGrabber::filter()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -792,11 +684,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "191"
-            endingLineNumber = "191"
+            startingLineNumber = "199"
+            endingLineNumber = "199"
             landmarkName = "SandSurfaceRenderer::drawSandbox()"
             landmarkType = "5">
          </BreakpointContent>
@@ -824,11 +716,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490026007.172875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "372"
-            endingLineNumber = "372">
+            startingLineNumber = "375"
+            endingLineNumber = "375">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -838,11 +730,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490026007.172875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "376"
-            endingLineNumber = "376"
+            startingLineNumber = "379"
+            endingLineNumber = "379"
             landmarkName = "ofApp::onSliderEvent(ofxDatGuiSliderEvent e)"
             landmarkType = "5">
          </BreakpointContent>
@@ -854,11 +746,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/ofApp.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490026007.172875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "379"
-            endingLineNumber = "379"
+            startingLineNumber = "382"
+            endingLineNumber = "382"
             landmarkName = "ofApp::onSliderEvent(ofxDatGuiSliderEvent e)"
             landmarkType = "5">
             <Locations>
@@ -962,11 +854,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "294"
-            endingLineNumber = "294"
+            startingLineNumber = "306"
+            endingLineNumber = "306"
             landmarkName = "SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e)"
             landmarkType = "5">
          </BreakpointContent>
@@ -978,11 +870,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "297"
-            endingLineNumber = "297"
+            startingLineNumber = "309"
+            endingLineNumber = "309"
             landmarkName = "SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e)"
             landmarkType = "5">
          </BreakpointContent>
@@ -994,11 +886,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "271"
-            endingLineNumber = "271"
+            startingLineNumber = "283"
+            endingLineNumber = "283"
             landmarkName = "SandSurfaceRenderer::updateColorListColor(int i, int j)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1010,11 +902,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "261"
-            endingLineNumber = "261"
+            startingLineNumber = "273"
+            endingLineNumber = "273"
             landmarkName = "SandSurfaceRenderer::setupGui()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1058,11 +950,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "298"
-            endingLineNumber = "298"
+            startingLineNumber = "310"
+            endingLineNumber = "310"
             landmarkName = "SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e)"
             landmarkType = "5">
             <Locations>
@@ -1118,11 +1010,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "299"
-            endingLineNumber = "299"
+            startingLineNumber = "311"
+            endingLineNumber = "311"
             landmarkName = "SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1139,23 +1031,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "80"
             endingLineNumber = "80"
-            landmarkName = "draw()"
-            landmarkType = "5">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../../addons/ofxDatGui/src/components/ofxDatGuiGroups.h"
-            timestampString = "489931281.374491"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "493"
-            endingLineNumber = "493"
-            landmarkName = "addChild(string option)"
+            landmarkName = "getIsExpanded()"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1166,11 +1042,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "310"
-            endingLineNumber = "310"
+            startingLineNumber = "322"
+            endingLineNumber = "322"
             landmarkName = "SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1182,11 +1058,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "489968913.851978"
+            timestampString = "490109463.277361"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "260"
-            endingLineNumber = "260"
+            startingLineNumber = "272"
+            endingLineNumber = "272"
             landmarkName = "SandSurfaceRenderer::setupGui()"
             landmarkType = "5">
          </BreakpointContent>
@@ -1198,11 +1074,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489975201.27407"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "760"
-            endingLineNumber = "760"
+            startingLineNumber = "786"
+            endingLineNumber = "786"
             landmarkName = "KinectProjector::gradientAtKinectCoord(float x, float y)"
             landmarkType = "5">
          </BreakpointContent>
@@ -1214,12 +1090,92 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/KinectProjector.cpp"
-            timestampString = "489973876.886026"
+            timestampString = "490111392.46955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "670"
-            endingLineNumber = "670"
+            startingLineNumber = "689"
+            endingLineNumber = "689"
             landmarkName = "KinectProjector::drawGradField()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/KinectGrabber.cpp"
+            timestampString = "490058496.367609"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+            landmarkName = "KinectGrabber::filter()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../addons/ofxModal/src/ofxModalWindow.cpp"
+            timestampString = "490058974.893528"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "347"
+            endingLineNumber = "347"
+            landmarkName = "ofxModalWindow::centerModal()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../addons/ofxModal/src/ofxModalWindow.cpp"
+            timestampString = "490059022.619857"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
+            landmarkName = "ofxModalWindow::show()"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../addons/ofxModal/src/ofxModalWindow.cpp"
+            timestampString = "490059148.538177"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
+            landmarkName = "ofxModalWindow::setTheme(std::shared_ptr&lt;ofxModalTheme&gt; theme)"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../addons/ofxModal/src/ofxModalWindow.cpp"
+            timestampString = "490059273.741361"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "126"
+            endingLineNumber = "126"
+            landmarkName = "ofxModalWindow::setTheme(std::shared_ptr&lt;ofxModalTheme&gt; theme)"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

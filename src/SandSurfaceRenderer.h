@@ -53,8 +53,8 @@ public:
     :settingsLoaded(false) {
         kinectProjector = k;
     }
-    ~SandSurfaceRenderer(void);
     
+    void exit(ofEventArgs& e);
     void setup(ofVec2f sprojRes);
     void setupMesh();
     void updateConversionMatrices();

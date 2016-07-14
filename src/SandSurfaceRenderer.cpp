@@ -10,17 +10,9 @@
 
 using namespace ofxCSG;
 
-SandSurfaceRenderer::~SandSurfaceRenderer(void)
-{
-    if (saveSettings())
-    {
-        ofLogVerbose("SandSurfaceRenderer") << "SandSurfaceRenderer(): Settings saved " ;
-    } else {
-        ofLogVerbose("SandSurfaceRenderer") << "SandSurfaceRenderer(): Settings could not be saved " ;
-    }
-}
-
 void SandSurfaceRenderer::setup(ofVec2f sprojRes){
+    ofAddListener(ofEvents().exit, this, &SandSurfaceRenderer::exit);
+    
     // Sandbox contourlines
     drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
@@ -51,14 +43,21 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
         colorMapFilesList.push_back(dir.getName(i));
     }
     
-    if (settingsLoaded){
-        heightMap.loadFile(colorMapPath+colorMapFile);
-    } else if (dir.size() > 0) {
-        heightMap.loadFile(colorMapPath+colorMapFilesList[0]);
+    bool heighMapFileLoaded = true;
+    
+    if (settingsLoaded)
+        heighMapFileLoaded = heightMap.loadFile(colorMapPath+colorMapFile);
+    
+    if (!(settingsLoaded && heighMapFileLoaded) && dir.size() > 0)
+    {
+        heighMapFileLoaded = heightMap.loadFile(colorMapPath+colorMapFilesList[0]);
         colorMapFile = colorMapFilesList[0];
         saveSettings();
         settingsLoaded = true;
-    } else {
+    }
+    
+    if (!heighMapFileLoaded)
+    {
         heightMap.createFile(colorMapPath+"HeightColorMap.xml");
         colorMapFile = "HeightColorMap.xml";
         saveSettings();
@@ -116,6 +115,15 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     // Setup range, base plane and conversion matrices
     updateConversionMatrices();
     updateRangesAndBasePlane();
+}
+
+void SandSurfaceRenderer::exit(ofEventArgs& e){
+    if (saveSettings())
+    {
+        ofLogVerbose("SandSurfaceRenderer") << "exit(): Settings saved " ;
+    } else {
+        ofLogVerbose("SandSurfaceRenderer") << "exit(): Settings could not be saved " ;
+    }
 }
 
 void SandSurfaceRenderer::updateConversionMatrices(){
@@ -252,6 +260,10 @@ void SandSurfaceRenderer::setupGui(){
     gui->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
     gui->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
     gui->onDropdownEvent(this, &SandSurfaceRenderer::onDropdownEvent);
+    
+    int pos = find(colorMapFilesList.begin(), colorMapFilesList.end(), colorMapFile) - colorMapFilesList.begin();
+    if (pos < colorMapFilesList.size())
+        gui->getDropdown("Load Color Map")->select(pos);
     
     // add a scroll view to list colors //
     colorList = new ofxDatGuiScrollView("Colors", 8);
@@ -404,7 +416,7 @@ void SandSurfaceRenderer::onSaveModalEvent(ofxModalEvent e){
             filen += ".xml";
         heightMap.saveFile(colorMapPath+filen);
         colorMapFilesList.push_back(filen);
-        gui->getDropdown("Load Color Map")->addChild(filen);
+        gui->getDropdown("Load Color Map")->setOptions(colorMapFilesList);
         ofLogVerbose("SandSurfaceRenderer") << "save confirm button pressed, filename: " << filen;
     }
 }

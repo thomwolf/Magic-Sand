@@ -33,12 +33,12 @@ class KinectProjector {
 
 public:
     void setup(ofVec2f sprojRes);
+    void exit(ofEventArgs& e);
     void setupGradientField();
     
     void update();
     void updateCalibration();
     void updateFullAutoCalibration();
-    
     void updateROIAutoCalibration();
     void updateROIFromColorImage();
     void updateROIFromDepthImage();
@@ -71,8 +71,13 @@ public:
     
     void updateMode();
     void dispBuffers(int x, int y);
+    void block(int x, int y);
     void updateNativeScale(float scaleMin, float scaleMax);
     
+    void startFullCalibration();
+    void startAutomaticROIDetection();
+    void startAutomaticKinectProjectorCalibration();
+        
     void setupGui();
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
@@ -81,8 +86,8 @@ public:
     void onCalibModalEvent(ofxModalEvent e);
     
     void saveCalibrationAndSettings();
-    bool loadSettings(string path);
-    bool saveSettings(string path);
+    bool loadSettings();
+    bool saveSettings();
     
     void bind(){
         FilteredDepthImage.getTexture().bind();
@@ -193,10 +198,16 @@ private:
     Auto_calibration_state autoCalibState;
     Full_Calibration_state fullCalibState;
 
-    //kinect interfaces
+    //kinect grabber
     KinectGrabber               kinectgrabber;
-    ofxCvFloatImage FilteredDepthImage;
-    ofVec2f* gradField;
+    bool                        spatialFiltering;
+    bool                        followBigChanges;
+    int                         numAveragingSlots;
+
+    //kinect buffer
+    ofxCvFloatImage             FilteredDepthImage;
+    ofxCvColorImage             kinectColorImage;
+    ofVec2f*                    gradField;
     
     // Projector and kinect variables
     ofVec2f projRes;
@@ -207,7 +218,6 @@ private:
     ofFbo fboMainWindow;
 
     //Images and cv matrixes
-    ofxCvColorImage             kinectColorImage;
     cv::Mat                     cvRgbImage;
     ofxCvFloatImage             Dptimg;
     
@@ -258,13 +268,10 @@ private:
     int   chessboardX;
     int   chessboardY;
 
-    // GUI Modal window
+    // GUI Modal window & interface
     shared_ptr<ofxModalConfirm>   confirmModal;
     shared_ptr<ofxModalAlert>   calibModal;
-//    string                      resultMessage;
-//    string                      modaltext;
-//    ofColor                     resultMessageColor;
-    // GUI Main interface
+    shared_ptr<ofxModalThemeProjKinect>   modalTheme;
     ofxDatGui* gui;
 };
 

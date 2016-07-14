@@ -11,6 +11,20 @@
 using namespace ofxCSG;
 
 void KinectProjector::setup(ofVec2f sprojRes){
+    // instantiate the modal windows //
+    modalTheme = make_shared<ofxModalThemeProjKinect>();
+    confirmModal = make_shared<ofxModalConfirm>();
+    confirmModal->setTheme(modalTheme);
+    confirmModal->addListener(this, &KinectProjector::onConfirmModalEvent);
+    confirmModal->setButtonLabel("Ok");
+    
+    calibModal = make_shared<ofxModalAlert>();
+    calibModal->setTheme(modalTheme);
+    calibModal->addListener(this, &KinectProjector::onCalibModalEvent);
+    calibModal->setButtonLabel("Cancel");
+    
+    ofAddListener(ofEvents().exit, this, &KinectProjector::exit);
+
 	// settings and defaults
     ROIcalibrated = false;
     projKinectCalibrated = false;
@@ -20,19 +34,6 @@ void KinectProjector::setup(ofVec2f sprojRes){
     ROIUpdated = false;
     imageStabilized = false;
     waitingForFlattenSand = false;
-
-    // instantiate the modal windows //
-    auto theme = make_shared<ofxModalThemeProjKinect>();
-    
-    confirmModal = make_shared<ofxModalConfirm>();
-    confirmModal->setTheme(theme);
-    confirmModal->addListener(this, &KinectProjector::onConfirmModalEvent);
-    confirmModal->setButtonLabel("Ok");
-    
-    calibModal = make_shared<ofxModalAlert>();
-    calibModal->setTheme(theme);
-    calibModal->addListener(this, &KinectProjector::onCalibModalEvent);
-    calibModal->setButtonLabel("Cancel");
 
     // calibration chessboard config
 	chessboardSize = 300;
@@ -53,8 +54,11 @@ void KinectProjector::setup(ofVec2f sprojRes){
     maxOffset = maxOffsetBack;
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
 
-    // kinectgrabber: start
+    // kinectgrabber: start & default setup
 	kinectgrabber.setup();
+    spatialFiltering = true;
+    followBigChanges = true;
+    numAveragingSlots = 15;
     
     // Get projector and kinect width & height
     projRes = sprojRes;
@@ -77,6 +81,8 @@ void KinectProjector::setup(ofVec2f sprojRes){
 //        generalState = GENERAL_STATE_SANDBOX;
 //        updateMode();
     } else {
+        confirmModal->setMessage("No calibration file could be found for the kinect and the projector. Starting calibration process.");
+        confirmModal->show();
 //        generalState = GENERAL_STATE_CALIBRATION;
 //        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
 //        initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
@@ -86,7 +92,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
     }
     
     //Try to load settings file if possible
-    if (loadSettings("settings/kinectProjectorSettings.xml"))
+    if (loadSettings())
     {
         ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Settings loaded " ;
         ROIcalibrated = true;
@@ -95,7 +101,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
     }
     
 	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(gradFieldresolution, maxOffset, kinectROI);
+    kinectgrabber.setupFramefilter(gradFieldresolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectWorldMatrix: " << kinectWorldMatrix ;
     
@@ -115,6 +121,15 @@ void KinectProjector::setup(ofVec2f sprojRes){
     setupGui();
     
     kinectgrabber.start(); // Start the acquisition
+}
+
+void KinectProjector::exit(ofEventArgs& e){
+    if (saveSettings())
+    {
+        ofLogVerbose("KinectProjector") << "exit(): Settings saved " ;
+    } else {
+        ofLogVerbose("KinectProjector") << "exit(): Settings could not be saved " ;
+    }
 }
 
 void KinectProjector::setupGradientField(){
@@ -153,12 +168,12 @@ void KinectProjector::update(){
         // Is the depth image stabilized
         imageStabilized = kinectgrabber.isImageStabilized();
         
-//        fboMainWindow.begin();
-//        FilteredDepthImage.draw(0, 0);
-//        ofNoFill();
-//        ofDrawRectangle(kinectROI);
-//        fboMainWindow.end();
-//        
+        fboMainWindow.begin();
+        FilteredDepthImage.draw(0, 0);
+        ofNoFill();
+        ofDrawRectangle(kinectROI);
+        fboMainWindow.end();
+//
         // Are we calibrating ?
         if (calibrating && !waitingForFlattenSand)
             updateCalibration();
@@ -341,11 +356,9 @@ void KinectProjector::setNewKinectROI(){
 }
 
 void KinectProjector::updateKinectGrabberROI(ofRectangle ROI){
-#if __cplusplus>=201103
-    kinectgrabber.ROIchannel.send(std::move(ROI));
-#else
-    kinectgrabber.ROIchannel.send(ROI);
-#endif
+    kinectgrabber.performInThread([ROI](KinectGrabber & kg) {
+        kg.setKinectROI(ROI);
+    });
     while (kinectgrabber.isImageStabilized()){
     } // Wait for kinectgrabber to reset buffers
     imageStabilized = false; // Now we can wait for a clean new depth frame
@@ -358,7 +371,9 @@ void KinectProjector::updateProjKinectAutoCalibration(){
         } else {
             calibModal->setMessage("Enlarging acquisition area & resetting buffers.");
             setMaxKinectGrabberROI();
-            kinectgrabber.setMaxOffset(0);
+            kinectgrabber.performInThread([](KinectGrabber & kg) {
+                kg.setMaxOffset(0);
+            });
             calibModal->setMessage("Stabilizing acquisition.");
             autoCalibState = AUTOCALIB_STATE_INIT_POINT;
         }
@@ -474,7 +489,9 @@ void KinectProjector::updateProjKinectAutoCalibration(){
         }
     } else if (autoCalibState == AUTOCALIB_STATE_COMPUTE){
         updateKinectGrabberROI(kinectROI); // Goes back to kinectROI and maxoffset
-        kinectgrabber.setMaxOffset(maxOffset);
+        kinectgrabber.performInThread([this](KinectGrabber & kg) {
+            kg.setMaxOffset(this->maxOffset);
+        });
         if (pairsKinect.size() == 0) {
             ofLogVerbose("KinectProjector") << "autoCalib(): Error: No points acquired !!" ;
             calibModal->hide();
@@ -575,7 +592,9 @@ void KinectProjector::updateMaxOffset(){
     maxOffsetBack = maxOffset;
     // Update max Offset
     ofLogVerbose("KinectProjector") << "updateMaxOffset(): maxOffset" << maxOffset ;
-    kinectgrabber.setMaxOffset(maxOffset);
+    kinectgrabber.performInThread([this](KinectGrabber & kg) {
+        kg.setMaxOffset(this->maxOffset);
+    });
 }
 
 bool KinectProjector::addPointPair() {
@@ -617,8 +636,8 @@ void KinectProjector::drawProjectorWindow(){
 }
 
 void KinectProjector::drawMainWindow(float x, float y, float width, float height){
-    if (calibrating)
-        fboMainWindow.draw(x, y, width, height);
+//    if (calibrating)
+    fboMainWindow.draw(x,y);//x, y, width, height);
 }
 
 void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
@@ -696,10 +715,17 @@ void KinectProjector::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
     ofPopMatrix();
 }
 
+void KinectProjector::block(int x, int y){
+    kinectgrabber.performInThread([x, y](KinectGrabber & kg) {
+        kg.setBlockXY(x, y);
+    });
+}
+
 void KinectProjector::dispBuffers(int x, int y){
     ofLogVerbose("KinectProjector") << "dispBuffers(): stat: " << kinectgrabber.getStatBuffer(x, y);
     for (int i=0; i< kinectgrabber.getNumAveragingSlots(); i++)
         ofLogVerbose("KinectProjector") << "dispBuffers(): average #" << i << " :" << kinectgrabber.getAveragingBuffer(x, y, i);
+    ofLogVerbose("KinectProjector") << "dispBuffers(): valid: " << kinectgrabber.getValidBuffer(x, y);
 }
 
 void KinectProjector::updateNativeScale(float scaleMin, float scaleMax){
@@ -764,120 +790,83 @@ ofVec2f KinectProjector::gradientAtKinectCoord(float x, float y){
 void KinectProjector::setupGui(){
     // instantiate and position the gui //
     gui = new ofxDatGui( ofxDatGuiAnchor::TOP_RIGHT );
-    
-    // add some components //
-    //    gui->addTextInput("message", "# open frameworks #");
-    
     gui->addFRM();
     gui->addBreak();
-    
-    // add a folder to group a few components together //
-//    ofxDatGuiFolder* sealevelFolder = gui->addFolder("Sea level", ofColor::blueSteel);
     gui->addSlider("Tilt X", -30, 30, 0);
     gui->addSlider("Tilt Y", -30, 30, 0);
     gui->addSlider("Vertical offset", -100, 100, 0);
     gui->addButton("Reset sea level");
-//    sealevelFolder->expand();
-    
     gui->addBreak();
-    
-    // add a folder to group a few components together //
-//    ofxDatGuiFolder* displayFolder = gui->addFolder("Depth frame filtering", ofColor::orangeRed);
     gui->addSlider("Ceiling", -300, 300, 0);
-    gui->addToggle("Spatial filtering", true);
-    gui->addToggle("Quick reaction", true);
-    gui->addSlider("Averaging", 1, 40, 15)->setPrecision(0);
-//    displayFolder->expand();
-    
+    gui->addToggle("Spatial filtering", spatialFiltering);
+    gui->addToggle("Quick reaction", followBigChanges);
+    gui->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
     gui->addBreak();
-    
-    // add a folder to group a few components together //
-//    ofxDatGuiFolder* calibrationFolder = gui->addFolder("Calibration", ofColor::purple);
     gui->addButton("Full Calibration");
     gui->addButton("Automatically detect sand region");
 //    calibrationFolder->addButton("Manually define sand region");
     gui->addButton("Automatically calibrate kinect & projector");
 //    calibrationFolder->addButton("Manually calibrate kinect & projector");
-//    calibrationFolder->expand();
     
     gui->addBreak();
-    
-    // adding the optional header allows you to drag the gui around //
     gui->addHeader(":: Settings ::", false);
-    
-    // adding the optional footer allows you to collapse/expand the gui //
-//    gui->addFooter();
     
     // once the gui has been assembled, register callbacks to listen for component specific events //
     gui->onButtonEvent(this, &KinectProjector::onButtonEvent);
     gui->onToggleEvent(this, &KinectProjector::onToggleEvent);
     gui->onSliderEvent(this, &KinectProjector::onSliderEvent);
-    
-    //    gui->setTheme(new ofxDatGuiThemeSmoke());
-    
-    //    gui->onTextInputEvent(this, &ofApp::onTextInputEvent);
-    //    gui->on2dPadEvent(this, &ofApp::on2dPadEvent);
-    //    gui->onDropdownEvent(this, &ofApp::onDropdownEvent);
-    //    gui->onColorPickerEvent(this, &ofApp::onColorPickerEvent);
-    //    gui->onMatrixEvent(this, &ofApp::onMatrixEvent);
-    
-    //    gui->setOpacity(gui->getSlider("datgui opacity")->getScale());
-//    gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
-    
-    // finally let's load up the stock themes, press spacebar to cycle through them //
-//    themes = {  new ofxDatGuiTheme(true),
-//        new ofxDatGuiThemeCalib(),
-//        new ofxDatGuiThemeSmoke(),
-//        new ofxDatGuiThemeWireframe(),
-//        new ofxDatGuiThemeMidnight(),
-//        new ofxDatGuiThemeAqua(),
-//        new ofxDatGuiThemeCharcoal(),
-//        new ofxDatGuiThemeAutumn(),
-//        new ofxDatGuiThemeCandy()};
-//    tIndex = 0;
+}
+
+void KinectProjector::startFullCalibration(){
+    calibrating = true;
+    calibrationState = CALIBRATION_STATE_FULL_AUTO_CALIBRATION;
+    fullCalibState = FULL_CALIBRATION_STATE_ROI_DETERMINATION;
+    ROICalibState = ROI_CALIBRATION_STATE_INIT;
+    confirmModal->setTitle("Full calibration");
+    calibModal->setTitle("Full calibration");
+    askToFlattenSand();
+    ofLogVerbose("KinectProjector") << "startFullCalibration(): Starting full calibration" ;
+}
+
+void KinectProjector::startAutomaticROIDetection(){
+    calibrating = true;
+    calibrationState = CALIBRATION_STATE_ROI_AUTO_DETERMINATION;
+    ROICalibState = ROI_CALIBRATION_STATE_INIT;
+    ofLogVerbose("KinectProjector") << "onButtonEvent(): Finding ROI" ;
+    confirmModal->setTitle("Detect sand region");
+    calibModal->setTitle("Detect sand region");
+    askToFlattenSand();
+    ofLogVerbose("KinectProjector") << "startAutomaticROIDetection(): starting ROI detection" ;
+}
+
+void KinectProjector::startAutomaticKinectProjectorCalibration(){
+    calibrating = true;
+    calibrationState = CALIBRATION_STATE_PROJ_KINECT_AUTO_CALIBRATION;
+    autoCalibState = AUTOCALIB_STATE_INIT_POINT;
+    confirmModal->setTitle("Calibrate projector");
+    calibModal->setTitle("Calibrate projector");
+    askToFlattenSand();
+    ofLogVerbose("KinectProjector") << "startAutomaticKinectProjectorCalibration(): Starting autocalib" ;
 }
 
 void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
     if (e.target->is("Full Calibration")) {
-        calibrating = true;
-        calibrationState = CALIBRATION_STATE_FULL_AUTO_CALIBRATION;
-        fullCalibState = FULL_CALIBRATION_STATE_ROI_DETERMINATION;
-        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        confirmModal->setTitle("Full calibration");
-        calibModal->setTitle("Full calibration");
-        askToFlattenSand();
-        ofLogVerbose("KinectProjector") << "onButtonEvent(): Starting full calibration" ;
-        //        showModal = true;
+        startFullCalibration();
     } else if (e.target->is("Automatically detect sand region")) {
-        calibrating = true;
-        calibrationState = CALIBRATION_STATE_ROI_AUTO_DETERMINATION;
-        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        ofLogVerbose("KinectProjector") << "onButtonEvent(): Finding ROI" ;
-        confirmModal->setTitle("Detect sand region");
-        calibModal->setTitle("Detect sand region");
-        askToFlattenSand();
-        //        showModal = true;
+        startAutomaticROIDetection();
     } else if (e.target->is("Manually define sand region")){
-        calibrating = true;
-        calibrationState = CALIBRATION_STATE_ROI_MANUAL_DETERMINATION;
-        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        ofLogVerbose("KinectProjector") << "onButtonEvent(): Updating ROI Manually" ;
-        //        showModal = true;
+//        calibrating = true;
+//        calibrationState = CALIBRATION_STATE_ROI_MANUAL_DETERMINATION;
+//        ROICalibState = ROI_CALIBRATION_STATE_INIT;
+//        ofLogVerbose("KinectProjector") << "onButtonEvent(): Updating ROI Manually" ;
+//        //        showModal = true;
     } else if (e.target->is("Automatically calibrate kinect & projector")){
-        calibrating = true;
-        calibrationState = CALIBRATION_STATE_PROJ_KINECT_AUTO_CALIBRATION;
-        autoCalibState = AUTOCALIB_STATE_INIT_POINT;
-        confirmModal->setTitle("Calibrate projector");
-        calibModal->setTitle("Calibrate projector");
-        askToFlattenSand();
-        ofLogVerbose("KinectProjector") << "onButtonEvent(): Starting autocalib" ;
-        //        showModal = true;
+        startAutomaticKinectProjectorCalibration();
     } else if (e.target->is("Manually calibrate kinect & projector")) {
-        calibrating = true;
-        calibrationState = CALIBRATION_STATE_PROJ_KINECT_MANUAL_CALIBRATION;
-        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-        ofLogVerbose("KinectProjector") << "onButtonEvent(): Manual calibration -- Not working now" ;
-        //        showModal = true;
+//        calibrating = true;
+//        calibrationState = CALIBRATION_STATE_PROJ_KINECT_MANUAL_CALIBRATION;
+//        ROICalibState = ROI_CALIBRATION_STATE_INIT;
+//        ofLogVerbose("KinectProjector") << "onButtonEvent(): Manual calibration -- Not working now" ;
     } else if (e.target->is("Reset sea level")){
         gui->getSlider("Tilt X")->setValue(0);
         gui->getSlider("Tilt Y")->setValue(0);
@@ -891,9 +880,15 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
 
 void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Spatial filtering")) {
-        kinectgrabber.setSpatialFiltering(e.checked);
+        spatialFiltering = e.checked;
+        kinectgrabber.performInThread([e](KinectGrabber & kg) {
+            kg.setSpatialFiltering(e.checked);
+        });
     }else if (e.target->is("Quick reaction")) {
-        kinectgrabber.setFollowBigChange(e.checked);
+        followBigChanges = e.checked;
+        kinectgrabber.performInThread([e](KinectGrabber & kg) {
+            kg.setFollowBigChange(e.checked);
+        });
     }
 }
 
@@ -910,23 +905,26 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
     } else if (e.target->is("Ceiling")){
         maxOffset = maxOffsetBack-e.value;
         ofLogVerbose("KinectProjector") << "onSliderEvent(): maxOffset" << maxOffset ;
-        kinectgrabber.setMaxOffset(maxOffset);
+        kinectgrabber.performInThread([this](KinectGrabber & kg) {
+            kg.setMaxOffset(this->maxOffset);
+        });
     } else if(e.target->is("Averaging")){
-#if __cplusplus>=201103
-        kinectgrabber.numAveragingSlotschannel.send(std::move(e.value));
-#else
-        kinectgrabber.numAveragingSlotschannel.send(e.value);
-#endif
+        numAveragingSlots = e.value;
+        kinectgrabber.performInThread([e](KinectGrabber & kg) {
+            kg.updateAveragingSlotsNumber(e.value);
+        });
     }
 }
 
 void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
     if (e.type == ofxModalEvent::SHOWN){
-        cout << "confirm modal window is open" << endl;
+        ofLogVerbose("KinectProjector") << "Confirm modal window is open" ;
     }   else if (e.type == ofxModalEvent::HIDDEN){
+        if (!projKinectCalibrated && !calibrating)
+            startFullCalibration();
         if (calibrating)
             calibModal->show();
-        cout << "confirm modal window is closed" << endl;
+        ofLogVerbose("KinectProjector") << "Confirm modal window is closed" ;
     }   else if (e.type == ofxModalEvent::CANCEL){
         calibrating = false;
         ofLogVerbose("KinectProjector") << "Modal cancel button pressed: Aborting" ;
@@ -963,40 +961,49 @@ void KinectProjector::saveCalibrationAndSettings(){
     } else {
         ofLogVerbose("KinectProjector") << "update(): initialisation: Calibration could not be saved " ;
     }
-    if (saveSettings("settings/kinectProjectorSettings.xml"))
+    if (saveSettings())
     {
         ofLogVerbose("KinectProjector") << "update(): initialisation: Settings saved " ;
     } else {
         ofLogVerbose("KinectProjector") << "update(): initialisation: Settings could not be saved " ;
     }
 }
-//TODO: Save additionnal settings
 
-bool KinectProjector::loadSettings(string path){
+bool KinectProjector::loadSettings(){
+    string settingsFile = "settings/kinectProjectorSettings.xml";
+    
     ofXml xml;
-    if (!xml.load(path))
+    if (!xml.load(settingsFile))
         return false;
     xml.setTo("KINECTSETTINGS");
     kinectROI = xml.getValue<ofRectangle>("kinectROI");
-    basePlaneNormalBack = xml.getValue<ofVec3f>("basePlaneNormal");
+    basePlaneNormalBack = xml.getValue<ofVec3f>("basePlaneNormalBack");
     basePlaneNormal = basePlaneNormalBack;
-    basePlaneOffsetBack = xml.getValue<ofVec3f>("basePlaneOffset");
+    basePlaneOffsetBack = xml.getValue<ofVec3f>("basePlaneOffsetBack");
     basePlaneOffset = basePlaneOffsetBack;
     basePlaneEq = xml.getValue<ofVec4f>("basePlaneEq");
-    maxOffset = xml.getValue<float>("maxOffset");
-    
+    maxOffsetBack = xml.getValue<float>("maxOffsetBack");
+    maxOffset = maxOffsetBack;
+    spatialFiltering = xml.getValue<bool>("spatialFiltering");
+    followBigChanges = xml.getValue<bool>("followBigChanges");
+    numAveragingSlots = xml.getValue<int>("numAveragingSlots");
     return true;
 }
 
-bool KinectProjector::saveSettings(string path){
+bool KinectProjector::saveSettings(){
+    string settingsFile = "settings/kinectProjectorSettings.xml";
+
     ofXml xml;
     xml.addChild("KINECTSETTINGS");
     xml.setTo("KINECTSETTINGS");
     xml.addValue("kinectROI", kinectROI);
-    xml.addValue("basePlaneNormal", basePlaneNormal);
-    xml.addValue("basePlaneOffset", basePlaneOffset);
+    xml.addValue("basePlaneNormalBack", basePlaneNormalBack);
+    xml.addValue("basePlaneOffsetBack", basePlaneOffsetBack);
     xml.addValue("basePlaneEq", basePlaneEq);
-    xml.addValue("maxOffset", maxOffset);
+    xml.addValue("maxOffsetBack", maxOffsetBack);
+    xml.addValue("spatialFiltering", spatialFiltering);
+    xml.addValue("followBigChanges", followBigChanges);
+    xml.addValue("numAveragingSlots", numAveragingSlots);
     xml.setToParent();
-    return xml.save(path);
+    return xml.save(settingsFile);
 }
