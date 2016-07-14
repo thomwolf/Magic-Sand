@@ -48,13 +48,26 @@ The autocalibration process comprises the following steps:
 6. The calibration process is over.
 
 ##Source Code
-Magic Sand is based on the [openframeworks](https://openframeworks.cc/) framework.
+###Dependencies
+Magic Sand is based on the [openframeworks](https://openframeworks.cc/) framework and make use of the following addons:
+- addons provided in openframeworks release 0.9.3
+* ofxOpenCv
+* ofxKinect
+* ofxXmlSettings
+- additional addons for the calibration:
+* [ofxCv](https://github.com/kylemcdonald/ofxCv)
+* [ofxKinectProjectorToolkit (modified to return calibration matrix)](https://github.com/thomwolf/ofxKinectProjectorToolkit)
+- additional addons for the GUI:
+* [ofxParagraph](https://github.com/braitsch/ofxParagraph)
+* [ofxDatGui](https://github.com/braitsch/ofxDatGui)
+* [ofxModal](https://github.com/braitsch/ofxModal)
 
-The source code was designed to be easily extendable so that additional games can be easily developed on its basis.
+###Use in code
+The code was designed to be easily extendable so that additional games can be easily developed on its basis.
 
-The communication with the kinect, calibration and geometrical computations are handled by the `KinectProjector` class.
+Communication with the kinect and calibration are handled by the `KinectProjector` class.
 
-The `KinectProjector` also contains functions to retreive the depth of the sand at a given location, the slope of the sand at a given location, to convert coordinates between kinect, world and projector spaces or to bind a texture containing the depth frame to an openGL shader among other things.
+`KinectProjector` also contains functions to (among other things) get the depth of the sand at a given location, the slope of the sand at a given location, to convert coordinates between kinect, world and projector coordinates or to bind a texture with the depth frame to an openGL shader.
 
 You can create a `KinectProjector` object as a `shared_ptr` and give it a pointer to the projector windows
 ```
