@@ -6,7 +6,7 @@
 #include "ofConstants.h"
 
 KinectGrabber::KinectGrabber()
-:newFrame(true), bufferInitiated(false), blockX(1000), blockY(1000)
+:newFrame(true), bufferInitiated(false)
 {
 }
 
@@ -200,9 +200,9 @@ void KinectGrabber::filter()
             filteredFramePtr += minX;
             for(unsigned int x=minX ; x<maxX ; ++x,++inputFramePtr,++averagingBufferPtr,statBufferPtr+=3,++validBufferPtr,++filteredFramePtr)
             {
-                if (x == blockX && y == blockY){
-                    // debug
-                }
+//                if (x == blockX && y == blockY){
+//                    // debug
+//                }
                 float newVal = static_cast<float>(*inputFramePtr);
                 float oldVal = *averagingBufferPtr;
                 

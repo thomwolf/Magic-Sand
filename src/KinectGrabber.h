@@ -29,11 +29,11 @@ public:
     void setKinectROI(ofRectangle skinectROI);
     void updateAveragingSlotsNumber(int snumAveragingSlots);
     
-    void setBlockXY(int x, int y){
-        blockX = x;
-        blockY = y;
-    }
-    
+//    void setBlockXY(int x, int y){
+//        blockX = x;
+//        blockY = y;
+//    }
+//    
     void decStoredframes(){
         storedframes -= 1;
     }
@@ -136,5 +136,5 @@ private:
     int currentInitFrame;
     
     // Debug
-    int blockX, blockY;
+//    int blockX, blockY;
 };

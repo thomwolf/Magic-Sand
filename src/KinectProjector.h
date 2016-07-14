@@ -71,7 +71,6 @@ public:
     
     void updateMode();
     void dispBuffers(int x, int y);
-    void block(int x, int y);
     void updateNativeScale(float scaleMin, float scaleMax);
     
     void startFullCalibration();

@@ -636,8 +636,7 @@ void KinectProjector::drawProjectorWindow(){
 }
 
 void KinectProjector::drawMainWindow(float x, float y, float width, float height){
-//    if (calibrating)
-    fboMainWindow.draw(x,y);//x, y, width, height);
+    fboMainWindow.draw(x,y, width, height);
 }
 
 void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
@@ -713,12 +712,6 @@ void KinectProjector::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
     ofDrawLine(length, 0, length-7, 5);
     ofDrawLine(length, 0, length-7, -5);
     ofPopMatrix();
-}
-
-void KinectProjector::block(int x, int y){
-    kinectgrabber.performInThread([x, y](KinectGrabber & kg) {
-        kg.setBlockXY(x, y);
-    });
 }
 
 void KinectProjector::dispBuffers(int x, int y){

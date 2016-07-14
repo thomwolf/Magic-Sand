@@ -127,9 +127,9 @@ void ofApp::update(){
 }
 
 void ofApp::draw(){
-    sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);
-    kinectProjector->drawMainWindow(300, 30, 600, 450);
-    fboVehicles.draw(300, 30, 600, 450);
+    sandSurfaceRenderer->drawMainWindow(400, 20, 400, 300);
+    fboVehicles.draw(400, 20, 400, 300);
+    kinectProjector->drawMainWindow(500, 340, 320, 240);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args){
@@ -165,7 +165,7 @@ void ofApp::drawMotherFish()
     float tailSize = 1*sc;
     float fishLength = 2*sc;
     float fishHead = tailSize;
-    float tailangle = 0;//nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
+    float tailangle = 0;
     
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherFish.x+tailSize, motherFish.y));
@@ -245,9 +245,7 @@ void ofApp::drawMotherRabbit()
     ofSetColor(255);
 }
 void ofApp::keyPressed(int key){
-    if (key == ' '){
-        kinectProjector->block(ofGetMouseX() - 300, ofGetMouseY()-30);
-    }
+
 }
 
 void ofApp::keyReleased(int key){
@@ -263,26 +261,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 }
 
 void ofApp::mousePressed(int x, int y, int button){
-//    if (x>300 && x<940 && y > 30 && y < 510)
-//        kinectProjector->dispBuffers(x-300, y-30);
-//    if (generalState == GENERAL_STATE_CALIBRATION && calibrationState == CALIBRATION_STATE_ROI_MANUAL_SETUP){
-//        // Manual ROI calibration
-//        if (ROICalibrationState == ROI_CALIBRATION_STATE_INIT)
-//        {
-//            kinectROIManualCalib.setPosition(x, y);
-//            ROICalibrationState = ROI_CALIBRATION_STATE_MOVE_UP;
-//        } else if (ROICalibrationState == ROI_CALIBRATION_STATE_MOVE_UP) {
-//            kinectROIManualCalib.setSize(x-kinectROIManualCalib.x, y-kinectROIManualCalib.y);
-//            ROICalibrationState = ROI_CALIBRATION_STATE_DONE;
-//            
-//            kinectROI = kinectROIManualCalib;
-//            kinectROI.standardize();
-//            ofLogVerbose("GreatSand") << "mousePressed(): kinectROI : " << kinectROI ;
-//            updateKinectGrabberROI();
-//            //update the mesh
-//            setupMesh();
-//        }
-//    }
+
 }
 
 void ofApp::mouseReleased(int x, int y, int button){
@@ -312,11 +291,6 @@ void ofApp::dragEvent(ofDragInfo dragInfo){
 void ofApp::setupGui(){
     // instantiate and position the gui //
     gui = new ofxDatGui();
-    
-    // add some components //
-//    gui->addTextInput("message", "# open frameworks #");
-    
-    // add a folder to group a few components together //
     gui->addSlider("# of fish", 0, 10, fish.size())->setPrecision(0);
     gui->addSlider("# of rabbits", 0, 10, rabbits.size())->setPrecision(0);
     gui->addToggle("Mother fish", showMotherFish);
@@ -324,27 +298,13 @@ void ofApp::setupGui(){
     gui->addButton("Remove all animals");
     gui->addBreak();
     gui->addHeader(":: Game ::", false);
-//    gui->addFooter();
-    
-    // once the gui has been assembled, register callbacks to listen for component specific events //
+
     gui->onButtonEvent(this, &ofApp::onButtonEvent);
     gui->onToggleEvent(this, &ofApp::onToggleEvent);
     gui->onSliderEvent(this, &ofApp::onSliderEvent);
     gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     
     gui->setPosition(ofxDatGuiAnchor::BOTTOM_RIGHT); // You have to do it at the end
-
-    // finally let's load up the stock themes, press spacebar to cycle through them //
-    themes = {  new ofxDatGuiTheme(true),
-        new ofxDatGuiThemeCandy(),
-        new ofxDatGuiThemeSmoke(),
-        new ofxDatGuiThemeWireframe(),
-        new ofxDatGuiThemeMidnight(),
-        new ofxDatGuiThemeAqua(),
-        new ofxDatGuiThemeCharcoal(),
-        new ofxDatGuiThemeAutumn(),
-        new ofxDatGuiThemeCandy()};
-    tIndex = 0;
 }
 
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
