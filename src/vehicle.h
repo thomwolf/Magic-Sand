@@ -3,18 +3,17 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 
-class vehicle{
+#include "KinectProjector.h"
+
+class Vehicle{
 
 public:
-    ofPoint location;
+    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f motherLocation);
     
-    float animalCoef; // 1 for fish who want to stay in the water, -1 for rabbits who want to stay on the ground
-  
-    virtual void setup(int x, int y, ofRectangle sborders);
-//    void updateBasePlaneEq(ofVec4f sbasePlaneEq);
-    void updateBeachDetection(bool beach, float beachDist, ofVec2f beachSlope);
+    virtual void setup();
+    void updateBeachDetection();
 
-    ofPoint seekEffect(const ofPoint & target);
+    ofPoint seekEffect();
     ofPoint bordersEffect();
     ofPoint slopesEffect();
     virtual ofPoint wanderEffect();
@@ -45,15 +44,22 @@ public:
         return mother;
     }
     
+    void setMotherLocation(ofVec2f loc){
+        motherLocation = loc;
+    }
+    
     std::vector<ofVec2f> getForces(void);
 
 protected:
+    std::shared_ptr<KinectProjector> kinectProjector;
+
     ofVec2f separateF ;
     ofVec2f seekF ;
     ofVec2f bordersF ;
     ofVec2f slopesF ;
     ofVec2f wanderF ;
 
+    ofPoint location;
     ofPoint velocity;
     ofPoint globalVelocityChange;
     ofVec2f currentForce;
@@ -66,13 +72,21 @@ protected:
     bool beach;
     bool border;
     bool setWait;
+    int waitCounter;
+    int waitTime;
+    int maxWaitingTime;
+    int minWaitingTime;
+    
     bool mother;
-    int waitCounter, waitTime, maxWaitingTime, minWaitingTime;
+    ofVec2f motherLocation;
+    
     // For slope effect
     float beachDist;
     ofVec2f beachSlope;
     
-//    const ofVec2f gradient;
+    bool liveInWater; // true for fish who want to stay in the water, false for rabbits who want to stay on the ground
+    
+    ofVec2f projectorCoord;
     ofRectangle borders, internalBorders;
 //    float topSpeed;
     float maxVelocityChange;
@@ -86,23 +100,25 @@ protected:
     float topSpeed;
 };
 
-class Fish : public vehicle {
+class Fish : public Vehicle {
 public:
-//    ofPoint separateEffect(vector<vehicle> vehicles);
-    void setup(int x, int y, ofRectangle sborders);
-    ofPoint wanderEffect();
+    Fish(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, true, motherLocation){}
 
-    void applyBehaviours(ofPoint target);
+    void setup();
+    ofPoint wanderEffect();
+    //    ofPoint separateEffect(vector<vehicle> vehicles);
+    void applyBehaviours(bool seekMother);
     void draw();
 };
 
-class Rabbit : public vehicle {
+class Rabbit : public Vehicle {
 public:
- //   ofPoint separateEffect(vector<vehicle> vehicles);
-    void setup(int x, int y, ofRectangle sborders);
+    Rabbit(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, false, motherLocation){}
+    
+    void setup();
     ofPoint wanderEffect();
-
-    void applyBehaviours(ofPoint target);
+    //    ofPoint separateEffect(vector<vehicle> vehicles);
+    void applyBehaviours(bool seekMother);
     void draw();
 };
 

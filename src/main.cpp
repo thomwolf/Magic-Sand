@@ -6,7 +6,7 @@ int main( ){
     ofGLFWWindowSettings settings;
 //	settings.setGLVersion(3,2);
     
-    settings.width = 800;
+    settings.width = 1200;
     settings.height = 600;
     settings.setPosition(ofVec2f(0, 0));
     settings.resizable = true;
@@ -23,6 +23,7 @@ int main( ){
     
     shared_ptr<ofApp> mainApp(new ofApp);
     ofAddListener(secondWindow->events().draw, mainApp.get(), &ofApp::drawProjWindow);
+//    ofAddListener(secondWindow->events().keyPressed, mainApp.get(), &ofApp::keyPressed);
     mainApp->projWindow = secondWindow;
     
     ofRunApp(mainWindow, mainApp);

@@ -1,19 +1,10 @@
 #pragma once
 #include "ofMain.h"
-
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 #include "ofxKinect.h"
 
-//#include "FrameFilter.h"
 #include "Utils.h"
-
-//#include <Geometry/HVector.h>
-//#include <Geometry/Plane.h>
-//#include <Geometry/Matrix.h>
-//#include <Geometry/ProjectiveTransformation.h>
-
-using namespace states;
 
 class KinectGrabber: public ofThread {
 public:
@@ -24,64 +15,90 @@ public:
 	~KinectGrabber();
     void start();
     void stop();
-    void setup(General_state, Calibration_state);
-    void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI);
+    void performInThread(std::function<void(KinectGrabber&)> action);
+    void setup();//General_state, Calibration_state);
+    void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI, bool spatialFilter, bool followBigChange, int numAveragingSlots);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
-
-    ofMatrix4x4 getWorldMatrix();
-   
+    
+    ofVec3f getStatBuffer(int x, int y);
+    float getAveragingBuffer(int x, int y, int slotNum);
+    float getValidBuffer(int x, int y);
+    
+    void setFollowBigChange(bool newfollowBigChange);
+    void setKinectROI(ofRectangle skinectROI);
+    void updateAveragingSlotsNumber(int snumAveragingSlots);
+    
+//    void setBlockXY(int x, int y){
+//        blockX = x;
+//        blockY = y;
+//    }
+//    
     void decStoredframes(){
         storedframes -= 1;
     }
-    bool isFirstImageReady(){
+    
+    bool isImageStabilized(){
         return firstImageReady;
     }
+    
     bool isFrameNew(){
         return newFrame;
     }
+    
     ofVec2f getKinectSize(){
         return ofVec2f(width, height);
     }
+    
+    float getRawDepthAt(int x, int y){
+        return kinectDepthImage.getData()[(int)(y*width+x)];
+    }
+    
+    ofMatrix4x4 getWorldMatrix(){
+        ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);// Trick to access kinect internal parameters without having to modify ofxKinect
+        ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
+        ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
+        return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
+                           0,       b.y-a.y,    0,  a.y,
+                           0,       0,          0,  1,
+                           0,       0,          0,  1);
+    }
+    
+    int getNumAveragingSlots(){
+        return numAveragingSlots;
+    }
+    
     void setMaxOffset(float newMaxOffset){
         maxOffset = newMaxOffset;
     }
+    
     void setSpatialFiltering(bool newspatialFilter){
         spatialFilter = newspatialFilter;
     }
-    void setFollowBigChange(bool newfollowBigChange){
-        followBigChange = newfollowBigChange;
-    }
-
+    
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
 	ofThreadChannel<ofVec2f*> gradient;
-	ofThreadChannel<General_state> generalStateChannel;
-	ofThreadChannel<Calibration_state> calibrationStateChannel;
-    ofThreadChannel<ofRectangle> ROIchannel;
-    ofThreadChannel<int> numAveragingSlotschannel;
     
 private:
 	void threadedFunction() override;
     void filter();
+    bool isInsideROI(int x, int y); // test is x, y is inside ROI
     void applySpaceFilter();
     void updateGradientField();
-    void setMode(General_state sgeneralState, Calibration_state scalibrationState);
-    void setKinectROI(ofRectangle skinectROI);
-    bool isInsideROI(int x, int y); // test is x, y is inside ROI
-    void updateAveragingSlotsNumber(int snumAveragingSlots);
     
-    // General state flags and variables
-    General_state generalState;
-    Calibration_state calibrationState;
 	bool newFrame;
     bool bufferInitiated;
     bool firstImageReady;
     int storedframes;
     
+    // Thread lambda functions (actions)
+	vector<std::function<void(KinectGrabber&)> > actions;
+	ofMutex actionsLock;
+    
     // Kinect parameters
     ofxKinect               kinect;
-    unsigned int width, height; // Width and height of frames
+    unsigned int width, height; // Width and height of kinect frames
     int minX, maxX, ROIwidth; // ROI definition
     int minY, maxY, ROIheight;
     
@@ -106,7 +123,8 @@ private:
 	int averagingSlotIndex; // Index of averaging slot in which to store the next frame's depth values
 	unsigned int minNumSamples; // Minimum number of valid samples needed to consider a pixel stable
 	float maxVariance; // Maximum variance to consider a pixel stable
-    float unvalidValue;
+    float initialValue;
+    float outsideROIValue;
 	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update the display
     bool followBigChange;
     float bigChange; // Amount of change over which the averaging slot is reset to new value
@@ -116,4 +134,7 @@ private:
     
     int minInitFrame; // Minimal number of frame to consider the kinect initialized
     int currentInitFrame;
+    
+    // Debug
+//    int blockX, blockY;
 };
