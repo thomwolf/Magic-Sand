@@ -13,19 +13,18 @@ void ofApp::setup(){
     ofSetLogLevel(OF_LOG_VERBOSE);
     ofSetLogLevel("ofThread", OF_LOG_WARNING);
     
-    // Get projector size
-    projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
-    
     // Setup kinectProjector
-    kinectProjector = std::make_shared<KinectProjector>();
-    kinectProjector->setup(projRes);
+    kinectProjector = std::make_shared<KinectProjector>(projWindow);
+    kinectProjector->setup(true);
+    
+    // Setup sandSurfaceRenderer
+    sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
+    sandSurfaceRenderer->setup(true);
     
     // Retrieve variables
     kinectRes = kinectProjector->getKinectRes();
     kinectROI = kinectProjector->getKinectROI();
-    
-    sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector);
-    sandSurfaceRenderer->setup(projRes);
+    projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
     
     fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
     fboVehicles.begin();
@@ -106,13 +105,8 @@ ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
 
 void ofApp::update(){
     kinectProjector->update();
-    if (kinectProjector->isROIUpdated())
-        sandSurfaceRenderer->setupMesh();
-    if (kinectProjector->isBasePlaneUpdated())
-        sandSurfaceRenderer->updateRangesAndBasePlane();
-    if (kinectProjector->isCalibrationUpdated())
-        sandSurfaceRenderer->updateConversionMatrices();
     sandSurfaceRenderer->update();
+
     if (kinectProjector->isImageStabilized()) {
         for (auto & f : fish){
             f.applyBehaviours(showMotherFish);
@@ -133,9 +127,9 @@ void ofApp::draw(){
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args){
-    if (kinectProjector->isCalibrating()){
-        kinectProjector->drawProjectorWindow();
-    } else {
+    kinectProjector->drawProjectorWindow();
+    
+    if (!kinectProjector->isCalibrating()){
         sandSurfaceRenderer->drawProjectorWindow();
         fboVehicles.draw(0,0);
     }

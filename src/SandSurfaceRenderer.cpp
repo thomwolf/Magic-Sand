@@ -10,7 +10,7 @@
 
 using namespace ofxCSG;
 
-void SandSurfaceRenderer::setup(ofVec2f sprojRes){
+void SandSurfaceRenderer::setup(bool sdisplayGui){
     ofAddListener(ofEvents().exit, this, &SandSurfaceRenderer::exit);
     
     // Sandbox contourlines
@@ -18,8 +18,8 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Initialize the fbos and images
-    projResX = sprojRes.x;
-    projResY = sprojRes.y;
+    projResX = projWindow->getWidth();
+    projResY = projWindow->getHeight();
     contourLineFramebufferObject.allocate(projResX+1, projResY+1, GL_RGBA);
     contourLineFramebufferObject.begin();
     ofClear(0,0,0,255);
@@ -110,7 +110,9 @@ void SandSurfaceRenderer::setup(ofVec2f sprojRes){
     ofClear(0,0,0,255);
     fboProjWindow.end();
     
-    setupGui();
+    displayGui = sdisplayGui;
+    if (displayGui)
+        setupGui();
     
     // Setup range, base plane and conversion matrices
     updateConversionMatrices();
@@ -178,15 +180,29 @@ void SandSurfaceRenderer::setupMesh(){
 }
 
 void SandSurfaceRenderer::update(){
+    // Update Renderer state if needed
+    if (kinectProjector->isROIUpdated())
+        setupMesh();
+    if (kinectProjector->isBasePlaneUpdated())
+        updateRangesAndBasePlane();
+    if (kinectProjector->isCalibrationUpdated())
+        updateConversionMatrices();
+    
+    // Draw sandbox
     if (drawContourLines)
         prepareContourLinesFbo();
     drawSandbox();
-    colorList->update();
+    
+    // GUI
+    if (displayGui)
+        colorList->update();
 }
 
 void SandSurfaceRenderer::drawMainWindow(float x, float y, float width, float height){
     fboProjWindow.draw(x, y, width, height);
-    colorList->draw();
+    
+    if (displayGui)
+        colorList->draw();
 }
 
 void SandSurfaceRenderer::drawProjectorWindow(){

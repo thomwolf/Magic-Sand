@@ -36,6 +36,7 @@
 		A81AF6FC4B1FD63D16781582 /* unicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 751648C5D0FFBBB967F90216 /* unicode.cpp */; };
 		ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBD37876A11E46E4D7069B3 /* cameras.c */; };
 		B6840996567E78436F7ECFAB /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B047FF96258DC01792B272DB /* ETF.cpp */; };
+		B79019511D3856D800B7B05A /* Calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B790194F1D3856D800B7B05A /* Calibration.cpp */; };
 		B7BDD85F1D286D7E007744C5 /* KinectProjector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7BDD85D1D286D7E007744C5 /* KinectProjector.cpp */; };
 		B7BDD8621D2870AD007744C5 /* SandSurfaceRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7BDD8601D2870AD007744C5 /* SandSurfaceRenderer.cpp */; };
 		C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE75A3FBA2C2D87D14F06FE6 /* ObjectFinder.cpp */; };
@@ -332,6 +333,9 @@
 		B5E6B871EEE8436AD0DF95DA /* matrix_conv_abstract.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix_conv_abstract.h; path = ../../../addons/ofxKinectProjectorToolkit/libs/dlib/matrix/matrix_conv_abstract.h; sourceTree = SOURCE_ROOT; };
 		B63997467445FAA179E2DFC7 /* ofxModalWindow.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxModalWindow.cpp; path = ../../../addons/ofxModal/src/ofxModalWindow.cpp; sourceTree = SOURCE_ROOT; };
 		B6ACE4E71F252C17A5D4890B /* ofxModalConfirm.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxModalConfirm.h; path = ../../../addons/ofxModal/src/ofxModalConfirm.h; sourceTree = SOURCE_ROOT; };
+		B790194F1D3856D800B7B05A /* Calibration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Calibration.cpp; sourceTree = "<group>"; };
+		B79019501D3856D800B7B05A /* Calibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Calibration.h; sourceTree = "<group>"; };
+		B79019521D38576300B7B05A /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		B7BDD85B1D26C7EA007744C5 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = bin/data; sourceTree = SOURCE_ROOT; };
 		B7BDD85D1D286D7E007744C5 /* KinectProjector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectProjector.cpp; sourceTree = "<group>"; };
 		B7BDD85E1D286D7E007744C5 /* KinectProjector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinectProjector.h; sourceTree = "<group>"; };
@@ -406,7 +410,7 @@
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4385429A1E63ACEDC39A612 /* operations.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = operations.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/core/operations.hpp; sourceTree = SOURCE_ROOT; };
 		E49C95D2F3306510F1D76F5C /* matrix_lu.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix_lu.h; path = ../../../addons/ofxKinectProjectorToolkit/libs/dlib/matrix/matrix_lu.h; sourceTree = SOURCE_ROOT; };
-		E4B69B5B0A3A1756003C02F2 /* GreatSandDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GreatSandDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4B69B5B0A3A1756003C02F2 /* GreatSandDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = GreatSandDebug.app; path = "Magic SandDebug.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
 		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
 		E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
@@ -1338,6 +1342,8 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				B790194F1D3856D800B7B05A /* Calibration.cpp */,
+				B79019501D3856D800B7B05A /* Calibration.h */,
 				B7BDD85D1D286D7E007744C5 /* KinectProjector.cpp */,
 				B7BDD85E1D286D7E007744C5 /* KinectProjector.h */,
 				2ED1543D4F626F41F20F57C9 /* KinectGrabber.cpp */,
@@ -1349,6 +1355,7 @@
 				2F711619107E8D547B8D902F /* Utils.h */,
 				90B7407A12B0FC9A41936FE5 /* vehicle.cpp */,
 				1C46BA18D11295D3BDC59E49 /* vehicle.h */,
+				B79019521D38576300B7B05A /* libs */,
 				B7BDD85B1D26C7EA007744C5 /* data */,
 			);
 			path = src;
@@ -1440,8 +1447,8 @@
 		FD702F29E90B58DEC499A265 /* ofxKinectProjectorToolkit */ = {
 			isa = PBXGroup;
 			children = (
-				3803B3BFF0E596F8697B9DCE /* src */,
 				D485F5AC132675EC9F9B3690 /* libs */,
+				3803B3BFF0E596F8697B9DCE /* src */,
 			);
 			name = ofxKinectProjectorToolkit;
 			sourceTree = "<group>";
@@ -1552,6 +1559,7 @@
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */,
+				B79019511D3856D800B7B05A /* Calibration.cpp in Sources */,
 				6AABAB39E82AF5CFEA23A205 /* ContourFinder.cpp in Sources */,
 				45CC483A999BF1065A6B926C /* Distance.cpp in Sources */,
 				5CC34D433F5806179935B89D /* Flow.cpp in Sources */,

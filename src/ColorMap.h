@@ -16,12 +16,6 @@ class ColorMap
 {
     /* Embedded classes: */
 public:
-    enum CreationTypes // Types for automatic palette generation
-    {
-        GREYSCALE=0x1,RAINBOW=0x2,
-        CONSTANT_ALPHA=0x4,RAMP_ALPHA=0x8
-    };
-
     struct HeightMapKey
     {
         float height;
@@ -36,7 +30,6 @@ public:
     };
     
     ColorMap(void);
-    ~ColorMap(void);
 
     /* Methods: */
     bool setKeys(std::vector<ofColor> colorkeys, std::vector<double> heightkeys); // Set keys

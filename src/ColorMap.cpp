@@ -11,10 +11,6 @@ ColorMap::ColorMap(void)
 :numEntries(512){
 }
 
-ColorMap::~ColorMap(void)
-{
-}
-
 void ColorMap::changeNumEntries(int amount, bool increase)
 {
     if (increase) {

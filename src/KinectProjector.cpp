@@ -10,7 +10,9 @@
 
 using namespace ofxCSG;
 
-void KinectProjector::setup(ofVec2f sprojRes){
+void KinectProjector::setup(bool displayGui){
+    checkProjectorWindow(); // Check the size and location of the second window to fit the second screen
+
     // instantiate the modal windows //
     modalTheme = make_shared<ofxModalThemeProjKinect>();
     confirmModal = make_shared<ofxModalConfirm>();
@@ -24,16 +26,6 @@ void KinectProjector::setup(ofVec2f sprojRes){
     calibModal->setButtonLabel("Cancel");
     
     ofAddListener(ofEvents().exit, this, &KinectProjector::exit);
-
-	// settings and defaults
-    ROIcalibrated = false;
-    projKinectCalibrated = false;
-    calibrating = false;
-    basePlaneUpdated = false;
-    projKinectCalibrationUpdated = false;
-    ROIUpdated = false;
-    imageStabilized = false;
-    waitingForFlattenSand = false;
 
     // calibration chessboard config
 	chessboardSize = 300;
@@ -61,7 +53,7 @@ void KinectProjector::setup(ofVec2f sprojRes){
     numAveragingSlots = 15;
     
     // Get projector and kinect width & height
-    projRes = sprojRes;
+    projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
     kinectRes = kinectgrabber.getKinectSize();
 	kinectROI = ofRectangle(0, 0, kinectRes.x, kinectRes.y);
     
@@ -78,16 +70,12 @@ void KinectProjector::setup(ofVec2f sprojRes){
         kinectProjMatrix = kpt.getProjectionMatrix();
         ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectProjMatrix: " << kinectProjMatrix ;
         projKinectCalibrated = true;
-//        generalState = GENERAL_STATE_SANDBOX;
-//        updateMode();
     } else {
-        confirmModal->setMessage("No calibration file could be found for the kinect and the projector. Starting calibration process.");
-        confirmModal->show();
-//        generalState = GENERAL_STATE_CALIBRATION;
-//        calibrationState = CALIBRATION_STATE_ROI_DETERMINATION;
-//        initialisationState = INITIALISATION_STATE_ROI_DETERMINATION;
-//        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-//        updateMode();
+        if (displayGui){
+            // Show auto calibration modal window
+            confirmModal->setMessage("No calibration file could be found for the kinect and the projector. Starting calibration process.");
+            confirmModal->show();
+        }
         ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Calibration could not be loaded" ;
     }
     
@@ -118,9 +106,34 @@ void KinectProjector::setup(ofVec2f sprojRes){
     ofClear(0,0,0,255);
     fboMainWindow.end();
     
-    setupGui();
+    if (displayGui)
+        setupGui();
     
     kinectgrabber.start(); // Start the acquisition
+}
+
+bool KinectProjector::checkProjectorWindow(){
+    // Check screens size and location
+    int count;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    cout << "Monitor count: " << count << endl;
+    ofLogVerbose("KinectProjector") << "checkProjectorWindow(): number of screen found: " << count ;
+    if(count>1){
+        int xM; int yM;
+        glfwGetMonitorPos(monitors[1], &xM, &yM); // We take the second monitor
+        const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[1]);
+
+        if(desktopMode){
+            projWindow->setWindowPosition(xM, yM);
+            projWindow->setWindowShape(desktopMode->width, desktopMode->height);
+            ofLogVerbose("KinectProjector") << "checkProjectorWindow(): second screen detected, projector window location and position updated" ;
+            return true;
+        }else{
+            return false;
+        }
+    }else{
+        return false;
+    }
 }
 
 void KinectProjector::exit(ofEventArgs& e){
@@ -325,7 +338,7 @@ void KinectProjector::updateROIFromDepthImage(){
     } else if (ROICalibState == ROI_CALIBRATION_STATE_DONE){
     }
 }
-//TODO: Fix manual ROI calibration
+//TODO: Add manual ROI calibration
 void KinectProjector::updateROIManualCalibration(){
 //    fboProjWindow.begin();
 //    ofBackground(255);
@@ -515,7 +528,7 @@ void KinectProjector::updateProjKinectAutoCalibration(){
     } else if (autoCalibState == AUTOCALIB_STATE_DONE){
     }
 }
-//TODO: Fix manual Prj Kinect calibration
+//TODO: Add manual Prj Kinect calibration
 void KinectProjector::updateProjKinectManualCalibration(){
     // Draw a Chessboard
     drawChessboard(ofGetMouseX(), ofGetMouseY(), chessboardSize);
@@ -848,18 +861,11 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
     } else if (e.target->is("Automatically detect sand region")) {
         startAutomaticROIDetection();
     } else if (e.target->is("Manually define sand region")){
-//        calibrating = true;
-//        calibrationState = CALIBRATION_STATE_ROI_MANUAL_DETERMINATION;
-//        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-//        ofLogVerbose("KinectProjector") << "onButtonEvent(): Updating ROI Manually" ;
-//        //        showModal = true;
+        // Not implemented yet
     } else if (e.target->is("Automatically calibrate kinect & projector")){
         startAutomaticKinectProjectorCalibration();
     } else if (e.target->is("Manually calibrate kinect & projector")) {
-//        calibrating = true;
-//        calibrationState = CALIBRATION_STATE_PROJ_KINECT_MANUAL_CALIBRATION;
-//        ROICalibState = ROI_CALIBRATION_STATE_INIT;
-//        ofLogVerbose("KinectProjector") << "onButtonEvent(): Manual calibration -- Not working now" ;
+        // Not implemented yet
     } else if (e.target->is("Reset sea level")){
         gui->getSlider("Tilt X")->setValue(0);
         gui->getSlider("Tilt Y")->setValue(0);
