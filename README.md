@@ -2,7 +2,7 @@
 Magic Sand is a software for operating an augmented reality sandbox such as the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-Magic Sand was inspired by the [SARndbox](https://github.com/KeckCAVES/SARndbox) project and
+Magic Sand was inspired by the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos and
 was developed with the specific aim of enabling the use of an augmented reality sandbox in a home environment.
 
 The following considerations thus guided its development:
