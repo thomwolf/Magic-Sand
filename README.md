@@ -3,12 +3,12 @@ Magic Sand is a software for operating an augmented reality sandbox such as the 
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
 Magic Sand was inspired by the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos and
-was developed with the specific aim of enabling the use of an augmented reality sandbox in a home environment.
+was developed with the specific aim of using an augmented reality sandbox in a home environment.
 
-The following considerations thus guided its development:
+The following considerations thus guided the development of Magic Sand:
 - operate on a standard home computer (no specific GPU requirement, run on Windows, Mac OS X and Linux).
-- automatic calibration, configuration and operation of the Sandbox so that the sandbox can be stored and deployed as quickly as possible.
-- user-friendly interface for controling and configuring the sandbox that the sandbox can be operated by the family and friends.
+- automatic calibration, configuration and operation of the Sandbox to be able to quickly store and deploy the sandbox.
+- user-friendly interface for controling and configuring the sandbox so that family and friends can operate the sandbox.
 - being a extensible framework for sandbox games and applications development.
 
 ##Main Features
@@ -16,7 +16,7 @@ The following considerations thus guided its development:
 Magic Sand operates on a computer connected to a home cinema projector and a kinect sensor.
 The software controls the projector to project colors as a function of the sand level measured by the kinect sensor.
 
-Magic Sand transforms the sandbox in a colorful playground.
+Magic Sand transforms a sandbox in a colorful playground.
 
 A simple game is included in which animals (fish and rabbits) populate the sandbox.
 The user can help the animals to reach their mothers by digging rivers or building mountains in the sand.
