@@ -2,13 +2,13 @@
 Magic Sand is a software for operating an augmented reality sandbox such as the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-Magic Sand was inspired by the [SARndbox](https://github.com/KeckCAVES/SARndbox) project and
-was developed with the specific aim of enabling the use of an augmented reality sandbox in a home environment.
+Magic Sand was inspired by the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos and
+was developed with the specific aim of using an augmented reality sandbox in a home environment.
 
-The following considerations thus guided its development:
+The following considerations thus guided the development of Magic Sand:
 - operate on a standard home computer (no specific GPU requirement, run on Windows, Mac OS X and Linux).
-- automatic calibration, configuration and operation of the Sandbox so that the sandbox can be stored and deployed as quickly as possible.
-- user-friendly interface for controling and configuring the sandbox that the sandbox can be operated by the family and friends.
+- automatic calibration, configuration and operation of the Sandbox to be able to quickly store and deploy the sandbox.
+- user-friendly interface for controling and configuring the sandbox so that family and friends can operate the sandbox.
 - being a extensible framework for sandbox games and applications development.
 
 ##Main Features
@@ -16,7 +16,7 @@ The following considerations thus guided its development:
 Magic Sand operates on a computer connected to a home cinema projector and a kinect sensor.
 The software controls the projector to project colors as a function of the sand level measured by the kinect sensor.
 
-Magic Sand transforms the sandbox in a colorful playground.
+Magic Sand transforms a sandbox in a colorful playground.
 
 A simple game is included in which animals (fish and rabbits) populate the sandbox.
 The user can help the animals to reach their mothers by digging rivers or building mountains in the sand.
@@ -35,10 +35,10 @@ It is thus probably less acurate than SARndbox.
 Magic Sand does not provide dynamic rain features of SARndbox which require a strong GPU usually not provided on a laptop.
 
 ##Operation
-The operation of the software is safe-explanatory.
+Operation of the software is safe-explanatory.
+The only preliminary operation required is to check that you have desactivated the monitor recopy mode (mirror image) so that the projector image is different from your computer screen.
 
-The autocalibration process starts automatically if no calibration file is detected.
-The autocalibration process comprises the following steps:
+The autocalibration process will start automatically if no calibration file is detected and comprises the following steps:
 
 1. The user is asked to flatten the sand surface. The flatten sand surface will be taken as the future sea level of the sandbox.
 2. The sand region is detected by looking for the walls of the sandbox.
@@ -50,16 +50,14 @@ The autocalibration process comprises the following steps:
 ##Source Code
 ###Dependencies
 Magic Sand is based on the [openframeworks](https://openframeworks.cc/) framework and make use of the following addons:
-- addons provided in openframeworks release 0.9.3
+- provided in openframeworks release 0.9.3
 * ofxOpenCv
 * ofxKinect
 * ofxXmlSettings
-- additional addons for the calibration:
+- additional addons:
 * [ofxCv](https://github.com/kylemcdonald/ofxCv)
-* [ofxKinectProjectorToolkit (modified to return calibration matrix)](https://github.com/thomwolf/ofxKinectProjectorToolkit)
-- additional addons for the GUI:
 * [ofxParagraph](https://github.com/braitsch/ofxParagraph)
-* [ofxDatGui](https://github.com/braitsch/ofxDatGui)
+* [ofxDatGui (forked)](https://github.com/thomwolf/ofxDatGui)
 * [ofxModal](https://github.com/braitsch/ofxModal)
 
 ###Use in code
