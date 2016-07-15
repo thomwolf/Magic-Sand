@@ -49,13 +49,14 @@ private:
 
 class SandSurfaceRenderer {
 public:
-    SandSurfaceRenderer(std::shared_ptr<KinectProjector> const& k)
+    SandSurfaceRenderer(std::shared_ptr<KinectProjector> const& k, std::shared_ptr<ofAppBaseWindow> const& p)
     :settingsLoaded(false) {
         kinectProjector = k;
+        projWindow = p;
     }
     
     void exit(ofEventArgs& e);
-    void setup(ofVec2f sprojRes);
+    void setup(bool sdisplayGui);
     void setupMesh();
     void updateConversionMatrices();
     void updateRangesAndBasePlane();
@@ -80,6 +81,7 @@ public:
     bool saveSettings();
 private:
     std::shared_ptr<KinectProjector> kinectProjector;
+    std::shared_ptr<ofAppBaseWindow> projWindow;
     bool settingsLoaded;
     
     // Projector Resolution
@@ -124,6 +126,7 @@ private:
     bool drawContourLines; // Flag if topographic contour lines are enabled
     
     // GUI Main interface and Modal
+    bool displayGui;
     ofxDatGui* gui;
     ofxDatGuiScrollView* colorList;
     int selectedColor;

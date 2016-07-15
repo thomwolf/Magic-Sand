@@ -13,10 +13,10 @@
 #include "ofMain.h"
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
-#include "ofxKinectProjectorToolkit.h"
 #include "KinectGrabber.h"
 #include "ofxModal.h"
 
+#include "Calibration.h"
 #include "Utils.h"
 
 class ofxModalThemeProjKinect : public ofxModalTheme {
@@ -32,7 +32,21 @@ public:
 class KinectProjector {
 
 public:
-    void setup(ofVec2f sprojRes);
+    KinectProjector(std::shared_ptr<ofAppBaseWindow> const& p)
+    : ROIcalibrated(false),
+    projKinectCalibrated(false),
+    calibrating (false),
+    basePlaneUpdated (false),
+    projKinectCalibrationUpdated (false),
+    ROIUpdated (false),
+    imageStabilized (false),
+    waitingForFlattenSand (false)
+    {
+        projWindow = p;
+    }
+
+    void setup(bool displayGui);
+    bool checkProjectorWindow();
     void exit(ofEventArgs& e);
     void setupGradientField();
     
@@ -197,6 +211,9 @@ private:
     Auto_calibration_state autoCalibState;
     Full_Calibration_state fullCalibState;
 
+    // Projector window
+    std::shared_ptr<ofAppBaseWindow> projWindow;
+    
     //kinect grabber
     KinectGrabber               kinectgrabber;
     bool                        spatialFiltering;

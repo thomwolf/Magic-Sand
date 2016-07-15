@@ -49,7 +49,7 @@ public:
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
     
-    shared_ptr<ofAppBaseWindow> projWindow;
+    std::shared_ptr<ofAppBaseWindow> projWindow;
     
 private:
     std::shared_ptr<KinectProjector> kinectProjector;
