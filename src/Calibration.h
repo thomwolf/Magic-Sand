@@ -2,8 +2,8 @@
 //  Calibration.h
 //  Magic Sand
 //
-//  Created by Thomas Wolf on 15/07/16.
-//
+// Adapted from ofxKinectProjectorToolkit by Gene Kogan:
+// https://github.com/genekogan/ofxKinectProjectorToolkit
 //
 
 #ifndef __Magic_Sand__Calibration__

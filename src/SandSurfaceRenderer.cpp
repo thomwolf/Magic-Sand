@@ -10,6 +10,12 @@
 
 using namespace ofxCSG;
 
+SandSurfaceRenderer::SandSurfaceRenderer(std::shared_ptr<KinectProjector> const& k, std::shared_ptr<ofAppBaseWindow> const& p)
+:settingsLoaded(false) {
+    kinectProjector = k;
+    projWindow = p;
+}
+
 void SandSurfaceRenderer::setup(bool sdisplayGui){
     ofAddListener(ofEvents().exit, this, &SandSurfaceRenderer::exit);
     

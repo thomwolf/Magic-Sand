@@ -10,30 +10,20 @@ class Vehicle{
 public:
     Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f motherLocation);
     
-    virtual void setup();
-    void updateBeachDetection();
-
-    ofPoint seekEffect();
-    ofPoint bordersEffect();
-    ofPoint slopesEffect();
-    virtual ofPoint wanderEffect();
-    void applyVelocityChange(const ofPoint & force);
-
-    void update();
-    void draw();
+    // Virtual functions
+    virtual void setup() = 0;
+    virtual void applyBehaviours(bool seekMother) = 0;
+    virtual void draw() = 0;
     
-//    ofPoint separateEffect(vector<vehicle> vehicles);
-//    virtual void applyBehaviours(vector<vehicle> vehicles, ofPoint target);
-
+    void update();
+    
+    std::vector<ofVec2f> getForces(void);
+    
     const ofPoint& getLocation() const {
         return location;
     }
     const ofPoint& getVelocity() const {
         return velocity;
-    }
-    
-    const ofVec2f& getCurrentForce() const {
-        return currentForce;
     }
     
     const float getAngle() const {
@@ -48,34 +38,30 @@ public:
         motherLocation = loc;
     }
     
-    std::vector<ofVec2f> getForces(void);
-
 protected:
+    void updateBeachDetection();
+    ofPoint seekEffect();
+    ofPoint bordersEffect();
+    ofPoint slopesEffect();
+    virtual ofPoint wanderEffect();
+    void applyVelocityChange(const ofPoint & force);
+    
     std::shared_ptr<KinectProjector> kinectProjector;
-
-    ofVec2f separateF ;
-    ofVec2f seekF ;
-    ofVec2f bordersF ;
-    ofVec2f slopesF ;
-    ofVec2f wanderF ;
 
     ofPoint location;
     ofPoint velocity;
     ofPoint globalVelocityChange;
     ofVec2f currentForce;
     float angle; // direction of the drawing
-    float velocityIncreaseStep; // Rabbit increase step
-    float minVelocity;
-    int maxStraightPath; // max rabbit straight path length
-    int currentStraightPathLength;// current rabbit straight path length
     
+    ofVec2f separateF ;
+    ofVec2f seekF ;
+    ofVec2f bordersF ;
+    ofVec2f slopesF ;
+    ofVec2f wanderF ;
+
     bool beach;
     bool border;
-    bool setWait;
-    int waitCounter;
-    int waitTime;
-    int maxWaitingTime;
-    int minWaitingTime;
     
     bool mother;
     ofVec2f motherLocation;
@@ -88,7 +74,6 @@ protected:
     
     ofVec2f projectorCoord;
     ofRectangle borders, internalBorders;
-//    float topSpeed;
     float maxVelocityChange;
     float maxRotation;
     int r, minborderDist, desiredseparation, cor;
@@ -105,10 +90,11 @@ public:
     Fish(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, true, motherLocation){}
 
     void setup();
-    ofPoint wanderEffect();
-    //    ofPoint separateEffect(vector<vehicle> vehicles);
     void applyBehaviours(bool seekMother);
     void draw();
+    
+private:
+    ofPoint wanderEffect();
 };
 
 class Rabbit : public Vehicle {
@@ -116,9 +102,21 @@ public:
     Rabbit(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, false, motherLocation){}
     
     void setup();
-    ofPoint wanderEffect();
-    //    ofPoint separateEffect(vector<vehicle> vehicles);
     void applyBehaviours(bool seekMother);
     void draw();
+
+private:
+    ofPoint wanderEffect();
+
+    int maxStraightPath; // max rabbit straight path length
+    int currentStraightPathLength;// current rabbit straight path length
+    
+    float velocityIncreaseStep; // Rabbit increase step
+    float minVelocity;
+    bool setWait;
+    int waitCounter;
+    int waitTime;
+    int maxWaitingTime;
+    int minWaitingTime;
 };
 

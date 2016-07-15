@@ -1,27 +1,4 @@
-/***********************************************************************
- ColorMap - Class to map from scalar values to RGBA colors.
- Inspired by Oliver Kreylos Vrui Colormap file.
- ***********************************************************************/
-
 #include <ColorMap.h>
-//using namespace ofxCv;
-//using namespace cv;
-
-ColorMap::ColorMap(void)
-:numEntries(512){
-}
-
-void ColorMap::changeNumEntries(int amount, bool increase)
-{
-    if (increase) {
-        numEntries += amount;
-    } else {
-        numEntries -= amount;
-        if (numEntries < 1)
-            numEntries = 1;
-    }
-    updateColormap();
-}
 
 bool ColorMap::updateColormap() {
     if (entries.isAllocated())
@@ -89,7 +66,6 @@ bool ColorMap::setHeightKey(int key, float height){
     return updateColormap();
 }
 
-// TODO: AddKey function, sorting list ;
 bool ColorMap::addKey(ofColor color, float height){
     heightMapKeys.push_back(HeightMapKey(height,color));
     
@@ -119,7 +95,7 @@ ColorMap::HeightMapKey ColorMap::operator[](int scalar) const
     return heightMapKeys[scalar];
 }
 
-ofTexture ColorMap::getTexture(void)  // return color map
+ofTexture ColorMap::getTexture(void)  // return color map texture
 {
     return tex.getTexture();
 }

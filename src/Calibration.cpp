@@ -2,8 +2,6 @@
 //  Calibration.cpp
 //  Magic Sand
 //
-//  Created by Thomas Wolf on 15/07/16.
-//
 //
 
 #include "Calibration.h"

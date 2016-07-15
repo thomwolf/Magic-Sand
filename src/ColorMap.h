@@ -1,20 +1,16 @@
 /***********************************************************************
  ColorMap - Class to map from scalar values to RGBA colors.
- Inspired by Oliver Kreylos Vrui Colormap file.
+ Adapted from Oliver Kreylos Vrui Colormap file:
+ https://github.com/KeckCAVES/Vrui
  ***********************************************************************/
 
 #pragma once
 
 #include "ofMain.h"
-//#include "ofxCv.h"
-//#include "ofxOpenCv.h"
 #include "ofxXmlSettings.h"
 
-//using namespace ofxCv;
-//using namespace cv;
 class ColorMap
 {
-    /* Embedded classes: */
 public:
     struct HeightMapKey
     {
@@ -29,12 +25,12 @@ public:
         }
     };
     
-    ColorMap(void);
-
-    /* Methods: */
+    ColorMap(void)
+    :numEntries(512){
+    }
+    
     bool setKeys(std::vector<ofColor> colorkeys, std::vector<double> heightkeys); // Set keys
     bool updateColormap(void);    // Update colormap based on stored colorkeys
-    void changeNumEntries(int amount, bool increase); // Changes the color map's size
     bool setColorKey(int key, ofColor color);
     bool setHeightKey(int key, float height);
     bool addKey(ofColor color, float height);
@@ -78,11 +74,5 @@ private:
     int numEntries; // Number of colors in the map
     ofPixels entries; // Array of RGBA entries
     ofImage tex;
-    double min,max; // The scalar value range
-    //    double factor,offset; // The scaling factors to map data values to indices
-    
-    /* Private methods: */
-    void copyMap(int newNumEntries,const ofColor* newEntries,double newMin,double newMax); // Copies from another color map
-    
-    /* Constructors and destructors: */
+    double min, max; // The scalar value range
 };

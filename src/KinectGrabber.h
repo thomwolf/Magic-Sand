@@ -1,3 +1,9 @@
+/***********************************************************************
+ KinectGrabber - control the kinect and perform frame filtering.
+ Frame filtering method adapted from Oliver Kreylos SARndbox FrameFilter.cpp
+ https://github.com/KeckCAVES/SARndbox
+ ***********************************************************************/
+
 #pragma once
 #include "ofMain.h"
 #include "ofxOpenCv.h"

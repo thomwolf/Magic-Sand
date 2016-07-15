@@ -24,18 +24,8 @@ void KinectGrabber::start(){
 /// Signal the thread to stop.  After calling this method,
 /// isThreadRunning() will return false and the while loop will stop
 /// next time it has the chance to.
-/// In order for the thread to actually go out of the while loop
-/// we need to notify the condition, otherwise the thread will
-/// sleep there forever.
-/// We also lock the mutex so the notify_all call only happens
-/// once the thread is waiting. We lock the mutex during the
-/// whole while loop but when we call condition.wait, that
-/// unlocks the mutex which ensures that we'll only call
-/// stop and notify here once the condition is waiting
 void KinectGrabber::stop(){
-    //    std::unique_lock<std::mutex> lck(mutex);
     stopThread();
-    //    condition.notify_all();
 }
 
 void KinectGrabber::setup(){
@@ -43,7 +33,7 @@ void KinectGrabber::setup(){
 	storedframes = 0;
 
     kinect.init();
-    kinect.setRegistration(true); // So we have correspondance between RGB and depth images
+    kinect.setRegistration(true); // To have correspondance between RGB and depth images
     kinect.open();
     kinect.setUseTexture(false);
     width = kinect.getWidth();

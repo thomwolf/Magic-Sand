@@ -30,51 +30,17 @@ public:
 };
 
 class KinectProjector {
-
 public:
-    KinectProjector(std::shared_ptr<ofAppBaseWindow> const& p)
-    : ROIcalibrated(false),
-    projKinectCalibrated(false),
-    calibrating (false),
-    basePlaneUpdated (false),
-    projKinectCalibrationUpdated (false),
-    ROIUpdated (false),
-    imageStabilized (false),
-    waitingForFlattenSand (false)
-    {
-        projWindow = p;
-    }
-
+    KinectProjector(std::shared_ptr<ofAppBaseWindow> const& p);
+    
+    // Running loop functions
     void setup(bool displayGui);
-    bool checkProjectorWindow();
-    void exit(ofEventArgs& e);
-    void setupGradientField();
-    
     void update();
-    void updateCalibration();
-    void updateFullAutoCalibration();
-    void updateROIAutoCalibration();
-    void updateROIFromColorImage();
-    void updateROIFromDepthImage();
-    void updateROIManualCalibration();
-    void setMaxKinectGrabberROI();
-    void setNewKinectROI();
-    void updateKinectGrabberROI(ofRectangle ROI);
-    
-    void updateProjKinectAutoCalibration();
-    void updateProjKinectManualCalibration();
-    bool addPointPair();
-    void updateMaxOffset();
-    void updateBasePlane();
-    
-    void askToFlattenSand();
-    
+    void updateNativeScale(float scaleMin, float scaleMax);
     void drawProjectorWindow();
     void drawMainWindow(float x, float y, float width, float height);
-    void drawChessboard(int x, int y, int chessboardSize);
-    void drawGradField();
-    void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
 
+    // Coordinate conversion function
     ofVec2f worldCoordToProjCoord(ofVec3f vin);
     ofVec2f kinectCoordToProjCoord(float x, float y);
     ofVec3f kinectCoordToWorldCoord(float x, float y);
@@ -83,14 +49,12 @@ public:
     float elevationToKinectDepth(float elevation, float x, float y);
     ofVec2f gradientAtKinectCoord(float x, float y);
     
-    void updateMode();
-    void dispBuffers(int x, int y);
-    void updateNativeScale(float scaleMin, float scaleMax);
-    
+    // Starting calibration function
     void startFullCalibration();
     void startAutomaticROIDetection();
     void startAutomaticKinectProjectorCalibration();
         
+    // Gui and event function
     void setupGui();
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
@@ -98,15 +62,23 @@ public:
     void onConfirmModalEvent(ofxModalEvent e);
     void onCalibModalEvent(ofxModalEvent e);
     
-    void saveCalibrationAndSettings();
-    bool loadSettings();
-    bool saveSettings();
-    
+    // External shaders functions
     void bind(){
         FilteredDepthImage.getTexture().bind();
     }
     void unbind(){
         FilteredDepthImage.getTexture().unbind();
+    }
+    ofMatrix4x4 getTransposedKinectWorldMatrix(){
+        return kinectWorldMatrix.getTransposedOf(kinectWorldMatrix);
+    } // For shaders: OpenGL is row-major order and OF is column-major order
+    ofMatrix4x4 getTransposedKinectProjMatrix(){
+        return kinectProjMatrix.getTransposedOf(kinectProjMatrix);
+    }
+    
+    // Getter and setter
+    ofTexture & getTexture(){
+        return FilteredDepthImage.getTexture();
     }
     ofRectangle getKinectROI(){
         return kinectROI;
@@ -114,15 +86,6 @@ public:
     ofVec2f getKinectRes(){
         return kinectRes;
     }
-    ofTexture & getTexture(){
-        return FilteredDepthImage.getTexture();
-    }
-    ofMatrix4x4 getTransposedKinectWorldMatrix(){
-        return kinectWorldMatrix.getTransposedOf(kinectWorldMatrix);
-    } // For shaders: OpenGL is row-major order and OF is column-major order
-    ofMatrix4x4 getTransposedKinectProjMatrix(){
-        return kinectProjMatrix.getTransposedOf(kinectProjMatrix);
-    } // For shaders: OpenGL is row-major order and OF is column-major order
     ofVec4f getBasePlaneEq(){
         return basePlaneEq;
     }
@@ -197,7 +160,39 @@ private:
         AUTOCALIB_STATE_DONE
     };
 
+    // Private methods
+    bool checkProjectorWindow();
+    void exit(ofEventArgs& e);
+    void setupGradientField();
+    
+    void updateCalibration();
+    void updateFullAutoCalibration();
+    void updateROIAutoCalibration();
+    void updateROIFromColorImage();
+    void updateROIFromDepthImage();
+    void updateROIManualCalibration();
+    void updateROIFromCalibration();
+    void setMaxKinectGrabberROI();
+    void setNewKinectROI();
+    void updateKinectGrabberROI(ofRectangle ROI);
+    
+    void updateProjKinectAutoCalibration();
+    void updateProjKinectManualCalibration();
+    bool addPointPair();
+    void updateMaxOffset();
+    void updateBasePlane();
+    void askToFlattenSand();
+
+    void drawChessboard(int x, int y, int chessboardSize);
+    void drawGradField();
+    void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
+
+    void saveCalibrationAndSettings();
+    bool loadSettings();
+    bool saveSettings();
+    
     // States variables
+    bool secondScreenFound;
     bool ROIcalibrated;
     bool projKinectCalibrated;
     bool calibrating;
@@ -206,6 +201,7 @@ private:
     bool basePlaneUpdated;
     bool imageStabilized;
     bool waitingForFlattenSand;
+    bool drawKinectView;
     Calibration_state calibrationState;
     ROI_calibration_state ROICalibState;
     Auto_calibration_state autoCalibState;
@@ -255,7 +251,6 @@ private:
     ofxCvContourFinder          contourFinder;
     float                       threshold;
     ofPolyline                  large;
-//    ofPolyline                  insideROIPoly;
     ofRectangle                 kinectROI, kinectROIManualCalib;
     
     // Base plane

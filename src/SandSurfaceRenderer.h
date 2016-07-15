@@ -49,26 +49,16 @@ private:
 
 class SandSurfaceRenderer {
 public:
-    SandSurfaceRenderer(std::shared_ptr<KinectProjector> const& k, std::shared_ptr<ofAppBaseWindow> const& p)
-    :settingsLoaded(false) {
-        kinectProjector = k;
-        projWindow = p;
-    }
+    SandSurfaceRenderer(std::shared_ptr<KinectProjector> const& k, std::shared_ptr<ofAppBaseWindow> const& p);
     
-    void exit(ofEventArgs& e);
+    // Main loop function
     void setup(bool sdisplayGui);
-    void setupMesh();
-    void updateConversionMatrices();
-    void updateRangesAndBasePlane();
     void update();
     void drawMainWindow(float x, float y, float width, float height);
     void drawProjectorWindow();
-    void drawSandbox();
-    void prepareContourLinesFbo();
     
+    // Gui and events functions
     void setupGui();
-    void updateColorListColor(int i, int j);
-    void populateColorList();
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
     void onSliderEvent(ofxDatGuiSliderEvent e);
@@ -76,10 +66,21 @@ public:
     void onDropdownEvent(ofxDatGuiDropdownEvent e);
     void onScrollViewEvent(ofxDatGuiScrollViewEvent e);
     void onSaveModalEvent(ofxModalEvent e);
-    
+    void exit(ofEventArgs& e);
+   
+private:
+    // Private methods
+    void setupMesh();
+    void updateConversionMatrices();
+    void updateRangesAndBasePlane();
+    void drawSandbox();
+    void prepareContourLinesFbo();
+    void updateColorListColor(int i, int j);
+    void populateColorList();
     bool loadSettings();
     bool saveSettings();
-private:
+    
+    // shared pointers
     std::shared_ptr<KinectProjector> kinectProjector;
     std::shared_ptr<ofAppBaseWindow> projWindow;
     bool settingsLoaded;

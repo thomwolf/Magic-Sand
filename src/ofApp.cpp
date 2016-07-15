@@ -5,7 +5,6 @@ using namespace cv;
 using namespace ofxCSG;
 
 void ofApp::setup(){
-    
     // OF basics
     ofSetFrameRate(60);
     ofBackground(0);
@@ -121,9 +120,9 @@ void ofApp::update(){
 }
 
 void ofApp::draw(){
-    sandSurfaceRenderer->drawMainWindow(400, 20, 400, 300);
-    fboVehicles.draw(400, 20, 400, 300);
-    kinectProjector->drawMainWindow(500, 340, 320, 240);
+    sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);//400, 20, 400, 300);
+    fboVehicles.draw(300, 30, 600, 450);
+    kinectProjector->drawMainWindow(300, 30, 600, 450);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args){
