@@ -207,8 +207,11 @@ void SandSurfaceRenderer::update(){
 void SandSurfaceRenderer::drawMainWindow(float x, float y, float width, float height){
     fboProjWindow.draw(x, y, width, height);
     
-    if (displayGui)
+    if (displayGui) {
         colorList->draw();
+        colorList->getY()+colorList->getHeight();
+        heightMap.getTexture().draw(gui2->getPosition().x, gui2->getPosition().y+gui2->getHeight(), gui2->getWidth(), 30);
+    }
 }
 
 void SandSurfaceRenderer::drawProjectorWindow(){
@@ -259,39 +262,45 @@ void SandSurfaceRenderer::setupGui(){
     saveModal->addListener(this, &SandSurfaceRenderer::onSaveModalEvent);
     
     // instantiate the gui //
-    gui = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
-    gui->addToggle("Contour lines", drawContourLines);
-    gui->addSlider("Contour lines distance", 1, 30, contourLineDistance);
-    gui->addBreak();
-    gui->addButton("Color #1")->setName("ColorName");
-    gui->addSlider("Height", -300, 300, 0);
-    gui->addColorPicker("ColorPicker", ofColor::black);
-    gui->addButton("Move up");
-    gui->addButton("Move down");
-    gui->addButton("Insert new color after current color");
-    gui->addButton("Remove color");
-    gui->addButton("Reset colors");
-    gui->addDropdown("Load Color Map", colorMapFilesList);
-    gui->addButton("Save color map");
-    gui->expand();
-    gui->addHeader(":: Display ::", false);
+    gui2 = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
+    gui2->addToggle("Contour lines", drawContourLines);
+    gui2->addSlider("Contour lines distance", 1, 30, contourLineDistance);
+    gui2->addDropdown("Load Color Map", colorMapFilesList)->setName("Load Color Map");
+    gui2->addHeader(":: Display ::", false);
+
+    gui = new ofxDatGui( ofxDatGuiAnchor::NO_ANCHOR );
+    gui->setPosition(gui2->getPosition().x, gui2->getPosition().y+gui2->getHeight()+30);
+    gui->addButton("Reset colors to color map file")->setName("Reset colors");
+    gui->addButton("Save to color map file")->setName("Save");
+
+    gui3 = new ofxDatGui( ofxDatGuiAnchor::NO_ANCHOR );
+    gui3->addSlider("Height", -300, 300, 0)->setName("Height");
+    gui3->addColorPicker("ColorPicker", ofColor::black);
+    gui3->addButton("Undo color change")->setName("Undo");
+    gui3->addButton("Move color up")->setName("Move up");
+    gui3->addButton("Move color down")->setName("Move down");
+    gui3->addButton("Insert new color after current color");
+    gui3->addButton("Remove color");
     
     // once the gui has been assembled, register callbacks to listen for component specific events //
+    gui2->onToggleEvent(this, &SandSurfaceRenderer::onToggleEvent);
+    gui2->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
+    gui2->onDropdownEvent(this, &SandSurfaceRenderer::onDropdownEvent);
     gui->onButtonEvent(this, &SandSurfaceRenderer::onButtonEvent);
-    gui->onToggleEvent(this, &SandSurfaceRenderer::onToggleEvent);
-    gui->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
-    gui->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
-    gui->onDropdownEvent(this, &SandSurfaceRenderer::onDropdownEvent);
+    gui3->onButtonEvent(this, &SandSurfaceRenderer::onButtonEvent);
+    gui3->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
+    gui3->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
     
     int pos = find(colorMapFilesList.begin(), colorMapFilesList.end(), colorMapFile) - colorMapFilesList.begin();
     if (pos < colorMapFilesList.size())
-        gui->getDropdown("Load Color Map")->select(pos);
+        gui2->getDropdown("Load Color Map")->select(pos);
     
     // add a scroll view to list colors //
     colorList = new ofxDatGuiScrollView("Colors", 8);
     colorList->setPosition(gui->getPosition().x, gui->getPosition().y+gui->getHeight());
     colorList->onScrollViewEvent(this, &SandSurfaceRenderer::onScrollViewEvent);
     populateColorList();
+    gui3->setPosition(colorList->getX(), colorList->getY()+colorList->getHeight());
 }
 
 void SandSurfaceRenderer::updateColorListColor(int i, int j){
@@ -316,15 +325,16 @@ void SandSurfaceRenderer::populateColorList(){
     //Initiate color controls
     selectedColor = 0;
     int j = heightMap.size()-1;
-    gui->getColorPicker("ColorPicker")->setColor(heightMap[j].color);
-    gui->getSlider("Height")->setValue(heightMap[j].height);
-    gui->getSlider("Height")->setMax(heightMap[j].height+100);
-    gui->getSlider("Height")->setMin(heightMap[j-1].height);
+    gui3->getColorPicker("ColorPicker")->setColor(heightMap[j].color);
+    undoColor = heightMap[j].color;
+    gui3->getSlider("Height")->setValue(heightMap[j].height);
+    gui3->getSlider("Height")->setMax(heightMap[j].height+100);
+    gui3->getSlider("Height")->setMin(heightMap[j-1].height);
     colorList->get(0)->setLabelAlignment(ofxDatGuiAlignment::CENTER);
 }
 
 void SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e){
-    if (e.target->is("Save color map")) {
+    if (e.target->is("Save")) {
         saveModal->show();
     } else if (e.target->is("Reset colors")) {
         heightMap.loadFile(colorMapPath+colorMapFile);
@@ -368,6 +378,12 @@ void SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e){
             updateColorListColor(i+1, j-1);
             onScrollViewEvent(ofxDatGuiScrollViewEvent(colorList, colorList->get(i+1), i+1));
         }
+    } else if (e.target->is("Undo")){
+        int i = selectedColor;
+        int j = heightMap.size()-1-i;
+        heightMap.setColorKey(j, undoColor);
+        gui3->getColorPicker("ColorPicker")->setColor(undoColor);
+        updateColorListColor(i, j);
     }
 }
 
@@ -410,9 +426,10 @@ void SandSurfaceRenderer::onScrollViewEvent(ofxDatGuiScrollViewEvent e){
         int j = heightMap.size()-1-i;
         e.target->setLabelAlignment(ofxDatGuiAlignment::CENTER);
         colorList->get(selectedColor)->setLabelAlignment(ofxDatGuiAlignment::LEFT);
-        gui->getButton("ColorName")->setLabel("Color #"+ofToString(i+1));
-        gui->getColorPicker("ColorPicker")->setColor(heightMap[j].color);
-        ofxDatGuiSlider* hgt = gui->getSlider("Height");
+//        gui3->getButton("ColorName")->setLabel("Color #"+ofToString(i+1));
+        gui3->getColorPicker("ColorPicker")->setColor(heightMap[j].color);
+        undoColor = heightMap[j].color;
+        ofxDatGuiSlider* hgt = gui3->getSlider("Height");
         hgt->setMin(heightMap.getScalarRangeMin());
         hgt->setMax(heightMap.getScalarRangeMax());
         float nmax = (j < heightMap.size()-1) ? heightMap[j+1].height : heightMap[j].height+100;
@@ -438,7 +455,7 @@ void SandSurfaceRenderer::onSaveModalEvent(ofxModalEvent e){
             filen += ".xml";
         heightMap.saveFile(colorMapPath+filen);
         colorMapFilesList.push_back(filen);
-        gui->getDropdown("Load Color Map")->setOptions(colorMapFilesList);
+        gui2->getDropdown("Load Color Map")->setOptions(colorMapFilesList);
         ofLogVerbose("SandSurfaceRenderer") << "save confirm button pressed, filename: " << filen;
     }
 }

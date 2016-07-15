@@ -136,7 +136,6 @@ bool KinectProjector::checkProjectorWindow(){
     // Check screens size and location
     int count;
     GLFWmonitor** monitors = glfwGetMonitors(&count);
-    cout << "Monitor count: " << count << endl;
     ofLogVerbose("KinectProjector") << "checkProjectorWindow(): number of screen found: " << count ;
     if(count>1){
         int xM; int yM;
@@ -146,7 +145,7 @@ bool KinectProjector::checkProjectorWindow(){
         if(desktopMode){
             projWindow->setWindowPosition(xM, yM);
             projWindow->setWindowShape(desktopMode->width, desktopMode->height);
-            ofLogVerbose("KinectProjector") << "checkProjectorWindow(): second screen detected at " << xM << ", " << yM << "size: " << desktopMode->width << ", " << desktopMode->height << ", projector window location and position updated" ;
+            ofLogVerbose("KinectProjector") << "checkProjectorWindow(): second screen detected at " << xM << ", " << yM << " size: " << desktopMode->width << ", " << desktopMode->height << ", projector window location and position updated" ;
             return true;
         }else{
             return false;

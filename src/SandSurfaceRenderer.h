@@ -129,7 +129,10 @@ private:
     // GUI Main interface and Modal
     bool displayGui;
     ofxDatGui* gui;
+    ofxDatGui* gui2;
+    ofxDatGui* gui3;
     ofxDatGuiScrollView* colorList;
     int selectedColor;
     shared_ptr<SaveModal> saveModal;
+    ofColor undoColor;
 };
