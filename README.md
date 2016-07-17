@@ -51,14 +51,14 @@ The autocalibration process will start automatically if no calibration file is d
 ###Dependencies
 Magic Sand is based on the [openframeworks](https://openframeworks.cc/) framework and make use of the following addons:
 - provided in openframeworks release 0.9.3
-* ofxOpenCv
-* ofxKinect
-* ofxXmlSettings
+  * ofxOpenCv
+  * ofxKinect
+  * ofxXmlSettings
 - additional addons:
-* [ofxCv](https://github.com/kylemcdonald/ofxCv)
-* [ofxParagraph](https://github.com/braitsch/ofxParagraph)
-* [ofxDatGui (forked)](https://github.com/thomwolf/ofxDatGui)
-* [ofxModal](https://github.com/braitsch/ofxModal)
+  * [ofxCv](https://github.com/kylemcdonald/ofxCv)
+  * [ofxParagraph](https://github.com/braitsch/ofxParagraph)
+  * [ofxDatGui (forked version)](https://github.com/thomwolf/ofxDatGui)
+  * [ofxModal](https://github.com/braitsch/ofxModal)
 
 ###Use in code
 The code was designed to be easily extendable so that additional games can be easily developed on its basis.
