@@ -2,13 +2,13 @@
 Magic Sand is a software for operating an augmented reality sandbox such as the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-Magic Sand was inspired by the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos and
-was developed with the specific aim of using an augmented reality sandbox in a home environment.
+Magic Sand is based on some parts of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos and
+was developed with the specific aim of using an augmented reality sandbox in a home/family environment.
 
 The following considerations thus guided the development of Magic Sand:
 - operate on a standard home computer (no specific GPU requirement, run on Windows, Mac OS X and Linux).
-- automatic calibration, configuration and operation of the Sandbox to be able to quickly store and deploy the sandbox.
-- user-friendly interface for controling and configuring the sandbox so that family and friends can operate the sandbox.
+- automatic calibration, configuration and operation of the Sandbox to easily take out and put away the sandbox.
+- user-friendly interface for controling and configuring the sandbox so that family/friends/kids can operate the sandbox.
 - being a extensible framework for sandbox games and applications development.
 
 ##Main Features
@@ -75,7 +75,7 @@ std::shared_ptr<KinectProjector> kinectProjector;
 kinectProjector = std::make_shared<KinectProjector>(projWindow);
 kinectProjector->setup(true);
 ```
-Here, `setup(true)` indicates that the GUI of the `kinectProjector` should be displayed (right side of the main screen).
+Here, `setup(true)` indicates that the GUI of the `kinectProjector` will be displayed (right side of the main screen).
 
 The `kinectProjector` object can be shared among the various classes of the software.
 In the following example a SandSurfaceRenderer object is created (the `SandSurfaceRenderer` class takes care of displaying the colors on the sand):
@@ -85,7 +85,7 @@ SandSurfaceRenderer* sandSurfaceRenderer;
 sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
 sandSurfaceRenderer->setup(true);
 ```
-Here again, `setup(true)` indicates that the GUI of the `sandSurfaceRenderer` should be displayed  (left side of the main screen).
+Here again, `setup(true)` indicates that the GUI of the `sandSurfaceRenderer` will be displayed  (left side of the main screen).
 The `kinectProjector` object need to be updated in the update() function and drawn within the projector draw() function.
 
 The following example is basically all that is needed to implement a simple sandbox operation once the `kinectProjector` and `sandSurfaceRenderer` objects have been initiated.
@@ -103,6 +103,6 @@ void ofApp::drawProjWindow(ofEventArgs &args){
   }
 }
 ```
-Since the kinectProjector needs to control on the projector during the calibration process, you should be careful not to draw things on the projector after the call to `kinectProjector->drawProjectorWindow()` if a calibration is performed (you can check `kinectProjector->isCalibrating()`).
+The kinectProjector object needs full control on the projector window during the calibration process so you should be careful not to draw things on the projector window after if a calibration is performed (you can check `kinectProjector->isCalibrating()`).
 
 Magic Sand itself forms a simple example on how to use the main `KinectProjector` class to make a simple game.
