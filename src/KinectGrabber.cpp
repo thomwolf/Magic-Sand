@@ -6,7 +6,9 @@
 #include "ofConstants.h"
 
 KinectGrabber::KinectGrabber()
-:newFrame(true), bufferInitiated(false)
+:newFrame(true),
+bufferInitiated(false),
+kinectOpened(false)
 {
 }
 
@@ -28,23 +30,27 @@ void KinectGrabber::stop(){
     stopThread();
 }
 
-void KinectGrabber::setup(){
+bool KinectGrabber::setup(){
 	// settings and defaults
 	storedframes = 0;
 
-    kinect.init();
-    kinect.setRegistration(true); // To have correspondance between RGB and depth images
-    kinect.open();
-    kinect.setUseTexture(false);
-    width = kinect.getWidth();
-    height = kinect.getHeight();
-    
-    kinectDepthImage.allocate(width, height, 1);
+	kinect.init();
+	kinect.setRegistration(true); // To have correspondance between RGB and depth images
+	kinect.setUseTexture(false);
+	width = kinect.getWidth();
+	height = kinect.getHeight();
+
+	kinectDepthImage.allocate(width, height, 1);
     filteredframe.allocate(width, height, 1);
     kinectColorImage.allocate(width, height);
     kinectColorImage.setUseTexture(false);
+	return openKinect();
 }
 
+bool KinectGrabber::openKinect() {
+	kinectOpened = kinect.open();
+	return kinectOpened;
+}
 void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffset, ofRectangle ROI, bool sspatialFilter, bool sfollowBigChange, int snumAveragingSlots) {
     gradFieldresolution = sgradFieldresolution;
     ofLogVerbose("kinectGrabber") << "setupFramefilter(): Gradient Field resolution: " << gradFieldresolution;
@@ -372,10 +378,10 @@ bool KinectGrabber::isInsideROI(int x, int y){
 }
 
 void KinectGrabber::setKinectROI(ofRectangle ROI){
-    minX = (int) ROI.getMinX();
-    maxX = (int) ROI.getMaxX();
-    minY = (int) ROI.getMinY();
-    maxY = (int) ROI.getMaxY();
+    minX = static_cast<int>(ROI.getMinX());
+    maxX = static_cast<int>(ROI.getMaxX());
+    minY = static_cast<int>(ROI.getMinY());
+    maxY = static_cast<int>(ROI.getMaxY());
     ROIwidth = maxX-minX;
     ROIheight = maxY-minY;
     resetBuffers();
@@ -421,5 +427,16 @@ float KinectGrabber::getValidBuffer(int x, int y){
     return *validBufferPtr;
 }
 
-
-
+ofMatrix4x4 KinectGrabber::getWorldMatrix() {
+	auto mat = ofMatrix4x4();
+	if (kinectOpened) {
+		ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);// Trick to access kinect internal parameters without having to modify ofxKinect
+		ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
+		ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
+		mat = ofMatrix4x4(b.x - a.x, 0, 0, a.x,
+			0, b.y - a.y, 0, a.y,
+			0, 0, 0, 1,
+			0, 0, 0, 1);
+	}
+	return mat;
+}

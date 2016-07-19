@@ -6,7 +6,9 @@
 
 #include "KinectProjectorCalibration.h"
 
-ofxKinectProjectorToolkit::ofxKinectProjectorToolkit() {
+ofxKinectProjectorToolkit::ofxKinectProjectorToolkit(ofVec2f sprojRes, ofVec2f skinectRes) {
+	projRes = sprojRes;
+	kinectRes = skinectRes;
     calibrated = false;
 }
 
@@ -80,7 +82,12 @@ bool ofxKinectProjectorToolkit::loadCalibration(string path){
     ofXml xml;
     if (!xml.load(path))
         return false;
-    xml.setTo("CALIBRATION");
+	xml.setTo("RESOLUTIONS");
+	ofVec2f sprojRes = xml.getValue<ofVec2f>("PROJECTOR");
+	ofVec2f skinectRes = xml.getValue<ofVec2f>("KINECT");
+	if (sprojRes!=projRes || skinectRes!=kinectRes)
+		return false;
+    xml.setTo("//CALIBRATION/COEFFICIENTS");
     for (int i=0; i<11; i++) {
         x(i, 0) = xml.getValue<float>("COEFF"+ofToString(i));
     }
@@ -94,9 +101,16 @@ bool ofxKinectProjectorToolkit::loadCalibration(string path){
 
 bool ofxKinectProjectorToolkit::saveCalibration(string path){
     ofXml xml;
-    xml.addChild("CALIBRATION");
-    xml.setTo("CALIBRATION");
-    for (int i=0; i<11; i++) {
+	xml.addChild("CALIBRATION");
+	xml.setTo("//CALIBRATION");
+	xml.addChild("RESOLUTIONS");
+	xml.setTo("RESOLUTIONS");
+	xml.addValue("PROJECTOR", projRes);
+	xml.addValue("KINECT", kinectRes);
+	xml.setTo("//CALIBRATION");
+	xml.addChild("COEFFICIENTS");
+	xml.setTo("COEFFICIENTS");
+	for (int i=0; i<11; i++) {
         ofXml coeff;
         coeff.addValue("COEFF"+ofToString(i), x(i, 0));
         xml.addXml(coeff);

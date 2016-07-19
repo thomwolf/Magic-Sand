@@ -18,7 +18,7 @@
 class ofxKinectProjectorToolkit
 {
 public:
-    ofxKinectProjectorToolkit();
+    ofxKinectProjectorToolkit(ofVec2f projRes, ofVec2f kinectRes);
     
     void calibrate(vector<ofVec3f> pairsKinect,
                    vector<ofVec2f> pairsProjector);
@@ -43,6 +43,8 @@ private:
     ofMatrix4x4 projMatrice;
     
     bool calibrated;
+	ofVec2f projRes;
+	ofVec2f kinectRes;
 };
 
 #endif /* defined(__Magic_Sand__Calibration__) */

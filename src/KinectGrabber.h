@@ -22,8 +22,9 @@ public:
     void start();
     void stop();
     void performInThread(std::function<void(KinectGrabber&)> action);
-    void setup();//General_state, Calibration_state);
-    void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI, bool spatialFilter, bool followBigChange, int numAveragingSlots);
+    bool setup();
+	bool openKinect();
+	void setupFramefilter(int gradFieldresolution, float newMaxOffset, ofRectangle ROI, bool spatialFilter, bool followBigChange, int numAveragingSlots);
     void initiateBuffers(void); // Reinitialise buffers
     void resetBuffers(void);
     
@@ -35,11 +36,6 @@ public:
     void setKinectROI(ofRectangle skinectROI);
     void updateAveragingSlotsNumber(int snumAveragingSlots);
     
-//    void setBlockXY(int x, int y){
-//        blockX = x;
-//        blockY = y;
-//    }
-//    
     void decStoredframes(){
         storedframes -= 1;
     }
@@ -60,15 +56,7 @@ public:
         return kinectDepthImage.getData()[(int)(y*width+x)];
     }
     
-    ofMatrix4x4 getWorldMatrix(){
-        ofVec3f a = kinect.getWorldCoordinateAt(0, 0, 1);// Trick to access kinect internal parameters without having to modify ofxKinect
-        ofVec3f b = kinect.getWorldCoordinateAt(1, 1, 1);
-        ofLogVerbose("kinectGrabber") << "getWorldMatrix(): Computing kinect world matrix";
-        return ofMatrix4x4(b.x-a.x, 0,          0,  a.x,
-                           0,       b.y-a.y,    0,  a.y,
-                           0,       0,          0,  1,
-                           0,       0,          0,  1);
-    }
+	ofMatrix4x4 getWorldMatrix();
     
     int getNumAveragingSlots(){
         return numAveragingSlots;
@@ -103,6 +91,7 @@ private:
 	ofMutex actionsLock;
     
     // Kinect parameters
+	bool kinectOpened;
     ofxKinect               kinect;
     unsigned int width, height; // Width and height of kinect frames
     int minX, maxX, ROIwidth; // ROI definition

@@ -41,21 +41,23 @@ public:
     void drawMainWindow(float x, float y, float width, float height);
     void drawGradField();
 
-    // Coordinate conversion function
+    // Coordinate conversion functions
     ofVec2f worldCoordToProjCoord(ofVec3f vin);
-    ofVec2f kinectCoordToProjCoord(float x, float y);
+	ofVec3f projCoordAndWorldZToWorldCoord(float projX, float projY, float worldZ);
+	ofVec2f kinectCoordToProjCoord(float x, float y);
     ofVec3f kinectCoordToWorldCoord(float x, float y);
-    ofVec3f RawKinectCoordToWorldCoord(float x, float y);
+	ofVec2f worldCoordTokinectCoord(ofVec3f wc);
+	ofVec3f RawKinectCoordToWorldCoord(float x, float y);
     float elevationAtKinectCoord(float x, float y);
     float elevationToKinectDepth(float elevation, float x, float y);
     ofVec2f gradientAtKinectCoord(float x, float y);
     
-    // Starting calibration function
+    // Starting calibration functions
     void startFullCalibration();
     void startAutomaticROIDetection();
     void startAutomaticKinectProjectorCalibration();
         
-    // Gui and event function
+    // Gui and event functions
     void setupGui();
     void onButtonEvent(ofxDatGuiButtonEvent e);
     void onToggleEvent(ofxDatGuiToggleEvent e);
@@ -192,6 +194,7 @@ private:
     
     // States variables
     bool secondScreenFound;
+	bool kinectOpened;
     bool ROIcalibrated;
     bool projKinectCalibrated;
     bool calibrating;
@@ -239,7 +242,7 @@ private:
     int fishInd;
     
     // Calibration variables
-    ofxKinectProjectorToolkit   kpt;
+    ofxKinectProjectorToolkit*  kpt;
     vector<ofVec2f>             currentProjectorPoints;
     vector<cv::Point2f>         cvPoints;
     vector<ofVec3f>             pairsKinect;

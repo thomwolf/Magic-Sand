@@ -68,8 +68,12 @@ void KinectProjector::setup(bool sdisplayGui){
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
 
     // kinectgrabber: start & default setup
-	kinectgrabber.setup();
-    spatialFiltering = true;
+	kinectOpened = kinectgrabber.setup();
+	if (!kinectOpened){
+	    confirmModal->setMessage("Cannot connect to Kinect. Please check that the kinect is (1) connected, (2) powerer and (3) not used by another application.");
+	    confirmModal->show();
+	}
+	spatialFiltering = true;
     followBigChanges = true;
     numAveragingSlots = 15;
     
@@ -84,11 +88,13 @@ void KinectProjector::setup(bool sdisplayGui){
     thresholdedImage.allocate(kinectRes.x, kinectRes.y);
     Dptimg.allocate(20, 20); // Small detailed ROI
     
-    //Try to load calibration file if possible
-    if (kpt.loadCalibration("settings/calibration.xml"))
+	kpt = new ofxKinectProjectorToolkit(projRes, kinectRes);
+
+	//Try to load calibration file if possible
+    if (kpt->loadCalibration("settings/calibration.xml"))
     {
         ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Calibration loaded " ;
-        kinectProjMatrix = kpt.getProjectionMatrix();
+        kinectProjMatrix = kpt->getProjectionMatrix();
         ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectProjMatrix: " << kinectProjMatrix ;
         projKinectCalibrated = true;
     } else {
@@ -234,6 +240,20 @@ void KinectProjector::updateROIAutoCalibration(){
 }
 
 void KinectProjector::updateROIFromCalibration(){
+	ofVec2f a = worldCoordTokinectCoord(projCoordAndWorldZToWorldCoord(0, 0, basePlaneOffset.z));
+	ofVec2f b = worldCoordTokinectCoord(projCoordAndWorldZToWorldCoord(projRes.x, 0, basePlaneOffset.z));
+	ofVec2f c = worldCoordTokinectCoord(projCoordAndWorldZToWorldCoord(projRes.x, projRes.y, basePlaneOffset.z));
+	ofVec2f d = worldCoordTokinectCoord(projCoordAndWorldZToWorldCoord(0, projRes.y, basePlaneOffset.z));
+	float x1 = max(a.x, d.x);
+	float x2 = min(b.x, c.x);
+	float y1 = max(a.y, b.y);
+	float y2 = min(c.y, d.y);
+	ofRectangle smallKinectROI = ofRectangle(ofPoint(max(x1, kinectROI.getLeft()), max(y1, kinectROI.getTop())), ofPoint(min(x2, kinectROI.getRight()), min(y2, kinectROI.getBottom())));
+	kinectROI = smallKinectROI;
+
+	kinectROI.standardize();
+	ofLogVerbose("KinectProjector") << "updateROIFromCalibration(): final kinectROI : " << kinectROI;
+	setNewKinectROI();
 }
 
 //TODO: update color image ROI acquisition to use calibration modal
@@ -524,15 +544,17 @@ void KinectProjector::updateProjKinectAutoCalibration(){
             calibrating = false;
         } else {
             ofLogVerbose("KinectProjector") << "autoCalib(): Calibrating" ;
-            kpt.calibrate(pairsKinect, pairsProjector);
-            kinectProjMatrix = kpt.getProjectionMatrix();
-            
+            kpt->calibrate(pairsKinect, pairsProjector);
+            kinectProjMatrix = kpt->getProjectionMatrix();
+
+			updateROIFromCalibration(); // Compute the limite of the ROI according to the projected area 
+
             projKinectCalibrated = true; // Update states variables
             projKinectCalibrationUpdated = true;
             calibrating = false;
             calibModal->setMessage("Calibration successfull.");
             calibModal->hide();
-            saveCalibrationAndSettings();
+            //saveCalibrationAndSettings(); // Already done in updateROIFromCalibration
         }
         autoCalibState = AUTOCALIB_STATE_DONE;
     } else if (autoCalibState == AUTOCALIB_STATE_DONE){
@@ -659,11 +681,7 @@ void KinectProjector::drawProjectorWindow(){
 }
 
 void KinectProjector::drawMainWindow(float x, float y, float width, float height){
-	//ofSetColor(255, 255, 255);
 	fboMainWindow.draw(x,y, width, height);
-	//ofNoFill();
-	//ofSetColor(0, 255, 0, 255);
-	//ofDrawRectangle(kinectROI);
 	if (displayGui)
 		gui->draw();
 }
@@ -722,12 +740,6 @@ void KinectProjector::drawGradField()
 
 void KinectProjector::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
 {
-//    ofFill();
-//    ofPushMatrix();
-//    ofTranslate(projectedPoint);
-//    ofDrawLine(0, 0, v1.x, v1.y);
-//    ofDrawCircle(v1.x, v1.y, 5);
-//    ofPopMatrix();
     float angle = ofRadToDeg(atan2(v1.y,v1.x));
     float length = v1.length();
     ofFill();
@@ -759,6 +771,23 @@ ofVec2f KinectProjector::worldCoordToProjCoord(ofVec3f vin)
     return projectedPoint;
 }
 
+ofVec3f KinectProjector::projCoordAndWorldZToWorldCoord(float projX, float projY, float worldZ)
+{
+	float a = kinectProjMatrix(0, 0) - kinectProjMatrix(2, 0)*projX;
+	float b = kinectProjMatrix(0, 1) - kinectProjMatrix(2, 1)*projX;
+	float c = (kinectProjMatrix(2, 2)*worldZ + 1)*projX - (kinectProjMatrix(0, 2)*worldZ + kinectProjMatrix(0, 3));
+	float d = kinectProjMatrix(1, 0) - kinectProjMatrix(2, 0)*projY;
+	float e = kinectProjMatrix(1, 1) - kinectProjMatrix(2, 1)*projY;
+	float f = (kinectProjMatrix(2, 2)*worldZ + 1)*projY - (kinectProjMatrix(1, 2)*worldZ + kinectProjMatrix(1, 3));
+	
+	float det = a*e - b*d;
+	if (det == 0)
+		return ofVec3f(0);
+	float y = (a*f - d*c) / det;
+	float x = (c*e - b*f) / det;
+	return ofVec3f(x, y, worldZ);
+}
+
 ofVec3f KinectProjector::kinectCoordToWorldCoord(float x, float y) // x, y in kinect pixel coord
 {
     ofVec4f kc = ofVec2f(x, y);
@@ -767,6 +796,13 @@ ofVec3f KinectProjector::kinectCoordToWorldCoord(float x, float y) // x, y in ki
     kc.w = 1;
     ofVec4f wc = kinectWorldMatrix*kc*kc.z;
     return ofVec3f(wc);
+}
+
+ofVec2f KinectProjector::worldCoordTokinectCoord(ofVec3f wc)
+{
+	float x = (wc.x / wc.z - kinectWorldMatrix(0, 3)) / kinectWorldMatrix(0, 0);
+	float y = (wc.y / wc.z - kinectWorldMatrix(1, 3)) / kinectWorldMatrix(1, 1);
+	return ofVec2f(x, y);
 }
 
 ofVec3f KinectProjector::RawKinectCoordToWorldCoord(float x, float y) // x, y in kinect pixel coord
@@ -819,6 +855,7 @@ void KinectProjector::setupGui(){
     advancedFolder->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
     advancedFolder->addBreak();
     advancedFolder->addButton("Calibrate")->setName("Full Calibration");
+	advancedFolder->addButton("Update ROI from calibration");
 //    gui->addButton("Automatically detect sand region");
 //    calibrationFolder->addButton("Manually define sand region");
 //    gui->addButton("Automatically calibrate kinect & projector");
@@ -871,7 +908,9 @@ void KinectProjector::startAutomaticKinectProjectorCalibration(){
 void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
     if (e.target->is("Full Calibration")) {
         startFullCalibration();
-    } else if (e.target->is("Automatically detect sand region")) {
+    } else if (e.target->is("Update ROI from calibration")) {
+		updateROIFromCalibration();
+	} else if (e.target->is("Automatically detect sand region")) {
         startAutomaticROIDetection();
     } else if (e.target->is("Manually define sand region")){
         // Not implemented yet
@@ -892,7 +931,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
 
 void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Spatial filtering")) {
-        spatialFiltering = e.checked;
+		spatialFiltering = e.checked;
         kinectgrabber.performInThread([e](KinectGrabber & kg) {
             kg.setSpatialFiltering(e.checked);
         });
@@ -938,9 +977,14 @@ void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
             startFullCalibration();
         if (calibrating)
             calibModal->show();
-        ofLogVerbose("KinectProjector") << "Confirm modal window is closed" ;
+		if (!kinectOpened) {
+			confirmModal->setMessage("Still no connection to Kinect. Please check that the kinect is (1) connected, (2) powerer and (3) not used by another application.");
+			confirmModal->show();
+		}
+		ofLogVerbose("KinectProjector") << "Confirm modal window is closed" ;
     }   else if (e.type == ofxModalEvent::CANCEL){
         calibrating = false;
+		kinectOpened = true; // The user don't care...
         ofLogVerbose("KinectProjector") << "Modal cancel button pressed: Aborting" ;
     }   else if (e.type == ofxModalEvent::CONFIRM){
         if (calibrating){
@@ -953,6 +997,9 @@ void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
                 }
             }
         }
+		if (!kinectOpened) {
+			kinectOpened = kinectgrabber.openKinect();
+		}
         ofLogVerbose("KinectProjector") << "Modal confirm button pressed" ;
     }
 }
@@ -969,7 +1016,7 @@ void KinectProjector::onCalibModalEvent(ofxModalEvent e){
 }
 
 void KinectProjector::saveCalibrationAndSettings(){
-    if (kpt.saveCalibration("settings/calibration.xml"))
+    if (kpt->saveCalibration("settings/calibration.xml"))
     {
         ofLogVerbose("KinectProjector") << "update(): initialisation: Calibration saved " ;
     } else {
