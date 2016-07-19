@@ -122,7 +122,7 @@ void KinectProjector::setup(bool sdisplayGui){
     ofClear(255, 255, 255, 0);
     fboProjWindow.end();
     
-    fboMainWindow.allocate(projRes.x, projRes.y, GL_RGBA);
+    fboMainWindow.allocate(kinectRes.x, kinectRes.y, GL_RGBA);
     fboMainWindow.begin();
     ofClear(255, 255, 255, 0);
     fboMainWindow.end();
@@ -162,17 +162,6 @@ void KinectProjector::update(){
     if (kinectgrabber.filtered.tryReceive(filteredframe)) {
         FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectRes.x, kinectRes.y);
         FilteredDepthImage.updateTexture();
-
-		//float min = FilteredDepthImage.getFloatPixelsRef().getData()[0];
-		//float max = min;
-		//for (int i = 0; i < (kinectRes.x*kinectRes.y); i++) {
-		//	float aa = FilteredDepthImage.getFloatPixelsRef().getData()[i];
-		//	if (aa < min)
-		//		min = aa;
-		//	if (aa > max)
-		//		max = aa;
-		//}
-		//cout << "FilteredDepth: min=" << min << " max=" << max << endl;
         
         // Get color image from kinect grabber
         ofPixels coloredframe;
@@ -182,7 +171,6 @@ void KinectProjector::update(){
         
         // Get gradient field from kinect grabber
         kinectgrabber.gradient.tryReceive(gradField);
-//        drawGradField();
         
         // Update grabber stored frame number
         kinectgrabber.lock();
@@ -711,7 +699,6 @@ void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
 
 void KinectProjector::drawGradField()
 {
-    fboMainWindow.begin();
     ofClear(255, 0);
     for(int rowPos=0; rowPos< gradFieldrows ; rowPos++)
     {
@@ -731,7 +718,6 @@ void KinectProjector::drawGradField()
             drawArrow(projectedPoint, v2);
         }
     }
-    fboMainWindow.end();
 }
 
 void KinectProjector::drawArrow(ofVec2f projectedPoint, ofVec2f v1)
@@ -824,19 +810,21 @@ void KinectProjector::setupGui(){
     gui->addSlider("Vertical offset", -100, 100, 0);
     gui->addButton("Reset sea level");
     gui->addBreak();
-    gui->addSlider("Ceiling", -300, 300, 0);
-    gui->addToggle("Spatial filtering", spatialFiltering);
-    gui->addToggle("Quick reaction", followBigChanges);
-    gui->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
-    gui->addBreak();
-    gui->addButton("Full Calibration");
-    gui->addButton("Automatically detect sand region");
+    
+    auto advancedFolder = gui->addFolder("Advanced", ofColor::purple);
+    advancedFolder->addToggle("Display kinect depth view", drawKinectView)->setName("Draw kinect depth view");
+    advancedFolder->addSlider("Ceiling", -300, 300, 0);
+    advancedFolder->addToggle("Spatial filtering", spatialFiltering);
+    advancedFolder->addToggle("Quick reaction", followBigChanges);
+    advancedFolder->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
+    advancedFolder->addBreak();
+    advancedFolder->addButton("Calibrate")->setName("Full Calibration");
+//    gui->addButton("Automatically detect sand region");
 //    calibrationFolder->addButton("Manually define sand region");
-    gui->addButton("Automatically calibrate kinect & projector");
-    gui->addToggle("Draw kinect depth view", drawKinectView);
+//    gui->addButton("Automatically calibrate kinect & projector");
 //    calibrationFolder->addButton("Manually calibrate kinect & projector");
     
-    gui->addBreak();
+//    gui->addBreak();
     gui->addHeader(":: Settings ::", false);
     
     // once the gui has been assembled, register callbacks to listen for component specific events //

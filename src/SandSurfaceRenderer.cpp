@@ -11,7 +11,8 @@
 using namespace ofxCSG;
 
 SandSurfaceRenderer::SandSurfaceRenderer(std::shared_ptr<KinectProjector> const& k, std::shared_ptr<ofAppBaseWindow> const& p)
-:settingsLoaded(false) {
+:settingsLoaded(false),
+editColorMap(false){
     kinectProjector = k;
     projWindow = p;
 }
@@ -203,8 +204,10 @@ void SandSurfaceRenderer::update(){
 	if (displayGui) {
 		gui->update();
 		gui2->update();
-		gui3->update();
-		colorList->update();
+        if (editColorMap){
+            gui3->update();
+            colorList->update();
+        }
 	}
 }
 
@@ -212,11 +215,13 @@ void SandSurfaceRenderer::drawMainWindow(float x, float y, float width, float he
     fboProjWindow.draw(x, y, width, height);
     
     if (displayGui) {
-		colorList->draw();
         heightMap.getTexture().draw(gui2->getPosition().x, gui2->getPosition().y+gui2->getHeight(), gui2->getWidth(), 30);
 		gui->draw();
 		gui2->draw();
-		gui3->draw();
+        if (editColorMap){
+            gui3->draw();
+            colorList->draw();
+        }
 	}
 }
 
@@ -269,15 +274,18 @@ void SandSurfaceRenderer::setupGui(){
     
     // instantiate the gui //
     gui2 = new ofxDatGui( ofxDatGuiAnchor::TOP_LEFT );
-    gui2->addToggle("Contour lines", drawContourLines);
-    gui2->addSlider("Contour lines distance", 1, 30, contourLineDistance);
+    gui2->addToggle("Contour lines", drawContourLines)->setStripeColor(ofColor::blue);
+    gui2->addSlider("Lines distance", 1, 30, contourLineDistance)->setName("Contour lines distance");
+    gui2->getSlider("Contour lines distance")->setStripeColor(ofColor::blue);
     gui2->addDropdown("Load Color Map", colorMapFilesList)->setName("Load Color Map");
+    gui2->getDropdown("Load Color Map")->setStripeColor(ofColor::yellow);
     gui2->addHeader(":: Display ::", false);
 
     gui = new ofxDatGui( ofxDatGuiAnchor::NO_ANCHOR );
     gui->setPosition(gui2->getPosition().x, gui2->getPosition().y+gui2->getHeight()+30);
     gui->addButton("Reset colors to color map file")->setName("Reset colors");
     gui->addButton("Save to color map file")->setName("Save");
+    gui->addToggle("Edit color map", editColorMap)->setName("Edit");
 
     gui3 = new ofxDatGui( ofxDatGuiAnchor::NO_ANCHOR );
     gui3->addSlider("Height", -300, 300, 0)->setName("Height");
@@ -293,6 +301,7 @@ void SandSurfaceRenderer::setupGui(){
     gui2->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
     gui2->onDropdownEvent(this, &SandSurfaceRenderer::onDropdownEvent);
     gui->onButtonEvent(this, &SandSurfaceRenderer::onButtonEvent);
+    gui->onToggleEvent(this, &SandSurfaceRenderer::onToggleEvent);
     gui3->onButtonEvent(this, &SandSurfaceRenderer::onButtonEvent);
     gui3->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
     gui3->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
@@ -306,7 +315,7 @@ void SandSurfaceRenderer::setupGui(){
         gui2->getDropdown("Load Color Map")->select(pos);
     
     // add a scroll view to list colors //
-    colorList = new ofxDatGuiScrollView("Colors", 8);
+    colorList = new ofxDatGuiScrollView("Colors", 7);
     colorList->setPosition(gui->getPosition().x, gui->getPosition().y+gui->getHeight());
     colorList->onScrollViewEvent(this, &SandSurfaceRenderer::onScrollViewEvent);
     populateColorList();
@@ -400,6 +409,8 @@ void SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e){
 void SandSurfaceRenderer::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Contour lines")) {
         drawContourLines = e.checked;
+    } else if (e.target->is("Edit")) {
+        editColorMap = e.checked;
     }
 }
 

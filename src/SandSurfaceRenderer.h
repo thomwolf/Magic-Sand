@@ -128,6 +128,7 @@ private:
     
     // GUI Main interface and Modal
     bool displayGui;
+    bool editColorMap;
     ofxDatGui* gui;
     ofxDatGui* gui2;
     ofxDatGui* gui3;
