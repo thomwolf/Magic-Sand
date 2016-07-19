@@ -200,22 +200,28 @@ void SandSurfaceRenderer::update(){
     drawSandbox();
     
     // GUI
-    if (displayGui)
-        colorList->update();
+	if (displayGui) {
+		gui->update();
+		gui2->update();
+		gui3->update();
+		colorList->update();
+	}
 }
 
 void SandSurfaceRenderer::drawMainWindow(float x, float y, float width, float height){
     fboProjWindow.draw(x, y, width, height);
     
     if (displayGui) {
-        colorList->draw();
-        colorList->getY()+colorList->getHeight();
+		colorList->draw();
         heightMap.getTexture().draw(gui2->getPosition().x, gui2->getPosition().y+gui2->getHeight(), gui2->getWidth(), 30);
-    }
+		gui->draw();
+		gui2->draw();
+		gui3->draw();
+	}
 }
 
 void SandSurfaceRenderer::drawProjectorWindow(){
-    fboProjWindow.draw(0,0);
+	fboProjWindow.draw(0,0);
 }
 
 void SandSurfaceRenderer::drawSandbox() {
@@ -291,7 +297,11 @@ void SandSurfaceRenderer::setupGui(){
     gui3->onSliderEvent(this, &SandSurfaceRenderer::onSliderEvent);
     gui3->onColorPickerEvent(this, &SandSurfaceRenderer::onColorPickerEvent);
     
-    int pos = find(colorMapFilesList.begin(), colorMapFilesList.end(), colorMapFile) - colorMapFilesList.begin();
+	gui->setAutoDraw(false);
+	gui2->setAutoDraw(false);
+	gui3->setAutoDraw(false);
+	
+	int pos = find(colorMapFilesList.begin(), colorMapFilesList.end(), colorMapFile) - colorMapFilesList.begin();
     if (pos < colorMapFilesList.size())
         gui2->getDropdown("Load Color Map")->select(pos);
     

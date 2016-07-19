@@ -1,41 +1,38 @@
 #include "ofApp.h"
 
-using namespace ofxCv;
-using namespace cv;
-using namespace ofxCSG;
-
-void ofApp::setup(){
-    // OF basics
-    ofSetFrameRate(60);
-    ofBackground(0);
+void ofApp::setup() {
+	// OF basics
+	ofSetFrameRate(60);
+	ofBackground(0);
 	ofSetVerticalSync(true);
-    ofSetLogLevel(OF_LOG_VERBOSE);
-    ofSetLogLevel("ofThread", OF_LOG_WARNING);
-    
-    // Setup kinectProjector
-    kinectProjector = std::make_shared<KinectProjector>(projWindow);
-    kinectProjector->setup(true);
-    
-    // Setup sandSurfaceRenderer
-    sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
-    sandSurfaceRenderer->setup(true);
-    
-    // Retrieve variables
-    kinectRes = kinectProjector->getKinectRes();
-    kinectROI = kinectProjector->getKinectROI();
-    projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
-    
-    fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
-    fboVehicles.begin();
-    ofClear(0,0,0,255);
-    fboVehicles.end();
-    
-    setupGui();
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	ofSetLogLevel("ofThread", OF_LOG_WARNING);
+//	ofSetBackgroundAuto(false);
 
-    // Vehicles
-    showMotherFish = false;
-    showMotherRabbit = false;
-    motherPlatformSize = 30;
+	// Setup kinectProjector
+	kinectProjector = std::make_shared<KinectProjector>(projWindow);
+	kinectProjector->setup(true);
+	
+	// Setup sandSurfaceRenderer
+	sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
+	sandSurfaceRenderer->setup(true);
+	
+	// Retrieve variables
+	kinectRes = kinectProjector->getKinectRes();
+	kinectROI = kinectProjector->getKinectROI();
+	projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
+	
+	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
+	fboVehicles.begin();
+	ofClear(0,0,0,255);
+	fboVehicles.end();
+	
+	setupGui();
+
+	// Vehicles
+	showMotherFish = false;
+	showMotherRabbit = false;
+	motherPlatformSize = 30;
 }
 
 void ofApp::addNewFish(){
@@ -102,36 +99,39 @@ ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
     return location;
 }
 
-void ofApp::update(){
-    kinectProjector->update();
-    sandSurfaceRenderer->update();
+void ofApp::update() {
+	gui->update();
+	kinectProjector->update();
+	sandSurfaceRenderer->update();
 
-    if (kinectProjector->isImageStabilized()) {
-        for (auto & f : fish){
-            f.applyBehaviours(showMotherFish);
-            f.update();
-        }
-        for (auto & r : rabbits){
-            r.applyBehaviours(showMotherRabbit);
-            r.update();
-        }
-        drawVehicles();
-    }
+	if (kinectProjector->isImageStabilized()) {
+	    for (auto & f : fish){
+	        f.applyBehaviours(showMotherFish);
+	        f.update();
+	    }
+	    for (auto & r : rabbits){
+	        r.applyBehaviours(showMotherRabbit);
+	        r.update();
+	    }
+	    drawVehicles();
+	}
 }
 
-void ofApp::draw(){
-    sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);//400, 20, 400, 300);
-    fboVehicles.draw(300, 30, 600, 450);
-    kinectProjector->drawMainWindow(300, 30, 600, 450);
+
+void ofApp::draw() {
+	sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);//400, 20, 400, 300);
+	fboVehicles.draw(300, 30, 600, 450);
+	kinectProjector->drawMainWindow(300, 30, 600, 450);
+	gui->draw();
 }
 
-void ofApp::drawProjWindow(ofEventArgs &args){
-    kinectProjector->drawProjectorWindow();
-    
-    if (!kinectProjector->isCalibrating()){
-        sandSurfaceRenderer->drawProjectorWindow();
-        fboVehicles.draw(0,0);
-    }
+void ofApp::drawProjWindow(ofEventArgs &args) {
+	kinectProjector->drawProjectorWindow();
+	
+	if (!kinectProjector->isCalibrating()){
+	    sandSurfaceRenderer->drawProjectorWindow();
+	    fboVehicles.draw(0,0);
+	}
 }
 
 void ofApp::drawVehicles()
@@ -237,48 +237,49 @@ void ofApp::drawMotherRabbit()
     ofPopMatrix();
     ofSetColor(255);
 }
-void ofApp::keyPressed(int key){
+
+void ofApp::keyPressed(int key) {
 
 }
 
-void ofApp::keyReleased(int key){
-    
-}
-
-void ofApp::mouseMoved(int x, int y ){
-    
-}
-
-void ofApp::mouseDragged(int x, int y, int button){
-    
-}
-
-void ofApp::mousePressed(int x, int y, int button){
+void ofApp::keyReleased(int key) {
 
 }
 
-void ofApp::mouseReleased(int x, int y, int button){
-    
+void ofApp::mouseMoved(int x, int y) {
+
 }
 
-void ofApp::mouseEntered(int x, int y){
-    
+void ofApp::mouseDragged(int x, int y, int button) {
+
 }
 
-void ofApp::mouseExited(int x, int y){
-    
+void ofApp::mousePressed(int x, int y, int button) {
+
 }
 
-void ofApp::windowResized(int w, int h){
-    
+void ofApp::mouseReleased(int x, int y, int button) {
+
 }
 
-void ofApp::gotMessage(ofMessage msg){
-    
+void ofApp::mouseEntered(int x, int y) {
+
 }
 
-void ofApp::dragEvent(ofDragInfo dragInfo){
-    
+void ofApp::mouseExited(int x, int y) {
+
+}
+
+void ofApp::windowResized(int w, int h) {
+
+}
+
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+void ofApp::dragEvent(ofDragInfo dragInfo) {
+
 }
 
 void ofApp::setupGui(){
@@ -298,6 +299,7 @@ void ofApp::setupGui(){
     gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
     
     gui->setPosition(ofxDatGuiAnchor::BOTTOM_RIGHT); // You have to do it at the end
+	gui->setAutoDraw(false); // troubles with multiple windows drawings on Windows
 }
 
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
@@ -347,6 +349,3 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
             }
     }
 }
-
-
-

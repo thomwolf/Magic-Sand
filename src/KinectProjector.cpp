@@ -11,8 +11,7 @@
 using namespace ofxCSG;
 
 KinectProjector::KinectProjector(std::shared_ptr<ofAppBaseWindow> const& p)
-:secondScreenFound(false),
-ROIcalibrated(false),
+:ROIcalibrated(false),
 projKinectCalibrated(false),
 calibrating (false),
 basePlaneUpdated (false),
@@ -25,7 +24,7 @@ drawKinectView(false)
     projWindow = p;
 }
 
-void KinectProjector::setup(bool displayGui){
+void KinectProjector::setup(bool sdisplayGui){
     // instantiate the modal windows //
     modalTheme = make_shared<ofxModalThemeProjKinect>();
     confirmModal = make_shared<ofxModalConfirm>();
@@ -40,12 +39,14 @@ void KinectProjector::setup(bool displayGui){
     
     ofAddListener(ofEvents().exit, this, &KinectProjector::exit);
     
-    // Check the size and location of the second window to fit the second screen
-    secondScreenFound = checkProjectorWindow();
-    if (!secondScreenFound){
-        confirmModal->setMessage("Projector not found. Please check that the projector is (1) connected, (2) powerer and (3) not in mirror mode.");
-        confirmModal->show();
-    }
+	displayGui = sdisplayGui;
+
+    //Check the size and location of the second window to fit the second screen
+    //secondScreenFound = checkProjectorWindow();
+    //if (!secondScreenFound){
+    //    confirmModal->setMessage("Projector not found. Please check that the projector is (1) connected, (2) powerer and (3) not in mirror mode.");
+    //    confirmModal->show();
+    //}
     
     // calibration chessboard config
 	chessboardSize = 300;
@@ -118,41 +119,18 @@ void KinectProjector::setup(bool displayGui){
     
     fboProjWindow.allocate(projRes.x, projRes.y, GL_RGBA);
     fboProjWindow.begin();
-    ofClear(0,0,0,255);
+    ofClear(255, 255, 255, 0);
     fboProjWindow.end();
     
     fboMainWindow.allocate(projRes.x, projRes.y, GL_RGBA);
     fboMainWindow.begin();
-    ofClear(0,0,0,255);
+    ofClear(255, 255, 255, 0);
     fboMainWindow.end();
     
     if (displayGui)
         setupGui();
     
     kinectgrabber.start(); // Start the acquisition
-}
-
-bool KinectProjector::checkProjectorWindow(){
-    // Check screens size and location
-    int count;
-    GLFWmonitor** monitors = glfwGetMonitors(&count);
-    ofLogVerbose("KinectProjector") << "checkProjectorWindow(): number of screen found: " << count ;
-    if(count>1){
-        int xM; int yM;
-        glfwGetMonitorPos(monitors[1], &xM, &yM); // We take the second monitor
-        const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[1]);
-
-        if(desktopMode){
-            projWindow->setWindowPosition(xM, yM);
-            projWindow->setWindowShape(desktopMode->width, desktopMode->height);
-            ofLogVerbose("KinectProjector") << "checkProjectorWindow(): second screen detected at " << xM << ", " << yM << " size: " << desktopMode->width << ", " << desktopMode->height << ", projector window location and position updated" ;
-            return true;
-        }else{
-            return false;
-        }
-    }else{
-        return false;
-    }
 }
 
 void KinectProjector::exit(ofEventArgs& e){
@@ -176,11 +154,25 @@ void KinectProjector::setupGradientField(){
 }
 
 void KinectProjector::update(){
+	if (displayGui)
+		gui->update();
+
     // Get depth image from kinect grabber
     ofFloatPixels filteredframe;
     if (kinectgrabber.filtered.tryReceive(filteredframe)) {
         FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectRes.x, kinectRes.y);
         FilteredDepthImage.updateTexture();
+
+		//float min = FilteredDepthImage.getFloatPixelsRef().getData()[0];
+		//float max = min;
+		//for (int i = 0; i < (kinectRes.x*kinectRes.y); i++) {
+		//	float aa = FilteredDepthImage.getFloatPixelsRef().getData()[i];
+		//	if (aa < min)
+		//		min = aa;
+		//	if (aa > max)
+		//		max = aa;
+		//}
+		//cout << "FilteredDepth: min=" << min << " max=" << max << endl;
         
         // Get color image from kinect grabber
         ofPixels coloredframe;
@@ -204,13 +196,14 @@ void KinectProjector::update(){
         if (calibrating && !waitingForFlattenSand) {
             updateCalibration();
         } else {
-            fboMainWindow.begin();
+			//ofEnableAlphaBlending();
+			fboMainWindow.begin();
             if (drawKinectView){
                 FilteredDepthImage.draw(0, 0);
-                ofNoFill();
-                ofDrawRectangle(kinectROI);
-                ofDrawRectangle(0, 0, kinectRes.x, kinectRes.y);
-            } else {
+				ofNoFill();
+				ofDrawRectangle(kinectROI);
+				ofDrawRectangle(0, 0, kinectRes.x, kinectRes.y);
+			} else {
                 ofClear(0, 0, 0, 0);
             }
             fboMainWindow.end();
@@ -678,7 +671,13 @@ void KinectProjector::drawProjectorWindow(){
 }
 
 void KinectProjector::drawMainWindow(float x, float y, float width, float height){
-    fboMainWindow.draw(x,y, width, height);
+	//ofSetColor(255, 255, 255);
+	fboMainWindow.draw(x,y, width, height);
+	//ofNoFill();
+	//ofSetColor(0, 255, 0, 255);
+	//ofDrawRectangle(kinectROI);
+	if (displayGui)
+		gui->draw();
 }
 
 void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
@@ -844,6 +843,9 @@ void KinectProjector::setupGui(){
     gui->onButtonEvent(this, &KinectProjector::onButtonEvent);
     gui->onToggleEvent(this, &KinectProjector::onToggleEvent);
     gui->onSliderEvent(this, &KinectProjector::onSliderEvent);
+
+	// disactivate autodraw
+	gui->setAutoDraw(false);
 }
 
 void KinectProjector::startFullCalibration(){
@@ -948,14 +950,9 @@ void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
             startFullCalibration();
         if (calibrating)
             calibModal->show();
-        if (!secondScreenFound){
-            confirmModal->setMessage("Projector still not found. Please check again that the projector is (1) connected, (2) powerer and (3) not in mirror mode.");
-            confirmModal->show();
-        }
         ofLogVerbose("KinectProjector") << "Confirm modal window is closed" ;
     }   else if (e.type == ofxModalEvent::CANCEL){
         calibrating = false;
-        secondScreenFound = true; // the user doesn't care...
         ofLogVerbose("KinectProjector") << "Modal cancel button pressed: Aborting" ;
     }   else if (e.type == ofxModalEvent::CONFIRM){
         if (calibrating){
@@ -967,9 +964,6 @@ void KinectProjector::onConfirmModalEvent(ofxModalEvent e){
                     upframe = true;
                 }
             }
-        } else if (!secondScreenFound){
-            // Check the size and location of the second window to fit the second screen
-            secondScreenFound = checkProjectorWindow();
         }
         ofLogVerbose("KinectProjector") << "Modal confirm button pressed" ;
     }
