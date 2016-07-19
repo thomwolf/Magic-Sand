@@ -39,6 +39,7 @@ public:
     void updateNativeScale(float scaleMin, float scaleMax);
     void drawProjectorWindow();
     void drawMainWindow(float x, float y, float width, float height);
+    void drawGradField();
 
     // Coordinate conversion function
     ofVec2f worldCoordToProjCoord(ofVec3f vin);
@@ -183,7 +184,6 @@ private:
     void askToFlattenSand();
 
     void drawChessboard(int x, int y, int chessboardSize);
-    void drawGradField();
     void drawArrow(ofVec2f projectedPoint, ofVec2f v1);
 
     void saveCalibrationAndSettings();
