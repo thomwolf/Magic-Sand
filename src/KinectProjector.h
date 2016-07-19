@@ -16,7 +16,7 @@
 #include "KinectGrabber.h"
 #include "ofxModal.h"
 
-#include "Calibration.h"
+#include "KinectProjectorCalibration.h"
 #include "Utils.h"
 
 class ofxModalThemeProjKinect : public ofxModalTheme {
@@ -34,7 +34,7 @@ public:
     KinectProjector(std::shared_ptr<ofAppBaseWindow> const& p);
     
     // Running loop functions
-    void setup(bool displayGui);
+    void setup(bool sdisplayGui);
     void update();
     void updateNativeScale(float scaleMin, float scaleMax);
     void drawProjectorWindow();
@@ -161,7 +161,6 @@ private:
     };
 
     // Private methods
-    bool checkProjectorWindow();
     void exit(ofEventArgs& e);
     void setupGradientField();
     
@@ -280,6 +279,7 @@ private:
     int   chessboardY;
 
     // GUI Modal window & interface
+	bool displayGui;
     shared_ptr<ofxModalConfirm>   confirmModal;
     shared_ptr<ofxModalAlert>   calibModal;
     shared_ptr<ofxModalThemeProjKinect>   modalTheme;

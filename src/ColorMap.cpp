@@ -1,4 +1,4 @@
-#include <ColorMap.h>
+#include "ColorMap.h"
 
 bool ColorMap::updateColormap() {
     if (entries.isAllocated())
@@ -12,8 +12,10 @@ bool ColorMap::updateColormap() {
         double val=double(i)*(heightMapKeys.back().height-heightMapKeys.front().height)/double(numEntries-1)+heightMapKeys.front().height;
 
         /* Find the piecewise linear segment of the color function containing the key value using binary search: */
-        int l=0;
-        int r=heightMapKeys.size();
+        int l = 0;
+        int r = heightMapKeys.size()-1;
+		//if (i == 511)
+		//	cout << "pof" << endl;
         while(r-l>1)
         {
             /* Enforce the invariant keys[l]<=val<keys[r]: */
@@ -23,6 +25,8 @@ bool ColorMap::updateColormap() {
             else
                 r=m;
         }
+		//if (r == 17)
+		//	cout << "paf" << endl;
 
         /* Evaluate the linear segment: */
         if(r<numEntries)

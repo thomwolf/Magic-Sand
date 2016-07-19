@@ -77,7 +77,8 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
 }
 
 void KinectGrabber::initiateBuffers(void){
-    
+	filteredframe.set(0);
+
     averagingBuffer=new float[numAveragingSlots*height*width];
     float* averagingBufferPtr=averagingBuffer;
     for(int i=0;i<numAveragingSlots;++i)
@@ -140,12 +141,12 @@ void KinectGrabber::threadedFunction() {
             filter();
             filteredframe.setImageType(OF_IMAGE_GRAYSCALE);
             updateGradientField();
-            kinectColorImage.setFromPixels(kinect.getPixels());
+			kinectColorImage.setFromPixels(kinect.getPixels());
         }
         if (storedframes == 0)
         {
             filtered.send(std::move(filteredframe));
-            gradient.send(std::move(gradField));
+			gradient.send(std::move(gradField));
             colored.send(std::move(kinectColorImage.getPixels()));
             lock();
             storedframes += 1;
@@ -181,7 +182,9 @@ void KinectGrabber::filter()
         statBufferPtr += minY*width*3;
         validBufferPtr += minY*width;
         filteredFramePtr += minY*width;
-        for(unsigned int y=minY ; y<maxY ; ++y)
+		//float min = validBufferPtr[minX];
+		//float max = min;
+		for(unsigned int y=minY ; y<maxY ; ++y)
         {
             inputFramePtr += minX;
             averagingBufferPtr += minX;
@@ -190,13 +193,10 @@ void KinectGrabber::filter()
             filteredFramePtr += minX;
             for(unsigned int x=minX ; x<maxX ; ++x,++inputFramePtr,++averagingBufferPtr,statBufferPtr+=3,++validBufferPtr,++filteredFramePtr)
             {
-//                if (x == blockX && y == blockY){
-//                    // debug
-//                }
                 float newVal = static_cast<float>(*inputFramePtr);
                 float oldVal = *averagingBufferPtr;
                 
-                if(newVal > maxOffset)//we are under the ceiling plane
+				if(newVal > maxOffset)//we are under the ceiling plane
                 {
                     *averagingBufferPtr = newVal; // Store the value
                     if (followBigChange && statBufferPtr[0] > 0){ // Follow big changes
@@ -242,14 +242,19 @@ void KinectGrabber::filter()
                     }
                 }
                 *filteredFramePtr = *validBufferPtr;
-            }
+				//if (*filteredFramePtr < min)
+				//	min = *filteredFramePtr;
+				//if (*filteredFramePtr > max)
+				//	max = *filteredFramePtr;
+			}
             inputFramePtr += width-maxX;
             averagingBufferPtr += width-maxX;
             statBufferPtr += (width-maxX)*3;
             validBufferPtr += width-maxX;
             filteredFramePtr += width-maxX;
         }
-        
+		//cout << "Filteredframe: min=" << min << " max=" << max << endl;
+		//cout << "Filtered after framefiltering: " << filteredframe.getData()[minY*width + minX] << endl;
         /* Go to the next averaging slot: */
         if(++averagingSlotIndex==numAveragingSlots)
             averagingSlotIndex=0;
@@ -265,7 +270,8 @@ void KinectGrabber::filter()
         {
             applySpaceFilter();
         }
-    }
+//		cout << "Filtered after spacefiltering: " << filteredframe.getData()[minY*width + minX] << endl;
+	}
 }
 
 void KinectGrabber::applySpaceFilter()
