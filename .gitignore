@@ -18,7 +18,8 @@
 x64/
 x86/
 bld/
-[Bb]in/
+bin/*
+!bin/data/
 [Oo]bj/
 [Ll]og/
 
