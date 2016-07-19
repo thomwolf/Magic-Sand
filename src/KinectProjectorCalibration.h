@@ -11,8 +11,8 @@
 
 #include <iostream>
 #include "ofMain.h"
-#include "libs\dlib\matrix.h"
-#include "libs\dlib\matrix\matrix_qr.h"
+#include "libs/dlib/matrix.h"
+#include "libs/dlib/matrix/matrix_qr.h"
 
 
 class ofxKinectProjectorToolkit

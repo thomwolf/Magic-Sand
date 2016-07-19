@@ -7,8 +7,6 @@
 #include "vehicle.h"
 #include "Utils.h"
 
-#include "of1App.h"
-
 class ofApp : public ofBaseApp {
 
 public:
