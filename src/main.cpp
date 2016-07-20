@@ -28,9 +28,11 @@ int main() {
 	ofGLFWWindowSettings settings;
 	settings.width = 1200;
 	settings.height = 600;
-	settings.setPosition(ofVec2f(0, 0));
 	settings.resizable = true;
+	settings.decorated = true;
+	settings.title = "Magic Sand";
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
+	mainWindow->setWindowPosition(ofGetScreenWidth() / 2 - settings.width / 2, ofGetScreenHeight() / 2 - settings.height / 2);
 
 	setSecondWindowDimensions(settings);
 	settings.resizable = false;
@@ -41,9 +43,8 @@ int main() {
 
 	shared_ptr<ofApp> mainApp(new ofApp);
 	ofAddListener(secondWindow->events().draw, mainApp.get(), &ofApp::drawProjWindow);
-
 	mainApp->projWindow = secondWindow;
-
+		
 	ofRunApp(mainWindow, mainApp);
 	ofRunMainLoop();
 }

@@ -25,7 +25,9 @@ drawKinectView(false)
 }
 
 void KinectProjector::setup(bool sdisplayGui){
-    // instantiate the modal windows //
+	ofAddListener(ofEvents().exit, this, &KinectProjector::exit);
+	
+	// instantiate the modal windows //
     modalTheme = make_shared<ofxModalThemeProjKinect>();
     confirmModal = make_shared<ofxModalConfirm>();
     confirmModal->setTheme(modalTheme);
@@ -36,9 +38,7 @@ void KinectProjector::setup(bool sdisplayGui){
     calibModal->setTheme(modalTheme);
     calibModal->addListener(this, &KinectProjector::onCalibModalEvent);
     calibModal->setButtonLabel("Cancel");
-    
-    ofAddListener(ofEvents().exit, this, &KinectProjector::exit);
-    
+        
 	displayGui = sdisplayGui;
 
     //Check the size and location of the second window to fit the second screen

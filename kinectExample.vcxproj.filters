@@ -1106,8 +1106,12 @@
     <ClInclude Include="src\SandSurfaceRenderer.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="resource2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="icon.rc" />
+    <ResourceCompile Include="Magic Sand2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="bin\data\icon.ico" />
   </ItemGroup>
 </Project>
