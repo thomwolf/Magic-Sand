@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "490631261.204383"
+            timestampString = "490733830.471018"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "276"
-            endingLineNumber = "276"
+            startingLineNumber = "274"
+            endingLineNumber = "274"
             landmarkName = "SandSurfaceRenderer::setupGui()"
             landmarkType = "5">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/SandSurfaceRenderer.cpp"
-            timestampString = "490631790.751402"
+            timestampString = "490733830.471018"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "391"
-            endingLineNumber = "391"
+            startingLineNumber = "389"
+            endingLineNumber = "389"
             landmarkName = "SandSurfaceRenderer::onButtonEvent(ofxDatGuiButtonEvent e)"
             landmarkType = "5">
          </BreakpointContent>
@@ -47,6 +47,240 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "14"
             endingLineNumber = "14">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/KinectProjector.cpp"
+            timestampString = "490718098.464752"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "409"
+            endingLineNumber = "409"
+            landmarkName = "KinectProjector::updateKinectGrabberROI(ofRectangle ROI)"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::updateKinectGrabberROI(ofRectangle)"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.029906"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "29">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::updateKinectGrabberROI(ofRectangle)"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.03038"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "84">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::updateKinectGrabberROI(ofRectangle)"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.030845"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "104">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::updateKinectGrabberROI(ofRectangle)"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.031281"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "151">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::updateKinectGrabberROI(ofRectangle)"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.031686"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "253">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::__1::__function::__func&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0, std::__1::allocator&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0&gt;, void (KinectGrabber&amp;)&gt;::~__func()"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.032088"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "23">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::__1::__function::__func&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0, std::__1::allocator&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0&gt;, void (KinectGrabber&amp;)&gt;::~__func()"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.03251"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "23">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::__1::__function::__func&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0, std::__1::allocator&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0&gt;, void (KinectGrabber&amp;)&gt;::__clone() const"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.032879"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "43">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::__1::__function::__func&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0, std::__1::allocator&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0&gt;, void (KinectGrabber&amp;)&gt;::__clone(std::__1::__function::__base&lt;void ()(KinectGrabber&amp;)&gt;*) const"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.033258"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "30">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::__1::__function::__func&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0, std::__1::allocator&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0&gt;, void (KinectGrabber&amp;)&gt;::destroy()"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.033634"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "9">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "std::__1::__function::__func&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0, std::__1::allocator&lt;KinectProjector::updateKinectGrabberROI(ofRectangle)::$_0&gt;, void (KinectGrabber&amp;)&gt;::destroy_deallocate()"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectProjector.cpp"
+                  timestampString = "490716296.034006"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "402"
+                  endingLineNumber = "402"
+                  offsetFromSymbolStart = "9">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/KinectGrabber.h"
+            timestampString = "490717553.2011"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "isImageStabilized()"
+            landmarkType = "5">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::update()"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectGrabber.h"
+                  timestampString = "490716411.630248"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "394">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "KinectProjector::updateKinectGrabberROI(ofRectangle)"
+                  moduleName = "Magic-Sand"
+                  urlString = "file://localhost/Users/thomaswolf/of_v0.9.3_osx_release/apps/myApps/Magic-Sand/src/KinectGrabber.h"
+                  timestampString = "490716411.630674"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "44"
+                  endingLineNumber = "44"
+                  offsetFromSymbolStart = "159">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/SandSurfaceRenderer.cpp"
+            timestampString = "490733830.471018"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
+            landmarkName = "SandSurfaceRenderer::drawSandbox()"
+            landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -159,17 +159,15 @@ void SandSurfaceRenderer::updateRangesAndBasePlane(){
 
 void SandSurfaceRenderer::setupMesh(){
     // Initialise mesh
-    //    float planeScale = 1;
     ofRectangle kinectROI = kinectProjector->getKinectROI();
     ofVec2f kinectRes = kinectProjector->getKinectRes();
-    meshwidth = kinectROI.width;//kinectResX;
-    meshheight = kinectROI.height;//kinectResY;
+    meshwidth = kinectROI.width;
+    meshheight = kinectROI.height;
     mesh.clear();
     for(unsigned int y=0;y<meshheight;y++)
         for(unsigned int x=0;x<meshwidth;x++)
         {
-            ofPoint pt = ofPoint(x*kinectRes.x/(meshwidth-1)+kinectROI.x,y*kinectRes.y/(meshheight-1)+kinectROI.y,0.0f)-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
-            //        ofPoint pt = ofPoint(x*kinectResX*planeScale/(meshwidth-1)+kinectROI.x,y*kinectResY*planeScale/(meshheight-1)+kinectROI.y,0.0f)-kinectROI.getCenter()*planeScale+kinectROI.getCenter()-ofPoint(0.5,0.5,0); // with a planescaling
+            ofPoint pt = ofPoint(x+kinectROI.x,y+kinectROI.y,0.0f)-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
             mesh.addVertex(pt); // make a new vertex
             mesh.addTexCoord(pt);
         }

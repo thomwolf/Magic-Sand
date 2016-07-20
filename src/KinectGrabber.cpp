@@ -90,7 +90,7 @@ void KinectGrabber::initiateBuffers(void){
     for(int i=0;i<numAveragingSlots;++i)
         for(unsigned int y=0;y<height;++y)
             for(unsigned int x=0;x<width;++x,++averagingBufferPtr)
-                *averagingBufferPtr=initialValue; // Mark sample as invalid
+                *averagingBufferPtr=initialValue;
     
     averagingSlotIndex=0;
     
@@ -107,7 +107,7 @@ void KinectGrabber::initiateBuffers(void){
     float* vbPtr=validBuffer;
     for(unsigned int y=0;y<height;++y)
         for(unsigned int x=0;x<width;++x,++vbPtr)
-            *vbPtr=0.0;
+            *vbPtr=initialValue;
     
     /* Initialize the gradient field buffer: */
     gradField = new ofVec2f[gradFieldcols*gradFieldrows];

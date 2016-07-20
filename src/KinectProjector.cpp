@@ -392,7 +392,14 @@ void KinectProjector::setMaxKinectGrabberROI(){
 }
 
 void KinectProjector::setNewKinectROI(){
-    ROIcalibrated = true; // Update states variables
+    // Cast to integer values
+    kinectROI.x = static_cast<int>(kinectROI.x);
+    kinectROI.y = static_cast<int>(kinectROI.y);
+    kinectROI.width = static_cast<int>(kinectROI.width);
+    kinectROI.height = static_cast<int>(kinectROI.height);
+    
+    // Update states variables
+    ROIcalibrated = true;
     ROIUpdated = true;
     saveCalibrationAndSettings();
     updateKinectGrabberROI(kinectROI);
@@ -402,8 +409,8 @@ void KinectProjector::updateKinectGrabberROI(ofRectangle ROI){
     kinectgrabber.performInThread([ROI](KinectGrabber & kg) {
         kg.setKinectROI(ROI);
     });
-    while (kinectgrabber.isImageStabilized()){
-    } // Wait for kinectgrabber to reset buffers
+//    while (kinectgrabber.isImageStabilized()){
+//    } // Wait for kinectgrabber to reset buffers
     imageStabilized = false; // Now we can wait for a clean new depth frame
 }
 
