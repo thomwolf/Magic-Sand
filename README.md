@@ -2,12 +2,12 @@
 Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-Magic Sand is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](openframeworks.cc/).
+Magic Sand is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan.
 
 Magic Sand was developed with the specific aim of simplifying the use of an augmented reality sandbox in a home/family environment.
 
-The following considerations & requested features guided its development :
-- run on a mid-range laptop / home computer (no specific GPU requirement, Windows / Mac OS X / Linux).
+The following goals & features guided its development :
+- run on a mid-range laptop / home computer (Windows / Mac OS X / Linux, minimal GPU requirement).
 - self-calibration to easily disassemble and reassemble the sandbox.
 - simple, easy-to-use interface.
 - framework for future sandbox-based games and applications.
@@ -172,5 +172,3 @@ The following functions give additional information :
 - `getBasePlaneNormal()` : see above
 - `getBasePlaneOffset()` : see above
 - `getBasePlaneEq()` : see above
-
-
