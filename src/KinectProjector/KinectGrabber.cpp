@@ -188,8 +188,7 @@ void KinectGrabber::filter()
         statBufferPtr += minY*width*3;
         validBufferPtr += minY*width;
         filteredFramePtr += minY*width;
-		//float min = validBufferPtr[minX];
-		//float max = min;
+
 		for(unsigned int y=minY ; y<maxY ; ++y)
         {
             inputFramePtr += minX;
@@ -248,10 +247,6 @@ void KinectGrabber::filter()
                     }
                 }
                 *filteredFramePtr = *validBufferPtr;
-				//if (*filteredFramePtr < min)
-				//	min = *filteredFramePtr;
-				//if (*filteredFramePtr > max)
-				//	max = *filteredFramePtr;
 			}
             inputFramePtr += width-maxX;
             averagingBufferPtr += width-maxX;
@@ -259,8 +254,7 @@ void KinectGrabber::filter()
             validBufferPtr += width-maxX;
             filteredFramePtr += width-maxX;
         }
-		//cout << "Filteredframe: min=" << min << " max=" << max << endl;
-		//cout << "Filtered after framefiltering: " << filteredframe.getData()[minY*width + minX] << endl;
+
         /* Go to the next averaging slot: */
         if(++averagingSlotIndex==numAveragingSlots)
             averagingSlotIndex=0;
@@ -276,7 +270,6 @@ void KinectGrabber::filter()
         {
             applySpaceFilter();
         }
-//		cout << "Filtered after spacefiltering: " << filteredframe.getData()[minY*width + minX] << endl;
 	}
 }
 
@@ -387,7 +380,7 @@ void KinectGrabber::setKinectROI(ofRectangle ROI){
     resetBuffers();
 }
 
-void KinectGrabber::updateAveragingSlotsNumber(int snumAveragingSlots){
+void KinectGrabber::setAveragingSlotsNumber(int snumAveragingSlots){
     if (bufferInitiated){
             bufferInitiated = false;
             delete[] averagingBuffer;
@@ -397,6 +390,18 @@ void KinectGrabber::updateAveragingSlotsNumber(int snumAveragingSlots){
         }
     numAveragingSlots = snumAveragingSlots;
     minNumSamples=(numAveragingSlots+1)/2;
+    initiateBuffers();
+}
+
+void KinectGrabber::setGradFieldResolution(int sgradFieldresolution){
+    if (bufferInitiated){
+        bufferInitiated = false;
+        delete[] averagingBuffer;
+        delete[] statBuffer;
+        delete[] validBuffer;
+        delete[] gradField;
+    }
+    gradFieldresolution = sgradFieldresolution;
     initiateBuffers();
 }
 

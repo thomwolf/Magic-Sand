@@ -20,8 +20,8 @@ void ofApp::setup() {
 	
 	// Retrieve variables
 	kinectRes = kinectProjector->getKinectRes();
-	kinectROI = kinectProjector->getKinectROI();
 	projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
+	kinectROI = kinectProjector->getKinectROI();
 	
 	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboVehicles.begin();
@@ -41,7 +41,7 @@ void ofApp::exit(ofEventArgs& e) {
 
 void ofApp::addNewFish(){
     ofVec2f location;
-    location = findRandomVehicleLocation(kinectROI, true);
+    setRandomVehicleLocation(kinectROI, true, location);
     auto f = Fish(kinectProjector, location, kinectROI, motherFish);
     f.setup();
     fish.push_back(f);
@@ -49,19 +49,23 @@ void ofApp::addNewFish(){
 
 void ofApp::addNewRabbit(){
     ofVec2f location;
-    location = findRandomVehicleLocation(kinectROI, false);
+    setRandomVehicleLocation(kinectROI, false, location);
     auto r = Rabbit(kinectProjector, location, kinectROI, motherRabbit);
     r.setup();
     rabbits.push_back(r);
 }
 
-void ofApp::addMotherFish(){
+bool ofApp::addMotherFish(){
     int minborderDist = 40;
     ofRectangle internalBorders = kinectROI;
     internalBorders.scaleFromCenter((kinectROI.width-minborderDist)/kinectROI.width, (kinectROI.height-minborderDist)/kinectROI.height);
 
-    // Find a location for the Fish mother outside of the water to be sure the fish cannot reach her without help
-    motherFish = findRandomVehicleLocation(internalBorders, false);
+    // Try to set a location for the Fish mother outside of the water to be sure the fish cannot reach her without help
+    ofVec2f location;
+    if (!setRandomVehicleLocation(internalBorders, false, location)){
+        return false;
+    }
+    motherFish = location;
     
     // Set the mother Fish plateform location under the sea level
     motherFish.z = kinectProjector->elevationToKinectDepth(-10, motherFish.x, motherFish.y);
@@ -69,15 +73,20 @@ void ofApp::addMotherFish(){
         f.setMotherLocation(motherFish);
     }
     showMotherFish = true;
+    return true;
 }
 
-void ofApp::addMotherRabbit(){
+bool ofApp::addMotherRabbit(){
     int minborderDist = 40;
     ofRectangle internalBorders = kinectROI;
     internalBorders.scaleFromCenter((kinectROI.width-minborderDist)/kinectROI.width, (kinectROI.height-minborderDist)/kinectROI.height);
     
-    // Find a location for the Rabbits mother inside of the water to be sure the rabbits cannot reach her without help
-    motherRabbit = findRandomVehicleLocation(internalBorders, true);
+    // Set a location for the Rabbits mother inside of the water to be sure the rabbits cannot reach her without help
+    ofVec2f location;
+    if (!setRandomVehicleLocation(internalBorders, true, location)){
+        return false;
+    }
+    motherRabbit = location;
     
     // Set the mother Rabbit plateform location over the sea level
     motherRabbit.z = kinectProjector->elevationToKinectDepth(10, motherRabbit.x, motherRabbit.y);
@@ -86,12 +95,15 @@ void ofApp::addMotherRabbit(){
         r.setMotherLocation(motherRabbit);
     }
     showMotherRabbit = true;
+    return true;
 }
 
-ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
-    ofVec2f location;
+bool ofApp::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location){
     bool okwater = false;
-    while (!okwater) {
+    int count = 0;
+    int maxCount = 100;
+    while (!okwater && count < maxCount) {
+        count++;
         float x = ofRandom(area.getLeft(),area.getRight());
         float y = ofRandom(area.getTop(),area.getBottom());
         bool insideWater = kinectProjector->elevationAtKinectCoord(x, y) < 0;
@@ -100,13 +112,17 @@ ofVec2f ofApp::findRandomVehicleLocation(ofRectangle area, bool liveInWater){
             okwater = true;
         }
     }
-    return location;
+    return okwater;
 }
 
 void ofApp::update() {
-	gui->update();
+    // Call kinectProjector->update() first during the update function()
 	kinectProjector->update();
+    
 	sandSurfaceRenderer->update();
+    
+    if (kinectProjector->isROIUpdated())
+        kinectROI = kinectProjector->getKinectROI();
 
 	if (kinectProjector->isImageStabilized()) {
 	    for (auto & f : fish){
@@ -119,6 +135,7 @@ void ofApp::update() {
 	    }
 	    drawVehicles();
 	}
+	gui->update();
 }
 
 
@@ -142,16 +159,16 @@ void ofApp::drawVehicles()
 {
     fboVehicles.begin();
     ofClear(255,255,255, 0);
+    if (showMotherFish)
+        drawMotherFish();
+    if (showMotherRabbit)
+        drawMotherRabbit();
     for (auto & f : fish){
         f.draw();
     }
     for (auto & r : rabbits){
         r.draw();
     }
-    if (showMotherFish)
-        drawMotherFish();
-    if (showMotherRabbit)
-        drawMotherRabbit();
     fboVehicles.end();
 }
 
@@ -167,11 +184,11 @@ void ofApp::drawMotherFish()
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherFish.x+tailSize, motherFish.y));
     
-    ofNoFill();
-    ofSetColor(255);//ofColor::blueSteel);
+    ofFill();
+    ofSetColor(ofColor::blueSteel);
     ofDrawCircle(-0.5*sc, 0, motherPlatformSize);
 
-    ofNoFill();
+    ofFill();
     ofSetColor(255);
     ofPolyline fish;
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
@@ -197,8 +214,8 @@ void ofApp::drawMotherRabbit()
     ofPushMatrix();
     ofTranslate(kinectProjector->kinectCoordToProjCoord(motherRabbit.x+5*sc, motherRabbit.y));
     
-    ofNoFill();
-    ofSetColor(255);//ofColor::yellow);
+    ofFill();
+    ofSetColor(ofColor::green);
     ofDrawCircle(-5*sc, 0, motherPlatformSize);
 
     ofFill();
@@ -321,13 +338,19 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
 
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Mother fish")) {
-        if (!showMotherFish)
-            addMotherFish();
-        showMotherFish = e.checked;
+        if (!showMotherFish) {
+            if (!addMotherFish())
+                e.target->setChecked(false);
+        } else {
+            showMotherFish = e.checked;
+        }
     } else if (e.target->is("Mother rabbit")) {
-        if (!showMotherRabbit)
-            addMotherRabbit();
-        showMotherRabbit = e.checked;
+        if (!showMotherRabbit) {
+            if (!addMotherRabbit())
+                e.target->setChecked(false);
+        } else {
+            showMotherRabbit = e.checked;
+        }
     }
 }
 

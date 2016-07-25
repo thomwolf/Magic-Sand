@@ -54,7 +54,7 @@ void KinectProjector::setup(bool sdisplayGui){
     chessboardY = 4;
     
     // 	Gradient Field
-	gradFieldresolution = 10;
+	gradFieldResolution = 10;
     arrowLength = 25;
 	
     // Setup default base plane
@@ -74,7 +74,7 @@ void KinectProjector::setup(bool sdisplayGui){
 	    confirmModal->show();
 	}
 	spatialFiltering = true;
-    followBigChanges = true;
+    followBigChanges = false;
     numAveragingSlots = 15;
     
     // Get projector and kinect width & height
@@ -116,7 +116,7 @@ void KinectProjector::setup(bool sdisplayGui){
     }
     
 	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(gradFieldresolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
+    kinectgrabber.setupFramefilter(gradFieldResolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
     kinectWorldMatrix = kinectgrabber.getWorldMatrix();
     ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectWorldMatrix: " << kinectWorldMatrix ;
     
@@ -149,8 +149,8 @@ void KinectProjector::exit(ofEventArgs& e){
 }
 
 void KinectProjector::setupGradientField(){
-    gradFieldcols = kinectRes.x / gradFieldresolution;
-    gradFieldrows = kinectRes.y / gradFieldresolution;
+    gradFieldcols = kinectRes.x / gradFieldResolution;
+    gradFieldrows = kinectRes.y / gradFieldResolution;
     
     gradField = new ofVec2f[gradFieldcols*gradFieldrows];
     ofVec2f* gfPtr=gradField;
@@ -159,7 +159,20 @@ void KinectProjector::setupGradientField(){
             *gfPtr=ofVec2f(0);
 }
 
+void KinectProjector::setGradFieldResolution(int sgradFieldResolution){
+    gradFieldResolution = sgradFieldResolution;
+    setupGradientField();
+    kinectgrabber.performInThread([sgradFieldResolution](KinectGrabber & kg) {
+        kg.setGradFieldResolution(sgradFieldResolution);
+    });
+}
+
 void KinectProjector::update(){
+    // Clear updated state variables
+    basePlaneUpdated = false;
+    ROIUpdated = false;
+    projKinectCalibrationUpdated = false;
+
 	if (displayGui)
 		gui->update();
 
@@ -271,7 +284,7 @@ void KinectProjector::updateROIFromColorImage(){
             kinectColorImage.setROI(0, 0, kinectRes.x, kinectRes.y);
             thresholdedImage = kinectColorImage;
             cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), threshold, 255, CV_THRESH_BINARY_INV);
-            contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true);
+            contourFinder.findContours(thresholdedImage, 12, kinectRes.x*kinectRes.y, 5, true);
             ofPolyline small = ofPolyline();
             for (int i = 0; i < contourFinder.nBlobs; i++) {
                 ofxCvBlob blobContour = contourFinder.blobs[i];
@@ -324,7 +337,7 @@ void KinectProjector::updateROIFromDepthImage(){
         while (threshold < 255){
             cvThreshold(thresholdedImage.getCvImage(), thresholdedImage.getCvImage(), 255-threshold, 255, CV_THRESH_TOZERO_INV);
             thresholdedImage.updateTexture();
-            contourFinder.findContours(thresholdedImage, 12, 640*480, 5, true, false);
+            contourFinder.findContours(thresholdedImage, 12, kinectRes.x*kinectRes.y, 5, true, false);
             ofPolyline small = ofPolyline();
             for (int i = 0; i < contourFinder.nBlobs; i++) {
                 ofxCvBlob blobContour = contourFinder.blobs[i];
@@ -729,8 +742,8 @@ void KinectProjector::drawGradField()
     {
         for(int colPos=0; colPos< gradFieldcols ; colPos++)
         {
-            float x = colPos*gradFieldresolution + gradFieldresolution/2;
-            float y = rowPos*gradFieldresolution  + gradFieldresolution/2;
+            float x = colPos*gradFieldResolution + gradFieldResolution/2;
+            float y = rowPos*gradFieldResolution  + gradFieldResolution/2;
             ofVec2f projectedPoint = kinectCoordToProjCoord(x, y);
             int ind = colPos + rowPos * gradFieldcols;
             ofVec2f v2 = gradField[ind];
@@ -838,7 +851,7 @@ float KinectProjector::elevationToKinectDepth(float elevation, float x, float y)
 }
 
 ofVec2f KinectProjector::gradientAtKinectCoord(float x, float y){
-    int ind = static_cast<int>(floor(x/gradFieldresolution)) + gradFieldcols*static_cast<int>(floor(y/gradFieldresolution));
+    int ind = static_cast<int>(floor(x/gradFieldResolution)) + gradFieldcols*static_cast<int>(floor(y/gradFieldResolution));
     fishInd = ind;
     return gradField[ind];
 }
@@ -862,7 +875,7 @@ void KinectProjector::setupGui(){
     advancedFolder->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
     advancedFolder->addBreak();
     advancedFolder->addButton("Calibrate")->setName("Full Calibration");
-	advancedFolder->addButton("Update ROI from calibration");
+//	advancedFolder->addButton("Update ROI from calibration");
 //    gui->addButton("Automatically detect sand region");
 //    calibrationFolder->addButton("Manually define sand region");
 //    gui->addButton("Automatically calibrate kinect & projector");
@@ -912,6 +925,20 @@ void KinectProjector::startAutomaticKinectProjectorCalibration(){
     ofLogVerbose("KinectProjector") << "startAutomaticKinectProjectorCalibration(): Starting autocalib" ;
 }
 
+void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
+    spatialFiltering = sspatialFiltering;
+    kinectgrabber.performInThread([sspatialFiltering](KinectGrabber & kg) {
+        kg.setSpatialFiltering(sspatialFiltering);
+    });
+}
+
+void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
+    followBigChanges = sfollowBigChanges;
+    kinectgrabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
+        kg.setFollowBigChange(sfollowBigChanges);
+    });
+}
+
 void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
     if (e.target->is("Full Calibration")) {
         startFullCalibration();
@@ -930,7 +957,7 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
         gui->getSlider("Tilt Y")->setValue(0);
         gui->getSlider("Vertical offset")->setValue(0);
         basePlaneNormal = basePlaneNormalBack;
-        basePlaneOffset.z = basePlaneOffsetBack.z;
+        basePlaneOffset = basePlaneOffsetBack;
         basePlaneEq = getPlaneEquation(basePlaneOffset,basePlaneNormal);
         basePlaneUpdated = true;
     }
@@ -938,15 +965,9 @@ void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){
 
 void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Spatial filtering")) {
-		spatialFiltering = e.checked;
-        kinectgrabber.performInThread([e](KinectGrabber & kg) {
-            kg.setSpatialFiltering(e.checked);
-        });
+		setSpatialFiltering(e.checked);
     }else if (e.target->is("Quick reaction")) {
-        followBigChanges = e.checked;
-        kinectgrabber.performInThread([e](KinectGrabber & kg) {
-            kg.setFollowBigChange(e.checked);
-        });
+        setFollowBigChanges(e.checked);
     } else if (e.target->is("Draw kinect depth view")){
         drawKinectView = e.checked;
     }
@@ -971,7 +992,7 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
     } else if(e.target->is("Averaging")){
         numAveragingSlots = e.value;
         kinectgrabber.performInThread([e](KinectGrabber & kg) {
-            kg.updateAveragingSlotsNumber(e.value);
+            kg.setAveragingSlotsNumber(e.value);
         });
     }
 }

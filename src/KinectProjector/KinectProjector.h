@@ -52,11 +52,14 @@ public:
     float elevationToKinectDepth(float elevation, float x, float y);
     ofVec2f gradientAtKinectCoord(float x, float y);
     
-    // Starting calibration functions
+    // Setup & calibration functions
     void startFullCalibration();
     void startAutomaticROIDetection();
     void startAutomaticKinectProjectorCalibration();
-        
+    void setGradFieldResolution(int gradFieldResolution);
+    void setSpatialFiltering(bool sspatialFiltering);
+    void setFollowBigChanges(bool sfollowBigChanges);
+    
     // Gui and event functions
     void setupGui();
     void onButtonEvent(ofxDatGuiButtonEvent e);
@@ -65,7 +68,7 @@ public:
     void onConfirmModalEvent(ofxModalEvent e);
     void onCalibModalEvent(ofxModalEvent e);
     
-    // External shaders functions
+    // Functions for shaders
     void bind(){
         FilteredDepthImage.getTexture().bind();
     }
@@ -107,29 +110,14 @@ public:
     bool isImageStabilized(){
         return imageStabilized;
     }
-    bool isBasePlaneUpdated(){ // Can be called only once after update
-        if (basePlaneUpdated){
-            basePlaneUpdated = false;
-            return true;
-        } else{
-            return false;
-        }
+    bool isBasePlaneUpdated(){ // To be called after update()
+        return basePlaneUpdated;
     }
-    bool isROIUpdated(){ // Can be called only once after update
-        if (ROIUpdated){
-            ROIUpdated = false;
-            return true;
-        } else{
-            return false;
-        }
+    bool isROIUpdated(){ // To be called after update()
+        return ROIUpdated;
     }
-    bool isCalibrationUpdated(){ // Can be called only once after update
-        if (projKinectCalibrationUpdated){
-            projKinectCalibrationUpdated = false;
-            return true;
-        } else{
-            return false;
-        }
+    bool isCalibrationUpdated(){ // To be called after update()
+        return projKinectCalibrationUpdated;
     }
     
 private:
@@ -237,7 +225,7 @@ private:
     
     //Gradient field variables
     int gradFieldcols, gradFieldrows;
-    double gradFieldresolution;
+    int gradFieldResolution;
     float arrowLength;
     int fishInd;
     

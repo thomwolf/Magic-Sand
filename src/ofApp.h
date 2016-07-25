@@ -2,21 +2,21 @@
 
 #include "ofMain.h"
 #include "ofxDatGui.h"
-#include "KinectProjector.h"
-#include "SandSurfaceRenderer.h"
+#include "KinectProjector/KinectProjector.h"
+#include "SandSurfaceRenderer/SandSurfaceRenderer.h"
 #include "vehicle.h"
-#include "Utils.h"
 
 class ofApp : public ofBaseApp {
 
 public:
 	void setup();
 	void exit(ofEventArgs& e);
+    
 	void addNewFish();
 	void addNewRabbit();
-	void addMotherFish();
-	void addMotherRabbit();
-	ofVec2f findRandomVehicleLocation(ofRectangle area, bool liveInWater);
+	bool addMotherFish();
+	bool addMotherRabbit();
+	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
 
 	void update();
 

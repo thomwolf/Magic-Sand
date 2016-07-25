@@ -2,19 +2,16 @@
 
 out vec4 outputColor;
 
-in float bug;
-//in vec2 varyingtexcoord;
+in float depthfrag;
 
 uniform sampler2DRect heightColorMapSampler;
 uniform sampler2DRect pixelCornerElevationSampler; // Sampler for the half pixel texture
 uniform float contourLineFactor;
 uniform int drawContourLines;
-//
-//in vec4 heightColorMapTexCoord; // Texture coordinate for the height color map
 
 void main()
 {
-    vec2 depthPos = vec2(bug, 0.5);//depthvalue*texsize, 0.5);
+    vec2 depthPos = vec2(depthfrag, 0.5);//depthvalue*texsize, 0.5);
     vec4 color =  texture(heightColorMapSampler, depthPos);	//colormap converted depth
 
     if (drawContourLines == 1)
@@ -58,28 +55,5 @@ void main()
         }
     }
 
-    outputColor = color;//vec4(bug/512, 0.0, 0.0, 1.0);//color;//texture1D(heightColorMapSampler,bug);//
+    outputColor = color;
 }
-
-//uniform sampler2DRect pixelCornerElevationSampler;
-//uniform float contourLineFactor;
-//
-//varying float col1; // Texture coordinate for the height color map
-//varying float color2; // Texture coordinate for the height color map
-
-//void main()
-//{
-//    /* Get the fragment's color from the height color map: */
-//    vec4 baseColor=texture1D(heightColorMapSampler,heightColorMapTexCoord);
-//
-//    /* Modulate the base color by contour line color: */
-//   // addContourLines(gl_FragCoord.xy,baseColor);
-//
-//    /* Assign the final color to the fragment: */
-//    gl_FragColor = baseColor; // vec4(1.0, 0.0, 0.0, 1.0);//
-//}
-
-void addContourLines(in vec2 fragCoord,inout vec4 baseColor)
-{
-}
-

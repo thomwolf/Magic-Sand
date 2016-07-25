@@ -34,7 +34,8 @@ public:
     
     void setFollowBigChange(bool newfollowBigChange);
     void setKinectROI(ofRectangle skinectROI);
-    void updateAveragingSlotsNumber(int snumAveragingSlots);
+    void setAveragingSlotsNumber(int snumAveragingSlots);
+    void setGradFieldResolution(int sgradFieldresolution);
     
     void decStoredframes(){
         storedframes -= 1;

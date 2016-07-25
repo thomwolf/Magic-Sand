@@ -12,9 +12,8 @@
 #include <iostream>
 #include "ofMain.h"
 
-#include "KinectProjector.h"
+#include "../KinectProjector/KinectProjector.h"
 #include "ColorMap.h"
-#include "Utils.h"
 #endif /* defined(__GreatSand__SandSurfaceRenderer__) */
 
 class SaveModal : public ofxModalWindow

@@ -3,7 +3,7 @@
 #include "ofxOpenCv.h"
 #include "ofxCv.h"
 
-#include "KinectProjector.h"
+#include "KinectProjector/KinectProjector.h"
 
 class Vehicle{
 
