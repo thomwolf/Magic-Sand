@@ -7,8 +7,6 @@ void ofApp::setup() {
 	ofSetVerticalSync(true);
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	ofSetLogLevel("ofThread", OF_LOG_WARNING);
-//	ofSetBackgroundAuto(false);
-	ofAddListener(ofEvents().exit, this, &ofApp::exit);
 
 	// Setup kinectProjector
 	kinectProjector = std::make_shared<KinectProjector>(projWindow);
@@ -34,9 +32,6 @@ void ofApp::setup() {
 	showMotherFish = false;
 	showMotherRabbit = false;
 	motherPlatformSize = 30;
-}
-
-void ofApp::exit(ofEventArgs& e) {
 }
 
 void ofApp::addNewFish(){

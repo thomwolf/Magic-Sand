@@ -2,22 +2,20 @@
 Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-Magic Sand is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](https://openframeworks.cc/).
+Magic Sand is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](openframeworks.cc/).
 
 Magic Sand was developed with the specific aim of simplifying the use of an augmented reality sandbox in a home/family environment.
 
-The following considerations guided its development :
-- operate on a standard laptop / home computer (no specific GPU requirement, run on Windows, Mac OS X and Linux).
-- automatic calibration & configuration of the Sandbox to be able to take out and put away quickly the sandbox.
-- graphic interface so that family/friends/kids can easily operate the sandbox.
-- being a extensible framework for sandbox games and applications development.
+The following considerations & requested features guided its development :
+- run on a mid-range laptop / home computer (no specific GPU requirement, Windows / Mac OS X / Linux).
+- self-calibration to easily disassemble and reassemble the sandbox.
+- simple, easy-to-use interface.
+- framework for future sandbox-based games and applications.
 
 ##Main Features
 
 Magic Sand operates on a computer connected to a home cinema projector and a kinect sensor.
-The software controls the projector to project colors as a function of the sand level measured by the kinect sensor.
-
-Magic Sand transforms a sandbox in a colorful playground.
+The software controls the projector to project colors as a function of the sand level measured by the kinect sensor and transforms a sandbox in a colorful playground.
 
 A simple game is included in which animals (fish and rabbits) populate the sandbox.
 The user can help the animals to reach their mothers by digging rivers or building mountains in the sand.
@@ -31,7 +29,7 @@ Magic Sand does not provide dynamic rain features (typically require a stronger 
 
 ##Source Code
 ###Dependencies
-Magic Sand is based on [openframeworks](https://openframeworks.cc/) release 0.9.3 and makes use of the following addons:
+Magic Sand is based on [openframeworks](openframeworks.cc/) release 0.9.3 and makes use of the following addons:
 - official addons (included in openframeworks 0.9.3)
   * ofxOpenCv
   * ofxKinect
@@ -47,29 +45,34 @@ The code was designed to be easily extendable so that additional games can be ea
 
 The `KinectProjector` class handles the communication with the kinect sensor, the calibration and the coordinates conversions between kinect (2D), world (3D) and projector (2D) coordinate systems.
 
-You can create a `KinectProjector` object as a `shared_ptr` in the `setup()` function of your openframeworks app. You need to give it a pointer to the projector window on construction (see `main.cpp` on how to properly setup two windows in openframeworks)
-```
-std::shared_ptr<ofAppBaseWindow> projWindow;
-std::shared_ptr<KinectProjector> kinectProjector;
-
-kinectProjector = std::make_shared<KinectProjector>(projWindow);
-kinectProjector->setup(true);
-```
-`setup(true)` indicates that the GUI of the `kinectProjector` will be displayed (right side of the main screen).
+You can create a `KinectProjector` object as a `shared_ptr` in the `setup()` function of your openframeworks app. It requires a pointer to the projector window (see `main.cpp` on how to properly setup two windows in openframeworks and get a pointer to the projector window).
 
 The `kinectProjector` object can be shared among the various objects that need access to depth and conversions functions (not multi-thread proof of course).
 
-In the following example a SandSurfaceRenderer object is created (the `SandSurfaceRenderer` class takes care of displaying the colors on the sand using a editable colormap):
+For instance, a `SandSurfaceRenderer` object can be constructed with a pointer to the `kinectProjector` shared object. (the `SandSurfaceRenderer` class convert depth information in color using a editable colormap and display these colors on the sand).
+
+A typical `setup()` function of a openframeworks app can thus reads:
 ```
+std::shared_ptr<ofAppBaseWindow> projWindow;
+std::shared_ptr<KinectProjector> kinectProjector;
 SandSurfaceRenderer* sandSurfaceRenderer;
 
-sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
-sandSurfaceRenderer->setup(true);
+void ofApp::setup() {
+	kinectProjector = std::make_shared<KinectProjector>(projWindow);
+	kinectProjector->setup(true);
+
+	sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
+	sandSurfaceRenderer->setup(true);
+}
 ```
-`setup(true)` indicates that the GUI of the `sandSurfaceRenderer` will be displayed  (left side of the main screen).
-The `kinectProjector` object need to be updated in the `update()` function of your openframeworks app before the other object that use its functions and drawn in the projector `draw()` function.
+`setup(true)` indicates that the GUI of the `kinectProjector` and the `sandSurfaceRenderer` will be displayed.
+
+The `kinectProjector` object then needs to be updated in the `update()` function of the openframeworks app (preferably before the objects that use its functions) and drawn in the projector `draw()` function.
+
+The `kinectProjector` object needs full control on the projector window during the calibration process so you should be careful not to draw things on the projector window after the call to `kinectProjector->drawProjectorWindow()` if a calibration is currently performed (you can check `kinectProjector->isCalibrating()`).
 
 The following example illustrates the `update()` and `draw()` functions to implement a simple augmented reality sandbox once the `kinectProjector` and `sandSurfaceRenderer` objects have been initiated as detailed above and provided that the projector window has a listener callback setup to the `drawProjWindow(ofEventArgs &args)` function (see `main.cpp`).
+
 ```
 void ofApp::update(){
   kinectProjector->update();
@@ -84,31 +87,34 @@ void ofApp::drawProjWindow(ofEventArgs &args){
   }
 }
 ```
-The kinectProjector object needs full control on the projector window during the calibration process so you should be careful not to draw things on the projector window after the call to `kinectProjector->drawProjectorWindow()` if a calibration is performed (you can check `kinectProjector->isCalibrating()`).
 
-Magic Sand itself forms a simple example on how to use the main `KinectProjector` class to make a simple game.
+The source code of Magic Sand itself is a simple example on how to use the main `KinectProjector` class to make a simple game.
 
 ###kinectProjector Functions
 
 ####Shader functions
-The `sandSurfaceRenderer` class shows example of shaders that can be used to compute color based on the texture computed by the `KinectProjector` object.
+The `sandSurfaceRenderer` class shows example of shaders that can be used to compute color and how to set uniforms.
 
-The following function of `KinectProjector` are used
+The following function of `KinectProjector` are of special interest to setup a uniform.
+
 ```
 void bind();
 void unbind();
 ofMatrix4x4 getTransposedKinectWorldMatrix();
 ofMatrix4x4 getTransposedKinectProjMatrix();
 ```
+The `sampler2DRect` received in the shader is normalized between 0 and 1, a conversion scale thus has to be also sent.
 
 ####Coordinate conversion / elevation functions
-The following function provide conversions between the three coordinate systems as well as elevation/gradient at a given point.
+Three coordinate systems can be used:
+- the kinect coordinate system of the 2D kinect image : (x, y) in pixel units with origin in the top-left corner,
+- the world coordinate system: a 3D coordinate system (x, y, z) in millimeters units originating from the kinect sensor with z axis extending from the kinect sensor, x the horizontal axis of the kinect sensor and y the vertical axis, and
+- the projector coordinate system of the 2D projector image : (x, y) in pixel units with origin in the top-left corner.
 
-The three coordinate systems are:
-- the kinect coordinate system in the 2D kinect image : (x, y) in pixel units with origin in the top-left corner,
-- the world coordinate system: a 3D coordinate system (x, y, z)in millimeters units originating from the kinect sensor with z axis extending from the kinect sensor, x the horizontal axis of the kinect sensor and y the vertical axis, and
-- the projector coordinate system in the 2D projector image : (x, y) in pixel units with origin in the top-left corner.
+The most straighforward conversion goes from kinect coordinates to world coordinate system and projector coordinate system.
+If you want to animate or display objects, a natural choice would thus be to store then in kinect coordinate and to perform the conversion on display.
 
+The following functions provide conversions between the coordinate systems:
 ```
 ofVec2f worldCoordToProjCoord(ofVec3f vin);
 ofVec3f projCoordAndWorldZToWorldCoord(float projX, float projY, float worldZ);
@@ -117,7 +123,7 @@ ofVec3f kinectCoordToWorldCoord(float x, float y);
 ofVec2f worldCoordTokinectCoord(ofVec3f wc);
 ```
 
-Another value used is the `elevation` which is the distance of a point in world coordinate to a 3D base plane that is defined by:
+Another value that can be used is the `elevation` which is the distance from a point in world coordinate to a 3D base plane of that is defined by:
 - a normal (`getBasePlaneNormal()`) and an offset (`getBasePlaneOffset()`), or
 - a plane equation (`getBasePlaneEq()`).
 

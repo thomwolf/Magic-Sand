@@ -10,7 +10,6 @@ class ofApp : public ofBaseApp {
 
 public:
 	void setup();
-	void exit(ofEventArgs& e);
     
 	void addNewFish();
 	void addNewRabbit();
