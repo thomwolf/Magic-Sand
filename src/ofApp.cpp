@@ -5,7 +5,7 @@ void ofApp::setup() {
 	ofSetFrameRate(60);
 	ofBackground(0);
 	ofSetVerticalSync(true);
-	ofSetLogLevel(OF_LOG_VERBOSE);
+//	ofSetLogLevel(OF_LOG_VERBOSE);
 	ofSetLogLevel("ofThread", OF_LOG_WARNING);
 
 	// Setup kinectProjector
