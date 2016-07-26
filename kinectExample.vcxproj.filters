@@ -139,23 +139,23 @@
     <ClCompile Include="..\..\..\addons\ofxParagraph\src\ofxParagraph.cpp">
       <Filter>addons\ofxParagraph\src</Filter>
     </ClCompile>
-    <ClCompile Include="src\KinectProjector.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\KinectProjectorCalibration.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\KinectGrabber.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\vehicle.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="src\ColorMap.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\KinectProjector\KinectProjector.cpp">
+      <Filter>src\KinectProjector</Filter>
     </ClCompile>
-    <ClCompile Include="src\SandSurfaceRenderer.cpp">
-      <Filter>src</Filter>
+    <ClCompile Include="src\KinectProjector\KinectProjectorCalibration.cpp">
+      <Filter>src\KinectProjector</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KinectProjector\KinectGrabber.cpp">
+      <Filter>src\KinectProjector</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SandSurfaceRenderer\SandSurfaceRenderer.cpp">
+      <Filter>src\SandSurfaceRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SandSurfaceRenderer\ColorMap.cpp">
+      <Filter>src\SandSurfaceRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -371,6 +371,12 @@
     </Filter>
     <Filter Include="addons\ofxParagraph\src">
       <UniqueIdentifier>{49cafda0-29c4-4afb-9eb8-de4f6cafc53b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\KinectProjector">
+      <UniqueIdentifier>{ecb46e3a-0e0c-4aaf-b590-b869205d5a36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\SandSurfaceRenderer">
+      <UniqueIdentifier>{4b543213-7a5b-4369-bde0-8d0b94a47c04}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -1085,28 +1091,28 @@
     <ClInclude Include="..\..\..\addons\ofxParagraph\src\ofxParagraph.h">
       <Filter>addons\ofxParagraph\src</Filter>
     </ClInclude>
-    <ClInclude Include="src\KinectProjector.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KinectProjectorCalibration.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Utils.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\KinectGrabber.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="src\vehicle.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\ColorMap.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\SandSurfaceRenderer.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="resource2.h" />
+    <ClInclude Include="src\KinectProjector\KinectProjector.h">
+      <Filter>src\KinectProjector</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KinectProjector\KinectProjectorCalibration.h">
+      <Filter>src\KinectProjector</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KinectProjector\Utils.h">
+      <Filter>src\KinectProjector</Filter>
+    </ClInclude>
+    <ClInclude Include="src\KinectProjector\KinectGrabber.h">
+      <Filter>src\KinectProjector</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SandSurfaceRenderer\SandSurfaceRenderer.h">
+      <Filter>src\SandSurfaceRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\SandSurfaceRenderer\ColorMap.h">
+      <Filter>src\SandSurfaceRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Magic Sand2.rc" />

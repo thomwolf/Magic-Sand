@@ -194,10 +194,9 @@ C:\Users\WOLF\Documents\Personnel\of_v0.9.3_vs_release\addons\ofxParagraph\src</
     <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
     <ClCompile Include="..\..\..\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
     <ClCompile Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
-    <ClCompile Include="src\ColorMap.cpp" />
-    <ClCompile Include="src\KinectGrabber.cpp" />
-    <ClCompile Include="src\KinectProjector.cpp" />
-    <ClCompile Include="src\KinectProjectorCalibration.cpp" />
+    <ClCompile Include="src\KinectProjector\KinectGrabber.cpp" />
+    <ClCompile Include="src\KinectProjector\KinectProjector.cpp" />
+    <ClCompile Include="src\KinectProjector\KinectProjectorCalibration.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="..\..\..\addons\ofxKinect\src\extra\ofxKinectExtras.cpp" />
@@ -220,7 +219,8 @@ C:\Users\WOLF\Documents\Personnel\of_v0.9.3_vs_release\addons\ofxParagraph\src</
     <ClCompile Include="..\..\..\addons\ofxOpenCv\src\ofxCvHaarFinder.cpp" />
     <ClCompile Include="..\..\..\addons\ofxOpenCv\src\ofxCvColorImage.cpp" />
     <ClCompile Include="..\..\..\addons\ofxOpenCv\src\ofxCvContourFinder.cpp" />
-    <ClCompile Include="src\SandSurfaceRenderer.cpp" />
+    <ClCompile Include="src\SandSurfaceRenderer\ColorMap.cpp" />
+    <ClCompile Include="src\SandSurfaceRenderer\SandSurfaceRenderer.cpp" />
     <ClCompile Include="src\vehicle.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -270,10 +270,10 @@ C:\Users\WOLF\Documents\Personnel\of_v0.9.3_vs_release\addons\ofxParagraph\src</
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\libs\tinyxml.h" />
     <ClInclude Include="..\..\..\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
     <ClInclude Include="resource2.h" />
-    <ClInclude Include="src\ColorMap.h" />
-    <ClInclude Include="src\KinectGrabber.h" />
-    <ClInclude Include="src\KinectProjector.h" />
-    <ClInclude Include="src\KinectProjectorCalibration.h" />
+    <ClInclude Include="src\KinectProjector\KinectGrabber.h" />
+    <ClInclude Include="src\KinectProjector\KinectProjector.h" />
+    <ClInclude Include="src\KinectProjector\KinectProjectorCalibration.h" />
+    <ClInclude Include="src\KinectProjector\Utils.h" />
     <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="..\..\..\addons\ofxKinect\src\extra\ofxKinectExtras.h" />
     <ClInclude Include="..\..\..\addons\ofxKinect\src\ofxKinect.h" />
@@ -466,8 +466,8 @@ C:\Users\WOLF\Documents\Personnel\of_v0.9.3_vs_release\addons\ofxParagraph\src</
     <ClInclude Include="..\..\..\addons\ofxOpenCv\libs\opencv\include\opencv\cxeigen.hpp" />
     <ClInclude Include="..\..\..\addons\ofxOpenCv\libs\opencv\include\opencv\highgui.h" />
     <ClInclude Include="..\..\..\addons\ofxOpenCv\libs\opencv\include\opencv\cv.hpp" />
-    <ClInclude Include="src\SandSurfaceRenderer.h" />
-    <ClInclude Include="src\Utils.h" />
+    <ClInclude Include="src\SandSurfaceRenderer\ColorMap.h" />
+    <ClInclude Include="src\SandSurfaceRenderer\SandSurfaceRenderer.h" />
     <ClInclude Include="src\vehicle.h" />
   </ItemGroup>
   <ItemGroup>
