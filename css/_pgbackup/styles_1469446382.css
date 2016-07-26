@@ -158,14 +158,12 @@ footer
     -webkit-transition: padding .2s ease-in;
     -moz-transition: padding .2s ease-in;
     transition: padding 0.2s ease-in;
-    font-size: 18px;
-    height: 50px;
 }
 
 .navbar-header > .navbar-brand:hover,
 .navbar-header > .navbar-brand:focus
 {
-    color: #4299ed;
+    color: #8B27B0;
 }
 
 .navbar-default .navbar-toggle:focus,
@@ -192,7 +190,7 @@ footer
 .navbar-default .nav > li > a:hover,
 .navbar-default .nav > li > a:focus:hover
 {
-    color: #4299ed;
+    color: #00519E;
 }
 
 .navbar-default .nav > li.active > a,
@@ -224,7 +222,7 @@ footer
     .navbar-default .navbar-header .navbar-brand:hover,
     .navbar-default .navbar-header .navbar-brand:focus
     {
-        color: #4299ed;
+        color: #005EB8;
     }
     .navbar-default .nav > li > a,
     .navbar-default .nav > li > a:focus
@@ -237,7 +235,7 @@ footer
     .navbar-default .nav > li > a:hover,
     .navbar-default .nav > li > a:focus:hover
     {
-        color: #4299ed;
+        color: #000eb5;
     }
     .navbar-default.affix
     {
@@ -246,9 +244,10 @@ footer
     }
     .navbar-default.affix .navbar-header .navbar-brand
     {
-        font-size: 18px;
+        font-size: 15px;
         color: #005EB8;
-        padding: 19px;
+        padding: 20px;
+        letter-spacing: 1px;
     }
     .navbar-default.affix .navbar-header .navbar-brand:hover,
     .navbar-default.affix .navbar-header .navbar-brand:focus
@@ -263,7 +262,7 @@ footer
     .navbar-default.affix .nav > li > a:hover,
     .navbar-default.affix .nav > li > a:focus:hover
     {
-        color: #4299ed;
+        color: #005EB8;
     }
 }
 
@@ -274,14 +273,13 @@ header
     text-align: center;
     color: #FFF;
     width: 100%;
-    background-color: #000000;
-    background-image: url('../img/Sandbox_small.jpg');
+    background-color: #C9C9C9;
+    background-image: url('https://splashbase.s3.amazonaws.com/lifeofpix/regular/Life-of-Pix-free-stock-photos-Slate-Stone-Xeromatic-1440x953.jpg');
+    background-position: center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
-    -o-background-size: cover;
     background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    -o-background-size: cover;
 }
 
 header .header-content
@@ -491,12 +489,11 @@ textarea
 .btn-default
 {
     border-color: #FFF;
-    color: #dddddd;
-    background-color: rgba(255, 255, 255, 0);
+    color: #222;
+    background-color: #FFF;
     -webkit-transition: all .35s;
     -moz-transition: all .35s;
     transition: all 0.35s;
-    border: 1px solid white;
 }
 
 .btn-default:hover,
@@ -508,7 +505,7 @@ textarea
 {
     border-color: #EDEDED;
     color: #222;
-    background-color: #ffffff;
+    background-color: #F2F2F2;
     opacity: 0.7;
 }
 
@@ -566,7 +563,7 @@ fieldset[disabled] .btn-default.active
 
 .btn
 {
-    border: 1px solid white;
+    border: 0;
     border-radius: 290px;
     font-family: 'Helvetica Neue', Arial, sans-serif;
 }

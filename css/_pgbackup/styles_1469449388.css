@@ -158,8 +158,6 @@ footer
     -webkit-transition: padding .2s ease-in;
     -moz-transition: padding .2s ease-in;
     transition: padding 0.2s ease-in;
-    font-size: 18px;
-    height: 50px;
 }
 
 .navbar-header > .navbar-brand:hover,
@@ -246,9 +244,10 @@ footer
     }
     .navbar-default.affix .navbar-header .navbar-brand
     {
-        font-size: 18px;
+        font-size: 15px;
         color: #005EB8;
-        padding: 19px;
+        padding: 20px;
+        letter-spacing: 1px;
     }
     .navbar-default.affix .navbar-header .navbar-brand:hover,
     .navbar-default.affix .navbar-header .navbar-brand:focus
@@ -276,12 +275,12 @@ header
     width: 100%;
     background-color: #000000;
     background-image: url('../img/Sandbox_small.jpg');
+    background-position: center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
     background-repeat: no-repeat;
-    background-position: center;
 }
 
 header .header-content

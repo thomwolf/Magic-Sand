@@ -158,8 +158,6 @@ footer
     -webkit-transition: padding .2s ease-in;
     -moz-transition: padding .2s ease-in;
     transition: padding 0.2s ease-in;
-    font-size: 18px;
-    height: 50px;
 }
 
 .navbar-header > .navbar-brand:hover,
@@ -246,9 +244,10 @@ footer
     }
     .navbar-default.affix .navbar-header .navbar-brand
     {
-        font-size: 18px;
+        font-size: 15px;
         color: #005EB8;
-        padding: 19px;
+        padding: 20px;
+        letter-spacing: 1px;
     }
     .navbar-default.affix .navbar-header .navbar-brand:hover,
     .navbar-default.affix .navbar-header .navbar-brand:focus
@@ -274,14 +273,13 @@ header
     text-align: center;
     color: #FFF;
     width: 100%;
-    background-color: #000000;
-    background-image: url('../img/Sandbox_small.jpg');
+    background-color: #C9C9C9;
+    background-image: url('https://splashbase.s3.amazonaws.com/lifeofpix/regular/Life-of-Pix-free-stock-photos-Slate-Stone-Xeromatic-1440x953.jpg');
+    background-position: center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
-    -o-background-size: cover;
     background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    -o-background-size: cover;
 }
 
 header .header-content
