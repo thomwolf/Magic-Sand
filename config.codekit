@@ -618,6 +618,17 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
+	"\/files\/explication.png": {
+		"fileType": 32768,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"initialSize": 0,
+		"inputAbbreviatedPath": "\/files\/explication.png",
+		"outputAbbreviatedPath": "\/files\/explication.png",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"processed": 0
+		},
 	"\/img\/Sandbox_small.jpg": {
 		"fileType": 16384,
 		"ignore": 0,
