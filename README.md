@@ -40,12 +40,20 @@ Magic Sand is based on [openframeworks](openframeworks.cc/) release 0.9.3 and ma
   * [ofxDatGui (forked version)](https://github.com/thomwolf/ofxDatGui)
   * [ofxModal](https://github.com/braitsch/ofxModal)
 
-###Quick start
-The code was designed to be easily extendable so that additional games can be easily developed on its basis.
+###Quick start for editing the source code
+- Grab a copy of [openframeworks](http://openframeworks.cc/download/) for your OS.
+- Grab the additionnal community addons listed above.
+- If you are a windows user, install the kinect drivers as detailed on the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)
+- Enjoy ! (Xcode / VS2015 project files are supplied, should work also on linux and probably Raspberry-Pi but I haven't had time to try it yet)
+
+Be sure to check the [openframeworks](http://openframeworks.cc/) documentation and forum if you don't know it yet, it is an amazing community !
+
+### How it can be used
+The code was designed trying to be easily extendable so that additional games/apps can be developed on its basis.
 
 The `KinectProjector` class handles the communication with the kinect sensor, the calibration and the coordinates conversions between kinect (2D), world (3D) and projector (2D) coordinate systems.
 
-You can create a `KinectProjector` object as a `shared_ptr` in the `setup()` function of your openframeworks app. It requires a pointer to the projector window (see `main.cpp` on how to properly setup two windows in openframeworks and get a pointer to the projector window).
+You can create a `KinectProjector` object as a `shared_ptr` in the `setup()` function of your openframeworks app. It requires a pointer to the projector window (see provided `main.cpp` on how to properly setup two windows in openframeworks and get a pointer to the projector window).
 
 The `kinectProjector` object can be shared among the various objects that need access to depth and conversions functions (not multi-thread proof of course).
 
