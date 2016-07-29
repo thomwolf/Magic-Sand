@@ -1,3 +1,5 @@
+**For Windows/Mac OSX compiled versions and use instructions, please go to the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)**
+
 # Magic Sand
 Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
