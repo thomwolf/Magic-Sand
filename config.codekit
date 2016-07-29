@@ -191,6 +191,15 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
+	"\/_pgbackup\/index_1469800132.html": {
+		"fileType": 8192,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/_pgbackup\/index_1469800132.html",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
 	"\/_pgbackup\/pinegrow_1469444373.json": {
 		"fileType": 524288,
 		"ignore": 1,
@@ -411,6 +420,17 @@
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 1
 		},
+	"\/_pgbackup\/pinegrow_1469800132.json": {
+		"fileType": 524288,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/_pgbackup\/pinegrow_1469800132.json",
+		"orderOutput": 0,
+		"outputAbbreviatedPath": "\/_pgbackup\/pinegrow_1469800132-min.json",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1
+		},
 	"\/css\/_pgbackup\/styles_1469443791.css": {
 		"fileType": 16,
 		"ignore": 0,
@@ -600,6 +620,15 @@
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0
 		},
+	"\/css\/_pgbackup\/styles_1469800132.css": {
+		"fileType": 16,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/css\/_pgbackup\/styles_1469800132.css",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
 	"\/css\/bootstrap.min.css": {
 		"fileType": 16,
 		"ignore": 0,
@@ -622,7 +651,7 @@
 		"fileType": 32768,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"initialSize": 0,
+		"initialSize": 547998,
 		"inputAbbreviatedPath": "\/files\/explication.png",
 		"outputAbbreviatedPath": "\/files\/explication.png",
 		"outputPathIsOutsideProject": 0,
@@ -633,7 +662,7 @@
 		"fileType": 16384,
 		"ignore": 0,
 		"ignoreWasSetByUser": 0,
-		"initialSize": 201683,
+		"initialSize": 190629,
 		"inputAbbreviatedPath": "\/img\/Sandbox_small.jpg",
 		"outputAbbreviatedPath": "\/img\/Sandbox_small.jpg",
 		"outputPathIsOutsideProject": 0,

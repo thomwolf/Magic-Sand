@@ -392,10 +392,9 @@ footer
 .form-control:focus
 {
     color: #222;
-    background-color: #FFF;
+    background-color: #CCC;
     box-shadow: none;
 }
-
 
 textarea
 {
@@ -563,7 +562,6 @@ fieldset[disabled] .btn-default.active
 .btn.btn-primary:hover
 {
     opacity: 0.7;
-    color: #000000;
 }
 
 .btn
