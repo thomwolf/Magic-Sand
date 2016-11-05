@@ -1,4 +1,5 @@
-**For Windows/Mac OSX compiled versions and use instructions, please go to the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)**
+## To download the latest read-to-use version of the software (for Windows/Mac OSX) and find the doc, please go to the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)
+## For detailed instructions on how to build an interactive sandbox, please go to the [tutorial page](https://imgur.com/gallery/Q86wR) and/or check the [reddit thread](https://www.reddit.com/r/DIY/comments/4v1gfi/a_magic_sandbox_i_made_for_my_3_yo_sons_birthday/)
 
 # Magic Sand
 Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
