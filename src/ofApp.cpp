@@ -53,6 +53,9 @@ void ofApp::setup() {
 	showMotherFish = false;
 	showMotherRabbit = false;
 	motherPlatformSize = 30;
+
+	//Start Position
+	ofVec2f firePos;
 }
 
 void ofApp::addNewFish(){
@@ -65,10 +68,20 @@ void ofApp::addNewFish(){
 
 void ofApp::addNewRabbit(){
     ofVec2f location;
+	ofVec2f fireSpawnPos;
+	fireSpawnPos.set(60, 60);
     setRandomVehicleLocation(kinectROI, false, location);
     auto r = Rabbit(kinectProjector, location, kinectROI, motherRabbit);
     r.setup();
     rabbits.push_back(r);
+}
+
+void ofApp::addNewFire(ofVec2f fireSpawnPos) {
+	ofVec2f location;
+	setFixedVehicleLocation(fireSpawnPos, false, location);
+	auto r = Rabbit(kinectProjector, location, kinectROI, motherRabbit);
+	r.setup();
+	rabbits.push_back(r);
 }
 
 bool ofApp::addMotherFish(){
@@ -114,6 +127,23 @@ bool ofApp::addMotherRabbit(){
     return true;
 }
 
+//Fixed Position for Rabbits : Simon
+bool ofApp::setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location){
+	bool okwater = false;
+	int countFixed = 0;
+	int maxCount = 100;
+	while (!okwater && countFixed < maxCount) {
+		countFixed++;
+		bool insideWater = kinectProjector->elevationAtKinectCoord(pos.x, pos.y) < 0;
+		if ((insideWater && liveInWater) || (!insideWater && !liveInWater)) {
+			location = pos;
+			okwater = true;
+		}
+	}
+	return okwater;
+	}
+
+
 bool ofApp::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location){
     bool okwater = false;
     int count = 0;
@@ -151,7 +181,8 @@ void ofApp::update() {
 	    }
 	    drawVehicles();
 	}
-	gui->update();
+	//gui->update();
+	gui2->update();
 }
 
 
@@ -159,7 +190,8 @@ void ofApp::draw() {
 	sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);//400, 20, 400, 300);
 	fboVehicles.draw(300, 30, 600, 450);
 	kinectProjector->drawMainWindow(300, 30, 600, 450);
-	gui->draw();
+	//gui->draw();
+	gui2->draw();
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args) {
@@ -321,74 +353,104 @@ void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 void ofApp::setupGui(){
     // instantiate and position the gui //
-    gui = new ofxDatGui();
-    gui->addSlider("# of fish", 0, 10, fish.size())->setPrecision(0);
-    gui->addSlider("# of rabbits", 0, 10, rabbits.size())->setPrecision(0);
-    gui->addToggle("Mother fish", showMotherFish);
-    gui->addToggle("Mother rabbit", showMotherRabbit);
-    gui->addButton("Remove all animals");
-    gui->addBreak();
-    gui->addHeader(":: Game ::", false);
+ //   gui = new ofxDatGui();
+ //   gui->addSlider("# of fish", 0, 10, fish.size())->setPrecision(0);	
+ //   gui->addSlider("# of rabbits", 0, 10, rabbits.size())->setPrecision(0);
+ //   gui->addToggle("Mother fish", showMotherFish);
+ //   gui->addToggle("Mother rabbit", showMotherRabbit);
+	//gui->addButton("Remove all animals");
+ //   gui->addBreak();
+ //   gui->addHeader(":: Game ::", false);
+	
+	//Fire Simulation GUI : Simon
+	gui2 = new ofxDatGui(ofxDatGuiAnchor::BOTTOM_LEFT);
+	gui2->add2dPad("Fire position", kinectROI);
+	gui2->addSlider("Temperature", 0, 50);
+	gui2->addSlider("Moisture of soil", 0, 100);
+	gui2->addSlider("Wind speed", 0, 10);
+	gui2->addSlider("Wind direction", 0, 360);
+	gui2->addButton("Start fire");
+	gui2->addButton("Reset");
+	gui2->addHeader(":: Fire simulation ::", false);
 
-    gui->onButtonEvent(this, &ofApp::onButtonEvent);
-    gui->onToggleEvent(this, &ofApp::onToggleEvent);
-    gui->onSliderEvent(this, &ofApp::onSliderEvent);
-    gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+	// once the gui has been assembled, register callbacks to listen for component specific events //
+    //gui->onButtonEvent(this, &ofApp::onButtonEvent);
+    //gui->onToggleEvent(this, &ofApp::onToggleEvent);
+    //gui->onSliderEvent(this, &ofApp::onSliderEvent);
+	gui2->onButtonEvent(this, &ofApp::onButtonEvent);
+	gui2->on2dPadEvent(this, &ofApp::on2dPadEvent);
+	gui2->onSliderEvent(this, &ofApp::onSliderEvent);
     
-    gui->setPosition(ofxDatGuiAnchor::BOTTOM_RIGHT); // You have to do it at the end
-	gui->setAutoDraw(false); // troubles with multiple windows drawings on Windows
+/*	gui->setLabelAlignment(ofxDatGuiAlignment::CENTER);
+    gui->setPosition(ofxDatGuiAnchor::BOTTOM_RIGHT);*/ // You have to do it at the end
+	
+/*	gui->setAutoDraw(false);*/ // troubles with multiple windows drawings on Windows
+	gui2->setAutoDraw(false);
 }
 
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
-    if (e.target->is("Remove all animals")) {
-        fish.clear();
-        rabbits.clear();
-        showMotherFish = false;
-        showMotherRabbit = false;
-        gui->getSlider("# of fish")->setValue(0);
-        gui->getSlider("# of rabbits")->setValue(0);
-        gui->getToggle("Mother fish")->setChecked(false);
-        gui->getToggle("Mother rabbit")->setChecked(false);
-    }
+    //if (e.target->is("Remove all animals")) {
+    //    fish.clear();
+    //    rabbits.clear();
+    //    showMotherFish = false;
+    //    showMotherRabbit = false;
+    //    gui->getSlider("# of fish")->setValue(0);
+    //    gui->getSlider("# of rabbits")->setValue(0);
+    //    gui->getToggle("Mother fish")->setChecked(false);
+    //    gui->getToggle("Mother rabbit")->setChecked(false);
+    //}
+	
+	if (e.target->is("Start fire")) {
+		addNewFire(firePos);
+	}
+	if (e.target->is("Reset")) {
+		rabbits.clear();
+		gui2->get2dPad("Fire position")->reset();
+	}
 }
 
 void ofApp::onToggleEvent(ofxDatGuiToggleEvent e){
-    if (e.target->is("Mother fish")) {
-        if (!showMotherFish) {
-            if (!addMotherFish())
-                e.target->setChecked(false);
-        } else {
-            showMotherFish = e.checked;
-        }
-    } else if (e.target->is("Mother rabbit")) {
-        if (!showMotherRabbit) {
-            if (!addMotherRabbit())
-                e.target->setChecked(false);
-        } else {
-            showMotherRabbit = e.checked;
-        }
-    }
+    //if (e.target->is("Mother fish")) {
+    //    if (!showMotherFish) {
+    //        if (!addMotherFish())
+    //            e.target->setChecked(false);
+    //    } else {
+    //        showMotherFish = e.checked;
+    //    }
+    //} else if (e.target->is("Mother rabbit")) {
+    //    if (!showMotherRabbit) {
+    //        if (!addMotherRabbit())
+    //            e.target->setChecked(false);
+    //    } else {
+    //        showMotherRabbit = e.checked;
+    //    }
+    //}
+}
+void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e) {
+	if (e.target->is("Fire position")) {
+		firePos.set(e.x, e.y);
+	}
 }
 
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
-    if (e.target->is("# of fish")) {
-        if (e.value > fish.size())
-            while (e.value > fish.size()){
-                addNewFish();
-            }
-        if (e.value < fish.size())
-            while (e.value < fish.size()){
-                fish.pop_back();
-            }
+    //if (e.target->is("# of fish")) {
+    //    if (e.value > fish.size())
+    //        while (e.value > fish.size()){
+    //            addNewFish();
+    //        }
+    //    if (e.value < fish.size())
+    //        while (e.value < fish.size()){
+    //            fish.pop_back();
+    //        }
 
-    } else if (e.target->is("# of rabbits")) {
-        if (e.value > rabbits.size())
-            while (e.value > rabbits.size()){
-                addNewRabbit();
-            }
-        if (e.value < rabbits.size())
-            while (e.value < rabbits.size()){
-                rabbits.pop_back();
-            }
-    }
+    //} else if (e.target->is("# of rabbits")) {
+    //    if (e.value > rabbits.size())
+    //        while (e.value > rabbits.size()){
+    //            addNewRabbit();
+    //        }
+    //    if (e.value < rabbits.size())
+    //        while (e.value < rabbits.size()){
+    //            rabbits.pop_back();
+    //        }
+    //}
 }
