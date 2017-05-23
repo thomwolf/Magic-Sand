@@ -1,7 +1,7 @@
-ofxKinect
-ofxOpenCv
-ofxXmlSettings
 ofxCv
 ofxDatGui
+ofxKinect
 ofxModal
+ofxOpenCv
 ofxParagraph
+ofxXmlSettings
