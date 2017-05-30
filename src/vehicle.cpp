@@ -78,13 +78,13 @@ ofPoint Vehicle::bordersEffect(){
         border = false;
     }
     
-    desired = target - location;
-    desired.normalize();
-    desired *= topSpeed;
+    //desired = target - location;
+    //desired.normalize();
+    //desired *= topSpeed;
     
     ofPoint velocityChange(0);
-    velocityChange = desired - velocity;
-    velocityChange.limit(maxVelocityChange);
+    //velocityChange = desired - velocity;
+    //velocityChange.limit(maxVelocityChange);
     return velocityChange;
 }
 
@@ -92,72 +92,72 @@ ofPoint Vehicle::wanderEffect(){
     
     ofPoint velocityChange, desired;
     
-    wandertheta += ofRandom(-change,change);     // Randomly change wander theta
-    
-    ofPoint front = velocity;
-    front.normalize();
-    front *= wanderD;
-    ofPoint circleloc = location + front;
-    
-	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
-    
-    ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+h),wanderR*sin(wandertheta+h));
-    ofPoint target = circleloc + circleOffSet;
-    
-    desired = target - location;
-    desired.normalize();
-    desired *= topSpeed;
-    
-    velocityChange = desired - velocity;
-    velocityChange.limit(maxVelocityChange);
-    
+ //   wandertheta += ofRandom(-change,change);     // Randomly change wander theta
+ //   
+ //   ofPoint front = velocity;
+ //   front.normalize();
+ //   front *= wanderD;
+ //   ofPoint circleloc = location + front;
+ //   
+	//float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+ //   
+ //   ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+h),wanderR*sin(wandertheta+h));
+ //   ofPoint target = circleloc + circleOffSet;
+ //   
+ //   desired = target - location;
+ //   desired.normalize();
+ //   desired *= topSpeed;
+ //   
+ //   velocityChange = desired - velocity;
+ //   velocityChange.limit(maxVelocityChange);
+ //   
     return velocityChange;
 }
 
 ofPoint Vehicle::slopesEffect(){
     ofPoint desired, velocityChange;
     
-    desired = beachSlope;
-    desired.normalize();
-    desired *= topSpeed;
-    if(beach){
-        desired /= beachDist; // The closest the beach is, the more we want to avoid it
-    }
-    velocityChange = desired - velocity;
-    velocityChange.limit(maxVelocityChange);
+    //desired = beachSlope;
+    //desired.normalize();
+    //desired *= topSpeed;
+    //if(beach){
+    //    desired /= beachDist; // The closest the beach is, the more we want to avoid it
+    //}
+    //velocityChange = desired - velocity;
+    //velocityChange.limit(maxVelocityChange);
     
     return velocityChange;
 }
 
 ofPoint Vehicle::seekEffect(){
     ofPoint desired;
-    desired = motherLocation - location;
-    
-    float d = desired.length();
-    desired.normalize();
-    
-    //If we are closer than XX pixels slow down
-    if (d < 10) {
-        desired *= ofMap(d,0,100,0,topSpeed);
-        mother = true;
-    } else {
-        //Otherwise, proceed at maximum speed.
-        desired *= topSpeed;
-    }
-    
+    //desired = motherLocation - location;
+    //
+    //float d = desired.length();
+    //desired.normalize();
+    //
+    ////If we are closer than XX pixels slow down
+    //if (d < 10) {
+    //    desired *= ofMap(d,0,100,0,topSpeed);
+    //    mother = true;
+    //} else {
+    //    //Otherwise, proceed at maximum speed.
+    //    desired *= topSpeed;
+    //}
+    //
     ofPoint velocityChange;
-    velocityChange = desired - velocity;
-    velocityChange.limit(maxVelocityChange);
-    
-    //If we are further than XX pixels we don't see the mother
-    if (d > 100) {
-        velocityChange = ofPoint(0);
-    }
+    //velocityChange = desired - velocity;
+    //velocityChange.limit(maxVelocityChange);
+    //
+    ////If we are further than XX pixels we don't see the mother
+    //if (d > 100) {
+    //    velocityChange = ofPoint(0);
+    //}
     
     return velocityChange;
 }
 
-//--------------------------------------------------------------
+//-------------------------------------------------------------- Thomas Wolf
 //ofPoint Vehicle::separateEffect(vector<vehicle> vehicles){
 ////    float desiredseparation = r*2;
 //    ofPoint velocityChange;
@@ -199,7 +199,7 @@ std::vector<ofVec2f> Vehicle::getForces(void)
 void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
     globalVelocityChange += velocityChange;
 }
-
+// Movement: vehicle update rotation ...
 void Vehicle::update(){
     projectorCoord = kinectProjector->kinectCoordToProjCoord(location.x, location.y);
     if (!mother || velocity.lengthSquared() != 0)
@@ -369,7 +369,7 @@ void Rabbit::setup(){
     desiredseparation = 24;
     maxVelocityChange = 1;
     maxRotation = 360;
-    topSpeed =3;
+    topSpeed = 1;
     velocityIncreaseStep = 2;
     maxStraightPath = 20;
     minVelocity = velocityIncreaseStep;
@@ -378,36 +378,36 @@ void Rabbit::setup(){
     maxWaitingTime = 10;
     setWait = false;
 }
-
+// Rotation vom Rabbit : Simon
 ofPoint Rabbit::wanderEffect(){
     
     ofPoint velocityChange, desired;
     
-    wandertheta = ofRandom(-change,change);     // Randomly change wander theta
-    
-    float currDir = ofDegToRad(angle);
-    ofPoint front = ofVec2f(cos(currDir), sin(currDir));
-    
-    front.normalize();
-    front *= wanderD;
-    ofPoint circleloc = location + front;
-    
-    //    float h = ofRadToDeg(atan2(front.x,front.y));
-    //	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
-    
-    ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+currDir),wanderR*sin(wandertheta+currDir));
-    ofPoint target = circleloc + circleOffSet;
-    
-    desired = target - location;
-    desired.normalize();
-    desired *= topSpeed;
-    
-    velocityChange = desired;// - velocity;
-    velocityChange.limit(maxVelocityChange);
+    //wandertheta = ofRandom(-change,change);     // Randomly change wander theta
+    //
+    //float currDir = ofDegToRad(angle);
+    //ofPoint front = ofVec2f(cos(currDir), sin(currDir));
+    //
+    //front.normalize();
+    //front *= wanderD;
+    //ofPoint circleloc = location + front;
+    //
+    ////    float h = ofRadToDeg(atan2(front.x,front.y));
+    ////	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+    //
+    //ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+currDir),wanderR*sin(wandertheta+currDir));
+    //ofPoint target = circleloc + circleOffSet;
+    //
+    //desired = target - location;
+    //desired.normalize();
+    //desired *= topSpeed;
+    //
+    //velocityChange = desired;// - velocity;
+    //velocityChange.limit(maxVelocityChange);
     
     return velocityChange;
 }
-
+// Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mögl.
 void Rabbit::applyBehaviours(bool seekMother){
     updateBeachDetection();
     
@@ -509,5 +509,3 @@ void Rabbit::draw()//, std::vector<ofVec2f> forces)
     // restore the pushed state
     ofPopMatrix();
 }
-
-

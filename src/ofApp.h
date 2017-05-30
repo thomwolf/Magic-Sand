@@ -34,8 +34,11 @@ public:
     
 	void addNewFish();
 	void addNewRabbit();
+	void addNewFire(ofVec2f fireSpawnPos);
 	bool addMotherFish();
 	bool addMotherRabbit();
+
+	bool setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location);
 	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
 
 	void update();
@@ -61,6 +64,7 @@ public:
 	void setupGui();
 	void onButtonEvent(ofxDatGuiButtonEvent e);
 	void onToggleEvent(ofxDatGuiToggleEvent e);
+	void on2dPadEvent(ofxDatGui2dPadEvent e);
 	void onSliderEvent(ofxDatGuiSliderEvent e);
 
 	std::shared_ptr<ofAppBaseWindow> projWindow;
@@ -90,7 +94,11 @@ private:
 	bool showMotherRabbit;
 	float motherPlatformSize;
 	bool waitingToInitialiseVehicles;
-	
+
+	//Fire Variables : Simon
+	ofVec2f firePos;
+
 	// GUI
-	ofxDatGui* gui;
+	//ofxDatGui* gui; 
+	ofxDatGui* gui2;
 };
