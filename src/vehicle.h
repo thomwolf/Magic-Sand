@@ -64,6 +64,7 @@ protected:
     ofPoint seekEffect();
     ofPoint bordersEffect();
     ofPoint slopesEffect();
+	ofPoint hillEffect();
     virtual ofPoint wanderEffect();
     void applyVelocityChange(const ofPoint & force);
     
@@ -80,6 +81,7 @@ protected:
     ofVec2f bordersF ;
     ofVec2f slopesF ;
     ofVec2f wanderF ;
+	ofVec2f hillF;
 
     bool beach;
     bool border;

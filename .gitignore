@@ -335,3 +335,9 @@ xcuserdata/
 /*.gcno
 
 # End of https://www.gitignore.io/api/osx,xcode,windows
+
+bin/data/settings/calibration.xml
+bin/data/settings/calibration.xml
+bin/data/settings/kinectProjectorSettings.xml
+bin/data/settings/calibration.xml
+bin/data/settings/kinectProjectorSettings.xml

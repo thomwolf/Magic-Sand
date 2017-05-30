@@ -91,7 +91,7 @@ ofPoint Vehicle::bordersEffect(){
 ofPoint Vehicle::wanderEffect(){
     
     ofPoint velocityChange, desired;
-    
+
  //   wandertheta += ofRandom(-change,change);     // Randomly change wander theta
  //   
  //   ofPoint front = velocity;
@@ -110,9 +110,33 @@ ofPoint Vehicle::wanderEffect(){
  //   
  //   velocityChange = desired - velocity;
  //   velocityChange.limit(maxVelocityChange);
- //   
     return velocityChange;
 }
+
+// Determine Elevation and return velocity change depending on Height
+
+ofPoint Vehicle::hillEffect() {
+	ofPoint velocityChange, futureLocation, currentLocation;
+	float futureelevation, currentelevation;
+
+	currentLocation = location;
+	futureLocation = location + velocity * 10;
+	currentelevation = kinectProjector->elevationAtKinectCoord(currentLocation.x, currentLocation.y);
+	futureelevation = kinectProjector->elevationAtKinectCoord(futureLocation.x,futureLocation.y);
+	//cout << velocity << endl;
+	//cout << futureelevation << "Future Elevation" << currentelevation << "Current Elevation" << endl;
+	if (currentelevation > futureelevation) {
+		cout << "Going DOWNHILL" << endl;
+	}
+	if (currentelevation < futureelevation) {
+		cout << "Going UPHILL" << endl;
+	}
+	if (currentelevation == futureelevation) {
+		cout << "FLATLAND" << endl;
+	}
+	return velocityChange;
+}
+
 
 ofPoint Vehicle::slopesEffect(){
     ofPoint desired, velocityChange;
@@ -125,7 +149,7 @@ ofPoint Vehicle::slopesEffect(){
     //}
     //velocityChange = desired - velocity;
     //velocityChange.limit(maxVelocityChange);
-    
+
     return velocityChange;
 }
 
@@ -208,7 +232,7 @@ void Vehicle::update(){
         velocity.limit(topSpeed);
         location += velocity;
         globalVelocityChange *= 0;
-        
+
         float desiredAngle = ofRadToDeg(atan2(velocity.y,velocity.x));
         float angleChange = desiredAngle - angle;
         angleChange += (angleChange > 180) ? -360 : (angleChange < -180) ? 360 : 0; // To take into account that the difference between -180 and 180 is 0 and not 360
@@ -276,6 +300,8 @@ void Fish::applyBehaviours(bool seekMother){
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();
+	// added from Simon
+	hillF = hillEffect();
     
     //    separateF*=1;//2;
     seekF *= 1;
@@ -418,6 +444,7 @@ void Rabbit::applyBehaviours(bool seekMother){
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();
+	hillF = hillEffect();
     
     ofPoint littleSlopeF = slopesF;
     
