@@ -407,7 +407,7 @@ ofPoint Rabbit::wanderEffect(){
     
     return velocityChange;
 }
-// Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mˆgl.
+// Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier m√∂gl.
 void Rabbit::applyBehaviours(bool seekMother){
     updateBeachDetection();
     
@@ -485,74 +485,27 @@ void Rabbit::applyBehaviours(bool seekMother){
 
 void Rabbit::draw()//, std::vector<ofVec2f> forces)
 {
+    // saves the current coordinate system
     ofPushMatrix();
     ofTranslate(projectorCoord);
     ofRotate(angle);
     
-    // Rabbit scale
-    float sc = 1;
+    ofColor color = ofColor(255,128,0);
+    
+    float sc = 20;
     
     ofFill();
-    ofSetLineWidth(1.0);  // Line widths apply to polylines
     
-    ofColor c1 = ofColor(255);
-    ofColor c2 = ofColor(0);
-    if (mother)
-    {
-        float nv = 255;
-        int fact = 50;
-        float et = ofGetElapsedTimef();
-        float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
-        c1.setHsb((int)hsb, 255, 255); // rainbow
-        c2.setHsb(255-(int)hsb, 255, 255);
-    }
-    // Aussehen vom Rabbit 
-    ofPath body;
-	body.rectangle(ofPoint(-2 * sc, 5.5*sc), 10 * sc, 10 * sc);
-    //body.curveTo( ofPoint(-2*sc, 5.5*sc));
-    //body.curveTo( ofPoint(-2*sc, 5.5*sc));
-    //body.curveTo( ofPoint(-9*sc, 7.5*sc));
-    //body.curveTo( ofPoint(-17*sc, 0*sc));
-    //body.curveTo( ofPoint(-9*sc, -7.5*sc));
-    //body.curveTo( ofPoint(-2*sc, -5.5*sc));
-    //body.curveTo( ofPoint(4*sc, 0*sc));
-    //body.curveTo( ofPoint(4*sc, 0*sc));
-    body.close();
-	//RED RABBITS : Simon
-	ofColor red(255, 0, 0);
-	ofSetColor(red);
-
-    ofSetColor(c1);
-    body.setFillColor(red);
-    body.draw();
+    ofPath flame;
+    flame.arc(0,-3*sc,3*sc,3*sc,90,270);
+    flame.arc(0,-5*sc,sc,sc,90,270);
+    flame.arc(0,-2*sc,2*sc,2*sc,270,90);
+    flame.setFillColor(color);
+    flame.setStrokeWidth(0);
+    flame.draw();
     
-    //ofSetColor(c2);
-    //ofDrawCircle(-19*sc, 0, 2*sc);
-
-    //ofPath head;
-    //head.curveTo( ofPoint(0, 1.5*sc));
-    //head.curveTo( ofPoint(0, 1.5*sc));
-    //head.curveTo( ofPoint(-3*sc, 1.5*sc));
-    //head.curveTo( ofPoint(-9*sc, 3.5*sc));
-    //head.curveTo( ofPoint(0, 5.5*sc));
-    //head.curveTo( ofPoint(8*sc, 0));
-    //head.curveTo( ofPoint(0, -5.5*sc));
-    //head.curveTo( ofPoint(-9*sc, -3.5*sc));
-    //head.curveTo( ofPoint(-3*sc, -1.5*sc));
-    //head.curveTo( ofPoint(0, -1.5*sc));
-    //head.curveTo( ofPoint(0, -1.5*sc));
-    //head.close();
-    //ofSetColor(c2);
-    //head.setFillColor(c2);
-    //head.draw();
+    ofNoFill();
     
-    //ofSetColor(c1);
-    //ofDrawCircle(8.5*sc, 0, 1*sc);
-
-    //ofSetColor(255);
-    //ofNoFill();
-
+    // restore the pushed state
     ofPopMatrix();
 }
-
-
