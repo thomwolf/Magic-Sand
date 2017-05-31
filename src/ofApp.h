@@ -33,7 +33,7 @@ public:
 	void setup();
     
 	void addNewFish();
-	void addNewRabbit();
+	void addNewFire();
 	void addNewFire(ofVec2f fireSpawnPos);
 	bool addMotherFish();
 	bool addMotherRabbit();
@@ -83,9 +83,9 @@ private:
 
 	// Fish and Rabbits
 	vector<Fish> fish;
-	vector<Rabbit> rabbits;
+	vector<Fire> fires;
 	int fishNum;
-	int rabbitsNum;
+	int fireNum;
 	
 	// Fish and Rabbits mothers
 	ofPoint motherFish;

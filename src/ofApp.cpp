@@ -66,22 +66,22 @@ void ofApp::addNewFish(){
     fish.push_back(f);
 }
 
-void ofApp::addNewRabbit(){
+void ofApp::addNewFire(){
     ofVec2f location;
 	ofVec2f fireSpawnPos;
 	fireSpawnPos.set(60, 60);
     setRandomVehicleLocation(kinectROI, false, location);
-    auto r = Rabbit(kinectProjector, location, kinectROI, motherRabbit);
+    auto r = Fire(kinectProjector, location, kinectROI, motherRabbit);
     r.setup();
-    rabbits.push_back(r);
+    fires.push_back(r);
 }
 
 void ofApp::addNewFire(ofVec2f fireSpawnPos) {
 	ofVec2f location;
 	setFixedVehicleLocation(fireSpawnPos, false, location);
-	auto r = Rabbit(kinectProjector, location, kinectROI, motherRabbit);
+	auto r = Fire(kinectProjector, location, kinectROI, motherRabbit);
 	r.setup();
-	rabbits.push_back(r);
+	fires.push_back(r);
 }
 
 bool ofApp::addMotherFish(){
@@ -120,7 +120,7 @@ bool ofApp::addMotherRabbit(){
     // Set the mother Rabbit plateform location over the sea level
     motherRabbit.z = kinectProjector->elevationToKinectDepth(10, motherRabbit.x, motherRabbit.y);
     
-    for (auto & r: rabbits){
+    for (auto & r: fires){
         r.setMotherLocation(motherRabbit);
     }
     showMotherRabbit = true;
@@ -175,7 +175,7 @@ void ofApp::update() {
 	        f.applyBehaviours(showMotherFish);
 	        f.update();
 	    }
-	    for (auto & r : rabbits){
+	    for (auto & r : fires){
 	        r.applyBehaviours(showMotherRabbit);
 	        r.update();
 	    }
@@ -214,7 +214,7 @@ void ofApp::drawVehicles()
     for (auto & f : fish){
         f.draw();
     }
-    for (auto & r : rabbits){
+    for (auto & r : fires){
         r.draw();
     }
     fboVehicles.end();
@@ -404,7 +404,7 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
 		addNewFire(firePos);
 	}
 	if (e.target->is("Reset")) {
-		rabbits.clear();
+		fires.clear();
 		gui2->get2dPad("Fire position")->reset();
 	}
 }

@@ -379,10 +379,10 @@ void Fish::draw()
 }
 
 //==============================================================
-// Derived class Rabbit
+// Derived class Fire
 //==============================================================
 
-void Rabbit::setup(){
+void Fire::setup(){
     minborderDist = 50;
     internalBorders = borders;
     internalBorders.scaleFromCenter((borders.width-minborderDist)/borders.width, (borders.height-minborderDist)/borders.height);
@@ -405,7 +405,7 @@ void Rabbit::setup(){
     setWait = false;
 }
 // Rotation vom Rabbit : Simon
-ofPoint Rabbit::wanderEffect(){
+ofPoint Fire::wanderEffect(){
     
     ofPoint velocityChange, desired;
     
@@ -434,7 +434,7 @@ ofPoint Rabbit::wanderEffect(){
     return velocityChange;
 }
 // Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mögl.
-void Rabbit::applyBehaviours(bool seekMother){
+void Fire::applyBehaviours(bool seekMother){
     updateBeachDetection();
     
     //    separateF = separateEffect(vehicles);
@@ -510,7 +510,7 @@ void Rabbit::applyBehaviours(bool seekMother){
     }
 }
 
-void Rabbit::draw()//, std::vector<ofVec2f> forces)
+void Fire::draw()//, std::vector<ofVec2f> forces)
 {
     // saves the current coordinate system
     ofPushMatrix();

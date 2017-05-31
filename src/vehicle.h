@@ -120,9 +120,9 @@ private:
     ofPoint wanderEffect();
 };
 
-class Rabbit : public Vehicle {
+class Fire : public Vehicle {
 public:
-    Rabbit(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, false, motherLocation){}
+    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, false, motherLocation){}
     
     void setup();
     void applyBehaviours(bool seekMother);
