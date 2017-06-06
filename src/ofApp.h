@@ -63,9 +63,8 @@ public:
 
 	void setupGui();
 	void onButtonEvent(ofxDatGuiButtonEvent e);
-	void onToggleEvent(ofxDatGuiToggleEvent e);
 	void on2dPadEvent(ofxDatGui2dPadEvent e);
-	void onSliderEvent(ofxDatGuiSliderEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
 
 	std::shared_ptr<ofAppBaseWindow> projWindow;
 
@@ -99,6 +98,5 @@ private:
 	ofVec2f firePos;
 
 	// GUI
-	//ofxDatGui* gui; 
-	ofxDatGui* gui2;
+	ofxDatGui* gui;
 };
