@@ -32,11 +32,8 @@ class ofApp : public ofBaseApp {
 public:
 	void setup();
     
-	void addNewFish();
 	void addNewFire();
 	void addNewFire(ofVec2f fireSpawnPos);
-	bool addMotherFish();
-	bool addMotherRabbit();
 
 	bool setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location);
 	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
@@ -46,8 +43,6 @@ public:
 	void draw();
 	void drawProjWindow(ofEventArgs& args);
 	void drawVehicles();
-	void drawMotherFish();
-	void drawMotherRabbit();
 
 	void keyPressed(int key);
 	void keyReleased(int key);
@@ -80,18 +75,10 @@ private:
 	// FBos
 	ofFbo fboVehicles;
 
-	// Fish and Rabbits
-	vector<Fish> fish;
+	// Fire
 	vector<Fire> fires;
-	int fishNum;
 	int fireNum;
 	
-	// Fish and Rabbits mothers
-	ofPoint motherFish;
-	ofPoint motherRabbit;
-	bool showMotherFish;
-	bool showMotherRabbit;
-	float motherPlatformSize;
 	bool waitingToInitialiseVehicles;
 
 	//Fire Variables : Simon

@@ -1,5 +1,5 @@
 /***********************************************************************
-vehicle.h - vehicle class (fish & rabbits moving in the sandbox)
+vehicle.h - vehicle class (fires moving in the sandbox)
 Copyright (c) 2016 Thomas Wolf
 
 This file is part of the Magic Sand.
@@ -29,11 +29,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 class Vehicle{
 
 public:
-    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f motherLocation);
+    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater);
     
     // Virtual functions
     virtual void setup() = 0;
-    virtual void applyBehaviours(bool seekMother) = 0;
+    virtual void applyBehaviours() = 0;
     virtual void draw() = 0;
     
     void update();
@@ -51,17 +51,8 @@ public:
         return angle;
     }
     
-    const bool foundMother() const {
-        return mother;
-    }
-    
-    void setMotherLocation(ofVec2f loc){
-        motherLocation = loc;
-    }
-    
 protected:
     void updateBeachDetection();
-    ofPoint seekEffect();
     ofPoint bordersEffect();
     ofPoint slopesEffect();
 	ofPoint hillEffect();
@@ -77,7 +68,6 @@ protected:
     float angle; // direction of the drawing
     
     ofVec2f separateF ;
-    ofVec2f seekF ;
     ofVec2f bordersF ;
     ofVec2f slopesF ;
     ofVec2f wanderF ;
@@ -85,9 +75,6 @@ protected:
 
     bool beach;
     bool border;
-    
-    bool mother;
-    ofVec2f motherLocation;
     
     // For slope effect
     float beachDist;
@@ -108,24 +95,13 @@ protected:
     float topSpeed;
 };
 
-class Fish : public Vehicle {
-public:
-    Fish(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, true, motherLocation){}
-
-    void setup();
-    void applyBehaviours(bool seekMother);
-    void draw();
-    
-private:
-    ofPoint wanderEffect();
-};
 
 class Fire : public Vehicle {
 public:
-    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, ofVec2f motherLocation) : Vehicle(k, slocation, sborders, false, motherLocation){}
+    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) : Vehicle(k, slocation, sborders, false){}
     
     void setup();
-    void applyBehaviours(bool seekMother);
+    void applyBehaviours();
     void draw();
 
 private:
