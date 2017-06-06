@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include "vehicle.h"
 
-Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f smotherLocation) {
+Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater) {
     kinectProjector = k;
     liveInWater = sliveInWater;
     location = slocation;
@@ -30,8 +30,6 @@ Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, o
     velocity.set(0.0, 0.0);
     angle = 0;
     wandertheta = 0;
-    mother = false;
-    motherLocation = smotherLocation;
 }
 
 void Vehicle::updateBeachDetection(){
@@ -153,33 +151,7 @@ ofPoint Vehicle::slopesEffect(){
     return velocityChange;
 }
 
-ofPoint Vehicle::seekEffect(){
-    ofPoint desired;
-    //desired = motherLocation - location;
-    //
-    //float d = desired.length();
-    //desired.normalize();
-    //
-    ////If we are closer than XX pixels slow down
-    //if (d < 10) {
-    //    desired *= ofMap(d,0,100,0,topSpeed);
-    //    mother = true;
-    //} else {
-    //    //Otherwise, proceed at maximum speed.
-    //    desired *= topSpeed;
-    //}
-    //
-    ofPoint velocityChange;
-    //velocityChange = desired - velocity;
-    //velocityChange.limit(maxVelocityChange);
-    //
-    ////If we are further than XX pixels we don't see the mother
-    //if (d > 100) {
-    //    velocityChange = ofPoint(0);
-    //}
-    
-    return velocityChange;
-}
+
 
 //-------------------------------------------------------------- Thomas Wolf
 //ofPoint Vehicle::separateEffect(vector<vehicle> vehicles){
@@ -213,7 +185,6 @@ std::vector<ofVec2f> Vehicle::getForces(void)
 {
     std::vector<ofVec2f> Forces;
     Forces.push_back( separateF);
-    Forces.push_back( seekF);
     Forces.push_back( bordersF);
     Forces.push_back( slopesF);
     Forces.push_back( wanderF);
@@ -226,7 +197,7 @@ void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
 // Movement: vehicle update rotation ...
 void Vehicle::update(){
     projectorCoord = kinectProjector->kinectCoordToProjCoord(location.x, location.y);
-    if (!mother || velocity.lengthSquared() != 0)
+    if ( velocity.lengthSquared() != 0)
     {
         velocity += globalVelocityChange;
         velocity.limit(topSpeed);
@@ -243,146 +214,11 @@ void Vehicle::update(){
     }
 }
 
-
 //==============================================================
-// Derived class Fish
-//==============================================================
-
-void Fish::setup(){
-    minborderDist = 50;
-    internalBorders = borders;
-    internalBorders.scaleFromCenter((borders.width-minborderDist)/borders.width, (borders.height-minborderDist)/borders.height);
-    
-    wanderR = 10;         // Radius for our "wander circle"
-    wanderD = 80;         // Distance for our "wander circle"
-    change = 0.3;
-    
-    r = 12;
-    desiredseparation = 24;
-    maxVelocityChange = 1;
-    maxRotation = 30;
-    topSpeed =2;
-}
-
-ofPoint Fish::wanderEffect(){
-    
-    ofPoint velocityChange, desired;
-    
-    wandertheta += ofRandom(-change,change);     // Randomly change wander theta
-    
-    ofPoint front = velocity;
-    front.normalize();
-    front *= wanderD;
-    ofPoint circleloc = location + front;
-    
-    float h = ofRadToDeg(atan2(front.y,front.x)); // Signed angle
-    
-    ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+h),wanderR*sin(wandertheta+h));
-    ofPoint target = circleloc + circleOffSet;
-    
-    desired = target - location;
-    desired.normalize();
-    desired *= topSpeed;
-    
-    velocityChange = desired - velocity;
-    velocityChange.limit(maxVelocityChange);
-    
-    return velocityChange;
-}
-
-void Fish::applyBehaviours(bool seekMother){
-    updateBeachDetection();
-    
-    //    separateF = separateEffect(vehicles);
-    seekF = ofVec2f(0);
-    if (seekMother)
-        seekF = seekEffect();
-    bordersF = bordersEffect();
-    slopesF = slopesEffect();
-    wanderF = wanderEffect();
-	// added from Simon
-	hillF = hillEffect();
-    
-    //    separateF*=1;//2;
-    seekF *= 1;
-    bordersF *=2;
-    slopesF *= 2;//2;
-    wanderF *= 0.8;
-    
-    if (beach){
-        applyVelocityChange(slopesF);
-    }
-    if (border){
-        applyVelocityChange(bordersF);
-    }
-    //    applyVelocityChange(separateF);
-    if (seekF.lengthSquared() == 0){
-        applyVelocityChange(wanderF);
-    } else {
-        applyVelocityChange(seekF);
-    }
-    //    currentForce = separateF+seekF+bordersF+slopesF;
-}
-
-void Fish::draw()
-{
-    ofPushMatrix();
-    ofTranslate(projectorCoord);
-    ofRotate(angle);
-    
-    // Compute tail angle
-    float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
-    float fact = 50+250*velocity.length()/topSpeed;
-    float tailangle = nv/25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50)-25);
-    
-    // Color of the fish
-    nv = 255;
-    fact = 50;
-    float hsb = nv/50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
-    
-    // Fish scale
-    float sc = 7;
-    float tailSize = 1*sc;
-    float fishLength = 2*sc;
-    float fishHead = tailSize;
-    
-    ofPolyline fish;
-    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
-    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle+0.8), tailSize*sin(tailangle+0.8)));
-    fish.curveTo( ofPoint(-fishLength, 0));
-    fish.curveTo( ofPoint(0, -fishHead));
-    fish.curveTo( ofPoint(fishHead, 0));
-    fish.curveTo( ofPoint(0, fishHead));
-    fish.curveTo( ofPoint(-fishLength, 0));
-    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
-    fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
-    fish.close();
-    ofSetLineWidth(2.0);
-    ofColor c = ofColor(255);
-    ofSetColor(c);
-    if (mother)
-    {
-        c.setHsb((int)hsb, 255, 255); // rainbow
-        ofFill();
-    } else {
-        ofNoFill();
-    }
-    fish.draw();
-    if (mother)
-    {
-        c.setHsb(255-(int)hsb, 255, 255); // rainbow
-        ofSetColor(c);
-    }
-    ofDrawCircle(0, 0, sc*0.5);
-    ofNoFill();
-    ofPopMatrix();
-}
-
-//==============================================================
-// Derived class Rabbit
+// Derived class Fire
 //==============================================================
 
-void Rabbit::setup(){
+void Fire::setup(){
     minborderDist = 50;
     internalBorders = borders;
     internalBorders.scaleFromCenter((borders.width-minborderDist)/borders.width, (borders.height-minborderDist)/borders.height);
@@ -405,7 +241,7 @@ void Rabbit::setup(){
     setWait = false;
 }
 // Rotation vom Rabbit : Simon
-ofPoint Rabbit::wanderEffect(){
+ofPoint Fire::wanderEffect(){
     
     ofPoint velocityChange, desired;
     
@@ -434,13 +270,10 @@ ofPoint Rabbit::wanderEffect(){
     return velocityChange;
 }
 // Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mögl.
-void Rabbit::applyBehaviours(bool seekMother){
+void Fire::applyBehaviours(){
     updateBeachDetection();
     
     //    separateF = separateEffect(vehicles);
-    seekF = ofVec2f(0);
-    if (seekMother)
-        seekF = seekEffect();
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();
@@ -449,7 +282,6 @@ void Rabbit::applyBehaviours(bool seekMother){
     ofPoint littleSlopeF = slopesF;
     
     //    separateF*=1;//2;
-    seekF *= 1;
     bordersF *=0.5;
     slopesF *= 2;//2;
     wanderF *= 1;// Used to introduce some randomness in the direction changes
@@ -469,12 +301,6 @@ void Rabbit::applyBehaviours(bool seekMother){
             //            oldDir.scale(topSpeed);
             wanderF = wanderEffect();
             ofPoint newDir;
-            if (seekF.lengthSquared() == 0){
-                newDir = wanderF;
-            } else {
-                newDir = seekF;
-            }
-
             //            newDir +=littleSlopeF;
             if (border)
                 newDir +=bordersF;
@@ -489,7 +315,7 @@ void Rabbit::applyBehaviours(bool seekMother){
             
         }
     } else {
-        if (!beach && !border && !mother && currentStraightPathLength < maxStraightPath)
+        if (!beach && !border && currentStraightPathLength < maxStraightPath)
         {
             
             applyVelocityChange(oldDir); // Just accelerate
@@ -510,7 +336,7 @@ void Rabbit::applyBehaviours(bool seekMother){
     }
 }
 
-void Rabbit::draw()//, std::vector<ofVec2f> forces)
+void Fire::draw()//, std::vector<ofVec2f> forces)
 {
     // saves the current coordinate system
     ofPushMatrix();

@@ -32,11 +32,8 @@ class ofApp : public ofBaseApp {
 public:
 	void setup();
     
-	void addNewFish();
-	void addNewRabbit();
+	void addNewFire();
 	void addNewFire(ofVec2f fireSpawnPos);
-	bool addMotherFish();
-	bool addMotherRabbit();
 
 	bool setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location);
 	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
@@ -46,8 +43,6 @@ public:
 	void draw();
 	void drawProjWindow(ofEventArgs& args);
 	void drawVehicles();
-	void drawMotherFish();
-	void drawMotherRabbit();
 
 	void keyPressed(int key);
 	void keyReleased(int key);
@@ -63,9 +58,8 @@ public:
 
 	void setupGui();
 	void onButtonEvent(ofxDatGuiButtonEvent e);
-	void onToggleEvent(ofxDatGuiToggleEvent e);
 	void on2dPadEvent(ofxDatGui2dPadEvent e);
-	void onSliderEvent(ofxDatGuiSliderEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
 
 	std::shared_ptr<ofAppBaseWindow> projWindow;
 
@@ -81,24 +75,15 @@ private:
 	// FBos
 	ofFbo fboVehicles;
 
-	// Fish and Rabbits
-	vector<Fish> fish;
-	vector<Rabbit> rabbits;
-	int fishNum;
-	int rabbitsNum;
+	// Fire
+	vector<Fire> fires;
+	int fireNum;
 	
-	// Fish and Rabbits mothers
-	ofPoint motherFish;
-	ofPoint motherRabbit;
-	bool showMotherFish;
-	bool showMotherRabbit;
-	float motherPlatformSize;
 	bool waitingToInitialiseVehicles;
 
 	//Fire Variables : Simon
 	ofVec2f firePos;
 
 	// GUI
-	//ofxDatGui* gui; 
-	ofxDatGui* gui2;
+	ofxDatGui* gui;
 };
