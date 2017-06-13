@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		05288EF9945F2C60656A8A43 /* KinectGrabber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C0EE041336290AC0FE2DAE9A /* KinectGrabber.cpp */; };
+		095DBD941EE6D98F00D0330E /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 095DBD921EE6D98F00D0330E /* Model.cpp */; };
 		096EA81C752D4F4B5B097194 /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 80324769DF9DC7E78112A12F /* ETF.cpp */; };
 		0CE085CDC42721EF4D39B2E4 /* ColorMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1329952A5F5D35E76BB42F00 /* ColorMap.cpp */; };
 		113F7BC7577B49D333FBF8C7 /* ofxDatGuiComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 994B09A072D1C1B41099AB39 /* ofxDatGuiComponent.cpp */; };
@@ -102,6 +103,8 @@
 		073BBFF16BE1F70F4D03978B /* dassert.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = dassert.h; path = src/KinectProjector/libs/dlib/dassert.h; sourceTree = SOURCE_ROOT; };
 		086953411CE79AFAEF23FAF9 /* flags.c */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.c; fileEncoding = 30; name = flags.c; path = ../of_v0.9.8_osx_release/addons/ofxKinect/libs/libfreenect/src/flags.c; sourceTree = SOURCE_ROOT; };
 		08E7EF1503E3B8D75C911C6F /* types_c.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = types_c.h; path = ../of_v0.9.8_osx_release/addons/ofxOpenCv/libs/opencv/include/opencv2/core/types_c.h; sourceTree = SOURCE_ROOT; };
+		095DBD921EE6D98F00D0330E /* Model.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		095DBD931EE6D98F00D0330E /* Model.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = Model.h; sourceTree = "<group>"; };
 		0AE1DB4D1DA5539737091F7B /* ofxDatGuiLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGuiLabel.h; path = ../of_v0.9.8_osx_release/addons/ofxDatGui/src/components/ofxDatGuiLabel.h; sourceTree = SOURCE_ROOT; };
 		0B6AC02ADBB14E6C68BC7A4C /* imgproc.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = imgproc.hpp; path = ../of_v0.9.8_osx_release/addons/ofxOpenCv/libs/opencv/include/opencv2/imgproc/imgproc.hpp; sourceTree = SOURCE_ROOT; };
 		0E06FDC13BA431B4FB3D1549 /* matrix_eigenvalue.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = matrix_eigenvalue.h; path = src/KinectProjector/libs/dlib/matrix/matrix_eigenvalue.h; sourceTree = SOURCE_ROOT; };
@@ -1339,6 +1342,8 @@
 				3BA5EAFC7A473D3C3B01587D /* SandSurfaceRenderer */,
 				90B7407A12B0FC9A41936FE5 /* vehicle.cpp */,
 				1C46BA18D11295D3BDC59E49 /* vehicle.h */,
+				095DBD921EE6D98F00D0330E /* Model.cpp */,
+				095DBD931EE6D98F00D0330E /* Model.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1569,6 +1574,7 @@
 				8FBBD600F2927EDDB023E8AC /* ofxDatGui.cpp in Sources */,
 				C0A64BAD4B9B03DE2FDD36C0 /* ofxKinectExtras.cpp in Sources */,
 				94338E73372C65FB89C2488E /* ofxKinect.cpp in Sources */,
+				095DBD941EE6D98F00D0330E /* Model.cpp in Sources */,
 				E7B94306FCF9857A1BE29F15 /* audio.c in Sources */,
 				D36FC89A5FADB7B8322A058B /* cameras.c in Sources */,
 				298C0BEBD4A6787FA019E7E2 /* core.c in Sources */,
