@@ -26,17 +26,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "KinectProjector/KinectProjector.h"
 #include "SandSurfaceRenderer/SandSurfaceRenderer.h"
 #include "vehicle.h"
+#include "Model.h"
 
 class ofApp : public ofBaseApp {
 
 public:
 	void setup();
-    
-	void addNewFire();
-	void addNewFire(ofVec2f fireSpawnPos);
-
-	bool setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location);
-	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
 
 	void update();
 
@@ -66,24 +61,19 @@ public:
 private:
 	std::shared_ptr<KinectProjector> kinectProjector;
 	SandSurfaceRenderer* sandSurfaceRenderer;
+    Model* model;
 	
 	// Projector and kinect variables
-	ofVec2f projRes;
-	ofVec2f kinectRes;
 	ofRectangle kinectROI;
 	
 	// FBos
 	ofFbo fboVehicles;
-
-	// Fire
-	vector<Fire> fires;
-	int fireNum;
-	
-	bool waitingToInitialiseVehicles;
 
 	//Fire Variables : Simon
 	ofVec2f firePos;
 
 	// GUI
 	ofxDatGui* gui;
+
+    void drawMainWindow(float x, float y, float width, float height);
 };

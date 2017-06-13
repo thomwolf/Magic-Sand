@@ -36,11 +36,13 @@ void ofApp::setup() {
 	// Setup sandSurfaceRenderer
 	sandSurfaceRenderer = new SandSurfaceRenderer(kinectProjector, projWindow);
 	sandSurfaceRenderer->setup(true);
-	
+
+    // Setup Model
+    model = new Model(kinectProjector);
+
 	// Retrieve variables
-	kinectRes = kinectProjector->getKinectRes();
-	projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
-	kinectROI = kinectProjector->getKinectROI();
+	ofVec2f projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
+    kinectROI = kinectProjector->getKinectROI();
 	
 	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboVehicles.begin();
@@ -50,57 +52,7 @@ void ofApp::setup() {
 	setupGui();
 }
 
-void ofApp::addNewFire(){
-    ofVec2f location;
-	ofVec2f fireSpawnPos;
-	fireSpawnPos.set(60, 60);
-    setRandomVehicleLocation(kinectROI, false, location);
-    auto r = Fire(kinectProjector, location, kinectROI);
-    r.setup();
-    fires.push_back(r);
-}
 
-void ofApp::addNewFire(ofVec2f fireSpawnPos) {
-	ofVec2f location;
-	setFixedVehicleLocation(fireSpawnPos, false, location);
-	auto r = Fire(kinectProjector, location, kinectROI);
-	r.setup();
-	fires.push_back(r);
-}
-
-//Fixed Position for Rabbits : Simon
-bool ofApp::setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location){
-	bool okwater = false;
-	int countFixed = 0;
-	int maxCount = 100;
-	while (!okwater && countFixed < maxCount) {
-		countFixed++;
-		bool insideWater = kinectProjector->elevationAtKinectCoord(pos.x, pos.y) < 0;
-		if ((insideWater && liveInWater) || (!insideWater && !liveInWater)) {
-			location = pos;
-			okwater = true;
-		}
-	}
-	return okwater;
-	}
-
-
-bool ofApp::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location){
-    bool okwater = false;
-    int count = 0;
-    int maxCount = 100;
-    while (!okwater && count < maxCount) {
-        count++;
-        float x = ofRandom(area.getLeft(),area.getRight());
-        float y = ofRandom(area.getTop(),area.getBottom());
-        bool insideWater = kinectProjector->elevationAtKinectCoord(x, y) < 0;
-        if ((insideWater && liveInWater) || (!insideWater && !liveInWater)){
-            location = ofVec2f(x, y);
-            okwater = true;
-        }
-    }
-    return okwater;
-}
 
 void ofApp::update() {
     // Call kinectProjector->update() first during the update function()
@@ -112,10 +64,7 @@ void ofApp::update() {
         kinectROI = kinectProjector->getKinectROI();
 
 	if (kinectProjector->isImageStabilized()) {
-	    for (auto & r : fires){
-	        r.applyBehaviours();
-	        r.update();
-	    }
+        model->update();
 	    drawVehicles();
 	}
 	gui->update();
@@ -123,10 +72,14 @@ void ofApp::update() {
 
 
 void ofApp::draw() {
-	sandSurfaceRenderer->drawMainWindow(300, 30, 600, 450);//400, 20, 400, 300);
-	fboVehicles.draw(300, 30, 600, 450);
-	kinectProjector->drawMainWindow(300, 30, 600, 450);
+    drawMainWindow(300, 30, 600, 450);
 	gui->draw();
+}
+
+void ofApp::drawMainWindow(float x, float y, float width, float height){
+    sandSurfaceRenderer->drawMainWindow(x, y, width, height);
+    fboVehicles.draw(x, y, width, height);
+    kinectProjector->drawMainWindow(x, y, width, height);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args) {
@@ -142,9 +95,7 @@ void ofApp::drawVehicles()
 {
     fboVehicles.begin();
     ofClear(255,255,255, 0);
-    for (auto & r : fires){
-        r.draw();
-    }
+    model->draw();
     fboVehicles.end();
 }
 
@@ -218,10 +169,10 @@ void ofApp::setupGui(){
 
 void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
 	if (e.target->is("Start fire")) {
-		addNewFire(firePos);
+		model->addNewFire(firePos);
 	}
 	if (e.target->is("Reset")) {
-		fires.clear();
+		model->clear();
 		gui->get2dPad("Fire position")->reset();
 	}
 }
