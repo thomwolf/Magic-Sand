@@ -26,29 +26,13 @@ void Model::addNewFire(){
 }
 
 void Model::addNewFire(ofVec2f fireSpawnPos) {
-    ofVec2f location;
-    setFixedVehicleLocation(fireSpawnPos, false, location);
-    auto f = Fire(kinectProjector, location, kinectROI);
+    if (kinectProjector->elevationAtKinectCoord(fireSpawnPos.x, fireSpawnPos.y) < 0){
+        return;
+    }
+    auto f = Fire(kinectProjector, fireSpawnPos, kinectROI);
     f.setup();
     fires.push_back(f);
 }
-
-//Fixed Position for Rabbits : Simon
-bool Model::setFixedVehicleLocation(ofVec2f pos, bool liveInWater, ofVec2f & location){
-    bool okwater = false;
-    int countFixed = 0;
-    int maxCount = 100;
-    while (!okwater && countFixed < maxCount) {
-        countFixed++;
-        bool insideWater = kinectProjector->elevationAtKinectCoord(pos.x, pos.y) < 0;
-        if ((insideWater && liveInWater) || (!insideWater && !liveInWater)) {
-            location = pos;
-            okwater = true;
-        }
-    }
-    return okwater;
-}
-
 
 bool Model::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location){
     bool okwater = false;
