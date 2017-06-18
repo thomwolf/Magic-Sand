@@ -90,24 +90,24 @@ ofPoint Vehicle::wanderEffect(){
     
     ofPoint velocityChange, desired;
 
- //   wandertheta += ofRandom(-change,change);     // Randomly change wander theta
- //   
- //   ofPoint front = velocity;
- //   front.normalize();
- //   front *= wanderD;
- //   ofPoint circleloc = location + front;
- //   
-	//float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
- //   
- //   ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+h),wanderR*sin(wandertheta+h));
- //   ofPoint target = circleloc + circleOffSet;
- //   
- //   desired = target - location;
- //   desired.normalize();
- //   desired *= topSpeed;
- //   
- //   velocityChange = desired - velocity;
- //   velocityChange.limit(maxVelocityChange);
+    wandertheta += ofRandom(-change,change);     // Randomly change wander theta
+    
+    ofPoint front = velocity;
+    front.normalize();
+    front *= wanderD;
+    ofPoint circleloc = location + front;
+    
+	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
+    
+    ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+h),wanderR*sin(wandertheta+h));
+    ofPoint target = circleloc + circleOffSet;
+    
+    desired = target - location;
+    desired.normalize();
+    desired *= topSpeed;
+    
+    velocityChange = desired - velocity;
+    velocityChange.limit(maxVelocityChange);
     return velocityChange;
 }
 
@@ -121,16 +121,15 @@ ofPoint Vehicle::hillEffect() {
 	futureLocation = location + velocity * 10;
 	currentelevation = kinectProjector->elevationAtKinectCoord(currentLocation.x, currentLocation.y);
 	futureelevation = kinectProjector->elevationAtKinectCoord(futureLocation.x,futureLocation.y);
-	//cout << velocity << endl;
-	//cout << futureelevation << "Future Elevation" << currentelevation << "Current Elevation" << endl;
 	if (currentelevation > futureelevation) {
-		cout << "Going DOWNHILL" << endl;
+		velocityChange = ofPoint(-0.5,0,0);
 	}
 	if (currentelevation < futureelevation) {
-		cout << "Going UPHILL" << endl;
+		velocityChange = velocity * 2;
+
 	}
 	if (currentelevation == futureelevation) {
-		cout << "FLATLAND" << endl;
+		//no Velocity Change 
 	}
 	return velocityChange;
 }
@@ -139,56 +138,16 @@ ofPoint Vehicle::hillEffect() {
 ofPoint Vehicle::slopesEffect(){
     ofPoint desired, velocityChange;
     
-    //desired = beachSlope;
-    //desired.normalize();
-    //desired *= topSpeed;
-    //if(beach){
-    //    desired /= beachDist; // The closest the beach is, the more we want to avoid it
-    //}
-    //velocityChange = desired - velocity;
-    //velocityChange.limit(maxVelocityChange);
+    desired = beachSlope;
+    desired.normalize();
+    desired *= topSpeed;
+    if(beach){
+        desired /= beachDist; // The closest the beach is, the more we want to avoid it
+    }
+    velocityChange = desired - velocity;
+    velocityChange.limit(maxVelocityChange);
 
     return velocityChange;
-}
-
-
-
-//-------------------------------------------------------------- Thomas Wolf
-//ofPoint Vehicle::separateEffect(vector<vehicle> vehicles){
-////    float desiredseparation = r*2;
-//    ofPoint velocityChange;
-//    int count = 0;
-//    ofPoint diff;
-//    vector<vehicle>::iterator other;
-//    for (other = vehicles.begin(); other < vehicles.end(); other++){
-//        float d = (location - other->getLocation()).length();
-//        if((d>0) && (d < desiredseparation)){
-//            diff = location - other->getLocation();
-//            diff.normalize();
-//            diff /= d;
-//            velocityChange+= diff;
-//            count ++;
-//        }
-//    }
-//    if(count > 0){
-//        velocityChange /= count;
-//        velocityChange.normalize();
-//        velocityChange*=topSpeed;
-//
-//        velocityChange -= velocity;
-//        velocityChange.limit(maxVelocityChange);
-//    }
-//    return velocityChange;
-//}
-
-std::vector<ofVec2f> Vehicle::getForces(void)
-{
-    std::vector<ofVec2f> Forces;
-    Forces.push_back( separateF);
-    Forces.push_back( bordersF);
-    Forces.push_back( slopesF);
-    Forces.push_back( wanderF);
-    return Forces;
 }
 
 void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
@@ -197,21 +156,21 @@ void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
 // Movement: vehicle update rotation ...
 void Vehicle::update(){
     projectorCoord = kinectProjector->kinectCoordToProjCoord(location.x, location.y);
-    if ( velocity.lengthSquared() != 0)
-    {
-        velocity += globalVelocityChange;
-        velocity.limit(topSpeed);
-        location += velocity;
-        globalVelocityChange *= 0;
+    //if ( velocity.lengthSquared() != 0)
+    //{
+    velocity += globalVelocityChange;
+    velocity.limit(topSpeed);
+    location += velocity;
+    globalVelocityChange *= 0;
 
-        float desiredAngle = ofRadToDeg(atan2(velocity.y,velocity.x));
-        float angleChange = desiredAngle - angle;
-        angleChange += (angleChange > 180) ? -360 : (angleChange < -180) ? 360 : 0; // To take into account that the difference between -180 and 180 is 0 and not 360
-        angleChange *= velocity.length();
-        angleChange /= topSpeed;
-        angleChange = max(min(angleChange, maxRotation), -maxRotation);
-        angle += angleChange;
-    }
+    float desiredAngle = ofRadToDeg(atan2(velocity.y,velocity.x));
+    float angleChange = desiredAngle - angle;
+    angleChange += (angleChange > 180) ? -360 : (angleChange < -180) ? 360 : 0; // To take into account that the difference between -180 and 180 is 0 and not 360
+    angleChange *= velocity.length();
+    angleChange /= topSpeed;
+    angleChange = max(min(angleChange, maxRotation), -maxRotation);
+    angle += angleChange;
+ /*   }*/
 }
 
 //==============================================================
@@ -228,44 +187,40 @@ void Fire::setup(){
     change = 1;
     
     r = 12;
-    desiredseparation = 24;
     maxVelocityChange = 1;
     maxRotation = 360;
     topSpeed = 1;
     velocityIncreaseStep = 2;
-    maxStraightPath = 20;
     minVelocity = velocityIncreaseStep;
     
-    minWaitingTime = 2;
-    maxWaitingTime = 10;
-    setWait = false;
+	alive = true;
 }
 // Rotation vom Rabbit : Simon
 ofPoint Fire::wanderEffect(){
     
     ofPoint velocityChange, desired;
     
-    //wandertheta = ofRandom(-change,change);     // Randomly change wander theta
-    //
-    //float currDir = ofDegToRad(angle);
-    //ofPoint front = ofVec2f(cos(currDir), sin(currDir));
-    //
-    //front.normalize();
-    //front *= wanderD;
-    //ofPoint circleloc = location + front;
-    //
-    ////    float h = ofRadToDeg(atan2(front.x,front.y));
-    ////	float h = front.angle(ofVec2f(1,0)); // We need to know the heading to offset wandertheta
-    //
-    //ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+currDir),wanderR*sin(wandertheta+currDir));
-    //ofPoint target = circleloc + circleOffSet;
-    //
-    //desired = target - location;
-    //desired.normalize();
-    //desired *= topSpeed;
-    //
-    //velocityChange = desired;// - velocity;
-    //velocityChange.limit(maxVelocityChange);
+    wandertheta = ofRandom(-change,change);     // Randomly change wander theta
+    
+    float currDir = ofDegToRad(angle);
+    ofPoint front = ofVec2f(cos(currDir), sin(currDir));
+    
+    front.normalize();
+    front *= wanderD;
+    ofPoint circleloc = location + front;
+    
+   // float h = ofradtodeg(atan2(front.x,front.y));
+  	//float h = front.angle(ofvec2f(1,0)); // we need to know the heading to offset wandertheta
+    
+    ofPoint circleOffSet = ofPoint(wanderR*cos(wandertheta+currDir),wanderR*sin(wandertheta+currDir));
+    ofPoint target = circleloc + circleOffSet;
+    
+    desired = target - location;
+    desired.normalize();
+    desired *= topSpeed;
+    
+    velocityChange = desired;// - velocity;
+    velocityChange.limit(maxVelocityChange);
     
     return velocityChange;
 }
@@ -273,7 +228,6 @@ ofPoint Fire::wanderEffect(){
 void Fire::applyBehaviours(){
     updateBeachDetection();
     
-    //    separateF = separateEffect(vehicles);
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();
@@ -281,7 +235,7 @@ void Fire::applyBehaviours(){
     
     ofPoint littleSlopeF = slopesF;
     
-    //    separateF*=1;//2;
+
     bordersF *=0.5;
     slopesF *= 2;//2;
     wanderF *= 1;// Used to introduce some randomness in the direction changes
@@ -290,62 +244,46 @@ void Fire::applyBehaviours(){
     float currDir = ofDegToRad(angle);
     ofPoint oldDir = ofVec2f(cos(currDir), sin(currDir));
     oldDir.scale(velocityIncreaseStep);
-    if (beach)
-        oldDir.scale(velocityIncreaseStep/beachDist);
+
+	ofPoint newDir;
+	newDir += wanderF;
+	newDir += hillF;
+
     
-    if (setWait){
-        waitCounter++;
-        if (waitCounter > waitTime){
-            setWait = false;
-            // Compute a new direction
-            //            oldDir.scale(topSpeed);
-            wanderF = wanderEffect();
-            ofPoint newDir;
-            //            newDir +=littleSlopeF;
-            if (border)
-                newDir +=bordersF;
-            if (beach)
-                newDir +=slopesF;
-            
-            newDir.scale(velocityIncreaseStep);
-            applyVelocityChange(newDir);
-            
-            currentStraightPathLength = 0;
-            angle = ofRadToDeg(atan2(newDir.y,newDir.x));
-            
-        }
-    } else {
-        if (!beach && !border && currentStraightPathLength < maxStraightPath)
-        {
-            
-            applyVelocityChange(oldDir); // Just accelerate
-            currentStraightPathLength++;
-        } else { // Wee need to decelerate and then change direction
-            if (velocity.lengthSquared() > minVelocity*minVelocity) // We are not stopped yet
-            {
-                applyVelocityChange(-oldDir); // Just deccelerate
-            } else {
-                velocity = ofPoint(0);
-                setWait = true;
-                waitCounter = 0;
-                waitTime = ofRandom(minWaitingTime, maxWaitingTime);
-                if (beach)
-                    waitTime = 0;
-            }
-        }
-    }
+	if (beach)
+        oldDir.scale(velocityIncreaseStep/beachDist);
+
+	if (!beach && !border)
+		{   
+		applyVelocityChange(newDir);
+		applyVelocityChange(oldDir); // Just accelerate
+		} else { // Wee need to decelerate and then change direction
+		    if (velocity.lengthSquared() > minVelocity*minVelocity) // We are not stopped yet
+		    {
+		        applyVelocityChange(-oldDir); // Just deccelerate
+				applyVelocityChange(-newDir);
+		    }  else {
+				// Stops the Fire agent
+				velocity = ofPoint(0);
+				alive = false;
+			}
+		}
 }
 
-void Fire::draw()//, std::vector<ofVec2f> forces)
+void Fire::draw()
 {
     // saves the current coordinate system
     ofPushMatrix();
     ofTranslate(projectorCoord);
     ofRotate(angle);
+	ofColor color;
+	if (alive) {
+		 color = ofColor(255,0,0);
+	} else {
+		 color = ofColor(0, 0, 0);
+	}
     
-    ofColor color = ofColor(255,128,0);
-    
-    float sc = 20;
+    float sc = 2;
     
     ofFill();
     

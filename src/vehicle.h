@@ -112,10 +112,6 @@ private:
     
     float velocityIncreaseStep; // Rabbit increase step
     float minVelocity;
-    bool setWait;
-    int waitCounter;
-    int waitTime;
-    int maxWaitingTime;
-    int minWaitingTime;
+	bool alive;
 };
 

@@ -31,7 +31,6 @@ bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
 		int xM; int yM;
 		glfwGetMonitorPos(monitors[1], &xM, &yM); // We take the second monitor
 		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[1]);
-
 		settings.width = desktopMode->width;
 		settings.height = desktopMode->height;
 		settings.setPosition(ofVec2f(xM, yM));
