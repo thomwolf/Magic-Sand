@@ -21,9 +21,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include "vehicle.h"
 
-Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater) {
+Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) {
     kinectProjector = k;
-    liveInWater = sliveInWater;
     location = slocation;
     borders = sborders;
     globalVelocityChange.set(0, 0);
@@ -41,14 +40,12 @@ void Vehicle::updateBeachDetection(){
     int i = 1;
     while (i < 10 && !beach)
     {
-        bool overwater = kinectProjector->elevationAtKinectCoord(futureLocation.x, futureLocation.y) > 0;
-        if ((overwater && liveInWater) || (!overwater && !liveInWater))
+        bool water = kinectProjector->elevationAtKinectCoord(futureLocation.x, futureLocation.y) < 0;
+        if (water)
         {
             beach = true;
             beachDist = i;
             beachSlope = kinectProjector->gradientAtKinectCoord(futureLocation.x,futureLocation.y);
-            if (liveInWater)
-                beachSlope *= -1;
         }
         futureLocation += velocity; // Go to next future location step
         i++;

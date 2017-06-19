@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 class Vehicle{
 
 public:
-    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater);
+    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders);
     
     // Virtual functions
     virtual void setup() = 0;
@@ -80,8 +80,6 @@ protected:
     float beachDist;
     ofVec2f beachSlope;
     
-    bool liveInWater; // true for fish who want to stay in the water, false for rabbits who want to stay on the ground
-    
     ofVec2f projectorCoord;
     ofRectangle borders, internalBorders;
     float maxVelocityChange;
@@ -98,7 +96,7 @@ protected:
 
 class Fire : public Vehicle {
 public:
-    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) : Vehicle(k, slocation, sborders, false){}
+    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) : Vehicle(k, slocation, sborders){}
     
     void setup();
     void applyBehaviours();
