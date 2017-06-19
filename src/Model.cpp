@@ -57,6 +57,7 @@ void Model::update(){
     
     for (auto & f : fires){
         f.applyBehaviours();
+//     
         f.update();
     }
 }
