@@ -19,6 +19,7 @@ public:
     
     void addNewFire();
     void addNewFire(ofVec2f fireSpawnPos);
+    void addNewFire(ofVec2f fireSpawnPos, float angle);
     
     bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
     
