@@ -26,12 +26,17 @@ void Model::addNewFire(){
 }
 
 void Model::addNewFire(ofVec2f fireSpawnPos) {
+    addNewFire(fireSpawnPos, 0);
+}
+
+void Model::addNewFire(ofVec2f fireSpawnPos, float angle){
     if (kinectProjector->elevationAtKinectCoord(fireSpawnPos.x, fireSpawnPos.y) < 0){
         return;
     }
-    auto f = Fire(kinectProjector, fireSpawnPos, kinectROI);
+    auto f = Fire(kinectProjector, fireSpawnPos, kinectROI, angle);
     f.setup();
     fires.push_back(f);
+
 }
 
 bool Model::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location){
@@ -55,9 +60,19 @@ void Model::update(){
     if (kinectProjector->isROIUpdated())
         kinectROI = kinectProjector->getKinectROI();
     
+    //spread fires
+    for (auto & f : fires){
+        if (f.isAlive()){
+            ofPoint location = f.getLocation();
+            int angle = f.getAngle();
+            addNewFire(location, (angle + 90)%360);
+            addNewFire(location, (angle + 180)%360);
+            addNewFire(location, (angle + 270)%360);
+        }
+    }
+
     for (auto & f : fires){
         f.applyBehaviours();
-//     
         f.update();
     }
 }

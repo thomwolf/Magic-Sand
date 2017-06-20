@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 class Vehicle{
 
 public:
-    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders);
+    Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, float sangle);
     
     // Virtual functions
     virtual void setup() = 0;
@@ -96,11 +96,17 @@ protected:
 
 class Fire : public Vehicle {
 public:
-    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) : Vehicle(k, slocation, sborders){}
-    
+    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) : Vehicle(k, slocation, sborders, 0){}
+
+    Fire(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, float sangle) : Vehicle(k, slocation, sborders, sangle){}
+
     void setup();
     void applyBehaviours();
     void draw();
+
+    const bool isAlive() const {
+        return alive;
+    }
 
 private:
     ofPoint wanderEffect();

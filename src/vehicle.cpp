@@ -21,13 +21,14 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include "vehicle.h"
 
-Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders) {
+
+Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, float sangle) {
     kinectProjector = k;
     location = slocation;
     borders = sborders;
+    angle = sangle;
     globalVelocityChange.set(0, 0);
     velocity.set(0.0, 0.0);
-    angle = 0;
     wandertheta = 0;
 }
 
