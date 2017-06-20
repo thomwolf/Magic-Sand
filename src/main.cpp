@@ -31,12 +31,12 @@ bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
 		int xM; int yM;
 		glfwGetMonitorPos(monitors[1], &xM, &yM); // We take the second monitor
 		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[1]);
-
 		settings.width = desktopMode->width;
 		settings.height = desktopMode->height;
 		settings.setPosition(ofVec2f(xM, yM));
 		return true;
-	} else {
+	}
+	else {
 		settings.width = 800; // Default settings if there is only one screen
 		settings.height = 600;
 		settings.setPosition(ofVec2f(0, 0));
@@ -56,8 +56,8 @@ int main() {
 	mainWindow->setWindowPosition(ofGetScreenWidth() / 2 - settings.width / 2, ofGetScreenHeight() / 2 - settings.height / 2);
 
 	setSecondWindowDimensions(settings);
-	settings.resizable = false;
-	settings.decorated = false;
+	settings.resizable = true;
+	settings.decorated = true;
 	settings.shareContextWith = mainWindow;
 	shared_ptr<ofAppBaseWindow> secondWindow = ofCreateWindow(settings);
 	secondWindow->setVerticalSync(false);
@@ -65,7 +65,7 @@ int main() {
 	shared_ptr<ofApp> mainApp(new ofApp);
 	ofAddListener(secondWindow->events().draw, mainApp.get(), &ofApp::drawProjWindow);
 	mainApp->projWindow = secondWindow;
-		
+
 	ofRunApp(mainWindow, mainApp);
 	ofRunMainLoop();
 }
