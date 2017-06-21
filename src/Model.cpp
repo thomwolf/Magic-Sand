@@ -61,12 +61,13 @@ void Model::update(){
         kinectROI = kinectProjector->getKinectROI();
     
     //spread fires
-    for (auto & f : fires){
-        if (f.isAlive()){
-            ofPoint location = f.getLocation();
-            int angle = f.getAngle();
+    int size = fires.size();
+    for (int i = 0; i < size ; i++){
+        int rand = std::rand() % 100;
+        if (fires[i].isAlive() && rand < 10){
+            ofPoint location = fires[i].getLocation();
+            int angle = fires[i].getAngle();
             addNewFire(location, (angle + 90)%360);
-            addNewFire(location, (angle + 180)%360);
             addNewFire(location, (angle + 270)%360);
         }
     }

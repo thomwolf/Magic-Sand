@@ -154,8 +154,6 @@ void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
 // Movement: vehicle update rotation ...
 void Vehicle::update(){
     projectorCoord = kinectProjector->kinectCoordToProjCoord(location.x, location.y);
-    //if ( velocity.lengthSquared() != 0)
-    //{
     velocity += globalVelocityChange;
     velocity.limit(topSpeed);
     location += velocity;
@@ -168,7 +166,6 @@ void Vehicle::update(){
     angleChange /= topSpeed;
     angleChange = max(min(angleChange, maxRotation), -maxRotation);
     angle += angleChange;
- /*   }*/
 }
 
 //==============================================================
