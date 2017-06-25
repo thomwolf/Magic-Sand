@@ -30,11 +30,15 @@ public:
     void clear();
     
 private:
+    void resetBurnedArea();
+    
     std::shared_ptr<KinectProjector> kinectProjector;
     
-    ofVec2f kinectRes;
     ofRectangle kinectROI;
     
     // Fire
     vector<Fire> fires;
+    
+    vector<vector<bool>> burnedArea;
+    
 };

@@ -154,8 +154,6 @@ void Vehicle::applyVelocityChange(const ofPoint & velocityChange){
 // Movement: vehicle update rotation ...
 void Vehicle::update(){
     projectorCoord = kinectProjector->kinectCoordToProjCoord(location.x, location.y);
-    //if ( velocity.lengthSquared() != 0)
-    //{
     velocity += globalVelocityChange;
     velocity.limit(topSpeed);
     location += velocity;
@@ -168,7 +166,6 @@ void Vehicle::update(){
     angleChange /= topSpeed;
     angleChange = max(min(angleChange, maxRotation), -maxRotation);
     angle += angleChange;
- /*   }*/
 }
 
 //==============================================================
@@ -224,6 +221,9 @@ ofPoint Fire::wanderEffect(){
 }
 // Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mögl.
 void Fire::applyBehaviours(){
+    if(!alive){
+        return;
+    }
     updateBeachDetection();
     
     bordersF = bordersEffect();
@@ -297,4 +297,8 @@ void Fire::draw()
     
     // restore the pushed state
     ofPopMatrix();
+}
+
+void Fire::kill(){
+    alive = false;
 }
