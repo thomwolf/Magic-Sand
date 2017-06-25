@@ -107,6 +107,8 @@ public:
     const bool isAlive() const {
         return alive;
     }
+    
+    void kill();
 
 private:
     ofPoint wanderEffect();

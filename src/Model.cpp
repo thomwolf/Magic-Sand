@@ -57,16 +57,28 @@ bool Model::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f
 }
 
 void Model::update(){
-    if (kinectProjector->isROIUpdated())
+    // kinectROI updated
+    if (kinectProjector->getKinectROI() != kinectROI){
         kinectROI = kinectProjector->getKinectROI();
+        resetBurnedArea();
+    }
+    
+    
     
     //spread fires
     int size = fires.size();
     for (int i = 0; i < size ; i++){
+        Fire f = fires[i];
+        ofPoint location = f.getLocation();
+        if (burnedArea[location.x][location.y]){
+            f.kill();
+        } else {
+            burnedArea[location.x][location.y] = true;
+        }
+        
         int rand = std::rand() % 100;
-        if (fires[i].isAlive() && rand < 10){
-            ofPoint location = fires[i].getLocation();
-            int angle = fires[i].getAngle();
+        if (f.isAlive() && rand < 10){
+            int angle = f.getAngle();
             addNewFire(location, (angle + 90)%360);
             addNewFire(location, (angle + 270)%360);
         }
@@ -86,5 +98,15 @@ void Model::draw(){
 
 void Model::clear(){
     fires.clear();
+    resetBurnedArea();
+}
+
+void Model::resetBurnedArea(){
+    burnedArea.clear();
+    for(int x = kinectROI.getLeft(); x <= kinectROI.getRight(); x++ ){
+        for (int y = kinectROI.getTop(); y <= kinectROI.getBottom(); y++ ){
+            burnedArea[x][y] = false;
+        }
+    }
 }
 
