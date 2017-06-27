@@ -14,6 +14,7 @@ Model::Model(std::shared_ptr<KinectProjector> const& k){
     
     // Retrieve variables
     kinectROI = kinectProjector->getKinectROI();
+    resetBurnedArea();
 
 }
 
@@ -103,10 +104,12 @@ void Model::clear(){
 
 void Model::resetBurnedArea(){
     burnedArea.clear();
-    for(int x = kinectROI.getLeft(); x <= kinectROI.getRight(); x++ ){
-        for (int y = kinectROI.getTop(); y <= kinectROI.getBottom(); y++ ){
-            burnedArea[x][y] = false;
+    for(int x = 0; x <= kinectROI.getRight(); x++ ){
+        vector<bool> row;
+        for (int y = 0; y <= kinectROI.getBottom(); y++ ){
+            row.push_back(false);
         }
+        burnedArea.push_back(row);
     }
 }
 

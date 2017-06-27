@@ -39,6 +39,6 @@ private:
     // Fire
     vector<Fire> fires;
     
-    vector<vector<bool>> burnedArea;
+    vector< vector<bool> > burnedArea;
     
 };
