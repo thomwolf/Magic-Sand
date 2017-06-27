@@ -221,9 +221,6 @@ ofPoint Fire::wanderEffect(){
 }
 // Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mögl.
 void Fire::applyBehaviours(){
-    if(!alive){
-        return;
-    }
     updateBeachDetection();
     
     bordersF = bordersEffect();
