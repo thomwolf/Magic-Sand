@@ -14,6 +14,7 @@ Model::Model(std::shared_ptr<KinectProjector> const& k){
     
     // Retrieve variables
     kinectROI = kinectProjector->getKinectROI();
+    resetBurnedArea();
 
 }
 
@@ -68,25 +69,26 @@ void Model::update(){
     //spread fires
     int size = fires.size();
     for (int i = 0; i < size ; i++){
-        Fire f = fires[i];
-        ofPoint location = f.getLocation();
-        if (burnedArea[location.x][location.y]){
-            f.kill();
+        ofPoint location = fires[i].getLocation();
+        if (burnedArea[floor(location.x)][floor(location.y)]){
+            fires[i].kill();
         } else {
-            burnedArea[location.x][location.y] = true;
+            burnedArea[floor(location.x)][floor(location.y)] = true;
         }
         
         int rand = std::rand() % 100;
-        if (f.isAlive() && rand < 10){
-            int angle = f.getAngle();
+        if (fires[i].isAlive() && rand < 10){
+            int angle = fires[i].getAngle();
             addNewFire(location, (angle + 90)%360);
             addNewFire(location, (angle + 270)%360);
         }
     }
 
     for (auto & f : fires){
-        f.applyBehaviours();
-        f.update();
+        if(f.isAlive()){
+            f.applyBehaviours();
+            f.update();
+        }
     }
 }
 
@@ -103,10 +105,12 @@ void Model::clear(){
 
 void Model::resetBurnedArea(){
     burnedArea.clear();
-    for(int x = kinectROI.getLeft(); x <= kinectROI.getRight(); x++ ){
-        for (int y = kinectROI.getTop(); y <= kinectROI.getBottom(); y++ ){
-            burnedArea[x][y] = false;
+    for(int x = 0; x <= kinectROI.getRight(); x++ ){
+        vector<bool> row;
+        for (int y = 0; y <= kinectROI.getBottom(); y++ ){
+            row.push_back(false);
         }
+        burnedArea.push_back(row);
     }
 }
 
