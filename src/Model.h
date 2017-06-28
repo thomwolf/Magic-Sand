@@ -20,6 +20,10 @@ public:
     void addNewFire();
     void addNewFire(ofVec2f fireSpawnPos);
     void addNewFire(ofVec2f fireSpawnPos, float angle);
+	//Fire parameters setters and getters
+	void setTemp(float uiTemp);
+	void setWindspeed(float uiWindspeed);
+	void setWinddirection(float uiWinddirection);
     
     bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
     
@@ -28,6 +32,7 @@ public:
     void draw();
     
     void clear();
+
     
 private:
     void resetBurnedArea();
@@ -38,7 +43,9 @@ private:
     
     // Fire
     vector<Fire> fires;
-    
     vector< vector<bool> > burnedArea;
+	float temperature;
+	float windspeed;
+	float winddirection;
     
 };
