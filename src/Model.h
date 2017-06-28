@@ -30,7 +30,8 @@ public:
     void clear();
     
 private:
-    void resetBurnedArea();
+	void deleteDeadFires();
+	void resetBurnedArea();
     
     std::shared_ptr<KinectProjector> kinectProjector;
     
