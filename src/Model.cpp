@@ -99,7 +99,7 @@ void Model::update(){
 
     for (auto & f : fires){
         if(f.isAlive()){
-            f.applyBehaviours();
+            f.applyBehaviours(temperature,windspeed,winddirection);
             f.update();
         }
     }
