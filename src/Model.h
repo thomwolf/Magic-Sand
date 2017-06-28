@@ -37,6 +37,7 @@ public:
 private:
 	void deleteDeadFires();
 	void resetBurnedArea();
+    void drawBurnedArea();
     
     std::shared_ptr<KinectProjector> kinectProjector;
     

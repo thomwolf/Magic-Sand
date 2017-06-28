@@ -106,6 +106,7 @@ void Model::update(){
 }
 
 void Model::draw(){
+    drawBurnedArea();
     for (auto & f : fires){
         f.draw();
     }
@@ -136,6 +137,32 @@ void Model::resetBurnedArea(){
             row.push_back(false);
         }
         burnedArea.push_back(row);
+    }
+}
+
+void Model::drawBurnedArea(){
+    for(int i = 0; i< burnedArea.size(); i++){
+        for(int j = 0; j < burnedArea[i].size(); j++){
+            if(burnedArea[i][j]){
+                ofVec2f coord = kinectProjector-> kinectCoordToProjCoord(i, j);
+                ofPushMatrix();
+                ofTranslate(coord);
+                ofColor color = ofColor(0, 0, 0);
+
+                ofFill();
+
+                ofPath ash;
+                ash.circle(0, 0, 3);
+                ash.setFillColor(color);
+                ash.setStrokeWidth(0);
+                ash.draw();
+
+                ofNoFill();
+
+                // restore the pushed state
+                ofPopMatrix();
+            }
+        }
     }
 }
 
