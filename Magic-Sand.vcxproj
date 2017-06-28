@@ -1,561 +1,563 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup Label="ProjectConfigurations">
-		<ProjectConfiguration Include="Debug|Win32">
-			<Configuration>Debug</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Debug|x64">
-			<Configuration>Debug</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|Win32">
-			<Configuration>Release</Configuration>
-			<Platform>Win32</Platform>
-		</ProjectConfiguration>
-		<ProjectConfiguration Include="Release|x64">
-			<Configuration>Release</Configuration>
-			<Platform>x64</Platform>
-		</ProjectConfiguration>
-	</ItemGroup>
-	<PropertyGroup Label="Globals">
-		<ProjectGuid>{7FD42DF7-442E-479A-BA76-D0022F99702A}</ProjectGuid>
-		<Keyword>Win32Proj</Keyword>
-		<RootNamespace>Magic-Sand</RootNamespace>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<CharacterSet>Unicode</CharacterSet>
-		<PlatformToolset>v140</PlatformToolset>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<CharacterSet>Unicode</CharacterSet>
-		<PlatformToolset>v140</PlatformToolset>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<CharacterSet>Unicode</CharacterSet>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<PlatformToolset>v140</PlatformToolset>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-		<ConfigurationType>Application</ConfigurationType>
-		<CharacterSet>Unicode</CharacterSet>
-		<WholeProgramOptimization>true</WholeProgramOptimization>
-		<PlatformToolset>v140</PlatformToolset>
-	</PropertyGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-		<Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
-	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-		<Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
-	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-		<Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
-	</ImportGroup>
-	<ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
-		<Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-		<Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
-	</ImportGroup>
-	<PropertyGroup Label="UserMacros" />
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<OutDir>bin\</OutDir>
-		<IntDir>obj\$(Configuration)\</IntDir>
-		<TargetName>$(ProjectName)_debug</TargetName>
-		<LinkIncremental>true</LinkIncremental>
-		<GenerateManifest>true</GenerateManifest>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<OutDir>bin\</OutDir>
-		<IntDir>obj\$(Configuration)\</IntDir>
-		<TargetName>$(ProjectName)_debug</TargetName>
-		<LinkIncremental>true</LinkIncremental>
-		<GenerateManifest>true</GenerateManifest>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<OutDir>bin\</OutDir>
-		<IntDir>obj\$(Configuration)\</IntDir>
-		<LinkIncremental>false</LinkIncremental>
-	</PropertyGroup>
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<OutDir>bin\</OutDir>
-		<IntDir>obj\$(Configuration)\</IntDir>
-		<LinkIncremental>false</LinkIncremental>
-	</PropertyGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-		<ClCompile>
-			<Optimization>Disabled</Optimization>
-			<BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-			<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-			<WarningLevel>Level3</WarningLevel>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
-			<CompileAs>CompileAsCpp</CompileAs>
-		</ClCompile>
-		<Link>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<SubSystem>Console</SubSystem>
-			<RandomizedBaseAddress>false</RandomizedBaseAddress>
-			<AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249d.lib;opencv_contrib249d.lib;opencv_core249d.lib;opencv_features2d249d.lib;opencv_flann249d.lib;opencv_gpu249d.lib;opencv_highgui249d.lib;opencv_imgproc249d.lib;opencv_legacy249d.lib;opencv_ml249d.lib;opencv_nonfree249d.lib;opencv_objdetect249d.lib;opencv_photo249d.lib;opencv_stitching249d.lib;opencv_superres249d.lib;opencv_ts249d.lib;opencv_video249d.lib;opencv_videostab249d.lib;zlibd.lib</AdditionalDependencies>
-			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug</AdditionalLibraryDirectories>
-		</Link>
-		<PostBuildEvent />
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-		<ClCompile>
-			<Optimization>Disabled</Optimization>
-			<BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-			<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-			<WarningLevel>Level3</WarningLevel>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
-			<CompileAs>CompileAsCpp</CompileAs>
-			<MultiProcessorCompilation>true</MultiProcessorCompilation>
-		</ClCompile>
-		<Link>
-			<GenerateDebugInformation>true</GenerateDebugInformation>
-			<SubSystem>Console</SubSystem>
-			<RandomizedBaseAddress>false</RandomizedBaseAddress>
-			<AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249d.lib;opencv_contrib249d.lib;opencv_core249d.lib;opencv_features2d249d.lib;opencv_flann249d.lib;opencv_gpu249d.lib;opencv_highgui249d.lib;opencv_imgproc249d.lib;opencv_legacy249d.lib;opencv_ml249d.lib;opencv_nonfree249d.lib;opencv_objdetect249d.lib;opencv_photo249d.lib;opencv_stitching249d.lib;opencv_superres249d.lib;opencv_ts249d.lib;opencv_video249d.lib;opencv_videostab249d.lib;zlibd.lib</AdditionalDependencies>
-			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug</AdditionalLibraryDirectories>
-		</Link>
-		<PostBuildEvent />
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-		<ClCompile>
-			<WholeProgramOptimization>false</WholeProgramOptimization>
-			<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-			<WarningLevel>Level3</WarningLevel>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
-			<CompileAs>CompileAsCpp</CompileAs>
-			<MultiProcessorCompilation>true</MultiProcessorCompilation>
-		</ClCompile>
-		<Link>
-			<IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-			<GenerateDebugInformation>false</GenerateDebugInformation>
-			<SubSystem>Console</SubSystem>
-			<OptimizeReferences>true</OptimizeReferences>
-			<EnableCOMDATFolding>true</EnableCOMDATFolding>
-			<RandomizedBaseAddress>false</RandomizedBaseAddress>
-			<AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249.lib;opencv_contrib249.lib;opencv_core249.lib;opencv_features2d249.lib;opencv_flann249.lib;opencv_gpu249.lib;opencv_highgui249.lib;opencv_imgproc249.lib;opencv_legacy249.lib;opencv_ml249.lib;opencv_nonfree249.lib;opencv_objdetect249.lib;opencv_photo249.lib;opencv_stitching249.lib;opencv_superres249.lib;opencv_ts249.lib;opencv_video249.lib;opencv_videostab249.lib;zlib.lib</AdditionalDependencies>
-			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release</AdditionalLibraryDirectories>
-		</Link>
-		<PostBuildEvent />
-	</ItemDefinitionGroup>
-	<ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-		<ClCompile>
-			<WholeProgramOptimization>false</WholeProgramOptimization>
-			<PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
-			<RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-			<WarningLevel>Level3</WarningLevel>
-			<AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
-			<CompileAs>CompileAsCpp</CompileAs>
-		</ClCompile>
-		<Link>
-			<IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-			<GenerateDebugInformation>false</GenerateDebugInformation>
-			<SubSystem>Console</SubSystem>
-			<OptimizeReferences>true</OptimizeReferences>
-			<EnableCOMDATFolding>true</EnableCOMDATFolding>
-			<RandomizedBaseAddress>false</RandomizedBaseAddress>
-			<AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249.lib;opencv_contrib249.lib;opencv_core249.lib;opencv_features2d249.lib;opencv_flann249.lib;opencv_gpu249.lib;opencv_highgui249.lib;opencv_imgproc249.lib;opencv_legacy249.lib;opencv_ml249.lib;opencv_nonfree249.lib;opencv_objdetect249.lib;opencv_photo249.lib;opencv_stitching249.lib;opencv_superres249.lib;opencv_ts249.lib;opencv_video249.lib;opencv_videostab249.lib;zlib.lib</AdditionalDependencies>
-			<AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release</AdditionalLibraryDirectories>
-		</Link>
-		<PostBuildEvent />
-	</ItemDefinitionGroup>
-	<ItemGroup>
-		<ClCompile Include="src\main.cpp" />
-		<ClCompile Include="src\ofApp.cpp" />
-		<ClCompile Include="src\KinectProjector\KinectGrabber.cpp" />
-		<ClCompile Include="src\KinectProjector\KinectProjector.cpp" />
-		<ClCompile Include="src\KinectProjector\KinectProjectorCalibration.cpp" />
-		<ClCompile Include="src\KinectProjector\libs\dlib\unicode\unicode.cpp" />
-		<ClCompile Include="src\SandSurfaceRenderer\ColorMap.cpp" />
-		<ClCompile Include="src\SandSurfaceRenderer\SandSurfaceRenderer.cpp" />
-		<ClCompile Include="src\vehicle.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiComponent.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont\ofxSmartFont.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\src\ETF.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\src\fdog.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Calibration.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\ContourFinder.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Distance.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Flow.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Helpers.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Kalman.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\ObjectFinder.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\RunningBackground.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Tracker.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Utilities.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Wrappers.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra\ofxKinectExtras.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\ofxKinect.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\failguard.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\audio.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\cameras.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\core.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\flags.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\keep_alive.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\loader.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\registration.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\tilt.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\usb_libusb10.c" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalWindow.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvColorImage.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvContourFinder.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvFloatImage.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvGrayscaleImage.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvHaarFinder.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvImage.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvShortImage.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxParagraph\src\ofxParagraph.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxml.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
-		<ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
-	</ItemGroup>
-	<ItemGroup>
-		<ClInclude Include="src\ofApp.h" />
-		<ClInclude Include="src\KinectProjector\KinectGrabber.h" />
-		<ClInclude Include="src\KinectProjector\KinectProjector.h" />
-		<ClInclude Include="src\KinectProjector\KinectProjectorCalibration.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\algs.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\dassert.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\enable_if.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\error.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\geometry\border_enumerator.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\geometry\border_enumerator_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\geometry\rectangle.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\geometry\rectangle_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\geometry\vector.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\geometry\vector_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\interfaces\cmd_line_parser_option.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\interfaces\enumerable.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\interfaces\map_pair.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\interfaces\remover.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\is_kind.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\cblas_constants.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\fortran_id.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\gees.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\geev.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\geqrf.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\gesdd.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\gesvd.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\getrf.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\ormqr.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\potrf.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\syev.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\syevr.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_assign.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_assign_fwd.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_blas_bindings.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_cholesky.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_conj_trans.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_conv.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_conv_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_data_layout.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_data_layout_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_default_mul.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_eigenvalue.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_exp.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_expressions.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_exp_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_fwd.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_la.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_la_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_lu.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_math_functions.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_math_functions_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_op.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_qr.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_subexp.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_subexp_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_trsm.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_utilities.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_utilities_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\symmetric_matrix_cache.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix\symmetric_matrix_cache_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\matrix.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\memory_manager_stateless\memory_manager_stateless_kernel_1.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\memory_manager_stateless\memory_manager_stateless_kernel_2.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\memory_manager_stateless\memory_manager_stateless_kernel_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\noncopyable.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\platform.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\serialize.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\stack_trace.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\uintn.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\unicode\unicode.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\unicode\unicode_abstract.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\unicode.h" />
-		<ClInclude Include="src\KinectProjector\libs\dlib\windows_magic.h" />
-		<ClInclude Include="src\KinectProjector\Utils.h" />
-		<ClInclude Include="src\SandSurfaceRenderer\ColorMap.h" />
-		<ClInclude Include="src\SandSurfaceRenderer\SandSurfaceRenderer.h" />
-		<ClInclude Include="src\vehicle.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGui2dPad.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiButton.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiColorPicker.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiControls.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiFRM.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiGroups.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiLabel.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiMatrix.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiScrollView.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiSlider.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiTextInput.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiTextInputField.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiTimeGraph.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiComponent.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiConstants.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiEvents.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiIntObject.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont\ofxSmartFont.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiTheme.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiThemes.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\src\ofxCv.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\ETF.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\fdog.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\imatrix.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\myvec.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Calibration.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\ContourFinder.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Distance.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Flow.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Helpers.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Kalman.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\ObjectFinder.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\RunningBackground.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Tracker.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Utilities.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Wrappers.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra\ofxKinectExtras.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\ofxBase3DVideo.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\ofxKinect.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include\libfreenect.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include\libfreenect_audio.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include\libfreenect_registration.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\failguard.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusb.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu_internal.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu_threads.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu_threads_win32.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\stdbool.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\unistd.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\cameras.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\flags.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\freenect_internal.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\keep_alive.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\loader.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\registration.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\usb_libusb10.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0\include\libusb-1.0\libusb.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include\lusb0_usb.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModal.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalConfirm.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalEvent.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalTheme.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalWindow.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvBlob.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvColorImage.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvConstants.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvContourFinder.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvFloatImage.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvGrayscaleImage.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvHaarFinder.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvImage.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvShortImage.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxOpenCv.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cv.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cv.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cvaux.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cvaux.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cvwimage.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxcore.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxcore.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxeigen.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxmisc.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\highgui.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\ml.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d\calib3d.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\contrib.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\detection_based_tracker.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\hybridtracker.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\openfabmap.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\retina.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\affine.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\core.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\core_c.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\cuda_devptrs.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\devmem2d.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\eigen.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\gpumat.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\internal.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\mat.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\opengl_interop.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\opengl_interop_deprecated.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\operations.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\types_c.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\version.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\wimage.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d\features2d.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\allocator.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\all_indices.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\any.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\autotuned_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\composite_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\config.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\defines.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\dist.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\dummy.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\dynamic_bitset.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\flann.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\flann_base.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\general.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\ground_truth.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\hdf5.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\heap.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\hierarchical_clustering_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\index_testing.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\kdtree_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\kdtree_single_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\kmeans_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\linear_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\logger.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\lsh_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\lsh_table.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\matrix.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\miniflann.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\nn_index.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\object_factory.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\params.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\random.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\result_set.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\sampling.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\saving.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\simplex_downhill.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\timer.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\block.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\border_interpolate.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\color.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\common.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\datamov_utils.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\color_detail.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\reduce.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\reduce_key_val.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\transform_detail.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\type_traits_detail.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\vec_distance_detail.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\dynamic_smem.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\emulation.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\filters.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\funcattrib.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\functional.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\limits.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\reduce.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\saturate_cast.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\scan.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\simd_functions.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\static_check.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\transform.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\type_traits.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\utility.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\vec_distance.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\vec_math.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\vec_traits.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\warp.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\warp_reduce.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\warp_shuffle.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\devmem2d.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\gpu.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\gpumat.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\stream_accessor.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\cap_ios.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\highgui.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\highgui_c.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\ios.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\imgproc.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\imgproc_c.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\types_c.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\blobtrack.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\compat.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\legacy.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\streams.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml\ml.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\features2d.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\gpu.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\nonfree.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\ocl.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect\objdetect.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\opencv.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\opencv_modules.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo\photo.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo\photo_c.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\autocalib.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\blenders.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\camera.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\exposure_compensate.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\matchers.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\motion_estimators.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\seam_finders.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\util.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\util_inl.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\warpers.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\warpers_inl.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\stitcher.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\warpers.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres\optical_flow.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres\superres.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\gpu_perf.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\gpu_test.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\ts.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\ts_gtest.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\ts_perf.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video\background_segm.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video\tracking.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video\video.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\deblurring.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\fast_marching.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\fast_marching_inl.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\frame_source.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\global_motion.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\inpainting.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\log.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\motion_stabilizing.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\optical_flow.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\stabilizer.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\videostab.hpp" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxParagraph\src\ofxParagraph.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
-		<ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxml.h" />
-	</ItemGroup>
-	<ItemGroup>
-		<ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
-			<Project>{5837595d-aca9-485c-8e76-729040ce4b0b}</Project>
-		</ProjectReference>
-	</ItemGroup>
-	<ItemGroup>
-		<ResourceCompile Include="icon.rc">
-			<AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
-			<AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
-			<AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
-		</ResourceCompile>
-	</ItemGroup>
-	<Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-	<ProjectExtensions>
-		<VisualStudio>
-			<UserProperties RESOURCE_FILE="icon.rc" />
-		</VisualStudio>
-	</ProjectExtensions>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7FD42DF7-442E-479A-BA76-D0022F99702A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Magic-Sand</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="../of_v0.9.8_vs_release/libs\openFrameworksCompiled\project\vs\openFrameworksDebug.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)_debug</TargetName>
+    <LinkIncremental>true</LinkIncremental>
+    <GenerateManifest>true</GenerateManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>bin\</OutDir>
+    <IntDir>obj\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249d.lib;opencv_contrib249d.lib;opencv_core249d.lib;opencv_features2d249d.lib;opencv_flann249d.lib;opencv_gpu249d.lib;opencv_highgui249d.lib;opencv_imgproc249d.lib;opencv_legacy249d.lib;opencv_ml249d.lib;opencv_nonfree249d.lib;opencv_objdetect249d.lib;opencv_photo249d.lib;opencv_stitching249d.lib;opencv_superres249d.lib;opencv_ts249d.lib;opencv_video249d.lib;opencv_videostab249d.lib;zlibd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249d.lib;opencv_contrib249d.lib;opencv_core249d.lib;opencv_features2d249d.lib;opencv_flann249d.lib;opencv_gpu249d.lib;opencv_highgui249d.lib;opencv_imgproc249d.lib;opencv_legacy249d.lib;opencv_ml249d.lib;opencv_nonfree249d.lib;opencv_objdetect249d.lib;opencv_photo249d.lib;opencv_stitching249d.lib;opencv_superres249d.lib;opencv_ts249d.lib;opencv_video249d.lib;opencv_videostab249d.lib;zlibd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249.lib;opencv_contrib249.lib;opencv_core249.lib;opencv_features2d249.lib;opencv_flann249.lib;opencv_gpu249.lib;opencv_highgui249.lib;opencv_imgproc249.lib;opencv_legacy249.lib;opencv_ml249.lib;opencv_nonfree249.lib;opencv_objdetect249.lib;opencv_photo249.lib;opencv_stitching249.lib;opencv_superres249.lib;opencv_ts249.lib;opencv_video249.lib;opencv_videostab249.lib;zlib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories);src;src\KinectProjector;src\KinectProjector\libs\dlib;src\KinectProjector\libs\dlib\geometry;src\KinectProjector\libs\dlib\interfaces;src\KinectProjector\libs\dlib\matrix;src\KinectProjector\libs\dlib\matrix\lapack;src\KinectProjector\libs\dlib\memory_manager_stateless;src\KinectProjector\libs\dlib\unicode;src\SandSurfaceRenderer;..\of_v0.9.8_vs_release\addons\ofxDatGui\src;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont;..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes;..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include;..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD;..\of_v0.9.8_vs_release\addons\ofxCv\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui audio\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui camera\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\amd64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\ia64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\license\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\inf\xbox nui motor\x86;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\license;..\of_v0.9.8_vs_release\addons\ofxKinect\src;..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra;..\of_v0.9.8_vs_release\addons\ofxModal\src;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\emscripten;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\Win32\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Debug;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\license;..\of_v0.9.8_vs_release\addons\ofxOpenCv\src;..\of_v0.9.8_vs_release\addons\ofxParagraph\src;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs;..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src</AdditionalIncludeDirectories>
+      <CompileAs>CompileAsCpp</CompileAs>
+    </ClCompile>
+    <Link>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Console</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <AdditionalDependencies>%(AdditionalDependencies);libusb.lib;libusbd.lib;opencv_calib3d249.lib;opencv_contrib249.lib;opencv_core249.lib;opencv_features2d249.lib;opencv_flann249.lib;opencv_gpu249.lib;opencv_highgui249.lib;opencv_imgproc249.lib;opencv_legacy249.lib;opencv_ml249.lib;opencv_nonfree249.lib;opencv_objdetect249.lib;opencv_photo249.lib;opencv_stitching249.lib;opencv_superres249.lib;opencv_ts249.lib;opencv_video249.lib;opencv_videostab249.lib;zlib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\lib\vs\x64;..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\lib\vs\x64\Release</AdditionalLibraryDirectories>
+    </Link>
+    <PostBuildEvent />
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\ofApp.cpp" />
+    <ClCompile Include="src\KinectProjector\KinectGrabber.cpp" />
+    <ClCompile Include="src\KinectProjector\KinectProjector.cpp" />
+    <ClCompile Include="src\KinectProjector\KinectProjectorCalibration.cpp" />
+    <ClCompile Include="src\KinectProjector\libs\dlib\unicode\unicode.cpp" />
+    <ClCompile Include="src\SandSurfaceRenderer\ColorMap.cpp" />
+    <ClCompile Include="src\SandSurfaceRenderer\SandSurfaceRenderer.cpp" />
+    <ClCompile Include="src\vehicle.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiComponent.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont\ofxSmartFont.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\src\ETF.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\src\fdog.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Calibration.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\ContourFinder.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Distance.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Flow.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Helpers.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Kalman.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\ObjectFinder.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\RunningBackground.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Tracker.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Utilities.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\src\Wrappers.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra\ofxKinectExtras.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\ofxKinect.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\failguard.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\audio.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\cameras.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\core.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\flags.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\keep_alive.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\loader.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\registration.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\tilt.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\usb_libusb10.c" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalWindow.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvColorImage.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvContourFinder.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvFloatImage.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvGrayscaleImage.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvHaarFinder.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvImage.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvShortImage.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxParagraph\src\ofxParagraph.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src\ofxXmlSettings.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxml.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxmlerror.cpp" />
+    <ClCompile Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxmlparser.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Model.h" />
+    <ClInclude Include="src\ofApp.h" />
+    <ClInclude Include="src\KinectProjector\KinectGrabber.h" />
+    <ClInclude Include="src\KinectProjector\KinectProjector.h" />
+    <ClInclude Include="src\KinectProjector\KinectProjectorCalibration.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\algs.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\dassert.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\enable_if.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\error.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\geometry\border_enumerator.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\geometry\border_enumerator_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\geometry\rectangle.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\geometry\rectangle_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\geometry\vector.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\geometry\vector_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\interfaces\cmd_line_parser_option.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\interfaces\enumerable.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\interfaces\map_pair.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\interfaces\remover.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\is_kind.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\cblas_constants.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\fortran_id.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\gees.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\geev.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\geqrf.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\gesdd.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\gesvd.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\getrf.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\ormqr.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\potrf.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\syev.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\lapack\syevr.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_assign.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_assign_fwd.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_blas_bindings.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_cholesky.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_conj_trans.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_conv.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_conv_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_data_layout.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_data_layout_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_default_mul.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_eigenvalue.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_exp.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_expressions.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_exp_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_fwd.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_la.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_la_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_lu.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_math_functions.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_math_functions_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_op.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_qr.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_subexp.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_subexp_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_trsm.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_utilities.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\matrix_utilities_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\symmetric_matrix_cache.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix\symmetric_matrix_cache_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\matrix.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\memory_manager_stateless\memory_manager_stateless_kernel_1.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\memory_manager_stateless\memory_manager_stateless_kernel_2.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\memory_manager_stateless\memory_manager_stateless_kernel_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\noncopyable.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\platform.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\serialize.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\stack_trace.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\uintn.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\unicode\unicode.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\unicode\unicode_abstract.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\unicode.h" />
+    <ClInclude Include="src\KinectProjector\libs\dlib\windows_magic.h" />
+    <ClInclude Include="src\KinectProjector\Utils.h" />
+    <ClInclude Include="src\SandSurfaceRenderer\ColorMap.h" />
+    <ClInclude Include="src\SandSurfaceRenderer\SandSurfaceRenderer.h" />
+    <ClInclude Include="src\vehicle.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGui2dPad.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiButton.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiColorPicker.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiControls.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiFRM.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiGroups.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiLabel.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiMatrix.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiScrollView.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiSlider.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiTextInput.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiTextInputField.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\components\ofxDatGuiTimeGraph.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiComponent.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiConstants.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiEvents.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\core\ofxDatGuiIntObject.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\libs\ofxSmartFont\ofxSmartFont.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\ofxDatGui.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiTheme.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxDatGui\src\themes\ofxDatGuiThemes.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\src\ofxCv.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\ETF.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\fdog.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\imatrix.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\CLD\include\CLD\myvec.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Calibration.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\ContourFinder.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Distance.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Flow.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Helpers.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Kalman.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\ObjectFinder.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\RunningBackground.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Tracker.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Utilities.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxCv\libs\ofxCv\include\ofxCv\Wrappers.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\extra\ofxKinectExtras.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\ofxBase3DVideo.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\src\ofxKinect.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include\libfreenect.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include\libfreenect_audio.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\include\libfreenect_registration.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\failguard.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusb.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu_internal.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu_threads.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\libusb10emu\libusb-1.0\libusbemu_threads_win32.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\stdbool.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\platform\windows\unistd.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\cameras.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\flags.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\freenect_internal.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\keep_alive.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\loader.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\registration.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libfreenect\src\usb_libusb10.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-1.0\include\libusb-1.0\libusb.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxKinect\libs\libusb-win32\include\lusb0_usb.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModal.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalConfirm.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalEvent.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalTheme.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxModal\src\ofxModalWindow.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvBlob.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvColorImage.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvConstants.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvContourFinder.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvFloatImage.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvGrayscaleImage.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvHaarFinder.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvImage.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxCvShortImage.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\src\ofxOpenCv.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cv.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cv.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cvaux.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cvaux.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cvwimage.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxcore.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxcore.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxeigen.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\cxmisc.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\highgui.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv\ml.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\calib3d\calib3d.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\contrib.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\detection_based_tracker.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\hybridtracker.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\openfabmap.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\contrib\retina.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\affine.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\core.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\core_c.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\cuda_devptrs.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\devmem2d.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\eigen.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\gpumat.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\internal.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\mat.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\opengl_interop.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\opengl_interop_deprecated.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\operations.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\types_c.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\version.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\core\wimage.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\features2d\features2d.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\allocator.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\all_indices.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\any.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\autotuned_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\composite_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\config.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\defines.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\dist.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\dummy.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\dynamic_bitset.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\flann.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\flann_base.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\general.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\ground_truth.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\hdf5.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\heap.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\hierarchical_clustering_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\index_testing.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\kdtree_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\kdtree_single_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\kmeans_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\linear_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\logger.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\lsh_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\lsh_table.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\matrix.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\miniflann.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\nn_index.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\object_factory.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\params.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\random.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\result_set.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\sampling.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\saving.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\simplex_downhill.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\flann\timer.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\block.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\border_interpolate.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\color.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\common.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\datamov_utils.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\color_detail.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\reduce.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\reduce_key_val.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\transform_detail.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\type_traits_detail.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\detail\vec_distance_detail.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\dynamic_smem.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\emulation.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\filters.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\funcattrib.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\functional.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\limits.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\reduce.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\saturate_cast.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\scan.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\simd_functions.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\static_check.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\transform.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\type_traits.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\utility.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\vec_distance.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\vec_math.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\vec_traits.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\warp.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\warp_reduce.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\device\warp_shuffle.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\devmem2d.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\gpu.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\gpumat.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\gpu\stream_accessor.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\cap_ios.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\highgui.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\highgui_c.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\highgui\ios.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\imgproc.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\imgproc_c.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\imgproc\types_c.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\blobtrack.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\compat.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\legacy.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\legacy\streams.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ml\ml.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\features2d.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\gpu.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\nonfree.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\nonfree\ocl.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\objdetect\objdetect.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\opencv.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\opencv_modules.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo\photo.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\photo\photo_c.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\autocalib.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\blenders.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\camera.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\exposure_compensate.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\matchers.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\motion_estimators.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\seam_finders.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\util.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\util_inl.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\warpers.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\detail\warpers_inl.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\stitcher.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\stitching\warpers.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres\optical_flow.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\superres\superres.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\gpu_perf.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\gpu_test.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\ts.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\ts_gtest.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\ts\ts_perf.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video\background_segm.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video\tracking.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\video\video.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\deblurring.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\fast_marching.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\fast_marching_inl.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\frame_source.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\global_motion.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\inpainting.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\log.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\motion_stabilizing.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\optical_flow.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\stabilizer.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxOpenCv\libs\opencv\include\opencv2\videostab\videostab.hpp" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxParagraph\src\ofxParagraph.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\src\ofxXmlSettings.h" />
+    <ClInclude Include="..\of_v0.9.8_vs_release\addons\ofxXmlSettings\libs\tinyxml.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
+      <Project>{5837595d-aca9-485c-8e76-729040ce4b0b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="icon.rc">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/D_DEBUG %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>$(OF_ROOT)\libs\openFrameworksCompiled\project\vs</AdditionalIncludeDirectories>
+    </ResourceCompile>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="icon.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

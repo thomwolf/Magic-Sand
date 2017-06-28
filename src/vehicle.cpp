@@ -132,6 +132,14 @@ ofPoint Vehicle::hillEffect() {
 	return velocityChange;
 }
 
+ofPoint Vehicle::windEffect(float windspeed, float winddirection) {
+	ofPoint velocityChange;
+	if (windspeed > 5) {
+		velocityChange = velocity * 2;
+	}
+	return velocityChange;
+}
+
 
 ofPoint Vehicle::slopesEffect(){
     ofPoint desired, velocityChange;
@@ -220,9 +228,14 @@ ofPoint Fire::wanderEffect(){
     return velocityChange;
 }
 // Forces : seekF, bordersF, slopesF, wanderF, ==> Temp, Wind, Humid, ... hier mögl.
-void Fire::applyBehaviours(){
+void Fire::applyBehaviours() {
+
+}
+
+void Fire::applyBehaviours(float temp, float windspeed, float winddirection) {
     updateBeachDetection();
     
+	windF = windEffect(windspeed, winddirection);
     bordersF = bordersEffect();
     slopesF = slopesEffect();
     wanderF = wanderEffect();

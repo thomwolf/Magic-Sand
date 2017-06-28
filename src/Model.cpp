@@ -57,6 +57,19 @@ bool Model::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f
     return okwater;
 }
 
+// SETTERS and GETTERS Fire Parameters:
+void Model::setWindspeed(float uiwindspeed) {
+	windspeed = uiwindspeed;
+}
+
+void Model::setTemp(float uiTemp) {
+	temperature = uiTemp;
+}
+
+void Model::setWinddirection(float uiWinddirection) {
+	winddirection = uiWinddirection;
+}
+
 void Model::update(){
     // kinectROI updated
     if (kinectProjector->getKinectROI() != kinectROI){
@@ -86,7 +99,7 @@ void Model::update(){
 	deleteDeadFires();
     for (auto & f : fires){
         if(f.isAlive()){
-            f.applyBehaviours();
+            f.applyBehaviours(temperature,windspeed,winddirection);
             f.update();
         }
     }

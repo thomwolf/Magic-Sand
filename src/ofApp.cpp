@@ -48,7 +48,11 @@ void ofApp::setup() {
 	fboVehicles.begin();
 	ofClear(0,0,0,255);
 	fboVehicles.end();
-	
+	//Initialize interface parameters without slider movement
+	firePos.set(kinectROI.width / 2, kinectROI.height / 2);
+	model->setTemp(25);
+	model->setWindspeed(5);
+	model->setWinddirection(180);
 	setupGui();
 }
 
@@ -149,7 +153,6 @@ void ofApp::setupGui(){
 	gui = new ofxDatGui();
 	gui->add2dPad("Fire position", kinectROI);
 	gui->addSlider("Temperature", 0, 50);
-	gui->addSlider("Moisture of soil", 0, 100);
 	gui->addSlider("Wind speed", 0, 10);
 	gui->addSlider("Wind direction", 0, 360);
 	gui->addButton("Start fire");
@@ -183,5 +186,16 @@ void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e) {
 	}
 }
 
-void ofApp::onSliderEvent(ofxDatGuiSliderEvent e){
+void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
+	if (e.target->is("Temperature")) {
+		model->setTemp(e.value);
+	}
+
+	if (e.target->is("Wind speed")) {
+		model->setWindspeed(e.value);
+	}
+
+	if (e.target->is("Wind direction")) {
+		model->setWinddirection(e.value);
+	}
 }

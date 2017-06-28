@@ -56,6 +56,7 @@ protected:
     ofPoint bordersEffect();
     ofPoint slopesEffect();
 	ofPoint hillEffect();
+	ofPoint windEffect(float windspeed, float winddirection);
     virtual ofPoint wanderEffect();
     void applyVelocityChange(const ofPoint & force);
     
@@ -72,6 +73,7 @@ protected:
     ofVec2f slopesF ;
     ofVec2f wanderF ;
 	ofVec2f hillF;
+	ofVec2f windF;
 
     bool beach;
     bool border;
@@ -102,6 +104,7 @@ public:
 
     void setup();
     void applyBehaviours();
+	void applyBehaviours(float temp, float windspeed, float winddirection);
     void draw();
 
     const bool isAlive() const {
