@@ -64,7 +64,7 @@ void Model::update(){
         resetBurnedArea();
     }
     
-    
+	
     
     //spread fires
     int size = fires.size();
@@ -83,7 +83,7 @@ void Model::update(){
             addNewFire(location, (angle + 270)%360);
         }
     }
-
+	deleteDeadFires();
     for (auto & f : fires){
         if(f.isAlive()){
             f.applyBehaviours();
@@ -103,6 +103,18 @@ void Model::clear(){
     resetBurnedArea();
 }
 
+void Model::deleteDeadFires() {
+	vector<int> deadFires;
+	
+	for (int i = 0; i < fires.size(); i++) {
+		if (!fires[i].isAlive()) {
+			deadFires.push_back(i);
+		}
+	}
+	for (int i = 0; i < deadFires.size(); i++) {
+		fires.erase(fires.begin() + (deadFires[i] - i));
+	}
+}
 void Model::resetBurnedArea(){
     burnedArea.clear();
     for(int x = 0; x <= kinectROI.getRight(); x++ ){
