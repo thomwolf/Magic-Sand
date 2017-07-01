@@ -90,7 +90,14 @@ void Model::update(){
         }
         
         int rand = std::rand() % 100;
-        if (fires[i].isAlive() && rand < 10){
+		int spreadFactor = 10;
+		if (temperature > 30) {
+			spreadFactor = 20;
+		}
+		else if (temperature < 10) {
+			spreadFactor = 5;
+		}
+        if (fires[i].isAlive() && rand < spreadFactor){
             int angle = fires[i].getAngle();
             addNewFire(location, (angle + 90)%360);
             addNewFire(location, (angle + 270)%360);
