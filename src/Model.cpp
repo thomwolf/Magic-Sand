@@ -77,26 +77,25 @@ void Model::update(){
         resetBurnedArea();
     }
     
-	
-    
     //spread fires
     int size = fires.size();
-    for (int i = 0; i < size ; i++){
+    int i = 0;
+    while(i < size){
         ofPoint location = fires[i].getLocation();
-        if (burnedArea[floor(location.x)][floor(location.y)]){
-            fires[i].kill();
+        if (burnedArea[floor(location.x)][floor(location.y)] || !fires[i].isAlive()){
+            fires.erase(fires.begin() + i);
+            size--;
         } else {
             burnedArea[floor(location.x)][floor(location.y)] = true;
-        }
-        
-        int rand = std::rand() % 100;
-        if (fires[i].isAlive() && rand < 10){
-            int angle = fires[i].getAngle();
-            addNewFire(location, (angle + 90)%360);
-            addNewFire(location, (angle + 270)%360);
+            int rand = std::rand() % 100;
+            if (fires[i].isAlive() && rand < 10){
+                int angle = fires[i].getAngle();
+                addNewFire(location, (angle + 90)%360);
+                addNewFire(location, (angle + 270)%360);
+            }
         }
     }
-	deleteDeadFires();
+    
     for (auto & f : fires){
         if(f.isAlive()){
             f.applyBehaviours(temperature,windspeed,winddirection);
@@ -116,18 +115,6 @@ void Model::clear(){
     resetBurnedArea();
 }
 
-void Model::deleteDeadFires() {
-	vector<int> deadFires;
-	
-	for (int i = 0; i < fires.size(); i++) {
-		if (!fires[i].isAlive()) {
-			deadFires.push_back(i);
-		}
-	}
-	for (int i = 0; i < deadFires.size(); i++) {
-		fires.erase(fires.begin() + (deadFires[i] - i));
-	}
-}
 void Model::resetBurnedArea(){
     burnedArea.clear();
     for(int x = 0; x <= kinectROI.getRight(); x++ ){
