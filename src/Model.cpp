@@ -93,6 +93,7 @@ void Model::update(){
                 addNewFire(location, (angle + 90)%360);
                 addNewFire(location, (angle + 270)%360);
             }
+            i++;
         }
     }
     
