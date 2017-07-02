@@ -142,10 +142,13 @@ ofPoint Vehicle::windEffect(float windspeed, float winddirection) {
 	int windForce;
 	// set Factor for velocityChange
 	if (windspeed < 4) {
-		int windForce = 1;
+		windForce = 1.25;
 	}
-	else if (windspeed > 4) {
-		int windForce = 2;
+	else if (windspeed > 6) {
+		windForce = 2;
+	}
+	else {
+		windForce = 1.5;
 	}
 
 	//Determine if headwind oder tailwind , sidewinds have no effect at the moment
