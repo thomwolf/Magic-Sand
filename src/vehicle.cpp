@@ -134,9 +134,34 @@ ofPoint Vehicle::hillEffect() {
 
 ofPoint Vehicle::windEffect(float windspeed, float winddirection) {
 	ofPoint velocityChange;
-	if (windspeed > 5) {
-		velocityChange = velocity * 2;
+	int directionOfWind = (int)winddirection;
+	int inverseWinddirection = (directionOfWind - 180) % 360;
+	int directionOfFire = (int)angle;
+	int positiveRangeFire = (directionOfFire + 45) % 360;
+	int negativeRangeFire = (directionOfFire - 45) % 360;
+	int windForce;
+	// set Factor for velocityChange
+	if (windspeed > 1) {
+		windForce = 1.25;
+	} else if (windspeed > 4) {
+		windForce = 1.5;
+	} else if (windspeed > 6) {
+		windForce = 1.75;
+	} else if (windspeed > 8) {
+		windForce = 2;
+	} else {
+		windForce = 0;
 	}
+
+	//Determine if headwind oder tailwind , sidewinds have no effect at the moment
+	if(directionOfWind < positiveRangeFire && directionOfWind > negativeRangeFire){
+		velocityChange = velocity * windForce;
+	} else if (inverseWinddirection < positiveRangeFire && inverseWinddirection > negativeRangeFire){
+		velocityChange = -velocity * windForce;
+	} else {
+		velocityChange = ofPoint(0);
+	}
+
 	return velocityChange;
 }
 
@@ -252,10 +277,10 @@ void Fire::applyBehaviours(float temp, float windspeed, float winddirection) {
     float currDir = ofDegToRad(angle);
     ofPoint oldDir = ofVec2f(cos(currDir), sin(currDir));
     oldDir.scale(velocityIncreaseStep);
-
 	ofPoint newDir;
 	newDir += wanderF;
 	newDir += hillF;
+	newDir += windF;
 
     
 	if (beach)

@@ -35,7 +35,6 @@ public:
 
     
 private:
-	void deleteDeadFires();
 	void resetBurnedArea();
     void drawBurnedArea();
     
