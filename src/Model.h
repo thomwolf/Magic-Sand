@@ -36,6 +36,7 @@ public:
     
 private:
 	void resetBurnedArea();
+    void drawBurnedArea();
     
     std::shared_ptr<KinectProjector> kinectProjector;
     

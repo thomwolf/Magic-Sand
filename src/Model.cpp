@@ -87,20 +87,20 @@ void Model::update(){
             size--;
         } else {
             burnedArea[floor(location.x)][floor(location.y)] = true;
-            int rand = std::rand() % 100;
-            int spreadFactor = 10;
-		        if (temperature > 30) {
-			          spreadFactor = 20;
-		        } else if (temperature < 10) {
-			          spreadFactor = 5;
-		        }
-            if (fires[i].isAlive() && rand < spreadFactor){
-                int angle = fires[i].getAngle();
-                addNewFire(location, (angle + 90)%360);
-                addNewFire(location, (angle + 270)%360);
-            }
-            i++;
         }
+        int rand = std::rand() % 100;
+        int spreadFactor = 10;
+        if (temperature > 30) {
+            spreadFactor = 20;
+        } else if (temperature < 10) {
+            spreadFactor = 5;
+        }
+        if (fires[i].isAlive() && rand < spreadFactor){
+            int angle = fires[i].getAngle();
+            addNewFire(location, (angle + 90)%360);
+            addNewFire(location, (angle + 270)%360);
+        }
+        i++;
     }
     
     for (auto & f : fires){
@@ -112,6 +112,7 @@ void Model::update(){
 }
 
 void Model::draw(){
+    drawBurnedArea();
     for (auto & f : fires){
         f.draw();
     }
@@ -130,6 +131,28 @@ void Model::resetBurnedArea(){
             row.push_back(false);
         }
         burnedArea.push_back(row);
+    }
+}
+
+void Model::drawBurnedArea(){
+    for(int i = 0; i< burnedArea.size(); i++){
+        for(int j = 0; j < burnedArea[i].size(); j++){
+            if(burnedArea[i][j]){
+                ofVec2f coord = kinectProjector-> kinectCoordToProjCoord(i,j);
+
+                ofColor color = ofColor(0, 0, 0);
+
+                ofFill();
+
+                ofPath ash;
+                ash.rectangle(coord.x-3, coord.y-3, 6, 6);
+                ash.setFillColor(color);
+                ash.setStrokeWidth(0);
+                ash.draw();
+
+                ofNoFill();
+            }
+        }
     }
 }
 
