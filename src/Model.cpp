@@ -88,7 +88,6 @@ void Model::update(){
         } else {
             burnedArea[floor(location.x)][floor(location.y)] = true;
         }
-        
         int rand = std::rand() % 100;
         if (fires[i].isAlive() && rand < 10){
             int angle = fires[i].getAngle();
@@ -144,23 +143,19 @@ void Model::drawBurnedArea(){
     for(int i = 0; i< burnedArea.size(); i++){
         for(int j = 0; j < burnedArea[i].size(); j++){
             if(burnedArea[i][j]){
-                ofVec2f coord = kinectProjector-> kinectCoordToProjCoord(i, j);
-                ofPushMatrix();
-                ofTranslate(coord);
+                ofVec2f coord = kinectProjector-> kinectCoordToProjCoord(i,j);
+
                 ofColor color = ofColor(0, 0, 0);
 
                 ofFill();
 
                 ofPath ash;
-                ash.circle(0, 0, 3);
+                ash.rectangle(coord.x-3, coord.y-3, 6, 6);
                 ash.setFillColor(color);
                 ash.setStrokeWidth(0);
                 ash.draw();
 
                 ofNoFill();
-
-                // restore the pushed state
-                ofPopMatrix();
             }
         }
     }
