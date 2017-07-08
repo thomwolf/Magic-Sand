@@ -98,7 +98,6 @@ void ofApp::drawProjWindow(ofEventArgs &args) {
 void ofApp::drawVehicles()
 {
     fboVehicles.begin();
-    ofClear(255,255,255, 0);
     model->draw();
     fboVehicles.end();
 }
@@ -176,6 +175,9 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
 	}
 	if (e.target->is("Reset")) {
 		model->clear();
+        fboVehicles.begin();
+        ofClear(0, 0, 0, 0);
+        fboVehicles.end();
 		gui->get2dPad("Fire position")->reset();
 	}
 }

@@ -110,14 +110,21 @@ public:
     const bool isAlive() const {
         return alive;
     }
+
+    int getIntensity() {
+        return intensity;
+    }
     
     void kill();
 
 private:
     ofPoint wanderEffect();
 
+    ofColor getFlameColor();
+
     int maxStraightPath; // max rabbit straight path length
     int currentStraightPathLength;// current rabbit straight path length
+    int intensity;
     
     float velocityIncreaseStep; // Rabbit increase step
     float minVelocity;

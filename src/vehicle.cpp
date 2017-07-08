@@ -221,6 +221,7 @@ void Fire::setup(){
     velocityIncreaseStep = 2;
     minVelocity = velocityIncreaseStep;
     
+    intensity = 10;
 	alive = true;
 }
 // Rotation vom Rabbit : Simon
@@ -303,18 +304,15 @@ void Fire::applyBehaviours(float temp, float windspeed, float winddirection) {
 		}
 }
 
-void Fire::draw()
-{
+void Fire::draw(){
+    if(!alive){
+        intensity--;
+    }
     // saves the current coordinate system
     ofPushMatrix();
     ofTranslate(projectorCoord);
     ofRotate(angle);
-	ofColor color;
-	if (alive) {
-		 color = ofColor(255,0,0);
-	} else {
-		 color = ofColor(0, 0, 0);
-	}
+    ofColor color = getFlameColor();
     
     float sc = 2;
     
@@ -336,4 +334,12 @@ void Fire::draw()
 
 void Fire::kill(){
     alive = false;
+}
+
+ofColor Fire::getFlameColor(){
+    float intensityFactor = 0.1 * intensity;
+    int red = 255 * intensityFactor;
+    int green = 64 * intensityFactor;
+    int blue = 0 * intensityFactor;
+    return ofColor(red, green, blue);
 }
