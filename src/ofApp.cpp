@@ -46,7 +46,7 @@ void ofApp::setup() {
 	
 	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboVehicles.begin();
-	ofClear(0,0,0,255);
+	ofClear(0,0,0,0);
 	fboVehicles.end();
 	//Initialize interface parameters without slider movement
 	firePos.set(kinectROI.width / 2, kinectROI.height / 2);
