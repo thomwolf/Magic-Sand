@@ -221,7 +221,7 @@ void Fire::setup(){
     velocityIncreaseStep = 2;
     minVelocity = velocityIncreaseStep;
     
-    intensity = 10;
+    intensity = 3;
 	alive = true;
 }
 // Rotation vom Rabbit : Simon
@@ -337,7 +337,7 @@ void Fire::kill(){
 }
 
 ofColor Fire::getFlameColor(){
-    float intensityFactor = 0.1 * intensity;
+    float intensityFactor = intensity <= 0 ? 0 : intensity*0.33;
     int red = 255 * intensityFactor;
     int green = 64 * intensityFactor;
     int blue = 0 * intensityFactor;

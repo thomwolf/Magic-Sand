@@ -141,7 +141,7 @@ void Model::drawEmbers(){
             embers[i].kill();
         }
         embers[i].draw();
-        if(embers[i].getIntensity() == 0){
+        if(embers[i].getIntensity() <= 0){
             embers.erase(embers.begin() + i);
             size--;
         } else {
