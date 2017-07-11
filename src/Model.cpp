@@ -123,6 +123,7 @@ void Model::draw(){
 
 void Model::clear(){
     fires.clear();
+	embers.clear();
     resetBurnedArea();
 }
 
