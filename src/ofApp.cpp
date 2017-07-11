@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 void ofApp::setup() {
 	// OF basics
-	ofSetFrameRate(60);
+	ofSetFrameRate(15);
 	ofBackground(0);
 	ofSetVerticalSync(true);
 //	ofSetLogLevel(OF_LOG_VERBOSE);
@@ -46,7 +46,7 @@ void ofApp::setup() {
 	
 	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboVehicles.begin();
-	ofClear(0,0,0,255);
+	ofClear(0,0,0,0);
 	fboVehicles.end();
 	//Initialize interface parameters without slider movement
 	firePos.set(kinectROI.width / 2, kinectROI.height / 2);
@@ -98,7 +98,6 @@ void ofApp::drawProjWindow(ofEventArgs &args) {
 void ofApp::drawVehicles()
 {
     fboVehicles.begin();
-    ofClear(255,255,255, 0);
     model->draw();
     fboVehicles.end();
 }
@@ -176,6 +175,9 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
 	}
 	if (e.target->is("Reset")) {
 		model->clear();
+        fboVehicles.begin();
+        ofClear(0, 0, 0, 0);
+        fboVehicles.end();
 		gui->get2dPad("Fire position")->reset();
 	}
 }
