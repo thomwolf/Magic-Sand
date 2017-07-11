@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 void ofApp::setup() {
 	// OF basics
-	ofSetFrameRate(60);
+	ofSetFrameRate(15);
 	ofBackground(0);
 	ofSetVerticalSync(true);
 //	ofSetLogLevel(OF_LOG_VERBOSE);
