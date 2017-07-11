@@ -85,6 +85,7 @@ void Model::update(){
     int size = fires.size();
     int i = 0;
     while(i < size){
+        embers.push_back(fires[i]);
         ofPoint location = fires[i].getLocation();
         if (burnedArea[floor(location.x)][floor(location.y)] || !fires[i].isAlive()){
             fires.erase(fires.begin() + i);
@@ -108,15 +109,13 @@ void Model::update(){
     }
     
     for (auto & f : fires){
-        if(f.isAlive()){
-            f.applyBehaviours(temperature,windspeed,winddirection);
-            f.update();
-        }
+        f.applyBehaviours(temperature,windspeed,winddirection);
+        f.update();
     }
 }
 
 void Model::draw(){
-    drawBurnedArea();
+    drawEmbers();
     for (auto & f : fires){
         f.draw();
     }
@@ -138,24 +137,19 @@ void Model::resetBurnedArea(){
     }
 }
 
-void Model::drawBurnedArea(){
-    for(int i = 0; i< burnedArea.size(); i++){
-        for(int j = 0; j < burnedArea[i].size(); j++){
-            if(burnedArea[i][j]){
-                ofVec2f coord = kinectProjector-> kinectCoordToProjCoord(i,j);
-
-                ofColor color = ofColor(0, 0, 0);
-
-                ofFill();
-
-                ofPath ash;
-                ash.rectangle(coord.x-3, coord.y-3, 6, 6);
-                ash.setFillColor(color);
-                ash.setStrokeWidth(0);
-                ash.draw();
-
-                ofNoFill();
-            }
+void Model::drawEmbers(){
+    int i = 0;
+    int size = embers.size();
+    while(i < size){
+        if(embers[i].isAlive()){
+            embers[i].kill();
+        }
+        embers[i].draw();
+        if(embers[i].getIntensity() <= 0){
+            embers.erase(embers.begin() + i);
+            size--;
+        } else {
+            i++;
         }
     }
 }

@@ -38,7 +38,7 @@ public:
     
 private:
 	void resetBurnedArea();
-    void drawBurnedArea();
+    void drawEmbers();
     
     std::shared_ptr<KinectProjector> kinectProjector;
     
@@ -46,6 +46,7 @@ private:
     
     // Fire
     vector<Fire> fires;
+    vector<Fire> embers;
     vector< vector<bool> > burnedArea;
 	float temperature;
 	float windspeed;
