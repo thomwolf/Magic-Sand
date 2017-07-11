@@ -153,16 +153,12 @@ ofPoint Vehicle::windEffect(float windspeed, float winddirection) {
 		windForce = 0;
 	}
 
-	//Determine if headwind oder tailwind , sidewinds have no effect at the moment
-	if(directionOfWind < positiveRangeFire && directionOfWind > negativeRangeFire){
-		velocityChange = velocity * windForce;
-	} else if (inverseWinddirection < positiveRangeFire && inverseWinddirection > negativeRangeFire){
-		velocityChange = -velocity * windForce;
-	} else {
-		velocityChange = ofPoint(0);
-	}
+	float windDir = ofDegToRad(winddirection);
+	ofPoint desired = ofVec2f(cos(windDir), sin(windDir));
+	desired.normalize();
+	desired *= windForce;
 
-	return velocityChange;
+	return desired.limit(maxVelocityChange);
 }
 
 
