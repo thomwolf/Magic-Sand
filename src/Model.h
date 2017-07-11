@@ -16,6 +16,8 @@
 class Model{
 public:
     Model(std::shared_ptr<KinectProjector> const& k);
+
+	bool isRunning();
     
     void addNewFire();
     void addNewFire(ofVec2f fireSpawnPos);

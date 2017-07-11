@@ -70,9 +70,13 @@ void ofApp::update() {
 
 	if (kinectProjector->isImageStabilized()) {
         if(runstate){
-		model->update();
+			model->update();
+			drawVehicles();
 		}
-	    drawVehicles();
+		if (!model->isRunning()) {
+			gui->getButton("Start fire")->setLabel("Start fire");
+			runstate = false;
+		}
 	}
 	gui->update();
 }

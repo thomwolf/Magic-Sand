@@ -18,6 +18,10 @@ Model::Model(std::shared_ptr<KinectProjector> const& k){
 
 }
 
+bool Model::isRunning() {
+	return fires.size() > 0;
+}
+
 void Model::addNewFire(){
     ofVec2f location;
     setRandomVehicleLocation(kinectROI, false, location);
