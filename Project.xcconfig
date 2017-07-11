@@ -1,9 +1,9 @@
 //THE PATH TO THE ROOT OF OUR OF PATH RELATIVE TO THIS PROJECT.
 //THIS NEEDS TO BE DEFINED BEFORE CoreOF.xcconfig IS INCLUDED
-OF_PATH = ../../..
+OF_PATH = ../of_v0.9.8_osx_release
 
 //THIS HAS ALL THE HEADER AND LIBS FOR OF CORE
-#include "../../../libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig"
+#include "../of_v0.9.8_osx_release/libs/openFrameworksCompiled/project/osx/CoreOF.xcconfig"
 
 //ICONS - NEW IN 0072 
 ICON_NAME_DEBUG = icon.icns
