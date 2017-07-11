@@ -53,6 +53,7 @@ void ofApp::setup() {
 	model->setTemp(25);
 	model->setWindspeed(5);
 	model->setWinddirection(180);
+	runstate = false;
 	setupGui();
 }
 
@@ -68,8 +69,14 @@ void ofApp::update() {
         kinectROI = kinectProjector->getKinectROI();
 
 	if (kinectProjector->isImageStabilized()) {
-        model->update();
-	    drawVehicles();
+        if(runstate){
+			model->update();
+			drawVehicles();
+		}
+		if (!model->isRunning()) {
+			gui->getButton("Start fire")->setLabel("Start fire");
+			runstate = false;
+		}
 	}
 	gui->update();
 }
@@ -169,16 +176,33 @@ void ofApp::setupGui(){
 	gui->setAutoDraw(false); // troubles with multiple windows drawings on Windows
 }
 
-void ofApp::onButtonEvent(ofxDatGuiButtonEvent e){
+void ofApp::onButtonEvent(ofxDatGuiButtonEvent e) {
 	if (e.target->is("Start fire")) {
-		model->addNewFire(firePos);
+		// Button functionality depending on State
+		if (gui->getButton("Start fire")->getLabel() == "Start fire") {
+			runstate = true;
+			gui->getButton("Start fire")->setLabel("Pause");
+			model->addNewFire(firePos);
+		}
+		else if (gui->getButton("Start fire")->getLabel() == "Pause") {
+			runstate = false;
+			gui->getButton("Start fire")->setLabel("Resume");
+		}
+		else if (gui->getButton("Start fire")->getLabel() == "Resume") {
+			runstate = true;
+			gui->getButton("Start fire")->setLabel("Pause");
+		}
 	}
+
 	if (e.target->is("Reset")) {
 		model->clear();
-        fboVehicles.begin();
-        ofClear(0, 0, 0, 0);
-        fboVehicles.end();
+    fboVehicles.begin();
+    ofClear(0, 0, 0, 0);
+    fboVehicles.end();
+		gui->getButton("Start fire")->setLabel("Start fire");
 		gui->get2dPad("Fire position")->reset();
+		runstate = false;
+		
 	}
 }
 

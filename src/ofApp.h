@@ -71,6 +71,7 @@ private:
 
 	//Fire Variables : Simon
 	ofVec2f firePos;
+	bool runstate;
 
 	// GUI
 	ofxDatGui* gui;
