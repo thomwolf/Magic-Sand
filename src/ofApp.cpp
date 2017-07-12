@@ -209,6 +209,23 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e) {
 void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e) {
 	if (e.target->is("Fire position")) {
 		firePos.set(e.x, e.y);
+		if (!model->isRunning()) {
+			fboVehicles.begin();
+			ofClear(0, 0, 0, 0);
+			ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(firePos.x, firePos.y);
+			ofColor color = ofColor(255, 0, 0, 255);
+
+			ofFill();
+
+			ofPath flame;
+			flame.circle(projectorCoord.x, projectorCoord.y, 5);
+			flame.setFillColor(color);
+			flame.setStrokeWidth(0);
+			flame.draw();
+
+			ofNoFill();
+			fboVehicles.end();
+		}
 	}
 }
 
