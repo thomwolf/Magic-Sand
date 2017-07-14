@@ -43,7 +43,12 @@ void ofApp::setup() {
 	// Retrieve variables
 	ofVec2f projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
     kinectROI = kinectProjector->getKinectROI();
-	
+	//Interface FBO 
+	fboInterface.allocate(projRes.x, projRes.y, GL_RGBA);
+	fboInterface.begin();
+	ofClear(0, 0, 0, 0);
+	fboInterface.end();
+	//Vehicles FBO
 	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboVehicles.begin();
 	ofClear(0,0,0,0);
@@ -52,7 +57,9 @@ void ofApp::setup() {
 	firePos.set(kinectROI.width / 2, kinectROI.height / 2);
 	model->setTemp(25);
 	model->setWindspeed(5);
+	windspeed = 5;
 	model->setWinddirection(180);
+	windDirection = 180;
 	runstate = false;
 	setupGui();
 }
@@ -69,6 +76,7 @@ void ofApp::update() {
         kinectROI = kinectProjector->getKinectROI();
 
 	if (kinectProjector->isImageStabilized()) {
+		drawWindArrow(windDirection, windspeed);
         if(runstate){
 			model->update();
 			drawVehicles();
@@ -89,8 +97,9 @@ void ofApp::draw() {
 
 void ofApp::drawMainWindow(float x, float y, float width, float height){
     sandSurfaceRenderer->drawMainWindow(x, y, width, height);
-    fboVehicles.draw(x, y, width, height);
     kinectProjector->drawMainWindow(x, y, width, height);
+	fboInterface.draw(x, y, width, height);
+	fboVehicles.draw(x, y, width, height);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args) {
@@ -99,6 +108,7 @@ void ofApp::drawProjWindow(ofEventArgs &args) {
 	if (!kinectProjector->isCalibrating()){
 	    sandSurfaceRenderer->drawProjectorWindow();
 	    fboVehicles.draw(0,0);
+		fboInterface.draw(0, 0);
 	}
 }
 
@@ -107,6 +117,28 @@ void ofApp::drawVehicles()
     fboVehicles.begin();
     model->draw();
     fboVehicles.end();
+}
+
+void ofApp::drawWindArrow(float winddirection, float windspeed)
+{
+	fboInterface.begin();
+	ofClear(0, 0, 0, 0);
+	ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(75, 125);
+	ofTranslate(projectorCoord);
+	ofRotate(winddirection);
+	ofScale(windspeed/5, 1, 1);
+
+	ofColor color = ofColor(255, 255, 255, 255);
+	ofFill();
+	ofDrawArrow(ofVec3f(20, 2.5, 0), ofVec3f(50, 2.5, 0), 15.05);
+	ofPath arrow;
+	arrow.rectangle(ofPoint(0, 0), 50, 5);
+	arrow.setFillColor(color);
+	arrow.setStrokeWidth(0);
+	arrow.draw();
+
+	ofNoFill();
+	fboInterface.end();
 }
 
 void ofApp::keyPressed(int key) {
@@ -236,23 +268,11 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
 
 	if (e.target->is("Wind speed")) {
 		model->setWindspeed(e.value);
+		windspeed = e.value;
 	}
 
 	if (e.target->is("Wind direction")) {
-		fboVehicles.begin();
-		ofClear(0, 0, 0, 0);
-		ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(50, 50);
-		ofTranslate(projectorCoord);
-		ofRotate(e.value);
-
-		ofColor color = ofColor(255, 0, 0, 255);
-		int sc = 2;
-		ofFill();
-		ofPath flame;
-		ofDrawArrow(ofVec3f(0, 0, 0), ofVec3f(50, 0, 0), 15.05);
-	
-
-		ofNoFill();
-		fboVehicles.end();
+		model->setWinddirection(e.value);
+		windDirection = e.value;		
 	}
 }
