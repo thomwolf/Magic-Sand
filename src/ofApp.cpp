@@ -239,6 +239,20 @@ void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
 	}
 
 	if (e.target->is("Wind direction")) {
-		model->setWinddirection(e.value);
+		fboVehicles.begin();
+		ofClear(0, 0, 0, 0);
+		ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(50, 50);
+		ofTranslate(projectorCoord);
+		ofRotate(e.value);
+
+		ofColor color = ofColor(255, 0, 0, 255);
+		int sc = 2;
+		ofFill();
+		ofPath flame;
+		ofDrawArrow(ofVec3f(0, 0, 0), ofVec3f(50, 0, 0), 15.05);
+	
+
+		ofNoFill();
+		fboVehicles.end();
 	}
 }
