@@ -26,26 +26,20 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "KinectProjector/KinectProjector.h"
 #include "SandSurfaceRenderer/SandSurfaceRenderer.h"
 #include "vehicle.h"
+#include "Model.h"
 
 class ofApp : public ofBaseApp {
 
 public:
 	void setup();
-    
-	void addNewFish();
-	void addNewRabbit();
-	bool addMotherFish();
-	bool addMotherRabbit();
-	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
 
 	void update();
 
 	void draw();
 	void drawProjWindow(ofEventArgs& args);
 	void drawVehicles();
-	void drawMotherFish();
-	void drawMotherRabbit();
-
+	void drawWindArrow(float winddirection,float windspeed);
+	
 	void keyPressed(int key);
 	void keyReleased(int key);
 	void mouseMoved(int x, int y);
@@ -60,37 +54,31 @@ public:
 
 	void setupGui();
 	void onButtonEvent(ofxDatGuiButtonEvent e);
-	void onToggleEvent(ofxDatGuiToggleEvent e);
-	void onSliderEvent(ofxDatGuiSliderEvent e);
+	void on2dPadEvent(ofxDatGui2dPadEvent e);
+    void onSliderEvent(ofxDatGuiSliderEvent e);
 
 	std::shared_ptr<ofAppBaseWindow> projWindow;
 
 private:
 	std::shared_ptr<KinectProjector> kinectProjector;
 	SandSurfaceRenderer* sandSurfaceRenderer;
+    Model* model;
 	
 	// Projector and kinect variables
-	ofVec2f projRes;
-	ofVec2f kinectRes;
 	ofRectangle kinectROI;
 	
 	// FBos
 	ofFbo fboVehicles;
+	ofFbo fboInterface;
+	int windspeed;
+	int windDirection;
 
-	// Fish and Rabbits
-	vector<Fish> fish;
-	vector<Rabbit> rabbits;
-	int fishNum;
-	int rabbitsNum;
-	
-	// Fish and Rabbits mothers
-	ofPoint motherFish;
-	ofPoint motherRabbit;
-	bool showMotherFish;
-	bool showMotherRabbit;
-	float motherPlatformSize;
-	bool waitingToInitialiseVehicles;
-	
+	//Fire Variables
+	ofVec2f firePos;
+	bool runstate;
+
 	// GUI
 	ofxDatGui* gui;
+
+    void drawMainWindow(float x, float y, float width, float height);
 };
