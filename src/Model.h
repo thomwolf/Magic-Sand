@@ -26,11 +26,14 @@ public:
 	void setTemp(float uiTemp);
 	void setWindspeed(float uiWindspeed);
 	void setWinddirection(float uiWinddirection);
+	void calculateRiskZones();
     
     bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
     
     void update();
-    
+
+	void drawRiskZones();
+
     void draw();
     
     void clear();
@@ -47,6 +50,7 @@ private:
     // Fire
     vector<Fire> fires;
     vector<Fire> embers;
+	vector< vector<bool> > riskZones;
     vector< vector<bool> > burnedArea;
 	float temperature;
 	float windspeed;
