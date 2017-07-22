@@ -104,7 +104,7 @@ public:
 
     void setup();
     void applyBehaviours();
-	void applyBehaviours(float temp, float windspeed, float winddirection);
+	void applyBehaviours(float windspeed, float winddirection);
     void draw();
 
     const bool isAlive() const {

@@ -62,16 +62,12 @@ bool Model::setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f
 }
 
 // SETTERS and GETTERS Fire Parameters:
-void Model::setWindspeed(float uiwindspeed) {
-	windspeed = uiwindspeed;
+void Model::setWindSpeed(float v) {
+	windSpeed = v;
 }
 
-void Model::setTemp(float uiTemp) {
-	temperature = uiTemp;
-}
-
-void Model::setWinddirection(float uiWinddirection) {
-	winddirection = uiWinddirection;
+void Model::setWindDirection(float d) {
+	windDirection = d;
 }
 
 void Model::update(){
@@ -94,11 +90,6 @@ void Model::update(){
             burnedArea[floor(location.x)][floor(location.y)] = true;
             int rand = std::rand() % 100;
             int spreadFactor = 10;
-            if (temperature > 30) {
-                spreadFactor = 20;
-            } else if (temperature < 10) {
-                spreadFactor = 5;
-            }
             if (fires[i].isAlive() && rand < spreadFactor){
                 int angle = fires[i].getAngle();
                 addNewFire(location, (angle + 90)%360);
@@ -109,7 +100,7 @@ void Model::update(){
     }
     
     for (auto & f : fires){
-        f.applyBehaviours(temperature,windspeed,winddirection);
+        f.applyBehaviours(windSpeed, windDirection);
         f.update();
     }
 }

@@ -38,9 +38,6 @@ public:
 	void draw();
 	void drawProjWindow(ofEventArgs& args);
 	void drawVehicles();
-	void drawWindArrow(float winddirection,float windspeed);
-	void drawPositioningTarget(ofVec2f firePos);
-
 	
 	void keyPressed(int key);
 	void keyReleased(int key);
@@ -72,15 +69,17 @@ private:
 	// FBos
 	ofFbo fboVehicles;
 	ofFbo fboInterface;
-	int windspeed;
-	int windDirection;
+    ofVec2f firePos;
 
-	//Fire Variables
-	ofVec2f firePos;
+	//Model Variables
 	bool runstate;
+    int windSpeed;
+    int windDirection;
 
 	// GUI
 	ofxDatGui* gui;
 
     void drawMainWindow(float x, float y, float width, float height);
+    void drawWindArrow();
+    void drawPositioningTarget(ofVec2f firePos);
 };

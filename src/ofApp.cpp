@@ -43,28 +43,30 @@ void ofApp::setup() {
 	// Retrieve variables
 	ofVec2f projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
     kinectROI = kinectProjector->getKinectROI();
+
 	//Interface FBO 
 	fboInterface.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboInterface.begin();
 	ofClear(0, 0, 0, 0);
 	fboInterface.end();
+
 	//Vehicles FBO
 	fboVehicles.allocate(projRes.x, projRes.y, GL_RGBA);
 	fboVehicles.begin();
 	ofClear(0,0,0,0);
 	fboVehicles.end();
+
 	//Initialize interface parameters without slider movement
+    runstate = false;
 	firePos.set(kinectROI.width / 2, kinectROI.height / 2);
-	model->setTemp(25);
-	model->setWindspeed(5);
-	windspeed = 5;
-	model->setWinddirection(180);
-	windDirection = 180;
-	runstate = false;
+    windSpeed = 5;
+    windDirection = 180;
+
+	model->setWindSpeed(windSpeed);
+	model->setWindDirection(windDirection);
+
 	setupGui();
 }
-
-
 
 void ofApp::update() {
     // Call kinectProjector->update() first during the update function()
@@ -75,12 +77,14 @@ void ofApp::update() {
     if (kinectProjector->isROIUpdated())
         kinectROI = kinectProjector->getKinectROI();
 
+    if (!model->isRunning()) {
+        gui->getButton("Start fire")->setLabel("Start fire");
+        runstate = false;
+    }
+
 	if (kinectProjector->isImageStabilized()) {
-		drawWindArrow(windDirection, windspeed);
-        if (!model->isRunning()) {
-            gui->getButton("Start fire")->setLabel("Start fire");
-            runstate = false;
-        }
+		drawWindArrow();
+
         if(runstate){
 			model->update();
 			drawVehicles();
@@ -88,7 +92,6 @@ void ofApp::update() {
 	}
 	gui->update();
 }
-
 
 void ofApp::draw() {
     drawMainWindow(300, 30, 600, 450);
@@ -119,21 +122,22 @@ void ofApp::drawVehicles()
     fboVehicles.end();
 }
 
-void ofApp::drawWindArrow(float winddirection, float windspeed)
+void ofApp::drawWindArrow()
 {
 	fboInterface.begin();
+    
 	ofClear(0, 0, 0, 0);
+    
 	ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(75, 125);
 	ofTranslate(projectorCoord);
-	ofRotate(winddirection);
-	ofScale(windspeed/5, 1, 1);
-
-	ofColor color = ofColor(255, 255, 255, 255);
+	ofRotate(windDirection);
+	ofScale(windSpeed/5, 1, 1);
 	ofFill();
+    
 	ofDrawArrow(ofVec3f(20, 2.5, 0), ofVec3f(50, 2.5, 0), 15.05);
 	ofPath arrow;
 	arrow.rectangle(ofPoint(0, 0), 50, 5);
-	arrow.setFillColor(color);
+    arrow.setFillColor(ofColor::white);
 	arrow.setStrokeWidth(0);
 	arrow.draw();
 
@@ -146,13 +150,12 @@ void ofApp::drawPositioningTarget(ofVec2f firePos)
 	fboVehicles.begin();
 	ofClear(0, 0, 0, 0);
 	ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(firePos.x, firePos.y);
-	ofColor color = ofColor(255, 0, 0, 255);
 
 	ofFill();
 
 	ofPath flame;
 	flame.circle(projectorCoord.x, projectorCoord.y, 10);
-	flame.setFillColor(color);
+    flame.setFillColor(ofColor::red);
 	flame.setStrokeWidth(0);
 	flame.draw();
 
@@ -210,8 +213,8 @@ void ofApp::setupGui(){
 	gui = new ofxDatGui();
 	gui->addButton("Calculate Risk Zones");
 	gui->add2dPad("Fire position", kinectROI);
-	gui->addSlider("Wind speed", 0, 10);
-	gui->addSlider("Wind direction", 0, 360);
+	gui->addSlider("Wind speed", 0, 10, windSpeed);
+	gui->addSlider("Wind direction", 0, 360, windDirection);
 	gui->addButton("Start fire");
 	gui->addButton("Reset");
 	gui->addHeader(":: Fire simulation ::", false);
@@ -281,12 +284,12 @@ void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e) {
 
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
 	if (e.target->is("Wind speed")) {
-		model->setWindspeed(e.value);
-		windspeed = e.value;
+		model->setWindSpeed(e.value);
+		windSpeed = e.value;
 	}
 
 	if (e.target->is("Wind direction")) {
-		model->setWinddirection(e.value);
+		model->setWindDirection(e.value);
 		windDirection = e.value;		
 	}
 }

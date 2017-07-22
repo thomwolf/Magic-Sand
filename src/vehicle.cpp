@@ -254,7 +254,7 @@ void Fire::applyBehaviours() {
 
 }
 
-void Fire::applyBehaviours(float temp, float windspeed, float winddirection) {
+void Fire::applyBehaviours(float windspeed, float winddirection) {
     updateBeachDetection();
     
 	windF = windEffect(windspeed, winddirection);
