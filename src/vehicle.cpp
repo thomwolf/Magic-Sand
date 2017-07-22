@@ -118,18 +118,26 @@ ofPoint Vehicle::hillEffect() {
 	currentLocation = location;
 	futureLocation = location + velocity * 10;
 	currentelevation = kinectProjector->elevationAtKinectCoord(currentLocation.x, currentLocation.y);
-	futureelevation = kinectProjector->elevationAtKinectCoord(futureLocation.x,futureLocation.y);
+	futureelevation = kinectProjector->elevationAtKinectCoord(futureLocation.x, futureLocation.y);
+
+
+	float currDir = ofDegToRad(angle);
+	ofPoint front = ofVec2f(cos(currDir), sin(currDir));
+	front.normalize();
 	if (currentelevation > futureelevation) {
-		velocityChange = ofPoint(-0.5,0,0);
+		// Inverse Direction when moving downhill
+		front *= -1;
+		ofPoint dirChange = front.limit(maxVelocityChange);
+		return dirChange;
 	}
 	if (currentelevation < futureelevation) {
-		velocityChange = velocity * 2;
-
+		// Increase Speed when moving uphill
+		front *= 3;
+		return front;
 	}
 	if (currentelevation == futureelevation) {
-		//no Velocity Change 
+		return ofPoint(0);
 	}
-	return velocityChange;
 }
 
 ofPoint Vehicle::windEffect(float windspeed, float winddirection) {
@@ -270,6 +278,8 @@ void Fire::applyBehaviours(float windspeed, float winddirection) {
     slopesF *= 2;//2;
     wanderF *= 1;// Used to introduce some randomness in the direction changes
     littleSlopeF *= 1;
+	hillF *= 3;
+	windF *= 0.6;
     
     float currDir = ofDegToRad(angle);
     ofPoint oldDir = ofVec2f(cos(currDir), sin(currDir));
