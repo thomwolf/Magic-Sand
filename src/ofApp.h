@@ -73,7 +73,7 @@ private:
 
 	//Model Variables
 	bool runstate;
-    int windSpeed;
+    float windSpeed;
     int windDirection;
 
 	// GUI

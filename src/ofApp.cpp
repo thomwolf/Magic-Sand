@@ -124,10 +124,8 @@ void ofApp::drawVehicles()
 
 void ofApp::drawWindArrow()
 {
-	fboInterface.begin();
-    
-	ofClear(0, 0, 0, 0);
-    
+	fboInterface.begin();   
+	ofClear(0, 0, 0, 0);  
 	ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(75, 125);
 	ofTranslate(projectorCoord);
 	ofRotate(windDirection);
