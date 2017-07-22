@@ -77,13 +77,13 @@ void ofApp::update() {
 
 	if (kinectProjector->isImageStabilized()) {
 		drawWindArrow(windDirection, windspeed);
+        if (!model->isRunning()) {
+            gui->getButton("Start fire")->setLabel("Start fire");
+            runstate = false;
+        }
         if(runstate){
 			model->update();
 			drawVehicles();
-		}
-		if (!model->isRunning()) {
-			gui->getButton("Start fire")->setLabel("Start fire");
-			runstate = false;
 		}
 	}
 	gui->update();
