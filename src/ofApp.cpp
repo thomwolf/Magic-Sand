@@ -98,8 +98,8 @@ void ofApp::draw() {
 void ofApp::drawMainWindow(float x, float y, float width, float height){
     sandSurfaceRenderer->drawMainWindow(x, y, width, height);
     kinectProjector->drawMainWindow(x, y, width, height);
-	fboInterface.draw(x, y, width, height);
 	fboVehicles.draw(x, y, width, height);
+	fboInterface.draw(x, y, width, height);
 }
 
 void ofApp::drawProjWindow(ofEventArgs &args) {
@@ -191,7 +191,6 @@ void ofApp::setupGui(){
 	gui = new ofxDatGui();
 	gui->addButton("Calculate Risk Zones");
 	gui->add2dPad("Fire position", kinectROI);
-	gui->addSlider("Temperature", 0, 50);
 	gui->addSlider("Wind speed", 0, 10);
 	gui->addSlider("Wind direction", 0, 360);
 	gui->addButton("Start fire");
@@ -270,10 +269,6 @@ void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e) {
 }
 
 void ofApp::onSliderEvent(ofxDatGuiSliderEvent e) {
-	if (e.target->is("Temperature")) {
-		model->setTemp(e.value);
-	}
-
 	if (e.target->is("Wind speed")) {
 		model->setWindspeed(e.value);
 		windspeed = e.value;
