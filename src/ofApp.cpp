@@ -141,6 +141,25 @@ void ofApp::drawWindArrow(float winddirection, float windspeed)
 	fboInterface.end();
 }
 
+void ofApp::drawPositioningTarget(ofVec2f firePos) 
+{
+	fboVehicles.begin();
+	ofClear(0, 0, 0, 0);
+	ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(firePos.x, firePos.y);
+	ofColor color = ofColor(255, 0, 0, 255);
+
+	ofFill();
+
+	ofPath flame;
+	flame.circle(projectorCoord.x, projectorCoord.y, 10);
+	flame.setFillColor(color);
+	flame.setStrokeWidth(0);
+	flame.draw();
+
+	ofNoFill();
+	fboVehicles.end();
+}
+
 void ofApp::keyPressed(int key) {
 
 }
@@ -213,8 +232,13 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e) {
 		// Button functionality depending on State
 		if (gui->getButton("Start fire")->getLabel() == "Start fire") {
 			runstate = true;
-			gui->getButton("Start fire")->setLabel("Pause");
+			// Clear vehicles FBO of target arrow
+			fboVehicles.begin();
+			ofClear(0, 0, 0, 0);
+			fboVehicles.end();
+			// Start fire
 			model->addNewFire(firePos);
+			gui->getButton("Start fire")->setLabel("Pause");
 		}
 		else if (gui->getButton("Start fire")->getLabel() == "Pause") {
 			runstate = false;
@@ -228,9 +252,9 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e) {
 
 	if (e.target->is("Reset")) {
 		model->clear();
-    fboVehicles.begin();
-    ofClear(0, 0, 0, 0);
-    fboVehicles.end();
+		fboVehicles.begin();
+		ofClear(0, 0, 0, 0);
+		fboVehicles.end();
 		gui->getButton("Start fire")->setLabel("Start fire");
 		gui->get2dPad("Fire position")->reset();
 		runstate = false;
@@ -240,6 +264,7 @@ void ofApp::onButtonEvent(ofxDatGuiButtonEvent e) {
 	if (e.target->is("Calculate Risk Zones")) {
 		model->calculateRiskZones();
 		fboVehicles.begin();
+		ofClear(0, 0, 0, 0);
 		model->drawRiskZones();
 		fboVehicles.end();
 	}
@@ -249,21 +274,7 @@ void ofApp::on2dPadEvent(ofxDatGui2dPadEvent e) {
 	if (e.target->is("Fire position")) {
 		firePos.set(e.x, e.y);
 		if (!model->isRunning()) {
-			fboVehicles.begin();
-			ofClear(0, 0, 0, 0);
-			ofVec2f projectorCoord = kinectProjector->kinectCoordToProjCoord(firePos.x, firePos.y);
-			ofColor color = ofColor(255, 0, 0, 255);
-
-			ofFill();
-
-			ofPath flame;
-			flame.circle(projectorCoord.x, projectorCoord.y, 5);
-			flame.setFillColor(color);
-			flame.setStrokeWidth(0);
-			flame.draw();
-
-			ofNoFill();
-			fboVehicles.end();
+			drawPositioningTarget(firePos);
 		}
 	}
 }

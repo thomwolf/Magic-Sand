@@ -39,6 +39,8 @@ public:
 	void drawProjWindow(ofEventArgs& args);
 	void drawVehicles();
 	void drawWindArrow(float winddirection,float windspeed);
+	void drawPositioningTarget(ofVec2f firePos);
+
 	
 	void keyPressed(int key);
 	void keyReleased(int key);
