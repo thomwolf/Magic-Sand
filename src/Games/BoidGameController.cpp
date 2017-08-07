@@ -461,8 +461,8 @@ bool CBoidGameController::StartSeekMotherGame()
 	fish.clear();
 	rabbits.clear();
 	sharks.clear();
-	showMotherFish = true;
-	showMotherRabbit = true;
+	addMotherFish();
+	addMotherRabbit();
 
 	for (int i = 0; i < 20; i++)
 		addNewFish();

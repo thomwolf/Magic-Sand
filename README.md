@@ -80,22 +80,24 @@ Before starting the game you should flatten the sand and shape a big lake in the
 The game is started by pressing **f** on the keyboard. After 5 minutes the game stop and the player who has the most **food+skins** wins the game.
 
 The behaviour of **fish**:
+- fish are light gray
 - there is always 50 fish in the box
 - their speed is determined by their size
 - they move in flocks
 - they flee from sharks (they will get a **red** center)
-- they have a limited life-span (they are **grey** when they are soon dying)
+- they have a limited life-span (they have a **grey** center when they are soon dying)
 - they respawn at the current mother fish 
 - if a fish is eaten by a shark it respawns as a baby fish by the current mother fish
-- the mother fish has a pink **center**
+- the mother fish has a **pink** center
 - the current mother fish is the oldest fish in the box
 - if a fish ends on land it will seek downwards to find water 
 
 The behaviour of **sharks**:
+- the shark is white
 - there is always two sharks in the box
-- they move slow when they are well fed **black**
-- they get **grey** when they are hungry but not hunting
-- they get **red** when they are hunting and will move fast
+- they move slow and have a **white** stomach when they are well fed 
+- they get a **black** stomach when they are hungry but not hunting
+- they get a **red** stomach when they are hunting and will move fast
 - there is a chance they will start hunting when they are hungry
 - they will hunt the biggest fish that are close to them
 - if they catch the fish they eat it and their hunger decrease. 
@@ -142,7 +144,7 @@ Magic Sand is based on [openframeworks](http://openframeworks.cc/) release 0.9.3
 ### Quick start for editing the source code
 - Grab a copy of [openframeworks](http://openframeworks.cc/download/) for your OS.
 - Unpack the Magic-Sand in the **app/myApps** folder in the openframeworks directory tree
-- Grab the additionnal community addons listed above. They should be installed in the **addons* subdirectory of openframeworks
+- Grab the additionnal community addons listed above. They should be installed in the **addons** subdirectory of openframeworks
 - If you are a windows user, install the kinect drivers as detailed on the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)
 - Enjoy ! (Xcode / VS2015 project files are supplied, should work also on linux)
 

@@ -537,7 +537,7 @@ void Fish::draw()
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
     fish.close();
     ofSetLineWidth(2.0);
-    ofColor c = ofColor(255);
+    ofColor c = ofColor(210,210,210);
     ofSetColor(c);
     if (mother)
     {
@@ -607,7 +607,7 @@ void Rabbit::setup(){
     desiredseparation = 24;
     maxVelocityChange = 1;
     maxRotation = 360;
-    topSpeed =3;
+    topSpeed = 1;
     velocityIncreaseStep = 2;
     maxStraightPath = 20;
     minVelocity = velocityIncreaseStep;
@@ -1051,20 +1051,21 @@ void Shark::draw()
 
 
 	ofColor c = ofColor(255);
+	ofColor StomachCol = ofColor(255);
 	if (isHunting)
 	{
 //		c.setHsb((int)hsb, 255, 255); // rainbow
 		// Red when hunting
-		c = ofColor(255, 0, 0); 
+		StomachCol = ofColor(255, 0, 0);
 	}
 	else if (hunger > size)
 	{
-		// Dark grey when hungry
-		c = ofColor(150, 150, 150);
+		// Black grey when hungry
+		StomachCol = ofColor(0, 0, 0);
 	}
 	else // not hunting or hungry - chill color
 	{
-		c = ofColor(0, 0, 0);
+		StomachCol = ofColor(255, 255, 255);
 	}
 	ofSetColor(c);
 	ofFill();
@@ -1074,6 +1075,7 @@ void Shark::draw()
 	//	c.setHsb(255 - (int)hsb, 255, 255); // rainbow
 	//	ofSetColor(c);
 	//}
+	ofSetColor(StomachCol);
 	ofDrawCircle(0, 0, sc*0.5);
 	ofNoFill();
 	ofPopMatrix();
