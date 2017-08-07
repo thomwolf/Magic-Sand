@@ -1,6 +1,6 @@
 /***********************************************************************
 Main.cpp
-Copyright (c) 2016 Thomas Wolf
+Copyright (c) 2016-2017 Thomas Wolf and Rasmus R. Paulsen (people.compute.dtu.dk/rapa)
 
 This file is part of the Magic Sand.
 
@@ -19,8 +19,34 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
+
 #include "ofMain.h"
 #include "ofApp.h"
+
+const std::string MagicSandVersion = "0.8.2.0";
+
+bool setFirstWindowDimensions(ofGLFWWindowSettings& settings) {
+	// Check screens size and location
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	if (monitor) {
+		int xM; int yM;
+		glfwGetMonitorPos(monitor, &xM, &yM);
+		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitor);
+
+		settings.width = desktopMode->width * 0.8;
+		settings.height = desktopMode->height * 0.8;
+		settings.setPosition(ofVec2f(xM, yM));
+
+		return true;
+	}
+	else {
+		settings.width = 1600; // Default settings if there is only one screen
+		settings.height = 800;
+		settings.setPosition(ofVec2f(0, 0));
+		return false;
+	}
+
+}
 
 bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
 	// Check screens size and location
@@ -35,6 +61,17 @@ bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
 		settings.width = desktopMode->width;
 		settings.height = desktopMode->height;
 		settings.setPosition(ofVec2f(xM, yM));
+
+		// In debug mode an external hi-res screen might be attached
+		if (settings.width > 2000)
+		{
+			cout << "External screen with width > 2000 found - going in debug mode" << std::endl;
+			settings.width = 800; // Default settings if there is only one screen
+			settings.height = 600;
+			settings.setPosition(ofVec2f(0, 0));
+			return false;
+		}
+
 		return true;
 	} else {
 		settings.width = 800; // Default settings if there is only one screen
@@ -42,16 +79,18 @@ bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
 		settings.setPosition(ofVec2f(0, 0));
 		return false;
 	}
+
 }
 
 //========================================================================
 int main() {
 	ofGLFWWindowSettings settings;
-	settings.width = 1200;
-	settings.height = 600;
+	setFirstWindowDimensions(settings);
+	//settings.width = 1200;
+ //	settings.height = 600;
 	settings.resizable = true;
 	settings.decorated = true;
-	settings.title = "Magic Sand";
+	settings.title = "Magic-Sand " + MagicSandVersion;
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
 	mainWindow->setWindowPosition(ofGetScreenWidth() / 2 - settings.width / 2, ofGetScreenHeight() / 2 - settings.height / 2);
 

@@ -1,36 +1,134 @@
-## To download the latest read-to-use version of the software (for Windows/Mac OSX) and find the doc, please go to the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)
-## For detailed instructions on how to build an interactive sandbox, please go to the [tutorial page](https://imgur.com/gallery/Q86wR) and/or check the [reddit thread](https://www.reddit.com/r/DIY/comments/4v1gfi/a_magic_sandbox_i_made_for_my_3_yo_sons_birthday/)
-
 # Magic Sand
 Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
 developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan.
+It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](http://openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan. It was ported to openframeworks by [Thomas Wolfe](https://github.com/thomwolf) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
 
 It was developed with the specific aim of simplifying the use of an augmented reality sandbox in a home/family environment :
 - run on a mid-range laptop / home computer (Windows / Mac OS X / Linux, minimal GPU requirement).
-- self-calibration to easily disassemble and reassemble the sandbox.
+- Easy calibration to easily disassemble and reassemble the sandbox.
 - simple, easy-to-use interface.
 - framework for future sandbox-based games and applications.
 
-##Main Features
+## Main Features
 
 Operates on a computer connected to a home cinema projector and a kinect sensor.
 The software controls the projector to project colors as a function of the sand level measured by the kinect sensor and transforms a sandbox in a colorful playground.
 
-A simple game is included in which animals (fish and rabbits) populate the sandbox.
-The user can help the animals to reach their mothers by digging rivers or building mountains in the sand.
+## Getting started
 
-##Main differences with [SARndbox](https://github.com/KeckCAVES/SARndbox)
-Magic Sand uses the build-in registration feature of the kinect to perform an automatic calibration between the projector and the kinect sensor and does not use a pixel based depth calibration.
+The easiest way to get started is to build the physical setup provided in the guide found at the [tutorial page](https://imgur.com/gallery/Q86wR) and/or check the [reddit thread](https://www.reddit.com/r/DIY/comments/4v1gfi/a_magic_sandbox_i_made_for_my_3_yo_sons_birthday/)
 
-It is thus probably less acurate than SARndbox.
+Secondly, download and install/unpack the latest ready-to-use version of the software at the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1). Follow the instructions on the release page to download and install the necessary drivers.
 
-Magic Sand does not provide dynamic rain features (typically require a stronger GPU than the graphic card provided on a laptop).
+### Setting up the system
 
-##Source Code
-###Dependencies
-Magic Sand is based on [openframeworks](openframeworks.cc/) release 0.9.3 and makes use of the following addons:
+Connect and turn on the projector and the kinect and start the software.
+
+By default the software starts in a **setup** mode where the depth or color image from the Kinect can be seen in the user interface and the projector projects a completely white image. This way it is easy to check if the Kinect is running (on Windows 10 machines it can be necessary to plug and unplug the Kinect several times before it starts) and if the projector is working. The status of the kinect and the projector can be seen in the status window to the lower left in the user interface.
+
+In **setup** mode the physical positions of the Kinect and projector can be optimised. 
+
+### Calibration
+
+To calibrate the system so the kinect and the projector is in correspondence a few steps are needed:
+- Flatten the sand in the sand box.
+- Make sure that you see either the depth image or the color image from the Kinect (click **advanced|Display Kinect Depth View**)
+- Press **Calibration|Manually Draw Sand Region** 
+- Define the sand region by drawing a rectangle with the mouse on the Kinect Depth or Color view
+- Press **Automatically Calibrate Kinect & Projector** - a series of Chessboard patterns are now projected  on the sand.
+- When a prompt appears cover the sand box with a light piece of cardboard or similar
+- Press ok -  a series of Chessboard patterns are now projected on the cardboard/plate.
+
+If the calibration is succesful the status window should be updated showing that all is ok.
+
+#### Debug mode for calibration
+If the calibration was not succesful a debug mode can be enabled that will place debug files in the **data\DebugFiles** folder. These might point you in the direction of why the calibration failed. Do this by enabling **advanced|Dump Debug** and run the calibration routine again.
+
+## Starting the Application
+If the calibration was succesful or if a calibration was done before, the application can be started by pressing space or pushing the **Run** button.
+
+Now a colored map with iso-lines should appear on the sand. The framerate should be close to 60 FPS for modern PCs.
+
+## Sandbox games
+
+There are a few games included in Magic-Sand
+
+### Shape an Island 
+The background for the game is that Denmark have more than [400 Islands](https://en.wikipedia.org/wiki/List_of_islands_of_Denmark) and we wanted to create a game that could teach people about islands. We added a few non-Danish Islands as well.
+The aim of the game is to shape an Island that matches a given Island. Only the outer contour of the Island is compared (not the height). The game is played like this:
+
+- Press **space** to start the game - now a welcome screen appear
+- Shape a big island in the middle of the box (you have 30 seconds). It must NOT be connected to the edge of the box.
+- The application will check if an Island exists and if not will let you try again
+- Now a name of a given Island is given and you are to shape that specific Island (Australia for example)
+- After 30 seconds the application will match your Island with the given Island and show you the results and a score
+- Now you have 1 minute to reshape your Island
+- Yet another intermediate results will be shown
+- Now you have 30 seconds to finalise your Island
+- A final result is computed and your score is compared to the overall high-score
+
+It is possible to add more Islands.  Instructions will be added later.
+
+This game was mainly developed by Rasmus R. Paulsen. 
+
+### The Sandimals 2-player game
+In this game the box is divided into two halfes where each player is only allowed to move the sand in his half. The goal is collect as much **food** and as many **skins** as possible in **5 minutes**. You get **skins** by having rabbits on your half and you get **food** by having fish on your half. The more rabbit the more skins per second. The more and bigger fish the more food per second.
+
+Before starting the game you should flatten the sand and shape a big lake in the middle of the box.
+
+The game is started by pressing **f** on the keyboard. After 5 minutes the game stop and the player who has the most **food+skins** wins the game.
+
+The behaviour of **fish**:
+- there is always 50 fish in the box
+- their speed is determined by their size
+- they move in flocks
+- they flee from sharks (they will get a **red** center)
+- they have a limited life-span (they are **grey** when they are soon dying)
+- they respawn at the current mother fish 
+- if a fish is eaten by a shark it respawns as a baby fish by the current mother fish
+- the mother fish has a pink **center**
+- the current mother fish is the oldest fish in the box
+- if a fish ends on land it will seek downwards to find water 
+
+The behaviour of **sharks**:
+- there is always two sharks in the box
+- they move slow when they are well fed **black**
+- they get **grey** when they are hungry but not hunting
+- they get **red** when they are hunting and will move fast
+- there is a chance they will start hunting when they are hungry
+- they will hunt the biggest fish that are close to them
+- if they catch the fish they eat it and their hunger decrease. 
+- if the hunger get too much (if they are trapped) they will die
+- if a shark die a new shark respawns
+- a shark respawns where there is the highest density of fish
+- if they end on land they will seek downwards to find water 
+
+The behaviour of **rabbits**:
+- there is always 10 rabbits in the box
+- they move and stop
+- they live on land
+
+Fish and sharks can be taken and moved using your hands if you shape them like a bowl. 
+
+This game was mainly developed by Rasmus R. Paulsen.
+
+### The animal and their mothers game
+
+A mother fish and a mother rabbit can be enabled. The user can help the animals to reach their mothers by digging rivers or building mountains in the sand.
+
+The game is started by pressing **m** on the keyboard.
+
+This game was mainly developed by Thomas Wolfe.
+
+## Coding and Extending Magic Sand
+
+### Source Code
+The full source code for Magic Sand is available on [github.com/thomwolf/Magic-Sand](https://github.com/thomwolf/Magic-Sand)
+
+
+### Dependencies
+Magic Sand is based on [openframeworks](http://openframeworks.cc/) release 0.9.3 and makes use of the following addons:
 - official addons (included in openframeworks 0.9.3)
   * ofxOpenCv
   * ofxKinect
@@ -41,11 +139,12 @@ Magic Sand is based on [openframeworks](openframeworks.cc/) release 0.9.3 and ma
   * [ofxDatGui (forked version)](https://github.com/thomwolf/ofxDatGui)
   * [ofxModal](https://github.com/braitsch/ofxModal)
 
-###Quick start for editing the source code
+### Quick start for editing the source code
 - Grab a copy of [openframeworks](http://openframeworks.cc/download/) for your OS.
-- Grab the additionnal community addons listed above.
+- Unpack the Magic-Sand in the **app/myApps** folder in the openframeworks directory tree
+- Grab the additionnal community addons listed above. They should be installed in the **addons* subdirectory of openframeworks
 - If you are a windows user, install the kinect drivers as detailed on the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/1.1)
-- Enjoy ! (Xcode / VS2015 project files are supplied, should work also on linux and probably Raspberry-Pi but I haven't had time to try it yet)
+- Enjoy ! (Xcode / VS2015 project files are supplied, should work also on linux)
 
 Be sure to check the [openframeworks](http://openframeworks.cc/) documentation and forum if you don't know it yet, it is an amazing community !
 
@@ -99,9 +198,9 @@ void ofApp::drawProjWindow(ofEventArgs &args){
 
 The source code of Magic Sand itself is a simple example on how to use the main `KinectProjector` class to make a simple game.
 
-###kinectProjector Functions
+### kinectProjector Functions
 
-####Shader functions
+#### Shader functions
 The `sandSurfaceRenderer` class shows example of shaders that can be used to compute color and how to set uniforms.
 
 The following function of `KinectProjector` are of special interest to setup a uniform.
@@ -114,7 +213,7 @@ ofMatrix4x4 getTransposedKinectProjMatrix();
 ```
 The `sampler2DRect` received in the shader is normalized between 0 and 1, a conversion scale thus has to be also sent.
 
-####Coordinate conversion / elevation functions
+#### Coordinate conversion / elevation functions
 Three coordinate systems can be used:
 - the kinect coordinate system of the 2D kinect image : (x, y) in pixel units with origin in the top-left corner,
 - the world coordinate system: a 3D coordinate system (x, y, z) in millimeters units originating from the kinect sensor with z axis extending from the kinect sensor, x the horizontal axis of the kinect sensor and y the vertical axis, and
@@ -148,11 +247,10 @@ The gradient at a given location can be accessed by:
 ofVec2f gradientAtKinectCoord(float x, float y);
 ```
 
-####Setup & calibration functions
+#### Setup & calibration functions
 `startFullCalibration()` perfoms an automatic calibration of the kinect and the projector.
 An automatic calibration comprises:
 - ask the user to flatten the sand,
-- detecte the sand region by identifying vertical walls of the sandbox,
 - measure the average plane formed by the sand surface to define the base plane (see above),
 - display and find 5 chess boards (60 calibration points) on the sand surface,
 - ask the user to cover the sand with a board,
@@ -164,7 +262,7 @@ The following functions can be called to change some internal values of `kinectP
 - `setSpatialFiltering(bool sspatialFiltering)`: toggle the spatial filtering of the depth frame
 - `setFollowBigChanges(bool sfollowBigChanges)`: toggle "big change" detection (follow the hand of the user).
 
-####Kinect projector state functions
+#### Kinect projector state functions
 
 The following functions give information of the state of the kinectprojector object:
 - `isCalibrating()`: is the `kinectProjector` currently performing a calibration 
@@ -174,10 +272,21 @@ The following functions give information of the state of the kinectprojector obj
 - `isROIUpdated()`: was the sand region location/extension updated in the previous call to `update()' 
 - `isCalibrationUpdated()`: was the calibration updated in the previous call to `update()'
 
-####Kinect projector other getters
+#### Kinect projector other getters
 The following functions give additional information :
 - `getKinectROI()`: get the sand region location/extension 
 - `getKinectRes()`: get the kinect resolution 
 - `getBasePlaneNormal()` : see above
 - `getBasePlaneOffset()` : see above
 - `getBasePlaneEq()` : see above
+
+## Main differences with [SARndbox](https://github.com/KeckCAVES/SARndbox)
+
+Magic Sand is a cross-platform project while SARndbox currently is only Linux. SARndbox is inherited from a larger VR toolbox that makes is somewhat daunting to start modifying. We hope that Magic Sand is slightly easier to start with.
+
+Magic Sand uses the build-in registration feature of the kinect to perform an automatic calibration between the projector and the kinect sensor and does not use a pixel based depth calibration.
+
+It is thus probably less acurate than SARndbox.
+
+Magic Sand does not provide dynamic rain features (typically require a stronger GPU than the graphic card provided on a laptop).
+

@@ -1,6 +1,6 @@
 /***********************************************************************
 ofApp.h - main openframeworks app
-Copyright (c) 2016 Thomas Wolf
+Copyright (c) 2016-2017 Thomas Wolf and Rasmus R. Paulsen (people.compute.dtu.dk/rapa)
 
 This file is part of the Magic Sand.
 
@@ -25,26 +25,18 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "ofxDatGui.h"
 #include "KinectProjector/KinectProjector.h"
 #include "SandSurfaceRenderer/SandSurfaceRenderer.h"
-#include "vehicle.h"
+#include "Games/MapGameController.h"
+#include "Games/BoidGameController.h"
 
 class ofApp : public ofBaseApp {
 
 public:
 	void setup();
-    
-	void addNewFish();
-	void addNewRabbit();
-	bool addMotherFish();
-	bool addMotherRabbit();
-	bool setRandomVehicleLocation(ofRectangle area, bool liveInWater, ofVec2f & location);
-
+ 
 	void update();
 
 	void draw();
 	void drawProjWindow(ofEventArgs& args);
-	void drawVehicles();
-	void drawMotherFish();
-	void drawMotherRabbit();
 
 	void keyPressed(int key);
 	void keyReleased(int key);
@@ -58,39 +50,14 @@ public:
 	void dragEvent(ofDragInfo dragInfo);
 	void gotMessage(ofMessage msg);
 
-	void setupGui();
-	void onButtonEvent(ofxDatGuiButtonEvent e);
-	void onToggleEvent(ofxDatGuiToggleEvent e);
-	void onSliderEvent(ofxDatGuiSliderEvent e);
-
 	std::shared_ptr<ofAppBaseWindow> projWindow;
 
 private:
 	std::shared_ptr<KinectProjector> kinectProjector;
 	SandSurfaceRenderer* sandSurfaceRenderer;
-	
-	// Projector and kinect variables
-	ofVec2f projRes;
-	ofVec2f kinectRes;
-	ofRectangle kinectROI;
-	
-	// FBos
-	ofFbo fboVehicles;
+	CMapGameController mapGameController;
+	CBoidGameController boidGameController;
 
-	// Fish and Rabbits
-	vector<Fish> fish;
-	vector<Rabbit> rabbits;
-	int fishNum;
-	int rabbitsNum;
-	
-	// Fish and Rabbits mothers
-	ofPoint motherFish;
-	ofPoint motherRabbit;
-	bool showMotherFish;
-	bool showMotherRabbit;
-	float motherPlatformSize;
-	bool waitingToInitialiseVehicles;
-	
-	// GUI
-	ofxDatGui* gui;
+	// Main window ROI 
+	ofRectangle mainWindowROI;
 };

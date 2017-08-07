@@ -28,10 +28,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include <iostream>
 #include "ofMain.h"
-
 #include "../KinectProjector/KinectProjector.h"
 #include "ColorMap.h"
-#endif /* defined(__GreatSand__SandSurfaceRenderer__) */
+
 
 class SaveModal : public ofxModalWindow
 {
@@ -153,3 +152,5 @@ private:
     shared_ptr<SaveModal> saveModal;
     ofColor undoColor;
 };
+
+#endif /* defined(__GreatSand__SandSurfaceRenderer__) */
