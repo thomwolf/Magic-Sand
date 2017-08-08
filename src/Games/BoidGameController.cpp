@@ -772,8 +772,8 @@ void CBoidGameController::setupGui() {
 	//animalGame->addToggle("Mother rabbit", showMotherRabbit);
 	//animalGame->addButton("Remove all animals");
 
-	gui->addButton("Start Sandimal game");
-	gui->addButton("Start Seek Mother game");
+//	gui->addButton("Start Sandimal game");
+//	gui->addButton("Start Seek Mother game");
 
 	gui->addSlider("# of fish", 0, 200, fish.size())->setPrecision(0);
 	gui->addSlider("# of rabbits", 0, 50, rabbits.size())->setPrecision(0);
@@ -812,14 +812,14 @@ void CBoidGameController::onButtonEvent(ofxDatGuiButtonEvent e) {
 		gui->getToggle("Mother fish")->setChecked(false);
 		gui->getToggle("Mother rabbit")->setChecked(false);
 	}
-	else if (e.target->is("Start Sandimal game"))
-	{
-		StartGame();
-	}
-	else if (e.target->is("Start Seek Mother game"))
-	{
-		StartSeekMotherGame();
-	}
+	//else if (e.target->is("Start Sandimal game"))
+	//{
+	//	StartGame();
+	//}
+	//else if (e.target->is("Start Seek Mother game"))
+	//{
+	//	StartSeekMotherGame();
+	//}
 }
 
 void CBoidGameController::onToggleEvent(ofxDatGuiToggleEvent e) {
