@@ -70,6 +70,8 @@ The aim of the game is to shape an Island that matches a given Island. Only the 
 
 It is possible to add more Islands.  Instructions will be added later.
 
+This game was used in an educational event at the Danish Island Bornholm as seen in this [video](https://www.youtube.com/watch?v=dDMrxtH1hyU).
+
 This game was mainly developed by Rasmus R. Paulsen. 
 
 ### The Sandimals 2-player game

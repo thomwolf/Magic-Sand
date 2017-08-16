@@ -135,7 +135,39 @@ void ofApp::keyPressed(int key)
 		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
 		{
 			boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
-			boidGameController.StartGame();
+			boidGameController.StartGame(2);
+		}
+	}
+	else if (key == '1') // Absolute beginner
+	{
+		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
+		{
+			boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
+			boidGameController.StartGame(0);
+		}
+	}
+	else if (key == '2') 
+	{
+		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
+		{
+			boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
+			boidGameController.StartGame(1);
+		}
+	}
+	else if (key == '3')
+	{
+		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
+		{
+			boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
+			boidGameController.StartGame(2);
+		}
+	}
+	else if (key == '4')
+	{
+		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
+		{
+			boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
+			boidGameController.StartGame(3);
 		}
 	}
 	else if (key == 'm')
