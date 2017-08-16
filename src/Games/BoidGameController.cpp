@@ -40,6 +40,7 @@ CBoidGameController::CBoidGameController()
 	{
 		ofLogVerbose("CBoidGameController()") << "could not read splash screen ";
 	}
+	GameDifficulty = 2;
 
 	LastTimeEvent = ofGetElapsedTimef();
 	SetupGameSequence();
@@ -359,13 +360,43 @@ bool  CBoidGameController::InitiateGameSequence()
 		showMotherFish = false;
 		showMotherRabbit = false;
 
-		for (int i = 0; i < 50; i++)
+		int nFish = 50;
+		int nRabbit = 10;
+		int nShark = 2;
+
+		if (GameDifficulty == 0)
+		{
+			nFish = 5;
+			nRabbit = 1;
+			nShark = 0;
+		}
+		else if (GameDifficulty == 1)
+		{
+			nFish = 15;
+			nRabbit = 3;
+			nShark = 1;
+		}
+		else if (GameDifficulty == 2)
+		{
+			nFish = 30;
+			nRabbit = 6;
+			nShark = 2;
+		}
+		else if (GameDifficulty == 3)
+		{
+			nFish = 50;
+			nRabbit = 10;
+			nShark = 2;
+		}
+
+
+		for (int i = 0; i < nFish; i++)
 			addNewFish();
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < nRabbit; i++)
 			addNewRabbit();
 
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < nShark; i++)
 			addNewShark();
 
 		Player1Food = 0;
@@ -373,6 +404,7 @@ bool  CBoidGameController::InitiateGameSequence()
 		Player1Skins = 0;
 		Player2Skins = 0;
 
+		UpdateGUI();
 //		std::cout << "Playing with countdown started" << std::endl;
 	}
 	else if (sequence == GAME_STATE_SHOWINTERMIDEATERESULT)
@@ -431,8 +463,9 @@ bool CBoidGameController::CreateSplashScreen()
 	return true;
 }
 
-bool CBoidGameController::StartGame()
+bool CBoidGameController::StartGame(int difficulty)
 {
+	GameDifficulty = difficulty;
 	if (GameSequence[CurrentGameSequence] != GAME_STATE_IDLE)
 	{
 		// Stop the game
@@ -469,7 +502,8 @@ bool CBoidGameController::StartSeekMotherGame()
 
 	for (int i = 0; i < 10; i++)
 		addNewRabbit();
-	
+
+	UpdateGUI();
 	return true;
 }
 
@@ -793,6 +827,15 @@ void CBoidGameController::setupGui() {
 	gui->setAutoDraw(false); // troubles with multiple windows drawings on Windows
 
 //	std::cout << "GUI size " << gui->getWidth() << " x " << gui->getHeight() << std::endl;
+}
+
+void CBoidGameController::UpdateGUI()
+{
+	gui->getSlider("# of fish")->setValue(fish.size());
+	gui->getSlider("# of rabbits")->setValue(rabbits.size());
+	gui->getSlider("# of sharks")->setValue(sharks.size());
+	gui->getToggle("Mother fish")->setEnabled(showMotherFish);
+	gui->getToggle("Mother rabbit")->setEnabled(showMotherRabbit);
 }
 
 bool CBoidGameController::isIdle()

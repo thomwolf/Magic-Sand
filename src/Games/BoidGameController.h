@@ -45,7 +45,8 @@ class CBoidGameController
 
 		void drawMainWindow(float x, float y, float width, float height);
 
-		bool StartGame();
+		// 0: absolute beginner, 1: beginner, 2: medium, 3: expert
+		bool StartGame(int difficulty);
 
 		bool StartSeekMotherGame();
 
@@ -69,6 +70,7 @@ class CBoidGameController
 		void onButtonEvent(ofxDatGuiButtonEvent e);
 		void onToggleEvent(ofxDatGuiToggleEvent e);
 		void onSliderEvent(ofxDatGuiSliderEvent e);
+		void UpdateGUI();
 
 		void updateBOIDS();
 
@@ -82,6 +84,8 @@ class CBoidGameController
 
 		std::string DataBaseDir;
 
+		// 0: absolute beginner, 1: beginner, 2: medium, 3: expert
+		int GameDifficulty;
 
 		// Projector and kinect variables
 		ofVec2f projRes;
