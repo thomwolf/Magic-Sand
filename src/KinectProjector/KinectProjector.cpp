@@ -399,6 +399,15 @@ void KinectProjector::mousePressed(int x, int y, int button)
 		ROICurrentPoint.x = x;
 		ROICurrentPoint.y = y;
 	}
+	else if (kinectOpened && drawKinectView)
+	{
+		int ind = y * kinectRes.x + x;
+		if (ind >= 0 && ind < FilteredDepthImage.getFloatPixelsRef().getTotalBytes())
+		{
+			float z = FilteredDepthImage.getFloatPixelsRef().getData()[ind];
+			std::cout << "Kinect depth (x, y, z) = (" << x << ", " << y << ", " << z << ")" << std::endl;
+		}
+	}
 }
 
 
