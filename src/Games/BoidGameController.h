@@ -101,6 +101,10 @@ class CBoidGameController
 		std::string ScoreText;
 		std::string HiScoreText;
 
+		// Should the boids be drawn flipped
+		// Depending on the direction of the Kinect
+		bool doFlippedDrawing;
+
 		float LastTimeEvent;
 
 		enum eGameState

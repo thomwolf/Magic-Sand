@@ -44,6 +44,7 @@ CBoidGameController::CBoidGameController()
 
 	LastTimeEvent = ofGetElapsedTimef();
 	SetupGameSequence();
+	doFlippedDrawing = false;
 }
 
 CBoidGameController::~CBoidGameController()
@@ -66,6 +67,7 @@ void CBoidGameController::setup(std::shared_ptr<KinectProjector> const& k)
 	showMotherFish = false;
 	showMotherRabbit = false;
 	motherPlatformSize = 30;
+	doFlippedDrawing = kinectProjector->getProjectionFlipped();
 
 	setupGui();
 }
@@ -74,6 +76,9 @@ void CBoidGameController::setup(std::shared_ptr<KinectProjector> const& k)
 
 void CBoidGameController::updateBOIDS()
 {
+	// Set static varible that indicate if all BOIDS should be drawn flipped
+	Vehicle::setDrawFlipped(doFlippedDrawing);
+
 	if (kinectProjector->isImageStabilized()) {
 		for (auto & f : fish) {
 			f.applyBehaviours(showMotherFish, fish, dangerBOIDS);
@@ -474,6 +479,7 @@ bool CBoidGameController::StartGame(int difficulty)
 	}
 
 	projROI = kinectProjector->getProjectorActiveROI();
+	
 	CurrentGameSequence = 0;
 	InitiateGameSequence();
 
@@ -525,6 +531,7 @@ void CBoidGameController::setKinectRes(ofVec2f& KR)
 void CBoidGameController::setKinectROI(ofRectangle &KROI)
 {
 	kinectROI = KROI;
+	doFlippedDrawing = kinectProjector->getProjectionFlipped();
 }
 
 void CBoidGameController::setDebug(bool flag)
@@ -814,6 +821,7 @@ void CBoidGameController::setupGui() {
 	gui->addSlider("# of sharks", 0, 10, sharks.size())->setPrecision(0);
 	gui->addToggle("Mother fish", showMotherFish);
 	gui->addToggle("Mother rabbit", showMotherRabbit);
+	gui->addToggle("Draw flipped", doFlippedDrawing);
 	gui->addButton("Remove all animals");
 
 	gui->addHeader(":: Games ::", false);
@@ -883,6 +891,9 @@ void CBoidGameController::onToggleEvent(ofxDatGuiToggleEvent e) {
 		else {
 			showMotherRabbit = e.checked;
 		}
+	}
+	else if (e.target->is("Draw flipped")) {
+		doFlippedDrawing = e.checked;
 	}
 }
 

@@ -83,6 +83,11 @@ public:
     void setMotherLocation(ofVec2f loc){
         motherLocation = loc;
     }
+
+	static void setDrawFlipped(bool df)
+	{
+		DrawFlipped = df;
+	};
     
 protected:
     void updateBeachDetection();
@@ -145,6 +150,10 @@ protected:
 	int spawnTime;
 	int maxAge;
 	int DeathAge;
+
+	// Should the vehicles been drawn flipped
+	// This variable is shared among all instances 
+	static bool DrawFlipped;
 };
 
 class Fish : public Vehicle {

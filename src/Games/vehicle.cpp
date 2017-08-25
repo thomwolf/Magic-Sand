@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 #include "vehicle.h"
 
+// Default value of static variable
+bool Vehicle::DrawFlipped = false;
+
 Vehicle::Vehicle(std::shared_ptr<KinectProjector> const& k, ofPoint slocation, ofRectangle sborders, bool sliveInWater, ofVec2f smotherLocation) {
     kinectProjector = k;
     liveInWater = sliveInWater;
@@ -507,8 +510,11 @@ void Fish::draw()
 {
     ofPushMatrix();
     ofTranslate(projectorCoord);
-    ofRotate(180+angle);
-    
+	if (DrawFlipped)
+		ofRotate(180+angle);
+	else
+		ofRotate(angle);
+
     // Compute tail angle
     float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
     float fact = 50+250*velocity.length()/topSpeed;
@@ -725,8 +731,11 @@ void Rabbit::draw()//, std::vector<ofVec2f> forces)
 {
     ofPushMatrix();
     ofTranslate(projectorCoord);
-    ofRotate(angle);
-    
+	if (DrawFlipped)
+		ofRotate(180 + angle);
+	else
+		ofRotate(angle);
+
     // Rabbit scale
     float sc = 1;
     
@@ -1018,7 +1027,10 @@ void Shark::draw()
 {
 	ofPushMatrix();
 	ofTranslate(projectorCoord);
-	ofRotate(180 + angle);
+	if (DrawFlipped)
+		ofRotate(180 + angle);
+	else
+		ofRotate(angle);
 
 	// Compute tail angle
 	float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
