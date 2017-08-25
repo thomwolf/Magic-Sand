@@ -81,9 +81,11 @@ Before starting the game you should flatten the sand and shape a big lake in the
 
 The game is started by pressing **f** on the keyboard. After 5 minutes the game stop and the player who has the most **food+skins** wins the game.
 
+You can also start the game by pressing **1** (complete beginner), **2** (novice), **3** (standard) and **4** (expert).
+
 The behaviour of **fish**:
 - fish are light gray
-- there is always 50 fish in the box
+- there is always a fixed number of fish (10, 20, 30 depending on level) in the box
 - their speed is determined by their size
 - they move in flocks
 - they flee from sharks (they will get a **red** center)
@@ -96,7 +98,7 @@ The behaviour of **fish**:
 
 The behaviour of **sharks**:
 - the shark is white
-- there is always two sharks in the box
+- there is always 2 sharks in the box
 - they move slow and have a **white** stomach when they are well fed 
 - they get a **black** stomach when they are hungry but not hunting
 - they get a **red** stomach when they are hunting and will move fast
@@ -109,7 +111,7 @@ The behaviour of **sharks**:
 - if they end on land they will seek downwards to find water 
 
 The behaviour of **rabbits**:
-- there is always 10 rabbits in the box
+- there is always a fixed number (4, 6 or 10 depending on level) of rabbits in the box
 - they move and stop
 - they live on land
 
@@ -294,3 +296,16 @@ It is thus probably less acurate than SARndbox.
 
 Magic Sand does not provide dynamic rain features (typically require a stronger GPU than the graphic card provided on a laptop).
 
+# Changelog
+## [unreleased]
+
+### Added
+- Debug feature: Kinect ROI can be seen on projector
+
+### Changed
+- GUI update for animal game. Now updates animal numbers
+- Adjusted game constants for animal game. 
+- Added beginner/novice/normal/expert game mode. Press 1, 2, 3 or 4 to start the different modes.
+
+## [1.5.0] - 08-08-2017
+Initial release of Magic-Sand with Games
