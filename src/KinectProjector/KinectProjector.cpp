@@ -39,6 +39,7 @@ waitingForFlattenSand (false),
 drawKinectView(false),
 drawKinectColorView(true)
 {
+	doShowROIonProjector = false;
 	applicationState = APPLICATION_STATE_SETUP;
     projWindow = p;
 	TemporalFilteringType = 1;
@@ -172,6 +173,8 @@ void KinectProjector::setGradFieldResolution(int sgradFieldResolution){
     });
 }
 
+// For some reason this call eats milliseconds - so it should only be called when something is changed
+// else it would be convenient just to call it in every update
 void KinectProjector::updateStatusGUI()
 {
 	if (kinectOpened)
@@ -351,6 +354,40 @@ void KinectProjector::update()
             fboMainWindow.end();
         }
     }
+
+	if (doShowROIonProjector && ROIcalibrated && kinectOpened)
+	{
+		fboProjWindow.begin();
+		ofClear(255, 255, 255, 0);
+		ofNoFill();
+		ofSetLineWidth(4);
+
+		// Draw rectangle of ROI using the offset by the current sand level
+		ofVec2f UL = kinectCoordToProjCoord(kinectROI.getMinX(), kinectROI.getMinY());
+		ofVec2f LR = kinectCoordToProjCoord(kinectROI.getMaxX(), kinectROI.getMaxY());
+
+		ofSetColor(255, 0, 0);
+		ofRectangle tempRect(ofPoint(UL.x, UL.y), ofPoint(LR.x, LR.y));
+		ofDrawRectangle(tempRect);		
+
+		ofSetColor(0, 0, 255);
+		ofRectangle tempRect2(ofPoint(UL.x - 2, UL.y - 2), ofPoint(UL.x + 2, UL.y + 2));
+		ofDrawRectangle(tempRect2);
+
+		// Draw rectangle of ROI using the offset by the waterlevel
+		UL = kinectCoordToProjCoord(kinectROI.getMinX(), kinectROI.getMinY(), basePlaneOffset.z);
+		LR = kinectCoordToProjCoord(kinectROI.getMaxX(), kinectROI.getMaxY(), basePlaneOffset.z);
+
+		ofSetColor(0, 255, 0);
+		tempRect = ofRectangle(ofPoint(UL.x, UL.y), ofPoint(LR.x, LR.y));
+		ofDrawRectangle(tempRect);
+
+		ofSetColor(255, 0, 255);
+		tempRect2 = ofRectangle(ofPoint(UL.x - 2, UL.y - 2), ofPoint(UL.x + 2, UL.y + 2));
+		ofDrawRectangle(tempRect2);
+
+		fboProjWindow.end();
+	}
 }
 
 void KinectProjector::mousePressed(int x, int y, int button)
@@ -1343,6 +1380,7 @@ void KinectProjector::setupGui(){
 	calibrationFolder->addButton("Manually define sand region");
 	calibrationFolder->addButton("Automatically calibrate kinect & projector");
 	calibrationFolder->addButton("Auto Adjust ROI");
+	calibrationFolder->addToggle("Show ROI on sand", doShowROIonProjector);
 
 	//	advancedFolder->addButton("Draw ROI")->setName("Draw ROI");
  //   advancedFolder->addButton("Calibrate")->setName("Full Calibration");
@@ -1579,6 +1617,14 @@ void KinectProjector::ResetSeaLevel()
 	basePlaneUpdated = true;
 }
 
+void KinectProjector::showROIonProjector(bool show)
+{
+	doShowROIonProjector = show;
+	fboProjWindow.begin();
+	ofClear(255, 255, 255, 0);
+	fboProjWindow.end();
+}
+
 bool KinectProjector::getDumpDebugFiles()
 {
 	return DumpDebugFiles;
@@ -1608,6 +1654,10 @@ void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
 	else if (e.target->is("Dump Debug"))
 	{
 		DumpDebugFiles = e.checked;
+	}
+	else if (e.target->is("Show ROI on sand"))
+	{
+		showROIonProjector(e.checked);
 	}
 }
 

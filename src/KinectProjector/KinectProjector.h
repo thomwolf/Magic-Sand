@@ -83,6 +83,7 @@ public:
     void setFollowBigChanges(bool sfollowBigChanges);
 	void StartManualROIDefinition();
 	void ResetSeaLevel();
+	void showROIonProjector(bool show);
 
     // Gui and event functions
     void setupGui();
@@ -313,6 +314,7 @@ private:
     ofRectangle                 kinectROI, kinectROIManualCalib;
 	ofVec2f                     ROIStartPoint;
 	ofVec2f                     ROICurrentPoint;
+	bool                        doShowROIonProjector;
 
     // Base plane
     ofVec3f basePlaneNormal, basePlaneNormalBack;
