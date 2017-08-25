@@ -192,7 +192,29 @@ void KinectGrabber::performInThread(std::function<void(KinectGrabber&)> action) 
 
 void KinectGrabber::filter()
 {
-    if (bufferInitiated)
+	if (bufferInitiated && numAveragingSlots < 2)
+	{
+		// Just copy raw kinect data
+		const RawDepth* inputFramePtr = static_cast<const RawDepth*>(kinectDepthImage.getData());
+		float* filteredFramePtr = filteredframe.getData();
+		inputFramePtr += minY*width;  // We only scan kinect ROI
+		filteredFramePtr += minY*width;
+
+		for (unsigned int y = minY; y < maxY; ++y)
+		{
+			inputFramePtr += minX;
+			filteredFramePtr += minX;
+
+			for (unsigned int x = minX; x < maxX; ++x, ++inputFramePtr, ++filteredFramePtr)
+			{
+				float newVal = static_cast<float>(*inputFramePtr);
+				*filteredFramePtr = newVal;
+			}
+			inputFramePtr += width - maxX;
+			filteredFramePtr += width - maxX;
+		}
+	}
+	else if (bufferInitiated)
     {
         const RawDepth* inputFramePtr = static_cast<const RawDepth*>(kinectDepthImage.getData());
         float* averagingBufferPtr = averagingBuffer+averagingSlotIndex*height*width;
