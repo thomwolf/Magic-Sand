@@ -294,49 +294,54 @@ void KinectGrabber::applySpaceFilter()
 {
     for(int filterPass=0;filterPass<2;++filterPass)
     {
-        /* Low-pass filter the entire output frame in-place: */
-        for(unsigned int x=minX;x<maxX;++x)
+		// Pointer to first pixel of ROI
+		float *ptrOffset = filteredframe.getData() + minY * width + minX;
+
+        // Low-pass filter the values in the ROI
+		// First a horisontal pass
+        for(unsigned int x = 0; x < width; x++)
         {
-            /* Get a pointer to the current column: */
-            float* colPtr = filteredframe.getData()+x;
-            
-            /* Filter the first pixel in the column: */
-            float lastVal = *colPtr;
-            *colPtr = (colPtr[0]*2.0f+colPtr[width])/3.0f;
+			// Pointer to current pixel
+            float* colPtr = ptrOffset + x;
+			float lastVal = *colPtr;
+
+            // Top border pixels 
+            *colPtr = (colPtr[0]*2.0f + colPtr[width]) / 3.0f;
             colPtr += width;
             
-            /* Filter the interior pixels in the column: */
-            for(unsigned int y=minY+1;y<maxY-1;++y,colPtr+=width)
+            // Filter the interior pixels in the column
+            for(unsigned int y = minY+1; y < maxY-1; ++y, colPtr += width)
             {
-                /* Filter the pixel: */
-                float nextLastVal=*colPtr;
-                *colPtr=(lastVal+colPtr[0]*2.0f+colPtr[width])*0.25f;
-                lastVal=nextLastVal;
+				float nextLastVal = *colPtr;
+                *colPtr=(lastVal + colPtr[0]*2.0f + colPtr[width])*0.25f;
+				lastVal = nextLastVal; // To avoid using already updated pixels
             }
             
-            /* Filter the last pixel in the column: */
-            *colPtr=(lastVal+colPtr[0]*2.0f)/3.0f;
+            // Filter the last pixel in the column: 
+            *colPtr=(lastVal + colPtr[0] * 2.0f)/3.0f;
         }
-        float* rowPtr = filteredframe.getData();
-        for(unsigned int y=minY;y<maxY;++y)
+
+		// then a vertical pass
+        for(unsigned int y = 0; y < height; y++)
         {
-            /* Filter the first pixel in the row: */
+			// Pointer to current pixel
+			float* rowPtr = ptrOffset + y * width;
+			
+			// Filter the first pixel in the row: 
             float lastVal=*rowPtr;
-            *rowPtr=(rowPtr[0]*2.0f+rowPtr[1])/3.0f;
-            ++rowPtr;
-            
-            /* Filter the interior pixels in the row: */
-            for(unsigned int x=minX+1;x<maxX-1;++x,++rowPtr)
+            *rowPtr=(rowPtr[0]*2.0f + rowPtr[1]) / 3.0f;
+            rowPtr++;
+       
+            // Filter the interior pixels in the row: 
+            for(unsigned int x = minX+1; x < maxX-1; ++x,++rowPtr)
             {
-                /* Filter the pixel: */
                 float nextLastVal=*rowPtr;
                 *rowPtr=(lastVal+rowPtr[0]*2.0f+rowPtr[1])*0.25f;
                 lastVal=nextLastVal;
             }
             
-            /* Filter the last pixel in the row: */
+            // Filter the last pixel in the row: 
             *rowPtr=(lastVal+rowPtr[0]*2.0f)/3.0f;
-            ++rowPtr;
         }
     }
 }
