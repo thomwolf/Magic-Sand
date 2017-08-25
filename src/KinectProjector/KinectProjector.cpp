@@ -445,6 +445,12 @@ void KinectProjector::mouseDragged(int x, int y, int button)
 	}
 }
 
+bool KinectProjector::getProjectionFlipped()
+{
+	return (kinectProjMatrix(0, 0) < 0);
+}
+
+
 void KinectProjector::updateCalibration()
 {
     if (calibrationState == CALIBRATION_STATE_FULL_AUTO_CALIBRATION)

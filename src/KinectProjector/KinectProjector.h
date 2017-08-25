@@ -111,7 +111,10 @@ public:
     ofMatrix4x4 getTransposedKinectProjMatrix(){
         return kinectProjMatrix.getTransposedOf(kinectProjMatrix);
     }
-    
+	// Depending on the mount direction of the Kinect, projections can be flipped. 
+	bool getProjectionFlipped();
+
+
     // Getter and setter
     ofTexture & getTexture(){
         return FilteredDepthImage.getTexture();
@@ -324,7 +327,7 @@ private:
     // Conversion matrices
     ofMatrix4x4                 kinectProjMatrix;
     ofMatrix4x4                 kinectWorldMatrix;
-    
+
     // Max offset for keeping kinect points
     float maxOffset;
     float maxOffsetSafeRange;
