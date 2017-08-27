@@ -157,6 +157,8 @@ Be sure to check the [openframeworks](http://openframeworks.cc/) documentation a
 ### How it can be used
 The code was designed trying to be easily extendable so that additional games/apps can be developed on its basis.
 
+Note that some of the below descriptions are slightly out-of-date.
+
 The `KinectProjector` class handles the communication with the kinect sensor, the calibration and the coordinates conversions between kinect (2D), world (3D) and projector (2D) coordinate systems.
 
 You can create a `KinectProjector` object as a `shared_ptr` in the `setup()` function of your openframeworks app. It requires a pointer to the projector window (see provided `main.cpp` on how to properly setup two windows in openframeworks and get a pointer to the projector window).
@@ -301,11 +303,16 @@ Magic Sand does not provide dynamic rain features (typically require a stronger 
 
 ### Added
 - Debug feature: Kinect ROI can be seen on projector
+- Debug feature: Left mouse click in Kinect depth view will print depth coordinates on console
 
 ### Changed
+- Animals in animal game is now flipped depending on Kinect-projector matrix - so hopefully no more backwards swimming
 - GUI update for animal game. Now updates animal numbers
 - Adjusted game constants for animal game. 
 - Added beginner/novice/normal/expert game mode. Press 1, 2, 3 or 4 to start the different modes.
+
+### Bug fixes
+- Spatial filter now correctly filters the ROI
 
 ## [1.5.0] - 08-08-2017
 Initial release of Magic-Sand with Games
