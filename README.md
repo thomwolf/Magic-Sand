@@ -304,6 +304,7 @@ Magic Sand does not provide dynamic rain features (typically require a stronger 
 ### Added
 - Debug feature: Kinect ROI can be seen on projector
 - Debug feature: Left mouse click in Kinect depth view will print depth coordinates on console
+- ChangeLog to the README
 
 ### Changed
 - Animals in animal game is now flipped depending on Kinect-projector matrix - so hopefully no more backwards swimming
