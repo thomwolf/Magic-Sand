@@ -29,14 +29,16 @@ bool setWindowDimensions(ofGLFWWindowSettings& settings, int windowsNum) {
 	int count;
 	GLFWmonitor** monitors = glfwGetMonitors(&count);
 	cout << "Number of screens found: " << count << endl;
-	if (count>=windowsNum) {
+	if (count > windowsNum) {
 		int xM; int yM;
 		glfwGetMonitorPos(monitors[windowsNum], &xM, &yM); // We take the first monitor
 		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[windowsNum]);
 
         cout << "Monitor " << windowsNum << " size: " << desktopMode->width << "x" << desktopMode->height << endl;
-		settings.width = desktopMode->width;
-		settings.height = desktopMode->height;
+		
+		// Make it almost full screen - but just a bit of space around to be able to grab other windows
+		settings.width = desktopMode->width * 4.0 / 5.0;
+		settings.height = desktopMode->height * 4.0 / 5.0;
 		settings.setPosition(ofVec2f(xM, yM));
 
 		return true;
