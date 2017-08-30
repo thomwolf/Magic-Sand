@@ -11,6 +11,7 @@
 *.userprefs
 
 # Build results
+*.DS_Store
 [Dd]ebug/
 [Dd]ebugPublic/
 [Rr]elease/
@@ -18,10 +19,14 @@
 x64/
 x86/
 bld/
-bin/*
-!bin/data/
 [Oo]bj/
 [Ll]og/
+bin/*
+!bin/data/
+bin/data/**/[Dd]ebug[Ff]iles/*
+bin/data/settings/*.xml
+**.DS_Store
+**scores.xml
 
 # Visual Studio 2015 cache/options directory
 .vs/
