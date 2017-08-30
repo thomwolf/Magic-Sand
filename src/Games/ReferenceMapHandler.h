@@ -44,8 +44,6 @@ class CReferenceMapHandler
 		bool WriteToFile();
 	
 		bool ReadFromFile();
-		
-		bool ReadFromFileOld();
 			
 		// CycleMode: 0: no cycling, 1: follow map order, 2: random permutation
 		void SetCycleMode(int mode);

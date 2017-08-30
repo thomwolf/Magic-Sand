@@ -178,41 +178,6 @@ bool CReferenceMapHandler::ReadFromFile()
 	return true;
 }
 
-bool CReferenceMapHandler::ReadFromFileOld()
-{
-	ReferenceNames.clear();
-	ReferenceMaps.clear();
-
-	std::string refName = "C:/Matchbornholm/ReferenceData/ReferenceData.txt";
-	std::ifstream fist(refName.c_str());
-	if (!fist)
-	{
-		std::cout << "could not read " << refName << std::endl;
-		return false;
-	}
-
-	bool stop = false;
-	std::string t1;
-	std::string t2;
-	do
-	{
-		std::getline(fist, t1);
-		std::getline(fist, t2);
-		if (fist.eof())
-		{
-			stop = true;
-		}
-		else
-		{
-			ReferenceNames.push_back(t1);
-			ReferenceMaps.push_back(t2);
-		}
-
-	} while (!stop);
-	std::cout << "read " << ReferenceMaps.size() << " reference maps" << std::endl;
-	return true;
-}
-
 void CReferenceMapHandler::SetCycleMode(int mode)
 {
 	CycleMode = mode;
