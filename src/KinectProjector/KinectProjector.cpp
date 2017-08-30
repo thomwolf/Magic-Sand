@@ -364,7 +364,7 @@ void KinectProjector::update()
 
 		// Draw rectangle of ROI using the offset by the current sand level
 		ofVec2f UL = kinectCoordToProjCoord(kinectROI.getMinX(), kinectROI.getMinY());
-		ofVec2f LR = kinectCoordToProjCoord(kinectROI.getMaxX(), kinectROI.getMaxY());
+		ofVec2f LR = kinectCoordToProjCoord(kinectROI.getMaxX()-1, kinectROI.getMaxY()-1);
 
 		ofSetColor(255, 0, 0);
 		ofRectangle tempRect(ofPoint(UL.x, UL.y), ofPoint(LR.x, LR.y));
@@ -1326,6 +1326,11 @@ ofVec3f KinectProjector::kinectCoordToWorldCoord(float x, float y) // x, y in ki
     ofVec4f kc = ofVec2f(x, y);
     int ind = static_cast<int>(y) * kinectRes.x + static_cast<int>(x);
     kc.z = FilteredDepthImage.getFloatPixelsRef().getData()[ind];
+	//if (kc.z == 0)
+	//	ofLogVerbose("KinectProjector") << "kinectCoordToWorldCoord z coordinate 0";
+	//if (kc.z == 4000)
+	//	ofLogVerbose("KinectProjector") << "kinectCoordToWorldCoord z coordinate 4000 (invalid)";
+
     kc.w = 1;
     ofVec4f wc = kinectWorldMatrix*kc*kc.z;
     return ofVec3f(wc);
