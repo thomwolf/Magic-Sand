@@ -302,6 +302,8 @@ Magic Sand does not provide dynamic rain features (typically require a stronger 
 ## [unreleased]
 
 ### Added
+- XCode build files
+- Better scaling of GUI
 - Debug feature: Kinect ROI can be seen on projector
 - Debug feature: Left mouse click in Kinect depth view will print depth coordinates on console
 - ChangeLog to the README
