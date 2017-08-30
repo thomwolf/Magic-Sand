@@ -116,7 +116,7 @@ void CReferenceMapHandler::PermuteMapOrder()
 
 bool CReferenceMapHandler::WriteToFile()
 {
-	std::string refName = "mapGame\\ReferenceData\\MapReferenceSettings.xml";
+	std::string refName = "mapGame/ReferenceData/MapReferenceSettings.xml";
 
 	ofXml XMLOut;
 	XMLOut.addChild("MapReferenceSettings");
@@ -142,7 +142,7 @@ bool CReferenceMapHandler::WriteToFile()
 
 bool CReferenceMapHandler::ReadFromFile()
 {
-	std::string refName = "mapGame\\ReferenceData\\MapReferenceSettings.xml";
+	std::string refName = "mapGame/ReferenceData/MapReferenceSettings.xml";
 
 	ReferenceNames.clear();
 	ReferenceMaps.clear();
@@ -183,7 +183,7 @@ bool CReferenceMapHandler::ReadFromFileOld()
 	ReferenceNames.clear();
 	ReferenceMaps.clear();
 
-	std::string refName = "C:\\Matchbornholm\\ReferenceData\\ReferenceData.txt";
+	std::string refName = "C:/Matchbornholm/ReferenceData/ReferenceData.txt";
 	std::ifstream fist(refName.c_str());
 	if (!fist)
 	{

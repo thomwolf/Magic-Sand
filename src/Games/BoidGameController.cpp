@@ -23,11 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "BoidGameController.h"
 
 #include <string>
-#include <direct.h>
+//#include <direct.h>
 
 CBoidGameController::CBoidGameController()
 {
-	DataBaseDir = "boidGame\\";
+	DataBaseDir = "boidGame/";
 	setDebug(true);
 
 	int xmin = 0;
@@ -35,7 +35,7 @@ CBoidGameController::CBoidGameController()
 	int xmax = 640;
 	int ymax = 480;
 		
-	std::string SplashScreenFname = DataBaseDir + "art\\BoidGameSplashScreen.png";
+	std::string SplashScreenFname = DataBaseDir + "art/BoidGameSplashScreen.png";
 	if (!splashScreen.loadImage(SplashScreenFname))
 	{
 		ofLogVerbose("CBoidGameController()") << "could not read splash screen ";
@@ -541,7 +541,7 @@ void CBoidGameController::setDebug(bool flag)
 	if (flag)
 	{
 		std::string BaseDir = "data//BoidGame//DebugFiles//";
-		mkdir(BaseDir.c_str());
+//		system("mkdir" + BaseDir.c_str());
 
 		// By default the application looks in data
 		debugBaseDir = "BoidGame//DebugFiles//";

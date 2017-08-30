@@ -23,11 +23,11 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "MapGameController.h"
 
 #include <string>
-#include <direct.h>
+//#include <direct.h>
 
 CMapGameController::CMapGameController()
 {
-	DataBaseDir = "mapGame\\";
+	DataBaseDir = "mapGame/";
 	setDebug(true);
 
 	int xmin = 0;
@@ -42,7 +42,7 @@ CMapGameController::CMapGameController()
 	referenceMapHandler.Init();
 	ShowScore = false;
 
-	std::string SplashScreenFname = DataBaseDir + "art\\IslandGameSplashScreen.png";
+	std::string SplashScreenFname = DataBaseDir + "art/IslandGameSplashScreen.png";
 	if (!splashScreen.loadImage(SplashScreenFname))
 	{
 		ofLogVerbose("CMapGameController()") << "could not read splash screen ";
@@ -79,7 +79,7 @@ void CMapGameController::setup(std::shared_ptr<KinectProjector> const& k)
 
 	for (int i = 0; i < nRefMaps; i++)
 	{
-		std::string tfname = ofToDataPath(DataBaseDir + "Scores\\" + referenceMapHandler.ReferenceMaps[i] + "_scores.xml");
+		std::string tfname = ofToDataPath(DataBaseDir + "Scores/" + referenceMapHandler.ReferenceMaps[i] + "_scores.xml");
 		scoreFileNames[i] = tfname;
 
 		scoreTrackers[i].LoadScoresXML(scoreFileNames[i]);
@@ -456,7 +456,7 @@ bool CMapGameController::CreateWelcomeScreen()
 		std::string RefMap = referenceMapHandler.ReferenceMaps[actRef];
 		std::string RefMapName = referenceMapHandler.ReferenceNames[actRef];
 
-		std::string referenceImage = DataBaseDir + "ReferenceData\\" + RefMap + "_Splash.png";
+		std::string referenceImage = DataBaseDir + "ReferenceData/" + RefMap + "_Splash.png";
 
 		ofImage temp;
 		if (!temp.loadImage(referenceImage))
@@ -697,7 +697,8 @@ void CMapGameController::setDebug(bool flag)
 	if (flag)
 	{
 		std::string BaseDir = "data//mapGame//DebugFiles//";
-		mkdir(BaseDir.c_str());
+        // TODO: Find a way to create folder both on Win/Mac
+        //		mkdir(BaseDir.c_str());
 
 		// By default the application looks in data
 		debugBaseDir = "mapGame//DebugFiles//";
@@ -1280,8 +1281,8 @@ bool CMapGameController::MatchMap()
 
 	std::string FoundMap = debugBaseDir + "HM_cutout_maxBlob.png";
 
-	std::string referenceMap = DataBaseDir + "ReferenceData\\" + RefMap + "_GT.png";
-	std::string referenceImage = DataBaseDir + "ReferenceData\\" + RefMap + ".png";
+	std::string referenceMap = DataBaseDir + "ReferenceData/" + RefMap + "_GT.png";
+	std::string referenceImage = DataBaseDir + "ReferenceData/" + RefMap + ".png";
 	std::string ScaledTransRef = debugBaseDir + RefMap + "_GT_scaled_trans.png";
 	std::string BestMatchOut = debugBaseDir + "BestMatchImage.png";
 	std::string LMsinOrgDepthOut = ofToDataPath(debugBaseDir + "LMsinRawDepthImage.txt");
@@ -1606,7 +1607,7 @@ bool CMapGameController::UpdateScores()
 	// Only dump hi-score images
 	if (isHighScore)
 	{
-		fname = DataBaseDir + "Scores\\" + referenceMapHandler.ReferenceMaps[ActualMap] + "_HiScoreMap_" + GetDateTimeString() + ".png";
+		fname = DataBaseDir + "Scores/" + referenceMapHandler.ReferenceMaps[ActualMap] + "_HiScoreMap_" + GetDateTimeString() + ".png";
 
 		ofLogVerbose("AcquireScoreImage") << "writing score image ";
 
@@ -1703,7 +1704,7 @@ bool CMapGameController::ComputeProjectorMap()
 	std::string RefMap = referenceMapHandler.ReferenceMaps[actRef];
 	std::string RefMapName = referenceMapHandler.ReferenceNames[actRef];
 
-	std::string referenceImage = DataBaseDir + "ReferenceData\\" + RefMap + ".png";
+	std::string referenceImage = DataBaseDir + "ReferenceData/" + RefMap + ".png";
 
 	ofImage temp;
 	if (!temp.loadImage(referenceImage))

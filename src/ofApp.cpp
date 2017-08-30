@@ -46,7 +46,7 @@ void ofApp::setup() {
 	ofRectangle kinectROI = kinectProjector->getKinectROI();
 	////mainWindowROI = ofRectangle(600, 30, 600, 450);
 	//mainWindowROI = ofRectangle(0, 0, 640, 480);
-	mainWindowROI = ofRectangle(600, 30, 640, 480);
+	mainWindowROI = ofRectangle((ofGetWindowWidth()-kinectRes.x)/2, (ofGetWindowHeight()-kinectRes.y)/2, kinectRes.x, kinectRes.y);
 
 	mapGameController.setup(kinectProjector);
 	mapGameController.setProjectorRes(projRes);

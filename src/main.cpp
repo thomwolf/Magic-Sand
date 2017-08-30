@@ -25,57 +25,25 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 
 const std::string MagicSandVersion = "1.5.1.1";
 
-bool setFirstWindowDimensions(ofGLFWWindowSettings& settings) {
-	// Check screens size and location
-	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-	if (monitor) {
+bool setWindowDimensions(ofGLFWWindowSettings& settings, int windowsNum) {
+	int count;
+	GLFWmonitor** monitors = glfwGetMonitors(&count);
+	cout << "Number of screens found: " << count << endl;
+	if (count>=windowsNum) {
 		int xM; int yM;
-		glfwGetMonitorPos(monitor, &xM, &yM);
-		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitor);
+		glfwGetMonitorPos(monitors[windowsNum], &xM, &yM); // We take the first monitor
+		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[windowsNum]);
 
-		settings.width = desktopMode->width * 0.8;
-		settings.height = desktopMode->height * 0.8;
+        cout << "Monitor " << windowsNum << " size: " << desktopMode->width << "x" << desktopMode->height << endl;
+		settings.width = desktopMode->width;
+		settings.height = desktopMode->height;
 		settings.setPosition(ofVec2f(xM, yM));
 
 		return true;
 	}
 	else {
-		settings.width = 1600; // Default settings if there is only one screen
+		settings.width = 1600; // Default settings
 		settings.height = 800;
-		settings.setPosition(ofVec2f(0, 0));
-		return false;
-	}
-
-}
-
-bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
-	// Check screens size and location
-	int count;
-	GLFWmonitor** monitors = glfwGetMonitors(&count);
-	cout << "Number of screens found: " << count << endl;
-	if (count>1) {
-		int xM; int yM;
-		glfwGetMonitorPos(monitors[1], &xM, &yM); // We take the second monitor
-		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[1]);
-
-		settings.width = desktopMode->width;
-		settings.height = desktopMode->height;
-		settings.setPosition(ofVec2f(xM, yM));
-
-		// In debug mode an external hi-res screen might be attached
-		if (settings.width > 2000)
-		{
-			cout << "External screen with width > 2000 found - going in debug mode" << std::endl;
-			settings.width = 800; // Default settings if there is only one screen
-			settings.height = 600;
-			settings.setPosition(ofVec2f(0, 0));
-			return false;
-		}
-
-		return true;
-	} else {
-		settings.width = 800; // Default settings if there is only one screen
-		settings.height = 600;
 		settings.setPosition(ofVec2f(0, 0));
 		return false;
 	}
@@ -85,16 +53,22 @@ bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
 //========================================================================
 int main() {
 	ofGLFWWindowSettings settings;
-	setFirstWindowDimensions(settings);
+//	setFirstWindowDimensions(settings);
 	//settings.width = 1200;
  //	settings.height = 600;
+    settings.width = 1600; // Default settings
+    settings.height = 800;
+    settings.setPosition(ofVec2f(0, 0));
 	settings.resizable = true;
 	settings.decorated = true;
 	settings.title = "Magic-Sand " + MagicSandVersion;
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
+    
+	setWindowDimensions(settings, 0);
 	mainWindow->setWindowPosition(ofGetScreenWidth() / 2 - settings.width / 2, ofGetScreenHeight() / 2 - settings.height / 2);
-
-	setSecondWindowDimensions(settings);
+    mainWindow->setWindowShape(settings.width, settings.height);
+    
+	setWindowDimensions(settings, 1);
 	settings.resizable = false;
 	settings.decorated = false;
 	settings.shareContextWith = mainWindow;
