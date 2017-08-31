@@ -86,6 +86,11 @@ public:
         spatialFilter = newspatialFilter;
     }
     
+	void setInPainting(bool inp)
+	{
+		doInPaint = inp;
+	}
+
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
 	ofThreadChannel<ofVec2f*> gradient;
@@ -97,6 +102,17 @@ private:
     void applySpaceFilter();
     void updateGradientField();
     
+	// A simple inpainting algorithm to remove outliers in the depth
+	// Since the shader has no way of filtering outliers (0 and 4000 values mainly) it creates visual artifacts if they are not 
+	// removed prior to the shader pass
+	void applySimpleOutlierInpainting();
+	float findInpaintValue(float *data, int x, int y);
+	double ROIAverageValue = 0;
+	int setToLocalAvg = 0;
+	int setToGlobalAvg = 0;
+	bool doInPaint;
+
+
 	bool newFrame;
     bool bufferInitiated;
     bool firstImageReady;
@@ -135,11 +151,11 @@ private:
 	unsigned int minNumSamples; // Minimum number of valid samples needed to consider a pixel stable
 	float maxVariance; // Maximum variance to consider a pixel stable
     float initialValue;
-    float outsideROIValue;
+ //   float outsideROIValue;
 	float hysteresis; // Amount by which a new filtered value has to differ from the current value to update the display
     bool followBigChange;
     float bigChange; // Amount of change over which the averaging slot is reset to new value
-	float instableValue; // Value to assign to instable pixels if retainValids is false
+//	float instableValue; // Value to assign to instable pixels if retainValids is false
 	bool spatialFilter; // Flag whether to apply a spatial filter to time-averaged depth values
     float maxOffset;
     

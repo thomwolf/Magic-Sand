@@ -80,7 +80,8 @@ public:
     void setGradFieldResolution(int gradFieldResolution);
 	void updateStatusGUI();
 	void setSpatialFiltering(bool sspatialFiltering);
-    void setFollowBigChanges(bool sfollowBigChanges);
+	void setInPainting(bool inp);
+	void setFollowBigChanges(bool sfollowBigChanges);
 	void StartManualROIDefinition();
 	void ResetSeaLevel();
 	void showROIonProjector(bool show);
@@ -277,6 +278,7 @@ private:
     bool                        spatialFiltering;
     bool                        followBigChanges;
     int                         numAveragingSlots;
+	bool                        doInpainting;
 
     //kinect buffer
     ofxCvFloatImage             FilteredDepthImage;

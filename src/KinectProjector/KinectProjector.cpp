@@ -95,6 +95,7 @@ void KinectProjector::setup(bool sdisplayGui)
 		ofLogVerbose("KinectProjector") << "KinectProjector.setup(): Kinect not found - trying again later";
 	}
 
+	doInpainting = false;
 	spatialFiltering = true;
     followBigChanges = false;
     numAveragingSlots = 15;
@@ -1388,7 +1389,8 @@ void KinectProjector::setupGui(){
 	advancedFolder->addToggle("Dump Debug", DumpDebugFiles);
 	advancedFolder->addSlider("Ceiling", -300, 300, 0);
     advancedFolder->addToggle("Spatial filtering", spatialFiltering);
-    advancedFolder->addToggle("Quick reaction", followBigChanges);
+	advancedFolder->addToggle("Inpaint outliers", doInpainting);
+	advancedFolder->addToggle("Quick reaction", followBigChanges);
     advancedFolder->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
 	advancedFolder->addSlider("Tilt X", -30, 30, 0);
 	advancedFolder->addSlider("Tilt Y", -30, 30, 0);
@@ -1580,6 +1582,13 @@ void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
     });
 }
 
+void KinectProjector::setInPainting(bool inp) {
+	doInpainting = inp;
+	kinectgrabber.performInThread([inp](KinectGrabber & kg) {
+		kg.setInPainting(inp);
+	});
+}
+
 void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
     followBigChanges = sfollowBigChanges;
     kinectgrabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
@@ -1653,8 +1662,12 @@ bool KinectProjector::getDumpDebugFiles()
 void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
     if (e.target->is("Spatial filtering")) {
 		setSpatialFiltering(e.checked);
-    }else if (e.target->is("Quick reaction")) {
-        setFollowBigChanges(e.checked);
+	}
+	else if (e.target->is("Quick reaction")) {
+		setFollowBigChanges(e.checked);
+	}
+	else if (e.target->is("Inpaint outliers")) {
+		setInPainting(e.checked);
     } else if (e.target->is("Draw kinect depth view")){
         drawKinectView = e.checked;
 		if (drawKinectView)

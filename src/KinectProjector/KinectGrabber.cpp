@@ -50,6 +50,10 @@ void KinectGrabber::stop(){
 bool KinectGrabber::setup(){
 	// settings and defaults
 	storedframes = 0;
+	ROIAverageValue = 0;
+	setToGlobalAvg = 0;
+	setToLocalAvg = 0;
+	doInPaint = 0;
 
 	kinect.init();
 	kinect.setRegistration(true); // To have correspondance between RGB and depth images
@@ -86,10 +90,10 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
     maxVariance = 4 ;
     hysteresis = 0.5f ;
     bigChange = 10.0f ;
-	instableValue = 0.0;
+//	instableValue = 0.0;
     maxgradfield = 1000;
     initialValue = 4000;
-    outsideROIValue = 3999;
+//    outsideROIValue = 3999;
     minInitFrame = 60;
     
     //Setup ROI
@@ -213,6 +217,16 @@ void KinectGrabber::filter()
 			inputFramePtr += width - maxX;
 			filteredFramePtr += width - maxX;
 		}
+
+		if (doInPaint)
+		{
+			applySimpleOutlierInpainting();
+		}
+
+		if (spatialFilter)
+		{
+			applySpaceFilter();
+		}
 	}
 	else if (bufferInitiated)
     {
@@ -304,6 +318,11 @@ void KinectGrabber::filter()
                 firstImageReady = true;
         }
         
+		if (doInPaint)
+		{
+			applySimpleOutlierInpainting();
+		}
+
         /* Apply a spatial filter if requested: */
         if(spatialFilter)
         {
@@ -406,6 +425,98 @@ void KinectGrabber::updateGradientField()
             }
         }
     }
+}
+
+
+float KinectGrabber::findInpaintValue(float *data, int x, int y)
+{
+	int sideLength = 5;
+
+	// We do not search outside ROI
+	int tminx = max(minX, x - sideLength);
+	int tmaxx = min(maxX, x + sideLength);
+	int tminy = max(minY, y - sideLength);
+	int tmaxy = min(maxY, y + sideLength);
+
+	int samples = 0;
+	double sumval = 0;
+	for (int y = tminy; y < tmaxy; y++)
+	{
+		for (int x = tminx; x < tmaxy; x++)
+		{
+			int idx = y * width + x;
+			float val = data[idx];
+			if (val != 0 && val != initialValue)
+			{
+				samples++;
+				sumval += val;
+			}
+		}
+	}
+	// No valid samples found in neighboorhood
+	if (samples == 0)
+		return 0;
+
+	return sumval / samples;
+}
+
+void KinectGrabber::applySimpleOutlierInpainting()
+{
+	float *data = filteredframe.getData();
+
+	// Estimate overall average inside ROI
+	int samples = 0;
+	ROIAverageValue = 0;
+	for (unsigned int y = minY; y < maxY; y++)
+	{
+		for (unsigned int x = minX; x < maxX; x++)
+		{
+			int idx = y * width + x;
+			float val = data[idx];
+			if (val != 0 && val != initialValue)
+			{
+				samples++;
+				ROIAverageValue += val;
+			}
+		}
+	}
+	// No valid samples found in ROI - strange situation
+	if (samples == 0)
+		ROIAverageValue = initialValue;
+	
+	ROIAverageValue /= samples;
+
+	setToLocalAvg = 0;
+	setToGlobalAvg = 0;
+	// Filter ROI
+	for (unsigned int y = max(0, minY-2); y < min((int)height, maxY+2); y++)
+	{
+		for (unsigned int x = max(0, minX-2); x < min((int)width, maxX+2); x++)
+		{
+	//for (unsigned int y = minY; y < maxY; y++)
+	//{
+	//	for (unsigned int x = minX; x < maxX; x++)
+	//	{
+			int idx = y * width + x;
+			float val = data[idx];
+
+			if (val == 0 || val == initialValue)
+			{
+				float newval = findInpaintValue(data, x, y);
+				if (newval == 0)
+				{
+					newval = ROIAverageValue;
+					setToGlobalAvg++;
+				}
+				else
+				{
+
+					setToLocalAvg++;
+				}
+				data[idx] = newval;
+			}
+		}
+	}
 }
 
 bool KinectGrabber::isInsideROI(int x, int y){
