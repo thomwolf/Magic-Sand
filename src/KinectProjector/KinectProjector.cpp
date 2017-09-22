@@ -236,6 +236,11 @@ void KinectProjector::updateStatusGUI()
 
 	StatusGUI->getLabel("Calibration Step")->setLabel("Calibration Step: " + calibrationText);;
 	StatusGUI->getLabel("Calibration Step")->setLabelColor(ofColor(0, 255, 255));
+
+	gui->getToggle("Spatial filtering")->setChecked(spatialFiltering);
+	gui->getToggle("Quick reaction")->setChecked(followBigChanges);
+	gui->getToggle("Inpaint outliers")->setChecked(doInpainting);
+	gui->getToggle("Full Frame Filtering")->setChecked(doFullFrameFiltering);
 }
 
 void KinectProjector::update()
@@ -1494,6 +1499,13 @@ void KinectProjector::startApplication()
 			basePlaneComputed = true;
 			setFullFrameFiltering(doFullFrameFiltering);
 			setInPainting(doInpainting);
+			setFollowBigChanges(followBigChanges);
+			setSpatialFiltering(spatialFiltering);
+
+			int nAvg = numAveragingSlots;
+			kinectgrabber.performInThread([nAvg](KinectGrabber & kg) {
+				kg.setAveragingSlotsNumber(nAvg); });
+
 			updateStatusGUI();
 		}
 		else 
@@ -1589,6 +1601,7 @@ void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
     kinectgrabber.performInThread([sspatialFiltering](KinectGrabber & kg) {
         kg.setSpatialFiltering(sspatialFiltering);
     });
+	updateStatusGUI();
 }
 
 void KinectProjector::setInPainting(bool inp) {
@@ -1596,16 +1609,18 @@ void KinectProjector::setInPainting(bool inp) {
 	kinectgrabber.performInThread([inp](KinectGrabber & kg) {
 		kg.setInPainting(inp);
 	});
+	updateStatusGUI();
 }
 
 
 void KinectProjector::setFullFrameFiltering(bool ff)
 {
 	doFullFrameFiltering = ff;
-	kinectgrabber.performInThread([ff](KinectGrabber & kg) {
-		kg.setFullFrameFiltering(ff);
+	ofRectangle ROI = kinectROI;
+	kinectgrabber.performInThread([ff, ROI](KinectGrabber & kg) {
+		kg.setFullFrameFiltering(ff, ROI);
 	});
-
+	updateStatusGUI();
 }
 
 void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
@@ -1613,6 +1628,7 @@ void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
     kinectgrabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
         kg.setFollowBigChange(sfollowBigChanges);
     });
+	updateStatusGUI();
 }
 
 void KinectProjector::onButtonEvent(ofxDatGuiButtonEvent e){

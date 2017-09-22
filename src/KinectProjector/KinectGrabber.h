@@ -92,7 +92,7 @@ public:
 	}
 
 	// Should the entire frame be filtered and thereby ignoring the KinectROI
-	void setFullFrameFiltering(bool ff);
+	void setFullFrameFiltering(bool ff, ofRectangle ROI);
 
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;

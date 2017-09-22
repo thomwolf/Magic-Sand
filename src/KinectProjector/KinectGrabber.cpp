@@ -332,12 +332,31 @@ void KinectGrabber::filter()
 	}
 }
 
-void KinectGrabber::setFullFrameFiltering(bool ff)
+void KinectGrabber::setFullFrameFiltering(bool ff, ofRectangle ROI)
 {
 	doFullFrameFiltering = ff;
 	if (ff)
 	{
 		setKinectROI(ofRectangle(0, 0, width, height));
+	}
+	else 
+	{
+		setKinectROI(ROI);
+		float *data = filteredframe.getData();
+
+		// Clear all pixels outside ROI
+		for (unsigned int y = 0; y < height; y++)
+		{
+			for (unsigned int x = 0; x < width; x++)
+			{
+				if (y < minY || y >= maxY || x < minX || x >= maxX)
+				{
+					int idx = y * width + x;
+					data[idx] = 0;
+				}
+			}
+		}
+
 	}
 }
 
