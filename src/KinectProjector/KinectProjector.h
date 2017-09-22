@@ -287,7 +287,9 @@ private:
     ofxCvFloatImage             FilteredDepthImage;
     ofxCvColorImage             kinectColorImage;
     ofVec2f*                    gradField;
-    
+	ofFpsCounter                fpsKinect;
+	ofxDatGuiTextInput*         fpsKinectText;
+
     // Projector and kinect variables
     ofVec2f projRes;
     ofVec2f kinectRes;

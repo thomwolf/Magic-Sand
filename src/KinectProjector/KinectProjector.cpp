@@ -282,7 +282,10 @@ void KinectProjector::update()
     ofFloatPixels filteredframe;
     if (kinectOpened && kinectgrabber.filtered.tryReceive(filteredframe)) 
 	{
-        FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectRes.x, kinectRes.y);
+		fpsKinect.newFrame();
+		fpsKinectText->setText(ofToString(fpsKinect.getFps(), 2));
+
+		FilteredDepthImage.setFromPixels(filteredframe.getData(), kinectRes.x, kinectRes.y);
         FilteredDepthImage.updateTexture();
         
         // Get color image from kinect grabber
@@ -1392,6 +1395,7 @@ void KinectProjector::setupGui(){
 	gui->addButton("RUN!")->setName("Start Application");
 	gui->addBreak();
     gui->addFRM();
+	fpsKinectText = gui->addTextInput("Kinect FPS", "0");
     gui->addBreak();
     
     auto advancedFolder = gui->addFolder("Advanced", ofColor::purple);
