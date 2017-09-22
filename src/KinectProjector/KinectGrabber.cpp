@@ -536,10 +536,25 @@ bool KinectGrabber::isInsideROI(int x, int y){
 }
 
 void KinectGrabber::setKinectROI(ofRectangle ROI){
-    minX = static_cast<int>(ROI.getMinX());
-    maxX = static_cast<int>(ROI.getMaxX());
-    minY = static_cast<int>(ROI.getMinY());
-    maxY = static_cast<int>(ROI.getMaxY());
+	if (doFullFrameFiltering)
+	{
+		minX = 0;
+		maxX = width;
+		minY = 0;
+		maxY = height;
+	}
+	else
+	{ // we extend a bit beyond the border - to get data here as well due to shader issues
+		minX = static_cast<int>(ROI.getMinX()) - 2;
+		maxX = static_cast<int>(ROI.getMaxX()) + 2;
+		minY = static_cast<int>(ROI.getMinY()) - 2;
+		maxY = static_cast<int>(ROI.getMaxY()) + 2;
+		
+		minX = max(0, minX);
+		maxX = min(maxX, (int)width);
+		minY = max(0, minY);
+		maxY = min(maxY, (int)height);
+	}
     //ROIwidth = maxX-minX;
     //ROIheight = maxY-minY;
     resetBuffers();
