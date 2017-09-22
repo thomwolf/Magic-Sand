@@ -52,6 +52,9 @@ class CMapGameController
 		// The button (or space) was pressed. Show map and subtract time
 		bool ButtonPressed();
 
+		// Signal to end the game
+		bool EndButtonPressed();
+
 		void TestMe();
 
 		void RealTimeTestMe();

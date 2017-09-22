@@ -642,6 +642,17 @@ bool CMapGameController::ButtonPressed()
 	return true;
 }
 
+bool CMapGameController::EndButtonPressed()
+{
+	CurrentGameSequence++;
+	// Debug check
+	if (CurrentGameSequence >= GameSequence.size())
+		CurrentGameSequence = GameSequence.size() - 1;
+
+	InitiateGameSequence();
+	return true;
+}
+
 void CMapGameController::TestMe()
 {
 	ConnectedComponentAnalysis();
