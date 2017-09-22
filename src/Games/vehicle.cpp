@@ -543,7 +543,7 @@ void Fish::draw()
     fish.curveTo( ofPoint(-fishLength-tailSize*cos(tailangle-0.8), tailSize*sin(tailangle-0.8)));
     fish.close();
     ofSetLineWidth(2.0);
-    ofColor c = ofColor(210,210,210);
+    ofColor c = ofColor(180,180,180);
     ofSetColor(c);
     if (mother)
     {
