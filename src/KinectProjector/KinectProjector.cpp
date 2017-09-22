@@ -33,7 +33,7 @@ projKinectCalibrated(false),
 basePlaneUpdated (false),
 basePlaneComputed(false),
 projKinectCalibrationUpdated (false),
-ROIUpdated (false),
+//ROIUpdated (false),
 imageStabilized (false),
 waitingForFlattenSand (false),
 drawKinectView(false),
@@ -96,6 +96,7 @@ void KinectProjector::setup(bool sdisplayGui)
 	}
 
 	doInpainting = false;
+	doFullFrameFiltering = false;
 	spatialFiltering = true;
     followBigChanges = false;
     numAveragingSlots = 15;
@@ -241,7 +242,7 @@ void KinectProjector::update()
 {
     // Clear updated state variables
     basePlaneUpdated = false;
-    ROIUpdated = false;
+//    ROIUpdated = false;
     projKinectCalibrationUpdated = false;
 
 	// Try to open the kinect every 3. second if it is not yet open
@@ -356,10 +357,10 @@ void KinectProjector::update()
         }
     }
 
+	fboProjWindow.begin();
+	ofClear(255, 255, 255, 0);
 	if (doShowROIonProjector && ROIcalibrated && kinectOpened)
 	{
-		fboProjWindow.begin();
-		ofClear(255, 255, 255, 0);
 		ofNoFill();
 		ofSetLineWidth(4);
 
@@ -386,9 +387,12 @@ void KinectProjector::update()
 		ofSetColor(255, 0, 255);
 		tempRect2 = ofRectangle(ofPoint(UL.x - 2, UL.y - 2), ofPoint(UL.x + 2, UL.y + 2));
 		ofDrawRectangle(tempRect2);
-
-		fboProjWindow.end();
 	}
+	else if (applicationState == APPLICATION_STATE_SETUP)
+	{
+		ofBackground(255); // Set to white in setup mode
+	}
+	fboProjWindow.end();
 }
 
 void KinectProjector::mousePressed(int x, int y, int button)
@@ -681,9 +685,11 @@ void KinectProjector::setNewKinectROI()
     kinectROI.width = static_cast<int>(kinectROI.width);
     kinectROI.height = static_cast<int>(kinectROI.height);
     
+	ofLogVerbose("KinectProjector") << "setNewKinectROI : " << kinectROI;
+
     // Update states variables
     ROIcalibrated = true;
-    ROIUpdated = true;
+//    ROIUpdated = true;
     saveCalibrationAndSettings();
     updateKinectGrabberROI(kinectROI);
 	updateStatusGUI();
@@ -1390,6 +1396,7 @@ void KinectProjector::setupGui(){
 	advancedFolder->addSlider("Ceiling", -300, 300, 0);
     advancedFolder->addToggle("Spatial filtering", spatialFiltering);
 	advancedFolder->addToggle("Inpaint outliers", doInpainting);
+	advancedFolder->addToggle("Full Frame Filtering", doFullFrameFiltering);
 	advancedFolder->addToggle("Quick reaction", followBigChanges);
     advancedFolder->addSlider("Averaging", 1, 40, numAveragingSlots)->setPrecision(0);
 	advancedFolder->addSlider("Tilt X", -30, 30, 0);
@@ -1485,6 +1492,8 @@ void KinectProjector::startApplication()
 			setNewKinectROI();
 			ROIcalibrated = true;
 			basePlaneComputed = true;
+			setFullFrameFiltering(doFullFrameFiltering);
+			setInPainting(doInpainting);
 			updateStatusGUI();
 		}
 		else 
@@ -1589,6 +1598,16 @@ void KinectProjector::setInPainting(bool inp) {
 	});
 }
 
+
+void KinectProjector::setFullFrameFiltering(bool ff)
+{
+	doFullFrameFiltering = ff;
+	kinectgrabber.performInThread([ff](KinectGrabber & kg) {
+		kg.setFullFrameFiltering(ff);
+	});
+
+}
+
 void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
     followBigChanges = sfollowBigChanges;
     kinectgrabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
@@ -1668,7 +1687,11 @@ void KinectProjector::onToggleEvent(ofxDatGuiToggleEvent e){
 	}
 	else if (e.target->is("Inpaint outliers")) {
 		setInPainting(e.checked);
-    } else if (e.target->is("Draw kinect depth view")){
+    } 
+	else if (e.target->is("Full Frame Filtering")) {
+		setFullFrameFiltering(e.checked);
+	}
+	else if (e.target->is("Draw kinect depth view")){
         drawKinectView = e.checked;
 		if (drawKinectView)
 		{
@@ -1820,6 +1843,8 @@ bool KinectProjector::loadSettings(){
     spatialFiltering = xml.getValue<bool>("spatialFiltering");
     followBigChanges = xml.getValue<bool>("followBigChanges");
     numAveragingSlots = xml.getValue<int>("numAveragingSlots");
+	doInpainting = xml.getValue<bool>("OutlierInpainting", false);
+	doFullFrameFiltering = xml.getValue<bool>("FullFrameFiltering", false);
     return true;
 }
 
@@ -1838,7 +1863,9 @@ bool KinectProjector::saveSettings()
     xml.addValue("spatialFiltering", spatialFiltering);
     xml.addValue("followBigChanges", followBigChanges);
     xml.addValue("numAveragingSlots", numAveragingSlots);
-    xml.setToParent();
+	xml.addValue("OutlierInpainting", doInpainting);
+	xml.addValue("FullFrameFiltering", doFullFrameFiltering);
+	xml.setToParent();
     return xml.save(settingsFile);
 }
 

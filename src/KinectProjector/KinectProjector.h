@@ -81,6 +81,8 @@ public:
 	void updateStatusGUI();
 	void setSpatialFiltering(bool sspatialFiltering);
 	void setInPainting(bool inp);
+	void setFullFrameFiltering(bool ff);	
+	
 	void setFollowBigChanges(bool sfollowBigChanges);
 	void StartManualROIDefinition();
 	void ResetSeaLevel();
@@ -151,9 +153,9 @@ public:
     bool isBasePlaneUpdated(){ // To be called after update()
         return basePlaneUpdated;
     }
-    bool isROIUpdated(){ // To be called after update()
-        return ROIUpdated;
-    }
+    //bool isROIUpdated(){ // To be called after update()  // Could be set using manual mouse based drawing and cleared before the information was propagated to other modules
+    //    return ROIUpdated;
+    //}
     bool isCalibrationUpdated(){ // To be called after update()
         return projKinectCalibrationUpdated;
     }
@@ -256,7 +258,7 @@ private:
 	float lastKinectOpenTry;
 	bool ROIcalibrated;
     bool projKinectCalibrated;
-    bool ROIUpdated;
+//    bool ROIUpdated;
     bool projKinectCalibrationUpdated;
 	bool basePlaneComputed;
     bool basePlaneUpdated;
@@ -279,6 +281,7 @@ private:
     bool                        followBigChanges;
     int                         numAveragingSlots;
 	bool                        doInpainting;
+	bool                        doFullFrameFiltering;
 
     //kinect buffer
     ofxCvFloatImage             FilteredDepthImage;
