@@ -66,7 +66,8 @@ void ofApp::update() {
 	kinectProjector->update();
    	sandSurfaceRenderer->update();
     
-    if (kinectProjector->isROIUpdated())
+    //if (kinectProjector->isROIUpdated())
+	if (kinectProjector->getKinectROI() != mapGameController.getKinectROI())
 	{
 		ofRectangle kinectROI = kinectProjector->getKinectROI();
 		mapGameController.setKinectROI(kinectROI);
@@ -96,14 +97,13 @@ void ofApp::draw()
 
 void ofApp::drawProjWindow(ofEventArgs &args) 
 {
-	kinectProjector->drawProjectorWindow();
-	
 	if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING)
 	{
 		sandSurfaceRenderer->drawProjectorWindow();
 		mapGameController.drawProjectorWindow();
 		boidGameController.drawProjectorWindow();
 	}
+	kinectProjector->drawProjectorWindow();
 }
 
 void ofApp::keyPressed(int key) 
@@ -121,8 +121,15 @@ void ofApp::keyPressed(int key)
 		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && 
 			boidGameController.isIdle()) // do not start map game if boidgame is not idle
 		{
-			mapGameController.setDebug(kinectProjector->getDumpDebugFiles());
-			mapGameController.StartGame();
+			if (mapGameController.isIdle())
+			{
+				mapGameController.setDebug(kinectProjector->getDumpDebugFiles());
+				mapGameController.StartGame();
+			}
+			else
+			{
+				mapGameController.ButtonPressed();
+			}
 		}
 		else if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_SETUP)
 		{
@@ -130,7 +137,7 @@ void ofApp::keyPressed(int key)
 			kinectProjector->startApplication();
 		}
 	}
-	else if (key == 'f')
+	else if (key == 'f' || key == 'r')
 	{
 		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
 		{
