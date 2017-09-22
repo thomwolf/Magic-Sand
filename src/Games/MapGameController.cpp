@@ -41,6 +41,7 @@ CMapGameController::CMapGameController()
 	ROI = cv::Rect(xmin, ymin, xmax - xmin, ymax - ymin);
 	referenceMapHandler.Init();
 	ShowScore = false;
+	ButtonPressTime = -1;
 
 	std::string SplashScreenFname = DataBaseDir + "art/IslandGameSplashScreen.png";
 	if (!splashScreen.loadImage(SplashScreenFname))
@@ -134,6 +135,14 @@ void CMapGameController::update()
 
 void CMapGameController::PlayAndShowCountDown(int resultTime)
 {
+	if (ButtonPressTime > 0 && resultTime - ButtonPressTime < 5)
+	{
+		// Button has been pressed and score is shown
+		return;
+	}
+
+	ButtonPressTime = -1;
+
 	fboProjWindow.begin();
 	ofClear(255, 255, 255, 0);
 	ofSetColor(255, 255, 255);
@@ -150,26 +159,26 @@ void CMapGameController::PlayAndShowCountDown(int resultTime)
 
 	scoreFont.drawString(timeString, sx, sy);
 
-	if (GameSequence[CurrentGameSequence+1] == GAME_STATE_SHOWINTERMIDEATERESULT || 
-		GameSequence[CurrentGameSequence + 1] == GAME_STATE_SHOWFINALRESULT)
-	{
+	//if (GameSequence[CurrentGameSequence+1] == GAME_STATE_SHOWINTERMIDEATERESULT || 
+	//	GameSequence[CurrentGameSequence + 1] == GAME_STATE_SHOWFINALRESULT)
+	//{
 
-		int currentStep = 0;
-		int totalSteps = 0;
-		ComputeWhereInSequence(currentStep, totalSteps);
-		std::string stepString = "Tries: " + ofToString(currentStep) + " / " + ofToString(totalSteps);
-		if (GameSequence[CurrentGameSequence + 1] == GAME_STATE_SHOWFINALRESULT)
-		{
-			stepString = stepString + " (final)";
-		}
-		//sW = nameFont.stringWidth(stepString);
-		//sH = nameFont.stringHeight(stepString);
+	//	int currentStep = 0;
+	//	int totalSteps = 0;
+	//	ComputeWhereInSequence(currentStep, totalSteps);
+	//	std::string stepString = "Tries: " + ofToString(currentStep) + " / " + ofToString(totalSteps);
+	//	if (GameSequence[CurrentGameSequence + 1] == GAME_STATE_SHOWFINALRESULT)
+	//	{
+	//		stepString = stepString + " (final)";
+	//	}
+	//	//sW = nameFont.stringWidth(stepString);
+	//	//sH = nameFont.stringHeight(stepString);
 
-		sx = projROI.x + 70;
-		sy = projROI.y + 70;
+	//	sx = projROI.x + 70;
+	//	sy = projROI.y + 70;
 
-		scoreFont.drawString(stepString, sx, sy);
-	}
+	//	scoreFont.drawString(stepString, sx, sy);
+	//}
 
 	if (timeleft < 4)
 	{
@@ -368,6 +377,8 @@ bool CMapGameController::CheckForIsland()
 		ofClear(255, 255, 255, 0);
 		
 		DrawMatchResultContourLines();
+
+		CheckedForIsland = 0;
 
 		fboProjWindow.end();
 	}
@@ -602,6 +613,35 @@ bool CMapGameController::StartGame()
 	return true;
 }
 
+bool CMapGameController::ButtonPressed()
+{
+	eGameState sequence = GameSequence[CurrentGameSequence];
+	if (sequence == GAME_STATE_PLAYANDSHOWCOUNTDOWN)
+	{
+		float resultTime = ofGetElapsedTimef();
+
+		int DeltaTime = GameSequenceTimings[CurrentGameSequence];
+		int timeleft = DeltaTime - (resultTime - LastTimeEvent);
+
+		if (timeleft > 12)
+		{
+			if (!CreateIntermediateResult())
+			{
+				fboProjWindow.begin();
+				ofClear(255, 255, 255, 0);
+				ofSetColor(255, 255, 255);
+				nameFont.drawString("No Island Found!", 100, projRes.y / 2);
+				fboProjWindow.end();
+			}
+
+			// Decrease time left
+			LastTimeEvent -= 8;
+			ButtonPressTime = resultTime;
+		}
+	}
+	return true;
+}
+
 void CMapGameController::TestMe()
 {
 	ConnectedComponentAnalysis();
@@ -688,6 +728,11 @@ void CMapGameController::setKinectROI(ofRectangle &KROI)
 	ROI.y = kinectROI.y;
 	ROI.width = kinectROI.width;
 	ROI.height = kinectROI.height;
+}
+
+ofRectangle CMapGameController::getKinectROI()
+{
+	return kinectROI;
 }
 
 void CMapGameController::setDebug(bool flag)
@@ -793,25 +838,25 @@ void CMapGameController::SetupGameSequence()
 	GameSequenceTimings.push_back(3);
 
 	GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
-	GameSequenceTimings.push_back(30);
-
-	GameSequence.push_back(GAME_STATE_SHOWINTERMIDEATERESULT);
-	GameSequenceTimings.push_back(5);
-
-	GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
-	GameSequenceTimings.push_back(60);
-
-	GameSequence.push_back(GAME_STATE_SHOWINTERMIDEATERESULT);
-	GameSequenceTimings.push_back(5);
-
-	//GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
-	//GameSequenceTimings.push_back(20);
+	GameSequenceTimings.push_back(180);
 
 	//GameSequence.push_back(GAME_STATE_SHOWINTERMIDEATERESULT);
 	//GameSequenceTimings.push_back(5);
 
-	GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
-	GameSequenceTimings.push_back(30);
+	//GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
+	//GameSequenceTimings.push_back(60);
+
+	//GameSequence.push_back(GAME_STATE_SHOWINTERMIDEATERESULT);
+	//GameSequenceTimings.push_back(5);
+
+	////GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
+	////GameSequenceTimings.push_back(20);
+
+	////GameSequence.push_back(GAME_STATE_SHOWINTERMIDEATERESULT);
+	////GameSequenceTimings.push_back(5);
+
+	//GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
+	//GameSequenceTimings.push_back(30);
 
 	GameSequence.push_back(GAME_STATE_SHOWFINALRESULT);
 	GameSequenceTimings.push_back(5);

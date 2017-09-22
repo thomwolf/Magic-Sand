@@ -49,12 +49,14 @@ class CMapGameController
 
 		bool StartGame();
 
+		// The button (or space) was pressed. Show map and subtract time
+		bool ButtonPressed();
+
 		void TestMe();
 
 		void RealTimeTestMe();
 		void DebugTestMe();
-		
-		
+				
 		bool isIdle();
 		
 		void setProjectorRes(ofVec2f& PR);
@@ -62,6 +64,8 @@ class CMapGameController
 		void setKinectRes(ofVec2f& KR);
 
 		void setKinectROI(ofRectangle &KROI);
+
+		ofRectangle getKinectROI();
 
 		// Should debug files be dumped
 		void setDebug(bool flag);
@@ -169,6 +173,7 @@ class CMapGameController
 		// State variables
 		bool ShowScore;
 		float LastTimeEvent;
+		float ButtonPressTime;
 
 		enum eGameState
 		{
