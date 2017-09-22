@@ -102,7 +102,8 @@ private:
     
     // Projector Resolution
     int projResX, projResY;
-    
+	ofRectangle kinectROI;
+
     // Conversion matrices
     ofMatrix4x4                 transposedKinectProjMatrix;
     ofMatrix4x4                 transposedKinectWorldMatrix;
