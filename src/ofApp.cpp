@@ -139,10 +139,17 @@ void ofApp::keyPressed(int key)
 	}
 	else if (key == 'f' || key == 'r')
 	{
-		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && mapGameController.isIdle())
+		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING)
 		{
-			boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
-			boidGameController.StartGame(2);
+			if (mapGameController.isIdle())
+			{
+				boidGameController.setDebug(kinectProjector->getDumpDebugFiles());
+				boidGameController.StartGame(2);
+			}
+			else 
+			{
+				mapGameController.EndButtonPressed();
+			}
 		}
 	}
 	else if (key == '1') // Absolute beginner
