@@ -554,7 +554,7 @@ void CBoidGameController::SetupGameSequence()
 	GameSequenceTimings.push_back(5);
 
 	GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
-	GameSequenceTimings.push_back(300);
+	GameSequenceTimings.push_back(180);
 
 	//GameSequence.push_back(GAME_STATE_PLAYANDSHOWCOUNTDOWN);
 	//GameSequenceTimings.push_back(30);
