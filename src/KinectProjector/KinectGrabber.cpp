@@ -54,6 +54,7 @@ bool KinectGrabber::setup(){
 	setToGlobalAvg = 0;
 	setToLocalAvg = 0;
 	doInPaint = 0;
+	doFullFrameFiltering = false;
 
 	kinect.init();
 	kinect.setRegistration(true); // To have correspondance between RGB and depth images
@@ -331,6 +332,15 @@ void KinectGrabber::filter()
 	}
 }
 
+void KinectGrabber::setFullFrameFiltering(bool ff)
+{
+	doFullFrameFiltering = ff;
+	if (ff)
+	{
+		setKinectROI(ofRectangle(0, 0, width, height));
+	}
+}
+
 void KinectGrabber::applySpaceFilter()
 {
     for(int filterPass=0;filterPass<2;++filterPass)
@@ -530,8 +540,8 @@ void KinectGrabber::setKinectROI(ofRectangle ROI){
     maxX = static_cast<int>(ROI.getMaxX());
     minY = static_cast<int>(ROI.getMinY());
     maxY = static_cast<int>(ROI.getMaxY());
-    ROIwidth = maxX-minX;
-    ROIheight = maxY-minY;
+    //ROIwidth = maxX-minX;
+    //ROIheight = maxY-minY;
     resetBuffers();
 }
 

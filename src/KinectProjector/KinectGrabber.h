@@ -91,6 +91,9 @@ public:
 		doInPaint = inp;
 	}
 
+	// Should the entire frame be filtered and thereby ignoring the KinectROI
+	void setFullFrameFiltering(bool ff);
+
 	ofThreadChannel<ofFloatPixels> filtered;
 	ofThreadChannel<ofPixels> colored;
 	ofThreadChannel<ofVec2f*> gradient;
@@ -110,7 +113,6 @@ private:
 	double ROIAverageValue = 0;
 	int setToLocalAvg = 0;
 	int setToGlobalAvg = 0;
-	bool doInPaint;
 
 
 	bool newFrame;
@@ -126,8 +128,8 @@ private:
 	bool kinectOpened;
     ofxKinect               kinect;
     unsigned int width, height; // Width and height of kinect frames
-    int minX, maxX, ROIwidth; // ROI definition
-    int minY, maxY, ROIheight;
+	int minX, maxX; // , ROIwidth; // ROI definition
+	int minY, maxY; //, ROIheight;
     
     // General buffers
     ofxCvColorImage         kinectColorImage;
@@ -161,7 +163,10 @@ private:
     
     int minInitFrame; // Minimal number of frame to consider the kinect initialized
     int currentInitFrame;
-    
+
+	bool doInPaint;
+
+	bool doFullFrameFiltering;
     // Debug
 //    int blockX, blockY;
 };
