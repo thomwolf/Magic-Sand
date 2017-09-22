@@ -302,7 +302,9 @@ Magic Sand does not provide dynamic rain features (typically require a stronger 
 ## [unreleased]
 
 ### Added
+- Kinect FPS counter for received frames
 - XCode build files
+- Full frame filter option 
 - Simple InPainting option for removing outliers in the depth map
 - Better scaling of GUI
 - Debug feature: Kinect ROI can be seen on projector
