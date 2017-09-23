@@ -19,7 +19,7 @@ The software controls the projector to project colors as a function of the sand 
 
 The easiest way to get started is to build the physical setup provided in the guide found at the [tutorial page](https://imgur.com/gallery/Q86wR) and/or check the [reddit thread](https://www.reddit.com/r/DIY/comments/4v1gfi/a_magic_sandbox_i_made_for_my_3_yo_sons_birthday/)
 
-Secondly, download and install/unpack the latest ready-to-use version of the software at the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/v1.5). Follow the instructions on the release page to download and install the necessary drivers.
+Secondly, download and install/unpack the latest ready-to-use version of the software at the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/v1.5.4). Follow the instructions on the release page to download and install the necessary drivers.
 
 ### Setting up the system
 
@@ -149,7 +149,7 @@ Magic Sand is based on [openframeworks](http://openframeworks.cc/) release 0.9.3
 - Grab a copy of [openframeworks](http://openframeworks.cc/download/) for your OS.
 - Unpack the Magic-Sand in the **app/myApps** folder in the openframeworks directory tree
 - Grab the additionnal community addons listed above. They should be installed in the **addons** subdirectory of openframeworks
-- If you are a windows user, install the kinect drivers as detailed on the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/v1.5)
+- If you are a windows user, install the kinect drivers as detailed on the [release page](https://github.com/thomwolf/Magic-Sand/releases/tag/v1.5.4)
 - Enjoy ! (Xcode / VS2015 project files are supplied, should work also on linux)
 
 Be sure to check the [openframeworks](http://openframeworks.cc/) documentation and forum if you don't know it yet, it is an amazing community !
@@ -299,7 +299,7 @@ It is thus probably less acurate than SARndbox.
 Magic Sand does not provide dynamic rain features (typically require a stronger GPU than the graphic card provided on a laptop).
 
 # Changelog
-## [1.5.4 - 23-09-2017]
+## [1.5.4](https://github.com/thomwolf/Magic-Sand/releases/tag/v1.5.4) - 23-09-2017
 
 Minor release of Magic-Sand-with-Games
 
@@ -322,5 +322,5 @@ Minor release of Magic-Sand-with-Games
 ### Bug fixes
 - Spatial filter now correctly filters the ROI
 
-## [1.5.0] - 08-08-2017
+## [1.5.0](https://github.com/thomwolf/Magic-Sand/tree/v1.5) - 08-08-2017
 Initial release of Magic-Sand with Games
