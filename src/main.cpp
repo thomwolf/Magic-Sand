@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #include "ofMain.h"
 #include "ofApp.h"
 
-const std::string MagicSandVersion = "1.5.3.1";
+const std::string MagicSandVersion = "1.5.4.0";
 
 bool setWindowDimensions(ofGLFWWindowSettings& settings, int windowsNum) {
 	int count;

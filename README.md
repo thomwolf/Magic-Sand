@@ -299,7 +299,9 @@ It is thus probably less acurate than SARndbox.
 Magic Sand does not provide dynamic rain features (typically require a stronger GPU than the graphic card provided on a laptop).
 
 # Changelog
-## [unreleased]
+## [1.5.4 - 23-09-2017]
+
+Minor release of Magic-Sand-with-Games
 
 ### Added
 - Kinect FPS counter for received frames
