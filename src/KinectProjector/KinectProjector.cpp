@@ -366,7 +366,11 @@ void KinectProjector::update()
     }
 
 	fboProjWindow.begin();
-	ofClear(255, 255, 255, 0);
+
+	if (applicationState != APPLICATION_STATE_CALIBRATING)
+	{
+		ofClear(255, 255, 255, 0);
+	}
 	if (doShowROIonProjector && ROIcalibrated && kinectOpened)
 	{
 		ofNoFill();
@@ -1226,8 +1230,9 @@ void KinectProjector::drawChessboard(int x, int y, int chessboardSize) {
     
     currentProjectorPoints.clear();
     
-    ofClear(255, 0);
-    ofSetColor(0);
+	ofClear(255, 255, 255, 0);
+	ofBackground(255); 
+	ofSetColor(0);
     ofTranslate(xf, yf);
     for (int j=0; j<chessboardY; j++) {
         for (int i=0; i<chessboardX; i++) {
