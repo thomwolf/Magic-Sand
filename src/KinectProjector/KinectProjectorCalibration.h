@@ -43,7 +43,6 @@ public:
     
     ofVec2f getProjectedPoint(ofVec3f worldPoint);
     ofMatrix4x4 getProjectionMatrix();
-    vector<ofVec2f> getProjectedContour(vector<ofVec3f> *worldPoints);
     
     vector<double> getCalibration();
     

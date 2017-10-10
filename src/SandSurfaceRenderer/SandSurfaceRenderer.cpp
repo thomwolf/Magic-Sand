@@ -101,6 +101,8 @@ void SandSurfaceRenderer::setup(bool sdisplayGui){
 	contourLineFboOffset = elevationMax;
     contourLineFactor = contourLineFboScale/contourLineDistance;
     
+	kinectROI = kinectProjector->getKinectROI();
+
     //setup the mesh
     setupMesh();
     
@@ -176,12 +178,15 @@ void SandSurfaceRenderer::updateRangesAndBasePlane(){
 
 void SandSurfaceRenderer::setupMesh(){
     // Initialise mesh
-    ofRectangle kinectROI = kinectProjector->getKinectROI();
-    ofVec2f kinectRes = kinectProjector->getKinectRes();
+    kinectROI = kinectProjector->getKinectROI();
+  //  ofVec2f kinectRes = kinectProjector->getKinectRes();
+	ofLogVerbose("SandSurfaceRenderer") << "setupMesh. KinectROI: " << kinectROI;
+
     meshwidth = kinectROI.width;
     meshheight = kinectROI.height;
     mesh.clear();
-    for(unsigned int y=0;y<meshheight;y++)
+
+	for (unsigned int y = 0; y < meshheight; y++)
         for(unsigned int x=0;x<meshwidth;x++)
         {
             ofPoint pt = ofPoint(x+kinectROI.x,y+kinectROI.y,0.0f)-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
@@ -203,8 +208,9 @@ void SandSurfaceRenderer::setupMesh(){
 
 void SandSurfaceRenderer::update(){
     // Update Renderer state if needed
-    if (kinectProjector->isROIUpdated())
-        setupMesh();
+    //if (kinectProjector->isROIUpdated() || kinectProjector->getKinectROI() != kinectROI)
+	if (kinectProjector->getKinectROI() != kinectROI)
+		setupMesh();
     if (kinectProjector->isBasePlaneUpdated())
         updateRangesAndBasePlane();
     if (kinectProjector->isCalibrationUpdated())

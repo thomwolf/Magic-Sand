@@ -1,6 +1,6 @@
 /***********************************************************************
 Main.cpp
-Copyright (c) 2016 Thomas Wolf
+Copyright (c) 2016-2017 Thomas Wolf and Rasmus R. Paulsen (people.compute.dtu.dk/rapa)
 
 This file is part of the Magic Sand.
 
@@ -19,43 +19,68 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
+
 #include "ofMain.h"
 #include "ofApp.h"
 
-bool setSecondWindowDimensions(ofGLFWWindowSettings& settings) {
-	// Check screens size and location
+const std::string MagicSandVersion = "1.5.4.1";
+
+bool setWindowDimensions(ofGLFWWindowSettings& settings, int windowsNum) {
 	int count;
 	GLFWmonitor** monitors = glfwGetMonitors(&count);
 	cout << "Number of screens found: " << count << endl;
-	if (count>1) {
+	if (count > windowsNum) {
 		int xM; int yM;
-		glfwGetMonitorPos(monitors[1], &xM, &yM); // We take the second monitor
-		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[1]);
+		glfwGetMonitorPos(monitors[windowsNum], &xM, &yM); // We take the first monitor
+		const GLFWvidmode * desktopMode = glfwGetVideoMode(monitors[windowsNum]);
 
-		settings.width = desktopMode->width;
-		settings.height = desktopMode->height;
+        cout << "Monitor " << windowsNum << " size: " << desktopMode->width << "x" << desktopMode->height << endl;
+		
+		if (windowsNum == 0)
+		{
+			// Make main window almost full screen - but just a bit of space around to be able to grab other windows
+			settings.width = desktopMode->width * 4.0 / 5.0;
+			settings.height = desktopMode->height * 4.0 / 5.0;
+		}
+		else
+		{
+			// Projector window full screen
+			settings.width = desktopMode->width;
+			settings.height = desktopMode->height;
+		}
+
 		settings.setPosition(ofVec2f(xM, yM));
+
 		return true;
-	} else {
-		settings.width = 800; // Default settings if there is only one screen
-		settings.height = 600;
+	}
+	else {
+		settings.width = 1600; // Default settings
+		settings.height = 800;
 		settings.setPosition(ofVec2f(0, 0));
 		return false;
 	}
+
 }
 
 //========================================================================
 int main() {
 	ofGLFWWindowSettings settings;
-	settings.width = 1200;
-	settings.height = 600;
+//	setFirstWindowDimensions(settings);
+	//settings.width = 1200;
+ //	settings.height = 600;
+    settings.width = 1600; // Default settings
+    settings.height = 800;
+    settings.setPosition(ofVec2f(0, 0));
 	settings.resizable = true;
 	settings.decorated = true;
-	settings.title = "Magic Sand";
+	settings.title = "Magic-Sand " + MagicSandVersion;
 	shared_ptr<ofAppBaseWindow> mainWindow = ofCreateWindow(settings);
+    
+	setWindowDimensions(settings, 0);
 	mainWindow->setWindowPosition(ofGetScreenWidth() / 2 - settings.width / 2, ofGetScreenHeight() / 2 - settings.height / 2);
-
-	setSecondWindowDimensions(settings);
+    mainWindow->setWindowShape(settings.width, settings.height);
+    
+	setWindowDimensions(settings, 1);
 	settings.resizable = false;
 	settings.decorated = false;
 	settings.shareContextWith = mainWindow;

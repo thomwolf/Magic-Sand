@@ -1,0 +1,41 @@
+<MapReferenceSettings>
+	<DefaultMap>0</DefaultMap>
+	<maps>
+		<map id="0">
+			<MapName>Bornholm</MapName>
+			<GroundTruth>BornholmOversigt3</GroundTruth>
+		</map>
+		<map id="1">
+			<MapName>Aeroe</MapName>
+			<GroundTruth>AeroeOversigt</GroundTruth>
+		</map>
+		<map id="2">
+			<MapName>Australia</MapName>
+			<GroundTruth>AustraliaOnly</GroundTruth>
+		</map>
+		<map id="3">
+			<MapName>Greenland</MapName>
+			<GroundTruth>GreenlandOnly</GroundTruth>
+		</map>
+		<map id="4">
+			<MapName>United Kingdom</MapName>
+			<GroundTruth>UKOnly</GroundTruth>
+		</map>
+		<map id="5">
+			<MapName>Sicily</MapName>
+			<GroundTruth>SicilyOnly</GroundTruth>
+		</map>
+		<map id="6">
+			<MapName>Iceland</MapName>
+			<GroundTruth>IcelandOnly</GroundTruth>
+		</map>
+		<map id="7">
+			<MapName>Madagascar</MapName>
+			<GroundTruth>MadagascarOnly</GroundTruth>
+		</map>
+		<map id="8">
+			<MapName>Crete</MapName>
+			<GroundTruth>CreteOnly</GroundTruth>
+		</map>
+	</maps>
+</MapReferenceSettings>

@@ -35,7 +35,14 @@
 		A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CEC50DB3D06414010233963 /* Utilities.cpp */; };
 		ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBD37876A11E46E4D7069B3 /* cameras.c */; };
 		B6840996567E78436F7ECFAB /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B047FF96258DC01792B272DB /* ETF.cpp */; };
+		B7B3B76C1F8D0219007A1B3F /* icon.icns in CopyFiles */ = {isa = PBXBuildFile; fileRef = B78DEA291F8CE6C0007C92AB /* icon.icns */; };
 		B7D75A271D3DAB3E005984FA /* KinectProjectorCalibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D75A251D3DAB3E005984FA /* KinectProjectorCalibration.cpp */; };
+		B7F484601F545F3200C0812E /* TemporalFrameFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F4845E1F545F3200C0812E /* TemporalFrameFilter.cpp */; };
+		B7F4846C1F54633700C0812E /* BoidGameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F484621F54633700C0812E /* BoidGameController.cpp */; };
+		B7F4846D1F54633700C0812E /* MapGameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F484641F54633700C0812E /* MapGameController.cpp */; };
+		B7F4846E1F54633700C0812E /* ReferenceMapHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F484661F54633700C0812E /* ReferenceMapHandler.cpp */; };
+		B7F4846F1F54633700C0812E /* SandboxScoreTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F484681F54633700C0812E /* SandboxScoreTracker.cpp */; };
+		B7F484701F54633700C0812E /* vehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F4846A1F54633700C0812E /* vehicle.cpp */; };
 		C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE75A3FBA2C2D87D14F06FE6 /* ObjectFinder.cpp */; };
 		C9466C434D1CF8AB968D298D /* ofxDatGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 26490D7CC31EF7D6ED5F925A /* ofxDatGui.cpp */; };
 		D31F5C1B140C59B2AF1533A8 /* registration.c in Sources */ = {isa = PBXBuildFile; fileRef = 71958293AC5292DE4B7C619D /* registration.c */; };
@@ -47,7 +54,6 @@
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 		E55DEEF784A10419E444669E /* flags.c in Sources */ = {isa = PBXBuildFile; fileRef = 682082DEC78C75C8FB18B7DB /* flags.c */; };
-		EBC173C90A2261956D1AFD88 /* vehicle.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 90B7407A12B0FC9A41936FE5 /* vehicle.cpp */; };
 		EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 402C8F4015542356D362AC88 /* Calibration.cpp */; };
 		EE68FB278FF83F27B1D66971 /* ofxModalWindow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B63997467445FAA179E2DFC7 /* ofxModalWindow.cpp */; };
 		F20EA81768BD07BF17758671 /* SandSurfaceRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63ABF8F2EDBCA4A7B0FBCA82 /* SandSurfaceRenderer.cpp */; };
@@ -78,10 +84,11 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		E4C2427710CC5ABF004149E2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolderSpec = 7;
 			files = (
+				B7B3B76C1F8D0219007A1B3F /* icon.icns in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,7 +125,6 @@
 		18E16A7CA55F6761C64833F7 /* vec_traits.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vec_traits.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/vec_traits.hpp; sourceTree = SOURCE_ROOT; };
 		1A3E3B8F332A1A3C7EDF4998 /* ofxDatGuiComponent.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxDatGuiComponent.cpp; path = ../../../addons/ofxDatGui/src/core/ofxDatGuiComponent.cpp; sourceTree = SOURCE_ROOT; };
 		1AD5FD8CB7EA240501080287 /* vec_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vec_math.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/vec_math.hpp; sourceTree = SOURCE_ROOT; };
-		1C46BA18D11295D3BDC59E49 /* vehicle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vehicle.h; path = src/vehicle.h; sourceTree = SOURCE_ROOT; };
 		1C490B8705672F1410388922 /* reduce.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = reduce.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/detail/reduce.hpp; sourceTree = SOURCE_ROOT; };
 		1E95EFD35ED9C5D97F2F015E /* timer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = timer.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/timer.h; sourceTree = SOURCE_ROOT; };
 		1F9D46D19614774956DFE362 /* seam_finders.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = seam_finders.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/stitching/detail/seam_finders.hpp; sourceTree = SOURCE_ROOT; };
@@ -229,7 +235,6 @@
 		8E79CF8911DFABAFE23EA45B /* ofxCvConstants.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvConstants.h; path = ../../../addons/ofxOpenCv/src/ofxCvConstants.h; sourceTree = SOURCE_ROOT; };
 		8FB4573CDB2FB9658ACF87AA /* gpu_test.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = gpu_test.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/ts/gpu_test.hpp; sourceTree = SOURCE_ROOT; };
 		902724601B82C6AD81BBCD71 /* ofxDatGui2dPad.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxDatGui2dPad.h; path = ../../../addons/ofxDatGui/src/components/ofxDatGui2dPad.h; sourceTree = SOURCE_ROOT; };
-		90B7407A12B0FC9A41936FE5 /* vehicle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = vehicle.cpp; path = src/vehicle.cpp; sourceTree = SOURCE_ROOT; };
 		939BE0373CA78643E03C85BE /* ColorMap.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ColorMap.cpp; path = src/SandSurfaceRenderer/ColorMap.cpp; sourceTree = SOURCE_ROOT; };
 		946187321200AC04E570E6EC /* hierarchical_clustering_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = hierarchical_clustering_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/hierarchical_clustering_index.h; sourceTree = SOURCE_ROOT; };
 		960BD311ABBA7D3299D7FE1F /* datamov_utils.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = datamov_utils.hpp; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/gpu/device/datamov_utils.hpp; sourceTree = SOURCE_ROOT; };
@@ -278,9 +283,22 @@
 		B6ACE4E71F252C17A5D4890B /* ofxModalConfirm.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxModalConfirm.h; path = ../../../addons/ofxModal/src/ofxModalConfirm.h; sourceTree = SOURCE_ROOT; };
 		B7449AB21D46C03C006B99F6 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		B7449AB31D46C4F1006B99F6 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = bin/data/shaders; sourceTree = SOURCE_ROOT; };
+		B78DEA291F8CE6C0007C92AB /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		B7BF51E8E757FF8A162D3662 /* lsh_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/lsh_index.h; sourceTree = SOURCE_ROOT; };
 		B7D75A251D3DAB3E005984FA /* KinectProjectorCalibration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectProjectorCalibration.cpp; sourceTree = "<group>"; };
 		B7D75A261D3DAB3E005984FA /* KinectProjectorCalibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinectProjectorCalibration.h; sourceTree = "<group>"; };
+		B7F4845E1F545F3200C0812E /* TemporalFrameFilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TemporalFrameFilter.cpp; sourceTree = "<group>"; };
+		B7F4845F1F545F3200C0812E /* TemporalFrameFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemporalFrameFilter.h; sourceTree = "<group>"; };
+		B7F484621F54633700C0812E /* BoidGameController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = BoidGameController.cpp; path = Games/BoidGameController.cpp; sourceTree = "<group>"; };
+		B7F484631F54633700C0812E /* BoidGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BoidGameController.h; path = Games/BoidGameController.h; sourceTree = "<group>"; };
+		B7F484641F54633700C0812E /* MapGameController.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MapGameController.cpp; path = Games/MapGameController.cpp; sourceTree = "<group>"; };
+		B7F484651F54633700C0812E /* MapGameController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MapGameController.h; path = Games/MapGameController.h; sourceTree = "<group>"; };
+		B7F484661F54633700C0812E /* ReferenceMapHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ReferenceMapHandler.cpp; path = Games/ReferenceMapHandler.cpp; sourceTree = "<group>"; };
+		B7F484671F54633700C0812E /* ReferenceMapHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ReferenceMapHandler.h; path = Games/ReferenceMapHandler.h; sourceTree = "<group>"; };
+		B7F484681F54633700C0812E /* SandboxScoreTracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SandboxScoreTracker.cpp; path = Games/SandboxScoreTracker.cpp; sourceTree = "<group>"; };
+		B7F484691F54633700C0812E /* SandboxScoreTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SandboxScoreTracker.h; path = Games/SandboxScoreTracker.h; sourceTree = "<group>"; };
+		B7F4846A1F54633700C0812E /* vehicle.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vehicle.cpp; path = Games/vehicle.cpp; sourceTree = "<group>"; };
+		B7F4846B1F54633700C0812E /* vehicle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vehicle.h; path = Games/vehicle.h; sourceTree = "<group>"; };
 		B8427966039B53A0FE69C1F0 /* cxcore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = cxcore.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv/cxcore.h; sourceTree = SOURCE_ROOT; };
 		B8A2CBF3E24E6E5026B13A90 /* ofxBase3DVideo.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxBase3DVideo.h; path = ../../../addons/ofxKinect/src/ofxBase3DVideo.h; sourceTree = SOURCE_ROOT; };
 		B9076967F8C54A04362C04AA /* Helpers.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = Helpers.cpp; path = ../../../addons/ofxCv/libs/ofxCv/src/Helpers.cpp; sourceTree = SOURCE_ROOT; };
@@ -942,6 +960,8 @@
 				B7449AB21D46C03C006B99F6 /* libs */,
 				B7D75A251D3DAB3E005984FA /* KinectProjectorCalibration.cpp */,
 				B7D75A261D3DAB3E005984FA /* KinectProjectorCalibration.h */,
+				B7F4845E1F545F3200C0812E /* TemporalFrameFilter.cpp */,
+				B7F4845F1F545F3200C0812E /* TemporalFrameFilter.h */,
 				2ED1543D4F626F41F20F57C9 /* KinectGrabber.cpp */,
 				20B9A504295C77AEF65EAB2C /* KinectGrabber.h */,
 				E2261220347510188D72EA5B /* KinectProjector.cpp */,
@@ -961,6 +981,23 @@
 				9CA07B16233BE1EB673A60D9 /* SandSurfaceRenderer.h */,
 			);
 			name = SandSurfaceRenderer;
+			sourceTree = "<group>";
+		};
+		B7F484611F54632000C0812E /* Games */ = {
+			isa = PBXGroup;
+			children = (
+				B7F484621F54633700C0812E /* BoidGameController.cpp */,
+				B7F484631F54633700C0812E /* BoidGameController.h */,
+				B7F484641F54633700C0812E /* MapGameController.cpp */,
+				B7F484651F54633700C0812E /* MapGameController.h */,
+				B7F484661F54633700C0812E /* ReferenceMapHandler.cpp */,
+				B7F484671F54633700C0812E /* ReferenceMapHandler.h */,
+				B7F484681F54633700C0812E /* SandboxScoreTracker.cpp */,
+				B7F484691F54633700C0812E /* SandboxScoreTracker.h */,
+				B7F4846A1F54633700C0812E /* vehicle.cpp */,
+				B7F4846B1F54633700C0812E /* vehicle.h */,
+			);
+			name = Games;
 			sourceTree = "<group>";
 		};
 		BB4B014C10F69532006C3DED /* addons */ = {
@@ -1132,6 +1169,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				B78DEA291F8CE6C0007C92AB /* icon.icns */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -1145,11 +1183,10 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				B7F484611F54632000C0812E /* Games */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
-				90B7407A12B0FC9A41936FE5 /* vehicle.cpp */,
-				1C46BA18D11295D3BDC59E49 /* vehicle.h */,
 				B7449AB01D46BB63006B99F6 /* KinectProjector */,
 				B7449AB11D46BB84006B99F6 /* SandSurfaceRenderer */,
 			);
@@ -1341,19 +1378,22 @@
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				F286B1EBA8ED3F2DAB7327A2 /* ColorMap.cpp in Sources */,
 				1F2C2F525E8E6E9AAA60A47F /* KinectGrabber.cpp in Sources */,
+				B7F4846E1F54633700C0812E /* ReferenceMapHandler.cpp in Sources */,
 				4CA87C3AAAB8074EC6CF6393 /* KinectProjector.cpp in Sources */,
 				F20EA81768BD07BF17758671 /* SandSurfaceRenderer.cpp in Sources */,
 				B7D75A271D3DAB3E005984FA /* KinectProjectorCalibration.cpp in Sources */,
-				EBC173C90A2261956D1AFD88 /* vehicle.cpp in Sources */,
 				B6840996567E78436F7ECFAB /* ETF.cpp in Sources */,
 				F76B4A79BD8DE4854141CB47 /* fdog.cpp in Sources */,
 				EBCDE831EFAE08274E799C97 /* Calibration.cpp in Sources */,
 				6AABAB39E82AF5CFEA23A205 /* ContourFinder.cpp in Sources */,
+				B7F484701F54633700C0812E /* vehicle.cpp in Sources */,
 				45CC483A999BF1065A6B926C /* Distance.cpp in Sources */,
 				5CC34D433F5806179935B89D /* Flow.cpp in Sources */,
 				2023EF517ED2D8B397511D4B /* Helpers.cpp in Sources */,
+				B7F4846F1F54633700C0812E /* SandboxScoreTracker.cpp in Sources */,
 				311DF864378748129984EA1D /* Kalman.cpp in Sources */,
 				C602002DE761F9B52DB4400A /* ObjectFinder.cpp in Sources */,
+				B7F4846C1F54633700C0812E /* BoidGameController.cpp in Sources */,
 				7CDAD32BE4FA46701E3552C7 /* RunningBackground.cpp in Sources */,
 				10B69DE456AED1288FC9316B /* Tracker.cpp in Sources */,
 				A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */,
@@ -1381,8 +1421,10 @@
 				63020F16C7E8DED980111241 /* ofxCvImage.cpp in Sources */,
 				D3301F6A0B43BB293ED97C1D /* ofxCvShortImage.cpp in Sources */,
 				85EEBF281BD3B965FFF08547 /* ofxParagraph.cpp in Sources */,
+				B7F4846D1F54633700C0812E /* MapGameController.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
+				B7F484601F545F3200C0812E /* TemporalFrameFilter.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
 			);

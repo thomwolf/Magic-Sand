@@ -50,6 +50,11 @@ void KinectGrabber::stop(){
 bool KinectGrabber::setup(){
 	// settings and defaults
 	storedframes = 0;
+	ROIAverageValue = 0;
+	setToGlobalAvg = 0;
+	setToLocalAvg = 0;
+	doInPaint = 0;
+	doFullFrameFiltering = false;
 
 	kinect.init();
 	kinect.setRegistration(true); // To have correspondance between RGB and depth images
@@ -86,10 +91,10 @@ void KinectGrabber::setupFramefilter(int sgradFieldresolution, float newMaxOffse
     maxVariance = 4 ;
     hysteresis = 0.5f ;
     bigChange = 10.0f ;
-	instableValue = 0.0;
+//	instableValue = 0.0;
     maxgradfield = 1000;
     initialValue = 4000;
-    outsideROIValue = 3999;
+//    outsideROIValue = 3999;
     minInitFrame = 60;
     
     //Setup ROI
@@ -192,7 +197,39 @@ void KinectGrabber::performInThread(std::function<void(KinectGrabber&)> action) 
 
 void KinectGrabber::filter()
 {
-    if (bufferInitiated)
+	if (bufferInitiated && numAveragingSlots < 2)
+	{
+		// Just copy raw kinect data
+		const RawDepth* inputFramePtr = static_cast<const RawDepth*>(kinectDepthImage.getData());
+		float* filteredFramePtr = filteredframe.getData();
+		inputFramePtr += minY*width;  // We only scan kinect ROI
+		filteredFramePtr += minY*width;
+
+		for (unsigned int y = minY; y < maxY; ++y)
+		{
+			inputFramePtr += minX;
+			filteredFramePtr += minX;
+
+			for (unsigned int x = minX; x < maxX; ++x, ++inputFramePtr, ++filteredFramePtr)
+			{
+				float newVal = static_cast<float>(*inputFramePtr);
+				*filteredFramePtr = newVal;
+			}
+			inputFramePtr += width - maxX;
+			filteredFramePtr += width - maxX;
+		}
+
+		if (doInPaint)
+		{
+			applySimpleOutlierInpainting();
+		}
+
+		if (spatialFilter)
+		{
+			applySpaceFilter();
+		}
+	}
+	else if (bufferInitiated)
     {
         const RawDepth* inputFramePtr = static_cast<const RawDepth*>(kinectDepthImage.getData());
         float* averagingBufferPtr = averagingBuffer+averagingSlotIndex*height*width;
@@ -282,6 +319,11 @@ void KinectGrabber::filter()
                 firstImageReady = true;
         }
         
+		if (doInPaint)
+		{
+			applySimpleOutlierInpainting();
+		}
+
         /* Apply a spatial filter if requested: */
         if(spatialFilter)
         {
@@ -290,53 +332,86 @@ void KinectGrabber::filter()
 	}
 }
 
+void KinectGrabber::setFullFrameFiltering(bool ff, ofRectangle ROI)
+{
+	doFullFrameFiltering = ff;
+	if (ff)
+	{
+		setKinectROI(ofRectangle(0, 0, width, height));
+	}
+	else 
+	{
+		setKinectROI(ROI);
+		float *data = filteredframe.getData();
+
+		// Clear all pixels outside ROI
+		for (unsigned int y = 0; y < height; y++)
+		{
+			for (unsigned int x = 0; x < width; x++)
+			{
+				if (y < minY || y >= maxY || x < minX || x >= maxX)
+				{
+					int idx = y * width + x;
+					data[idx] = 0;
+				}
+			}
+		}
+
+	}
+}
+
 void KinectGrabber::applySpaceFilter()
 {
     for(int filterPass=0;filterPass<2;++filterPass)
     {
-        /* Low-pass filter the entire output frame in-place: */
-        for(unsigned int x=minX;x<maxX;++x)
+		// Pointer to first pixel of ROI
+		float *ptrOffset = filteredframe.getData() + minY * width + minX;
+
+        // Low-pass filter the values in the ROI
+		// First a horisontal pass
+        for(unsigned int x = 0; x < width; x++)
         {
-            /* Get a pointer to the current column: */
-            float* colPtr = filteredframe.getData()+x;
-            
-            /* Filter the first pixel in the column: */
-            float lastVal = *colPtr;
-            *colPtr = (colPtr[0]*2.0f+colPtr[width])/3.0f;
+			// Pointer to current pixel
+            float* colPtr = ptrOffset + x;
+			float lastVal = *colPtr;
+
+            // Top border pixels 
+            *colPtr = (colPtr[0]*2.0f + colPtr[width]) / 3.0f;
             colPtr += width;
             
-            /* Filter the interior pixels in the column: */
-            for(unsigned int y=minY+1;y<maxY-1;++y,colPtr+=width)
+            // Filter the interior pixels in the column
+            for(unsigned int y = minY+1; y < maxY-1; ++y, colPtr += width)
             {
-                /* Filter the pixel: */
-                float nextLastVal=*colPtr;
-                *colPtr=(lastVal+colPtr[0]*2.0f+colPtr[width])*0.25f;
-                lastVal=nextLastVal;
+				float nextLastVal = *colPtr;
+                *colPtr=(lastVal + colPtr[0]*2.0f + colPtr[width])*0.25f;
+				lastVal = nextLastVal; // To avoid using already updated pixels
             }
             
-            /* Filter the last pixel in the column: */
-            *colPtr=(lastVal+colPtr[0]*2.0f)/3.0f;
+            // Filter the last pixel in the column: 
+            *colPtr=(lastVal + colPtr[0] * 2.0f)/3.0f;
         }
-        float* rowPtr = filteredframe.getData();
-        for(unsigned int y=minY;y<maxY;++y)
+
+		// then a vertical pass
+        for(unsigned int y = 0; y < height; y++)
         {
-            /* Filter the first pixel in the row: */
+			// Pointer to current pixel
+			float* rowPtr = ptrOffset + y * width;
+			
+			// Filter the first pixel in the row: 
             float lastVal=*rowPtr;
-            *rowPtr=(rowPtr[0]*2.0f+rowPtr[1])/3.0f;
-            ++rowPtr;
-            
-            /* Filter the interior pixels in the row: */
-            for(unsigned int x=minX+1;x<maxX-1;++x,++rowPtr)
+            *rowPtr=(rowPtr[0]*2.0f + rowPtr[1]) / 3.0f;
+            rowPtr++;
+       
+            // Filter the interior pixels in the row: 
+            for(unsigned int x = minX+1; x < maxX-1; ++x,++rowPtr)
             {
-                /* Filter the pixel: */
                 float nextLastVal=*rowPtr;
                 *rowPtr=(lastVal+rowPtr[0]*2.0f+rowPtr[1])*0.25f;
                 lastVal=nextLastVal;
             }
             
-            /* Filter the last pixel in the row: */
+            // Filter the last pixel in the row: 
             *rowPtr=(lastVal+rowPtr[0]*2.0f)/3.0f;
-            ++rowPtr;
         }
     }
 }
@@ -381,6 +456,98 @@ void KinectGrabber::updateGradientField()
     }
 }
 
+
+float KinectGrabber::findInpaintValue(float *data, int x, int y)
+{
+	int sideLength = 5;
+
+	// We do not search outside ROI
+	int tminx = max(minX, x - sideLength);
+	int tmaxx = min(maxX, x + sideLength);
+	int tminy = max(minY, y - sideLength);
+	int tmaxy = min(maxY, y + sideLength);
+
+	int samples = 0;
+	double sumval = 0;
+	for (int y = tminy; y < tmaxy; y++)
+	{
+		for (int x = tminx; x < tmaxy; x++)
+		{
+			int idx = y * width + x;
+			float val = data[idx];
+			if (val != 0 && val != initialValue)
+			{
+				samples++;
+				sumval += val;
+			}
+		}
+	}
+	// No valid samples found in neighboorhood
+	if (samples == 0)
+		return 0;
+
+	return sumval / samples;
+}
+
+void KinectGrabber::applySimpleOutlierInpainting()
+{
+	float *data = filteredframe.getData();
+
+	// Estimate overall average inside ROI
+	int samples = 0;
+	ROIAverageValue = 0;
+	for (unsigned int y = minY; y < maxY; y++)
+	{
+		for (unsigned int x = minX; x < maxX; x++)
+		{
+			int idx = y * width + x;
+			float val = data[idx];
+			if (val != 0 && val != initialValue)
+			{
+				samples++;
+				ROIAverageValue += val;
+			}
+		}
+	}
+	// No valid samples found in ROI - strange situation
+	if (samples == 0)
+		ROIAverageValue = initialValue;
+	
+	ROIAverageValue /= samples;
+
+	setToLocalAvg = 0;
+	setToGlobalAvg = 0;
+	// Filter ROI
+	for (unsigned int y = max(0, minY-2); y < min((int)height, maxY+2); y++)
+	{
+		for (unsigned int x = max(0, minX-2); x < min((int)width, maxX+2); x++)
+		{
+	//for (unsigned int y = minY; y < maxY; y++)
+	//{
+	//	for (unsigned int x = minX; x < maxX; x++)
+	//	{
+			int idx = y * width + x;
+			float val = data[idx];
+
+			if (val == 0 || val == initialValue)
+			{
+				float newval = findInpaintValue(data, x, y);
+				if (newval == 0)
+				{
+					newval = ROIAverageValue;
+					setToGlobalAvg++;
+				}
+				else
+				{
+
+					setToLocalAvg++;
+				}
+				data[idx] = newval;
+			}
+		}
+	}
+}
+
 bool KinectGrabber::isInsideROI(int x, int y){
     if (x<minX||x>maxX||y<minY||y>maxY)
         return false;
@@ -388,12 +555,27 @@ bool KinectGrabber::isInsideROI(int x, int y){
 }
 
 void KinectGrabber::setKinectROI(ofRectangle ROI){
-    minX = static_cast<int>(ROI.getMinX());
-    maxX = static_cast<int>(ROI.getMaxX());
-    minY = static_cast<int>(ROI.getMinY());
-    maxY = static_cast<int>(ROI.getMaxY());
-    ROIwidth = maxX-minX;
-    ROIheight = maxY-minY;
+	if (doFullFrameFiltering)
+	{
+		minX = 0;
+		maxX = width;
+		minY = 0;
+		maxY = height;
+	}
+	else
+	{ // we extend a bit beyond the border - to get data here as well due to shader issues
+		minX = static_cast<int>(ROI.getMinX()) - 2;
+		maxX = static_cast<int>(ROI.getMaxX()) + 2;
+		minY = static_cast<int>(ROI.getMinY()) - 2;
+		maxY = static_cast<int>(ROI.getMaxY()) + 2;
+		
+		minX = max(0, minX);
+		maxX = min(maxX, (int)width);
+		minY = max(0, minY);
+		maxY = min(maxY, (int)height);
+	}
+    //ROIwidth = maxX-minX;
+    //ROIheight = maxY-minY;
     resetBuffers();
 }
 
