@@ -35,6 +35,7 @@
 		A6668C5B1272D7FCD5B5A16F /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6CEC50DB3D06414010233963 /* Utilities.cpp */; };
 		ACE7DC9A3223ED5EE1B80074 /* cameras.c in Sources */ = {isa = PBXBuildFile; fileRef = 3DBD37876A11E46E4D7069B3 /* cameras.c */; };
 		B6840996567E78436F7ECFAB /* ETF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B047FF96258DC01792B272DB /* ETF.cpp */; };
+		B7B3B76C1F8D0219007A1B3F /* icon.icns in CopyFiles */ = {isa = PBXBuildFile; fileRef = B78DEA291F8CE6C0007C92AB /* icon.icns */; };
 		B7D75A271D3DAB3E005984FA /* KinectProjectorCalibration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7D75A251D3DAB3E005984FA /* KinectProjectorCalibration.cpp */; };
 		B7F484601F545F3200C0812E /* TemporalFrameFilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F4845E1F545F3200C0812E /* TemporalFrameFilter.cpp */; };
 		B7F4846C1F54633700C0812E /* BoidGameController.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B7F484621F54633700C0812E /* BoidGameController.cpp */; };
@@ -83,10 +84,11 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		E4C2427710CC5ABF004149E2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			dstPath = "";
-			dstSubfolderSpec = 10;
+			dstSubfolderSpec = 7;
 			files = (
+				B7B3B76C1F8D0219007A1B3F /* icon.icns in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -281,6 +283,7 @@
 		B6ACE4E71F252C17A5D4890B /* ofxModalConfirm.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxModalConfirm.h; path = ../../../addons/ofxModal/src/ofxModalConfirm.h; sourceTree = SOURCE_ROOT; };
 		B7449AB21D46C03C006B99F6 /* libs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = libs; sourceTree = "<group>"; };
 		B7449AB31D46C4F1006B99F6 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; name = shaders; path = bin/data/shaders; sourceTree = SOURCE_ROOT; };
+		B78DEA291F8CE6C0007C92AB /* icon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = icon.icns; sourceTree = "<group>"; };
 		B7BF51E8E757FF8A162D3662 /* lsh_index.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = lsh_index.h; path = ../../../addons/ofxOpenCv/libs/opencv/include/opencv2/flann/lsh_index.h; sourceTree = SOURCE_ROOT; };
 		B7D75A251D3DAB3E005984FA /* KinectProjectorCalibration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = KinectProjectorCalibration.cpp; sourceTree = "<group>"; };
 		B7D75A261D3DAB3E005984FA /* KinectProjectorCalibration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KinectProjectorCalibration.h; sourceTree = "<group>"; };
@@ -1166,6 +1169,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				B78DEA291F8CE6C0007C92AB /* icon.icns */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
