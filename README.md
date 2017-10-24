@@ -130,7 +130,7 @@ This game was mainly developed by Thomas Wolfe.
 ## Coding and Extending Magic Sand
 
 ### Source Code
-The full source code for Magic Sand is available on [github.com/thomwolf/Magic-Sand](https://github.com/thomwolf/Magic-Sand). The Magic-Sand-with-Games is currently available in a branch here [github.com/thomwolf/Magic-Sand/tree/Magic-Sand-with-Games](https://github.com/thomwolf/Magic-Sand/tree/Magic-Sand-with-Games)
+The full source code for Magic Sand is available on [github.com/thomwolf/Magic-Sand](https://github.com/thomwolf/Magic-Sand). 
 
 
 ### Dependencies
