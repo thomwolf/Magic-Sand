@@ -24,6 +24,8 @@ Magic-Sand was developed with the specific aim of simplifying the use of an augm
 Operates on a computer connected to a home cinema projector and a kinect sensor.
 The software controls the projector to project colors as a function of the sand level measured by the kinect sensor and transforms a sandbox in a colorful playground.
 
+![View of the interface to use the Magic Sandbox](./art/explication.png)
+
 ## Getting started
 
 The easiest way to get started is to build the physical setup provided in the guide found at the [tutorial page](https://imgur.com/gallery/Q86wR) and/or check the [reddit thread](https://www.reddit.com/r/DIY/comments/4v1gfi/a_magic_sandbox_i_made_for_my_3_yo_sons_birthday/)
@@ -50,6 +52,8 @@ To calibrate the system so the kinect and the projector is in correspondence a f
 - Press ok -  a series of Chessboard patterns are now projected on the cardboard/plate.
 
 If the calibration is succesful the status window should be updated showing that all is ok.
+
+![Animation of the calibration steps to use the Magic Sandbox](./art/calibration.gif)
 
 #### Debug mode for calibration
 If the calibration was not succesful a debug mode can be enabled that will place debug files in the **data\DebugFiles** folder. These might point you in the direction of why the calibration failed. Do this by enabling **advanced|Dump Debug** and run the calibration routine again.
