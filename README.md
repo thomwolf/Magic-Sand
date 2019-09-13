@@ -1,14 +1,19 @@
 # Magic Sand
-Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu)
-developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
+Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu) developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
 
-It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](http://openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan. It was ported to openframeworks by [Thomas Wolf](https://github.com/thomwolf) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
+![First View of a Magic Sandbox](./art/general-view-2.jpg)
 
-It was developed with the specific aim of simplifying the use of an augmented reality sandbox in a home/family environment :
+It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](http://openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan. It was ported to openframeworks for multi-plateform support with user interface and simple calibration by [Thomas Wolf](https://github.com/thomwolf) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
+
+![Animation of a Magic Sandbox](./art/animated-box.gif)
+
+Magic-Sand was developed with the specific aim of simplifying the use of an augmented reality sandbox in a home/family environment :
 - run on a mid-range laptop / home computer (Windows / Mac OS X / Linux, minimal GPU requirement).
 - Easy calibration to easily disassemble and reassemble the sandbox.
 - simple, easy-to-use interface.
 - framework for future sandbox-based games and applications.
+
+![View of a Magic Sandbox](./art/general-view.jpg)
 
 ## Main Features
 
