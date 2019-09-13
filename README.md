@@ -1,9 +1,13 @@
 # Magic Sand
-Magic Sand is a software for operating an augmented reality sandbox like the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu) developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/).
+Magic Sand is a software for operating an augmented reality sandbox like this one:
 
 ![First View of a Magic Sandbox](./art/general-view-2.jpg)
 
-It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](http://openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan. It was ported to openframeworks for multi-plateform support with user interface and simple calibration by [Thomas Wolf](https://github.com/thomwolf) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
+An augmented reality sandbox is made of a sand box, a depth detector (like a Kinect) and a beamer coupled together. The software provided on this repository control the beamer and the kinect in order to project on the sand colors which are related to the height of the sand.
+
+This project was inspired and adapted from the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu) developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/). It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](http://openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan.
+
+It was ported to openFrameworks with multi-plateform support (linux/macos/windows), a simple user interface and a robust yet simple calibration procedure by [Thomas Wolf](https://github.com/thomwolf) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
 
 ![Animation of a Magic Sandbox](./art/animated-box.gif)
 
