@@ -7,7 +7,7 @@ An augmented reality sandbox is made of a sand box, a depth detector (like a Kin
 
 This project was inspired and adapted from the [Augmented Reality Sandbox](https://arsandbox.ucdavis.edu) developped by [UC Davis](http://idav.ucdavis.edu/~okreylos/ResDev/SARndbox/). It is a partial port of the [SARndbox](https://github.com/KeckCAVES/SARndbox) project of Oliver Kreylos under [openframeworks](http://openframeworks.cc/) and is also adapted from the [ofxKinectProjectorToolkit](https://github.com/genekogan/ofxKinectProjectorToolkit) by Gene Kogan.
 
-It was ported to openFrameworks with multi-plateform support (linux/macos/windows), a simple user interface and a robust yet simple calibration procedure by [Thomas Wolf](https://github.com/thomwolf) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
+It was ported to openFrameworks with multi-plateform support (linux/macos/windows), a simple user interface and a robust yet simple calibration procedure by [Thomas Wolf](https://thomwolf.io) and later modified and extended with some games by [Rasmus R. Paulsen](http://people.compute.dtu.dk/rapa).
 
 ![Animation of a Magic Sandbox](./art/animated-box.gif)
 
