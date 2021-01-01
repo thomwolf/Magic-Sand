@@ -586,8 +586,8 @@ void Fish::draw()
 void Fish::setSizeAndSpeed(double sz)
 {
 	size = sz;
-	topSpeed = size / 4;
-	maxVelocityChange = size / 8;
+	topSpeed = size / 8;
+	maxVelocityChange = size / 16;
 
 	if (isFleeing)
 	{
@@ -895,8 +895,8 @@ void Shark::setSizeAndSpeed(double sz)
 {
 	size = sz;
 
-	topSpeed = size / 4;
-	maxVelocityChange = size / 8;
+	topSpeed = size / 16;
+	maxVelocityChange = size / 32;
 
 	// Chill speed
 	if (!isHunting)
