@@ -1023,6 +1023,7 @@ void Shark::applyBehaviours(std::vector<Fish>& vehicles)
 	}
 }
 
+
 void Shark::draw()
 {
 	ofPushMatrix();
@@ -1036,30 +1037,79 @@ void Shark::draw()
 	float nv = 0.5;//velocity.lengthSquared()/10; // Tail movement amplitude
 	float fact = 50 + 250 * velocity.length() / topSpeed;
 	float tailangle = nv / 25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50) - 25);
+	float angle = nv / 25 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50) - 25);
 
-	// Color of the fish
+	// Color of the shark
 	nv = 255;
 	fact = 50;
 //	float hsb = nv / 50 * (abs(((int)(ofGetElapsedTimef()*fact) % 100) - 50));
 
-	// Fish scale
+	// Shark scale
 	float sc = size;
 	float tailSize = 1 * sc;
-	float fishLength = 2 * sc;
-	float fishHead = tailSize;
+	float sharkL = 5 * sc;
+	float sharkW = 0.5 * sc;
+	int x = 0; int y = 0;
 
-	ofPolyline fish;
-	fish.curveTo(ofPoint(-fishLength - tailSize*cos(tailangle + 0.8), tailSize*sin(tailangle + 0.8)));
-	fish.curveTo(ofPoint(-fishLength - tailSize*cos(tailangle + 0.8), tailSize*sin(tailangle + 0.8)));
-	fish.curveTo(ofPoint(-fishLength, 0));
-	fish.curveTo(ofPoint(0, -fishHead));
-	fish.curveTo(ofPoint(fishHead, 0));
-	fish.curveTo(ofPoint(0, fishHead));
-	fish.curveTo(ofPoint(-fishLength, 0));
-	fish.curveTo(ofPoint(-fishLength - tailSize*cos(tailangle - 0.8), tailSize*sin(tailangle - 0.8)));
-	fish.curveTo(ofPoint(-fishLength - tailSize*cos(tailangle - 0.8), tailSize*sin(tailangle - 0.8)));
-	fish.close();
-	ofSetLineWidth(2.0);
+	ofPolyline shark;
+	shark.lineTo(ofPoint(x - sharkL * 0.82 + cos(angle), y - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.90 + cos(angle), y - sharkW * 0.7 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 1.00 + cos(angle), y - sharkW * 0.8 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.96 + cos(angle), y - sharkW * 0.52 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.86 + cos(angle), y - sharkW * 0.51 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.76 + cos(angle), y - sharkW * 0.5 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.73 + cos(angle), y - sharkW * 0.3 - 10 * sin(angle))); // beginning of first tail
+	shark.curveTo(ofPoint(x - sharkL * 0.70, y - sharkW * 0.4 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.68, y - sharkW * 0.45 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.64, y - sharkW * 0.5 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.55, y - sharkW * 0.55 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.48, y - sharkW * 0.7 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.44, y - sharkW * 0.7 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.40, y - sharkW * 0.7 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.38, y - sharkW * 1.4 - 10 * sin(angle))); // beginning of fins
+	shark.lineTo(ofPoint(x - sharkL * 0.39, y - sharkW * 2.2 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.406, y - sharkW * 2.58 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.41, y - sharkW * 2.6 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.38, y - sharkW * 2.5 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.36, y - sharkW * 2.4 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.33, y - sharkW * 1.9 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.26, y - sharkW * 1.7 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.23, y - sharkW * 1.3 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.213, y - sharkW * 0.82 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.211, y - sharkW * 0.79 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.21, y - sharkW * 0.8 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.1 + cos(angle), y - sharkW * 0.7));  // beginning of head
+	shark.curveTo(ofPoint(x + sharkL * 0.02 + cos(angle), y - sharkW * 0.3));
+	shark.curveTo(ofPoint(x + sharkL * 0.02 + cos(angle), y + sharkW * 0.3));
+	shark.curveTo(ofPoint(x - sharkL * 0.1 + cos(angle), y + sharkW * 0.7)); // end of head
+	shark.curveTo(ofPoint(x - sharkL * 0.21, y + sharkW * 0.8 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.211, y + sharkW * 0.79 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.213, y + sharkW * 0.82 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.23, y + sharkW * 1.3 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.26, y + sharkW * 1.7 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.33, y + sharkW * 1.9 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.36, y + sharkW * 2.4 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.38, y + sharkW * 2.5 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.41, y + sharkW * 2.6 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.406, y + sharkW * 2.58 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.39, y + sharkW * 2.2 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.38, y + sharkW * 1.4 - 10 * sin(angle))); // end of fins
+	shark.lineTo(ofPoint(x - sharkL * 0.40, y + sharkW * 0.7 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.44, y + sharkW * 0.7 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.48, y + sharkW * 0.7 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.55, y + sharkW * 0.55 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.64, y + sharkW * 0.5 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.68, y + sharkW * 0.45 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.70, y + sharkW * 0.4 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.73 + cos(angle), y + sharkW * 0.4 - 10 * sin(angle))); // end of first tail
+	shark.curveTo(ofPoint(x - sharkL * 0.80 + cos(angle), y + sharkW * 0.7 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.86 + cos(angle), y + sharkW * 0.9 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.88 + cos(angle), y + sharkW * 0.9 - 10 * sin(angle)));
+	shark.curveTo(ofPoint(x - sharkL * 0.80 + cos(angle), y + sharkW * 0.5 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.78 + cos(angle), y + sharkW * 0.0 - 10 * sin(angle)));
+	shark.lineTo(ofPoint(x - sharkL * 0.82 + cos(angle), y + 10 * sin(angle)));
+
+	shark.close();
 
 
 	ofColor c = ofColor(255);
@@ -1081,7 +1131,7 @@ void Shark::draw()
 	}
 	ofSetColor(c);
 	ofFill();
-	fish.draw();
+	shark.draw();
 	//if (isHunting)
 	//{
 	//	c.setHsb(255 - (int)hsb, 255, 255); // rainbow
