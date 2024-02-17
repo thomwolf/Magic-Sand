@@ -276,7 +276,7 @@ private:
     std::shared_ptr<ofAppBaseWindow> projWindow;
     
     //kinect grabber
-    KinectGrabber               kinectgrabber;
+    KinectGrabber               grabber;
     bool                        spatialFiltering;
     bool                        followBigChanges;
     int                         numAveragingSlots;
