@@ -87,7 +87,8 @@ void KinectProjector::setup(bool sdisplayGui)
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
 
     // kinectgrabber: start & default setup
-	kinectOpened = kinectgrabber.setup();
+    
+	kinectOpened = grabber.setup();
 	lastKinectOpenTry = ofGetElapsedTimef(); 
 	if (!kinectOpened)
 	{
@@ -104,7 +105,7 @@ void KinectProjector::setup(bool sdisplayGui)
     
     // Get projector and kinect width & height
     projRes = ofVec2f(projWindow->getWidth(), projWindow->getHeight());
-    kinectRes = kinectgrabber.getKinectSize();
+    kinectRes = grabber.getKinectSize();
 	kinectROI = ofRectangle(0, 0, kinectRes.x, kinectRes.y);
 	ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectROI " << kinectROI;
 
@@ -116,8 +117,8 @@ void KinectProjector::setup(bool sdisplayGui)
 	kpt = new ofxKinectProjectorToolkit(projRes, kinectRes);
 
 	// finish kinectgrabber setup and start the grabber
-    kinectgrabber.setupFramefilter(gradFieldResolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
-    kinectWorldMatrix = kinectgrabber.getWorldMatrix();
+    grabber.setupFramefilter(gradFieldResolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
+    kinectWorldMatrix = grabber.getWorldMatrix();
     ofLogVerbose("KinectProjector") << "KinectProjector.setup(): kinectWorldMatrix: " << kinectWorldMatrix ;
     
     // Setup gradient field
@@ -137,7 +138,7 @@ void KinectProjector::setup(bool sdisplayGui)
     if (displayGui)
         setupGui();
 
-    kinectgrabber.start(); // Start the acquisition
+    grabber.start(); // Start the acquisition
 
 	updateStatusGUI();
 }
@@ -170,7 +171,11 @@ void KinectProjector::setupGradientField(){
 void KinectProjector::setGradFieldResolution(int sgradFieldResolution){
     gradFieldResolution = sgradFieldResolution;
     setupGradientField();
-    kinectgrabber.performInThread([sgradFieldResolution](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+    grabber.performInThread([sgradFieldResolution](NI2Grabber & kg) {
+#else
+    grabber.performInThread([sgradFieldResolution](KinectGrabber & kg) {
+#endif
         kg.setGradFieldResolution(sgradFieldResolution);
     });
 }
@@ -255,17 +260,17 @@ void KinectProjector::update()
 	if (!kinectOpened && TimeStamp-lastKinectOpenTry > 3)
 	{
 		lastKinectOpenTry = TimeStamp;
-		kinectOpened = kinectgrabber.openKinect();
+		kinectOpened = grabber.openKinect();
 
 		if (kinectOpened)
 		{
 			ofLogVerbose("KinectProjector") << "KinectProjector.update(): A Kinect was found ";
-			kinectRes = kinectgrabber.getKinectSize();
+			kinectRes = grabber.getKinectSize();
 			kinectROI = ofRectangle(0, 0, kinectRes.x, kinectRes.y);
 			ofLogVerbose("KinectProjector") << "KinectProjector.update(): kinectROI " << kinectROI;
 
-			kinectgrabber.setupFramefilter(gradFieldResolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
-			kinectWorldMatrix = kinectgrabber.getWorldMatrix();
+            grabber.setupFramefilter(gradFieldResolution, maxOffset, kinectROI, spatialFiltering, followBigChanges, numAveragingSlots);
+			kinectWorldMatrix = grabber.getWorldMatrix();
 			ofLogVerbose("KinectProjector") << "KinectProjector.update(): kinectWorldMatrix: " << kinectWorldMatrix;
 
 			updateStatusGUI();
@@ -280,7 +285,7 @@ void KinectProjector::update()
 
     // Get images from kinect grabber
     ofFloatPixels filteredframe;
-    if (kinectOpened && kinectgrabber.filtered.tryReceive(filteredframe)) 
+    if (kinectOpened && grabber.filtered.tryReceive(filteredframe))
 	{
 		fpsKinect.newFrame();
 		fpsKinectText->setText(ofToString(fpsKinect.getFps(), 2));
@@ -290,7 +295,7 @@ void KinectProjector::update()
         
         // Get color image from kinect grabber
         ofPixels coloredframe;
-        if (kinectgrabber.colored.tryReceive(coloredframe)) 
+        if (grabber.colored.tryReceive(coloredframe))
 		{
             kinectColorImage.setFromPixels(coloredframe);
 		
@@ -301,15 +306,15 @@ void KinectProjector::update()
 		}
 
         // Get gradient field from kinect grabber
-        kinectgrabber.gradient.tryReceive(gradField);
+        grabber.gradient.tryReceive(gradField);
         
         // Update grabber stored frame number
-        kinectgrabber.lock();
-        kinectgrabber.decStoredframes();
-        kinectgrabber.unlock();
+        grabber.lock();
+        grabber.decStoredframes();
+        grabber.unlock();
         
         // Is the depth image stabilized
-        imageStabilized = kinectgrabber.isImageStabilized();
+        imageStabilized = grabber.isImageStabilized();
         
         // Are we calibrating ?
         if (applicationState == APPLICATION_STATE_CALIBRATING && !waitingForFlattenSand) 
@@ -672,8 +677,9 @@ void KinectProjector::updateROIFromFile()
 	ofXml xml;
 	if (xml.load(settingsFile))
 	{
-		xml.setTo("KINECTSETTINGS");
-		kinectROI = xml.getValue<ofRectangle>("kinectROI");
+        auto kinectSettings = xml.find("KINECTSETTINGS").getFirst();
+//		xml.setTo("KINECTSETTINGS");
+		kinectROI = kinectSettings.getChild("kinectROI").getValue<ofRectangle>();
 		setNewKinectROI();
 		ROICalibState = ROI_CALIBRATION_STATE_DONE;
 		return;
@@ -708,7 +714,11 @@ void KinectProjector::setNewKinectROI()
 }
 
 void KinectProjector::updateKinectGrabberROI(ofRectangle ROI){
-    kinectgrabber.performInThread([ROI](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+    grabber.performInThread([ROI](NI2Grabber & kg) {
+#else
+    grabber.performInThread([ROI](KinectGrabber & kg) {
+#endif
         kg.setKinectROI(ROI);
     });
 //    while (kinectgrabber.isImageStabilized()){
@@ -758,7 +768,11 @@ void KinectProjector::updateProjKinectAutoCalibration()
 {
     if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
 	{
-        kinectgrabber.performInThread([](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+        grabber.performInThread([](NI2Grabber & kg) {
+#else
+        grabber.performInThread([](KinectGrabber & kg) {
+#endif
             kg.setMaxOffset(0);
         });
 		calibrationText = "Stabilizing acquisition";
@@ -825,7 +839,11 @@ void KinectProjector::updateProjKinectAutoCalibration()
 	else if (autoCalibState == AUTOCALIB_STATE_COMPUTE) 
 	{
         updateKinectGrabberROI(kinectROI); // Goes back to kinectROI and maxoffset
-        kinectgrabber.performInThread([this](KinectGrabber & kg) {
+    #ifdef USE_OPENNI
+        grabber.performInThread([this](NI2Grabber & kg) {
+    #else
+        grabber.performInThread([this](KinectGrabber & kg) {
+    #endif
             kg.setMaxOffset(this->maxOffset);
         });
         if (pairsKinect.size() == 0) {
@@ -1153,7 +1171,11 @@ void KinectProjector::updateMaxOffset(){
     maxOffsetBack = maxOffset;
     // Update max Offset
     ofLogVerbose("KinectProjector") << "updateMaxOffset(): maxOffset" << maxOffset ;
-    kinectgrabber.performInThread([this](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+    grabber.performInThread([this](NI2Grabber & kg) {
+#else
+    grabber.performInThread([this](KinectGrabber & kg) {
+#endif
         kg.setMaxOffset(this->maxOffset);
     });
 }
@@ -1365,7 +1387,7 @@ ofVec2f KinectProjector::worldCoordTokinectCoord(ofVec3f wc)
 
 ofVec3f KinectProjector::RawKinectCoordToWorldCoord(float x, float y) // x, y in kinect pixel coord
 {
-    ofVec4f kc = ofVec3f(x, y, kinectgrabber.getRawDepthAt(static_cast<int>(x), static_cast<int>(y)));
+    ofVec4f kc = ofVec3f(x, y, grabber.getRawDepthAt(static_cast<int>(x), static_cast<int>(y)));
     kc.w = 1;
     ofVec4f wc = kinectWorldMatrix*kc*kc.z;
     return ofVec3f(wc);
@@ -1403,7 +1425,7 @@ void KinectProjector::setupGui(){
 	fpsKinectText = gui->addTextInput("Kinect FPS", "0");
     gui->addBreak();
     
-    auto advancedFolder = gui->addFolder("Advanced", ofColor::purple);
+    auto * advancedFolder = gui->addFolder("Advanced", ofColor::purple);
     advancedFolder->addToggle("Display kinect depth view", drawKinectView)->setName("Draw kinect depth view");
 	advancedFolder->addToggle("Display kinect color view", drawKinectColorView)->setName("Draw kinect color view");
 	advancedFolder->addToggle("Dump Debug", DumpDebugFiles);
@@ -1419,7 +1441,7 @@ void KinectProjector::setupGui(){
 	advancedFolder->addButton("Reset sea level");
 	advancedFolder->addBreak();
 	
-	auto calibrationFolder = gui->addFolder("Calibration", ofColor::darkCyan);
+	auto * calibrationFolder = gui->addFolder("Calibration", ofColor::darkCyan);
 	calibrationFolder->addButton("Manually define sand region");
 	calibrationFolder->addButton("Automatically calibrate kinect & projector");
 	calibrationFolder->addButton("Auto Adjust ROI");
@@ -1512,7 +1534,11 @@ void KinectProjector::startApplication()
 			setSpatialFiltering(spatialFiltering);
 
 			int nAvg = numAveragingSlots;
-			kinectgrabber.performInThread([nAvg](KinectGrabber & kg) {
+    #ifdef USE_OPENNI
+            grabber.performInThread([nAvg](NI2Grabber & kg) {
+    #else
+            grabber.performInThread([nAvg](KinectGrabber & kg) {
+    #endif
 				kg.setAveragingSlotsNumber(nAvg); });
 
 			updateStatusGUI();
@@ -1607,7 +1633,11 @@ void KinectProjector::startAutomaticKinectProjectorCalibration(){
 
 void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
     spatialFiltering = sspatialFiltering;
-    kinectgrabber.performInThread([sspatialFiltering](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+        grabber.performInThread([sspatialFiltering](NI2Grabber & kg) {
+#else
+        grabber.performInThread([sspatialFiltering](KinectGrabber & kg) {
+#endif
         kg.setSpatialFiltering(sspatialFiltering);
     });
 	updateStatusGUI();
@@ -1615,7 +1645,11 @@ void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
 
 void KinectProjector::setInPainting(bool inp) {
 	doInpainting = inp;
-	kinectgrabber.performInThread([inp](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+    grabber.performInThread([inp](NI2Grabber & kg) {
+#else
+    grabber.performInThread([inp](KinectGrabber & kg) {
+#endif
 		kg.setInPainting(inp);
 	});
 	updateStatusGUI();
@@ -1626,7 +1660,11 @@ void KinectProjector::setFullFrameFiltering(bool ff)
 {
 	doFullFrameFiltering = ff;
 	ofRectangle ROI = kinectROI;
-	kinectgrabber.performInThread([ff, ROI](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+    grabber.performInThread([ff, ROI](NI2Grabber & kg){
+#else
+    grabber.performInThread([ff, ROI](KinectGrabber & kg){
+#endif
 		kg.setFullFrameFiltering(ff, ROI);
 	});
 	updateStatusGUI();
@@ -1634,7 +1672,11 @@ void KinectProjector::setFullFrameFiltering(bool ff)
 
 void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
     followBigChanges = sfollowBigChanges;
-    kinectgrabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+    grabber.performInThread([sfollowBigChanges](NI2Grabber & kg) {
+#else
+    grabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
+#endif
         kg.setFollowBigChange(sfollowBigChanges);
     });
 	updateStatusGUI();
@@ -1755,12 +1797,20 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
     } else if (e.target->is("Ceiling")){
         maxOffset = maxOffsetBack-e.value;
         ofLogVerbose("KinectProjector") << "onSliderEvent(): maxOffset" << maxOffset ;
-        kinectgrabber.performInThread([this](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+        grabber.performInThread([this](NI2Grabber & kg) {
+#else
+        grabber.performInThread([this](KinectGrabber & kg) {
+#endif
             kg.setMaxOffset(this->maxOffset);
         });
     } else if(e.target->is("Averaging")){
         numAveragingSlots = e.value;
-        kinectgrabber.performInThread([e](KinectGrabber & kg) {
+#ifdef USE_OPENNI
+        grabber.performInThread([e](NI2Grabber & kg) {
+#else
+        grabber.performInThread([e](KinectGrabber & kg) {
+#endif
             kg.setAveragingSlotsNumber(e.value);
         });
     }
@@ -1856,20 +1906,20 @@ bool KinectProjector::loadSettings(){
     ofXml xml;
     if (!xml.load(settingsFile))
         return false;
-    xml.setTo("KINECTSETTINGS");
-    kinectROI = xml.getValue<ofRectangle>("kinectROI");
-    basePlaneNormalBack = xml.getValue<ofVec3f>("basePlaneNormalBack");
+    auto kinectSettings = xml.find("KINECTSETTINGS").getFirst();
+    kinectROI = kinectSettings.getChild("kinectROI").getValue<ofRectangle>();
+    basePlaneNormalBack = kinectSettings.getChild("basePlaneNormalBack").getValue<ofVec3f>();
     basePlaneNormal = basePlaneNormalBack;
-    basePlaneOffsetBack = xml.getValue<ofVec3f>("basePlaneOffsetBack");
+    basePlaneOffsetBack = kinectSettings.getChild("basePlaneOffsetBack").getValue<ofVec3f>();
     basePlaneOffset = basePlaneOffsetBack;
-    basePlaneEq = xml.getValue<ofVec4f>("basePlaneEq");
-    maxOffsetBack = xml.getValue<float>("maxOffsetBack");
+    basePlaneEq = kinectSettings.getChild("basePlaneEq").getValue<ofVec4f>();
+    maxOffsetBack = kinectSettings.getChild("maxOffsetBack").getValue<float>();
     maxOffset = maxOffsetBack;
-    spatialFiltering = xml.getValue<bool>("spatialFiltering");
-    followBigChanges = xml.getValue<bool>("followBigChanges");
-    numAveragingSlots = xml.getValue<int>("numAveragingSlots");
-	doInpainting = xml.getValue<bool>("OutlierInpainting", false);
-	doFullFrameFiltering = xml.getValue<bool>("FullFrameFiltering", false);
+    spatialFiltering = kinectSettings.getChild("spatialFiltering").getValue<bool>();
+    followBigChanges = kinectSettings.getChild("followBigChanges").getValue<bool>();
+    numAveragingSlots = kinectSettings.getChild("numAveragingSlots").getValue<int>();
+	doInpainting = kinectSettings.getChild("OutlierInpainting").getValue<bool>();
+	doFullFrameFiltering = kinectSettings.getChild("FullFrameFiltering").getValue<bool>();
     return true;
 }
 
@@ -1878,19 +1928,17 @@ bool KinectProjector::saveSettings()
     string settingsFile = "settings/kinectProjectorSettings.xml";
 
     ofXml xml;
-    xml.addChild("KINECTSETTINGS");
-    xml.setTo("KINECTSETTINGS");
-    xml.addValue("kinectROI", kinectROI);
-    xml.addValue("basePlaneNormalBack", basePlaneNormalBack);
-    xml.addValue("basePlaneOffsetBack", basePlaneOffsetBack);
-    xml.addValue("basePlaneEq", basePlaneEq);
-    xml.addValue("maxOffsetBack", maxOffsetBack);
-    xml.addValue("spatialFiltering", spatialFiltering);
-    xml.addValue("followBigChanges", followBigChanges);
-    xml.addValue("numAveragingSlots", numAveragingSlots);
-	xml.addValue("OutlierInpainting", doInpainting);
-	xml.addValue("FullFrameFiltering", doFullFrameFiltering);
-	xml.setToParent();
+    auto kinect = xml.appendChild("KINECTSETTINGS");
+    kinect.appendChild("kinectROI").set(kinectROI);
+    kinect.appendChild("basePlaneNormalBack").set(basePlaneNormalBack);
+    kinect.appendChild("basePlaneOffsetBack").set(basePlaneOffsetBack);
+    kinect.appendChild("basePlaneEq").set(basePlaneEq);
+    kinect.appendChild("maxOffsetBack").set(maxOffsetBack);
+    kinect.appendChild("spatialFiltering").set(spatialFiltering);
+    kinect.appendChild("followBigChanges").set(followBigChanges);
+    kinect.appendChild("numAveragingSlots").set(numAveragingSlots);
+    kinect.appendChild("OutlierInpainting").set(doInpainting);
+    kinect.appendChild("FullFrameFiltering").set(doFullFrameFiltering);
     return xml.save(settingsFile);
 }
 
