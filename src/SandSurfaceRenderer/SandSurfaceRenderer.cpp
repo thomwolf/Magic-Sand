@@ -189,9 +189,9 @@ void SandSurfaceRenderer::setupMesh(){
 	for (unsigned int y = 0; y < meshheight; y++)
         for(unsigned int x=0;x<meshwidth;x++)
         {
-            ofPoint pt = ofPoint(x+kinectROI.x,y+kinectROI.y,0.0f)-ofPoint(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
+            ofVec3f pt = ofVec3f(x+kinectROI.x,y+kinectROI.y,0.0f)-ofVec3f(0.5,0.5,0); // We move of a half pixel to center the color pixel (more beautiful)
             mesh.addVertex(pt); // make a new vertex
-            mesh.addTexCoord(pt);
+            mesh.addTexCoord(ofVec2f(pt.x, pt.y));
         }
     for(unsigned int y=0;y<meshheight-1;y++)
         for(unsigned int x=0;x<meshwidth-1;x++)
@@ -511,11 +511,11 @@ bool SandSurfaceRenderer::loadSettings(){
     ofXml xml;
     if (!xml.load(settingsFile))
         return false;
-    xml.setTo("SURFACERENDERERSETTINGS");
-    colorMapFile = xml.getValue<string>("colorMapFile");
-    drawContourLines = xml.getValue<bool>("drawContourLines");
-    contourLineDistance = xml.getValue<float>("contourLineDistance");
-    
+    auto srs = xml.find("SURFACERENDERERSETTINGS").getFirst();
+    colorMapFile = srs.getChild("colorMapFile").getValue<string>();
+    drawContourLines = srs.getChild("drawContourLines").getValue<bool>();
+    contourLineDistance = srs.getChild("contourLineDistance").getValue<float>();
+    ofLogVerbose()<<colorMapFile<<":"<<drawContourLines<<":"<<contourLineDistance;
     return true;
 }
 
@@ -523,12 +523,10 @@ bool SandSurfaceRenderer::saveSettings(){
     string settingsFile = "settings/sandSurfaceRendererSettings.xml";
 
     ofXml xml;
-    xml.addChild("SURFACERENDERERSETTINGS");
-    xml.setTo("SURFACERENDERERSETTINGS");
-    xml.addValue("colorMapFile", colorMapFile);
-    xml.addValue("drawContourLines", drawContourLines);
-    xml.addValue("contourLineDistance", contourLineDistance);
-    xml.setToParent();
+    auto srs = xml.appendChild("SURFACERENDERERSETTINGS");
+    srs.appendChild("colorMapFile").set(colorMapFile);
+    srs.appendChild("drawContourLines").set(drawContourLines);
+    srs.appendChild("contourLineDistance").set(contourLineDistance);
     return xml.save(settingsFile);
 }
 
