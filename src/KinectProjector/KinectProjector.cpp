@@ -87,7 +87,7 @@ void KinectProjector::setup(bool sdisplayGui)
     maxOffsetSafeRange = 50; // Range above the autocalib measured max offset
 
     // kinectgrabber: start & default setup
-    
+
 	kinectOpened = grabber.setup();
 	lastKinectOpenTry = ofGetElapsedTimef(); 
 	if (!kinectOpened)
@@ -170,12 +170,8 @@ void KinectProjector::setupGradientField(){
 
 void KinectProjector::setGradFieldResolution(int sgradFieldResolution){
     gradFieldResolution = sgradFieldResolution;
-    setupGradientField();
-#ifdef USE_OPENNI
-    grabber.performInThread([sgradFieldResolution](NI2Grabber & kg) {
-#else
+    //robotconscience NI2 code removed. 17 Feb 2024 STH
     grabber.performInThread([sgradFieldResolution](KinectGrabber & kg) {
-#endif
         kg.setGradFieldResolution(sgradFieldResolution);
     });
 }
@@ -714,11 +710,8 @@ void KinectProjector::setNewKinectROI()
 }
 
 void KinectProjector::updateKinectGrabberROI(ofRectangle ROI){
-#ifdef USE_OPENNI
-    grabber.performInThread([ROI](NI2Grabber & kg) {
-#else
+	//robotconscience NI2 code removed. 17 Feb 2024 STH
     grabber.performInThread([ROI](KinectGrabber & kg) {
-#endif
         kg.setKinectROI(ROI);
     });
 //    while (kinectgrabber.isImageStabilized()){
@@ -768,11 +761,8 @@ void KinectProjector::updateProjKinectAutoCalibration()
 {
     if (autoCalibState == AUTOCALIB_STATE_INIT_FIRST_PLANE)
 	{
-#ifdef USE_OPENNI
-        grabber.performInThread([](NI2Grabber & kg) {
-#else
+		//robotconscience NI2 code removed. 17 Feb 2024 STH
         grabber.performInThread([](KinectGrabber & kg) {
-#endif
             kg.setMaxOffset(0);
         });
 		calibrationText = "Stabilizing acquisition";
@@ -839,11 +829,8 @@ void KinectProjector::updateProjKinectAutoCalibration()
 	else if (autoCalibState == AUTOCALIB_STATE_COMPUTE) 
 	{
         updateKinectGrabberROI(kinectROI); // Goes back to kinectROI and maxoffset
-    #ifdef USE_OPENNI
-        grabber.performInThread([this](NI2Grabber & kg) {
-    #else
+        //robotconscience NI2 code removed. 17 Feb 2024 STH
         grabber.performInThread([this](KinectGrabber & kg) {
-    #endif
             kg.setMaxOffset(this->maxOffset);
         });
         if (pairsKinect.size() == 0) {
@@ -1171,11 +1158,8 @@ void KinectProjector::updateMaxOffset(){
     maxOffsetBack = maxOffset;
     // Update max Offset
     ofLogVerbose("KinectProjector") << "updateMaxOffset(): maxOffset" << maxOffset ;
-#ifdef USE_OPENNI
-    grabber.performInThread([this](NI2Grabber & kg) {
-#else
+    //robotconscience NI2 code removed. 17 Feb 2024 STH
     grabber.performInThread([this](KinectGrabber & kg) {
-#endif
         kg.setMaxOffset(this->maxOffset);
     });
 }
@@ -1534,11 +1518,8 @@ void KinectProjector::startApplication()
 			setSpatialFiltering(spatialFiltering);
 
 			int nAvg = numAveragingSlots;
-    #ifdef USE_OPENNI
-            grabber.performInThread([nAvg](NI2Grabber & kg) {
-    #else
+			//robotconscience NI2 code removed. 17 Feb 2024 STH
             grabber.performInThread([nAvg](KinectGrabber & kg) {
-    #endif
 				kg.setAveragingSlotsNumber(nAvg); });
 
 			updateStatusGUI();
@@ -1633,11 +1614,8 @@ void KinectProjector::startAutomaticKinectProjectorCalibration(){
 
 void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
     spatialFiltering = sspatialFiltering;
-#ifdef USE_OPENNI
-        grabber.performInThread([sspatialFiltering](NI2Grabber & kg) {
-#else
+		//robotconscience NI2 code removed. 17 Feb 2024 STH
         grabber.performInThread([sspatialFiltering](KinectGrabber & kg) {
-#endif
         kg.setSpatialFiltering(sspatialFiltering);
     });
 	updateStatusGUI();
@@ -1645,11 +1623,8 @@ void KinectProjector::setSpatialFiltering(bool sspatialFiltering){
 
 void KinectProjector::setInPainting(bool inp) {
 	doInpainting = inp;
-#ifdef USE_OPENNI
-    grabber.performInThread([inp](NI2Grabber & kg) {
-#else
+	//robotconscience NI2 code removed. 17 Feb 2024 STH
     grabber.performInThread([inp](KinectGrabber & kg) {
-#endif
 		kg.setInPainting(inp);
 	});
 	updateStatusGUI();
@@ -1660,11 +1635,8 @@ void KinectProjector::setFullFrameFiltering(bool ff)
 {
 	doFullFrameFiltering = ff;
 	ofRectangle ROI = kinectROI;
-#ifdef USE_OPENNI
-    grabber.performInThread([ff, ROI](NI2Grabber & kg){
-#else
+	//robotconscience NI2 code removed. 17 Feb 2024 STH
     grabber.performInThread([ff, ROI](KinectGrabber & kg){
-#endif
 		kg.setFullFrameFiltering(ff, ROI);
 	});
 	updateStatusGUI();
@@ -1672,11 +1644,8 @@ void KinectProjector::setFullFrameFiltering(bool ff)
 
 void KinectProjector::setFollowBigChanges(bool sfollowBigChanges){
     followBigChanges = sfollowBigChanges;
-#ifdef USE_OPENNI
-    grabber.performInThread([sfollowBigChanges](NI2Grabber & kg) {
-#else
+	//robotconscience NI2 code removed. 17 Feb 2024 STH
     grabber.performInThread([sfollowBigChanges](KinectGrabber & kg) {
-#endif
         kg.setFollowBigChange(sfollowBigChanges);
     });
 	updateStatusGUI();
@@ -1797,20 +1766,14 @@ void KinectProjector::onSliderEvent(ofxDatGuiSliderEvent e){
     } else if (e.target->is("Ceiling")){
         maxOffset = maxOffsetBack-e.value;
         ofLogVerbose("KinectProjector") << "onSliderEvent(): maxOffset" << maxOffset ;
-#ifdef USE_OPENNI
-        grabber.performInThread([this](NI2Grabber & kg) {
-#else
+		//robotconscience NI2 code removed. 17 Feb 2024 STH
         grabber.performInThread([this](KinectGrabber & kg) {
-#endif
             kg.setMaxOffset(this->maxOffset);
         });
     } else if(e.target->is("Averaging")){
         numAveragingSlots = e.value;
-#ifdef USE_OPENNI
-        grabber.performInThread([e](NI2Grabber & kg) {
-#else
+		//robotconscience NI2 code removed. 17 Feb 2024 STH
         grabber.performInThread([e](KinectGrabber & kg) {
-#endif
             kg.setAveragingSlotsNumber(e.value);
         });
     }
