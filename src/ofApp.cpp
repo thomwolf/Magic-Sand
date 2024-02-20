@@ -116,6 +116,16 @@ void ofApp::keyPressed(int key)
 	{
 		kinectProjector->SaveFilteredDepthImage();
 	}
+	////////////////////
+	//this is a stub to generate an image that external apps can use as a DEM
+	//19 Feb 2024. STH
+	else if (key == 's')
+	{
+		//no need to dump the text files
+		//will use a unique file path
+		kinectProjector->SaveFilteredDepthImage();
+	}
+	////////////////////
 	else if (key == ' ')
 	{
 		if (kinectProjector->GetApplicationState() == KinectProjector::APPLICATION_STATE_RUNNING && 
