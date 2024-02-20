@@ -38,7 +38,7 @@ void SandSurfaceRenderer::setup(bool sdisplayGui){
     ofAddListener(ofEvents().exit, this, &SandSurfaceRenderer::exit);
     
     // Sandbox contourlines
-    drawContourLines = true; // Flag if topographic contour lines are enabled
+    //drawContourLines = true; // Flag if topographic contour lines are enabled
 	contourLineDistance = 10.0; // Elevation distance between adjacent topographic contour lines in millimiters
     
     // Initialize the fbos and images
@@ -59,7 +59,7 @@ void SandSurfaceRenderer::setup(bool sdisplayGui){
     }
 
     // Load colormap folder and set heightmap
-    colorMapPath = "colorMaps/";
+    //colorMapPath = "colorMaps/"; //loaded from settings. 19 Feb 2024. STH
     ofDirectory dir(colorMapPath);
     dir.allowExt("xml");
     dir.listDir();
@@ -516,12 +516,27 @@ bool SandSurfaceRenderer::loadSettings(){
     drawContourLines = srs.getChild("drawContourLines").getValue<bool>();
     contourLineDistance = srs.getChild("contourLineDistance").getValue<float>();
     ofLogVerbose()<<colorMapFile<<":"<<drawContourLines<<":"<<contourLineDistance;
+
+    //adding editable settings vs hardcoded. 19 Feb 2024 STH
+    string defaultsFile = "settings/defaultSettings.xml";
+    if (!xml.load(defaultsFile))
+        return false;
+    auto defaultSets = xml.find("DEFAULTSETTINGS").getFirst();
+    colorMapPath = defaultSets.getChild("colorMapPath").getValue<string>(); //19 Feb 2024 STH
+
+    //STH debug. 19 Feb 2024.
+    // cout << "********************" << endl;
+    // cout << "Path to colour map: " << colorMapPath << endl;
+    // cout << "Path to debug files: " << DebugFileOutDir << endl;
+    // cout << "Output debug files: " << DumpDebugFiles << endl;
+    // cout << "********************" << endl;
+    
     return true;
 }
 
 bool SandSurfaceRenderer::saveSettings(){
     string settingsFile = "settings/sandSurfaceRendererSettings.xml";
-
+    
     ofXml xml;
     auto srs = xml.appendChild("SURFACERENDERERSETTINGS");
     srs.appendChild("colorMapFile").set(colorMapFile);
