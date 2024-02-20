@@ -43,8 +43,22 @@ drawKinectColorView(true)
 	applicationState = APPLICATION_STATE_SETUP;
     projWindow = p;
 	TemporalFilteringType = 1;
-	DumpDebugFiles = true;
-	DebugFileOutDir = "DebugFiles//";
+	//DumpDebugFiles = true; //read in from settings file. 19 Feb 2024. STH
+	//DebugFileOutDir = "DebugFiles//"; //read in from settings file. 19 Feb 2024. STH
+
+	////////////////////////////////////////////////////////
+	//adding editable settings vs hardcoded. 19 Feb 2024 STH
+    ofXml xml;
+    string defaultsFile = "settings/defaultSettings.xml";
+    if (!xml.load(defaultsFile)){
+        DumpDebugFiles = true;
+		DebugFileOutDir = "DebugFiles//";
+	}
+	else{}
+	    auto defaultSets = xml.find("DEFAULTSETTINGS").getFirst();
+	    DebugFileOutDir = defaultSets.getChild("debugFolderPath").getValue<string>();
+	    DumpDebugFiles = defaultSets.getChild("dumpDebugFiles").getValue<bool>();
+	////////////////////////////////////////////////////////
 }
 
 void KinectProjector::setup(bool sdisplayGui)
@@ -1975,6 +1989,9 @@ void KinectProjector::CheckAndNormalizeKinectROI()
 
 void KinectProjector::SaveFilteredDepthImageDebug()
 {
+	cout << "********************" << endl;
+	cout << "Path to debug files: " << DebugFileOutDir << endl;
+	cout << "********************" << endl;
 	std::string rawValOutKC = ofToDataPath(DebugFileOutDir+ "RawValsKinectCoords.txt");
 	std::string rawValOutWC = ofToDataPath(DebugFileOutDir + "RawValsWorldCoords.txt");
 	std::string rawValOutHM = ofToDataPath(DebugFileOutDir + "RawValsHM.txt");
@@ -2083,6 +2100,9 @@ ofRectangle KinectProjector::getProjectorActiveROI()
 
 void KinectProjector::SaveFilteredDepthImage()
 {
+	cout << "********************" << endl;
+	cout << "Path to debug files: " << DebugFileOutDir << endl;
+	cout << "********************" << endl;
 	std::string rawValOutKC = ofToDataPath(DebugFileOutDir + "RawValsKinectCoords.txt");
 	std::string rawValOutWC = ofToDataPath(DebugFileOutDir + "RawValsWorldCoords.txt");
 	std::string rawValOutHM = ofToDataPath(DebugFileOutDir + "RawValsHM.txt");
@@ -2137,6 +2157,9 @@ void KinectProjector::SaveFilteredDepthImage()
 
 void KinectProjector::SaveKinectColorImage()
 {
+	cout << "********************" << endl;
+	cout << "Path to debug files: " << DebugFileOutDir << endl;
+	cout << "********************" << endl;
 	std::string ColourOutName = DebugFileOutDir + "RawColorImage.png";
 	std::string MedianOutName = DebugFileOutDir + "TemporalFilteredImage.png";
 	ofSaveImage(kinectColorImage.getPixels(), ColourOutName);
