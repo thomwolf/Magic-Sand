@@ -180,6 +180,9 @@ public:
 	void SaveFilteredDepthImage();
 	void SaveKinectColorImage();
 
+    // ROI image export function
+    void SaveROIImage();
+
 private:
 
     enum Calibration_state
@@ -253,7 +256,7 @@ private:
 	void CheckAndNormalizeKinectROI();
 
     // State variables
-    bool secondScreenFound;
+    //bool secondScreenFound; //is this used? 20 Feb 2024 STH
 	bool kinectOpened;
 	float lastKinectOpenTry;
 	bool ROIcalibrated;
@@ -373,6 +376,9 @@ private:
 	std::string GetTimeAndDateString();
 	bool savePointPair();
 	void SaveFilteredDepthImageDebug();
+
+    // ROI image export
+    string ROIFileOutDir;
 };
 
 
