@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
 <DEFAULTSETTINGS>
 	<colorMapPath>colorMaps/</colorMapPath>
-	<debugFolderPath>Bla/</debugFolderPath>
+	<debugFolderPath>DebugFiles/</debugFolderPath>
 	<dumpDebugFiles>1</dumpDebugFiles>
+	<roiImagePath>Bla/</roiImagePath>
 </DEFAULTSETTINGS>
