@@ -52,12 +52,14 @@ drawKinectColorView(true)
     string defaultsFile = "settings/defaultSettings.xml";
     if (!xml.load(defaultsFile)){
         DumpDebugFiles = true;
-		DebugFileOutDir = "DebugFiles//";
+		DebugFileOutDir = "DebugFiles/";
+		ROIFileOutDir = "DebugFiles/";
 	}
 	else{}
 	    auto defaultSets = xml.find("DEFAULTSETTINGS").getFirst();
 	    DebugFileOutDir = defaultSets.getChild("debugFolderPath").getValue<string>();
 	    DumpDebugFiles = defaultSets.getChild("dumpDebugFiles").getValue<bool>();
+	    ROIFileOutDir = defaultSets.getChild("roiImagePath").getValue<string>();
 	////////////////////////////////////////////////////////
 }
 
@@ -2153,6 +2155,51 @@ void KinectProjector::SaveFilteredDepthImage()
 	}
 
 	ofSaveImage(BinImg.getPixels(), BinOutName);
+}
+
+void KinectProjector::SaveROIImage()
+{
+	cout << "********************" << endl;
+	cout << "Path to ROI file output: " << ROIFileOutDir << endl;
+	cout << "ROI: " << kinectROI << endl;
+	cout << "ROI: " << kinectROI.getMinY() << endl;
+	cout << "ROI: " << kinectROI.getMaxY() << endl;
+	cout << "ROI: " << kinectROI.getMinX() << endl;
+	cout << "ROI: " << kinectROI.getMaxX() << endl;
+	cout << "ROI: " << kinectROI.width << endl;
+	cout << "ROI: " << kinectROI.height << endl;
+	cout << "********************" << endl;
+	std::string ROIOutName = ofToDataPath(ROIFileOutDir + "ROIImage-" + GetTimeAndDateString() + ".png");
+	ofSaveImage(kinectColorImage.getPixels(), ROIOutName);
+
+	ofxCvFloatImage temp;
+	temp.setFromPixels(FilteredDepthImage.getFloatPixelsRef().getData(), kinectRes.x, kinectRes.y);
+	temp.setNativeScale(FilteredDepthImage.getNativeScaleMin(), FilteredDepthImage.getNativeScaleMax());
+	temp.convertToRange(0, 1);
+	ofxCvGrayscaleImage temp2;
+	temp2.setFromPixels(temp.getFloatPixelsRef());
+	ofSaveImage(temp2.getPixels(), ROIOutName);
+
+	ofPixels pixels;
+	fboProjWindow.readToPixels(pixels);
+
+	ofImage screenshot;
+	screenshot.setFromPixels(pixels);
+
+	// Save the image to disk
+	screenshot.save("screenshot.tiff");
+
+// 	if (TemporalFrameFilter.isValid())
+// 	{
+// 		ofxCvGrayscaleImage tempImage;
+// //		tempImage.allocate(kinectColorImage.width, kinectColorImage.height);
+// 		if (TemporalFilteringType == 0)
+// 			tempImage.setFromPixels(TemporalFrameFilter.getMedianFilteredImage(), kinectColorImage.width, kinectColorImage.height);
+// 		if (TemporalFilteringType == 1)
+// 			tempImage.setFromPixels(TemporalFrameFilter.getAverageFilteredColImage(), kinectColorImage.width, kinectColorImage.height);
+// 		ofSaveImage(tempImage.getPixels(), MedianOutName);
+// 	}
+
 }
 
 void KinectProjector::SaveKinectColorImage()
