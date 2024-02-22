@@ -123,7 +123,7 @@ void ofApp::keyPressed(int key)
 	{
 		//no need to dump the text files
 		//will use a unique file path
-		kinectProjector->SaveFilteredDepthImage();
+		kinectProjector->SaveROIImage();
 	}
 	////////////////////
 	else if (key == ' ')
