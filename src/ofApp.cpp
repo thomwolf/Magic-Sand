@@ -117,13 +117,13 @@ void ofApp::keyPressed(int key)
 		kinectProjector->SaveFilteredDepthImage();
 	}
 	////////////////////
-	//this is a stub to generate an image that external apps can use as a DEM
-	//19 Feb 2024. STH
+	//generate an image that external apps can use as a DEM
+	//21 Feb 2024. STH
 	else if (key == 's')
 	{
 		//no need to dump the text files
 		//will use a unique file path
-		kinectProjector->SaveROIImage();
+		sandSurfaceRenderer->SaveROIImage();
 	}
 	////////////////////
 	else if (key == ' ')

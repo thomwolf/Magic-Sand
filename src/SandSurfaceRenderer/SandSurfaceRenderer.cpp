@@ -234,7 +234,8 @@ void SandSurfaceRenderer::update(){
 
 void SandSurfaceRenderer::drawMainWindow(float x, float y, float width, float height){
     fboProjWindow.draw(x, y, width, height);
-    
+
+    // /////////////////////////    
     if (displayGui) {
         heightMap.getTexture().draw(gui2->getPosition().x, gui2->getPosition().y+gui2->getHeight(), gui2->getWidth(), 30);
 		gui->draw();
@@ -502,6 +503,24 @@ void SandSurfaceRenderer::onSaveModalEvent(ofxModalEvent e){
     }
 }
 
+void SandSurfaceRenderer::SaveROIImage()
+{
+    cout << "********************" << endl;
+
+    /////////////////////////
+    //test in writing out fboProjWindow
+    ofPixels pixels;
+    fboProjWindow.readToPixels(pixels);
+
+    ofImage screenshot;
+    screenshot.setFromPixels(pixels);
+
+    cout << "Saving terrain to" << endl;
+    // Save the image to disk
+    screenshot.save("screenshot.tiff");
+}
+
+
 
 //TODO: Save additionnal settings
 
@@ -523,13 +542,6 @@ bool SandSurfaceRenderer::loadSettings(){
         return false;
     auto defaultSets = xml.find("DEFAULTSETTINGS").getFirst();
     colorMapPath = defaultSets.getChild("colorMapPath").getValue<string>(); //19 Feb 2024 STH
-
-    //STH debug. 19 Feb 2024.
-    // cout << "********************" << endl;
-    // cout << "Path to colour map: " << colorMapPath << endl;
-    // cout << "Path to debug files: " << DebugFileOutDir << endl;
-    // cout << "Output debug files: " << DumpDebugFiles << endl;
-    // cout << "********************" << endl;
     
     return true;
 }
@@ -544,5 +556,6 @@ bool SandSurfaceRenderer::saveSettings(){
     srs.appendChild("contourLineDistance").set(contourLineDistance);
     return xml.save(settingsFile);
 }
+
 
 

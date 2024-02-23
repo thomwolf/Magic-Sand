@@ -58,6 +58,7 @@ public:
         return textInput->getText();
     }
 
+
 private:
     ofxDatGuiTextInput* textInput;
 };
@@ -82,6 +83,10 @@ public:
     void onScrollViewEvent(ofxDatGuiScrollViewEvent e);
     void onSaveModalEvent(ofxModalEvent e);
     void exit(ofEventArgs& e);
+
+    //STH moved from KinectProjector.h
+    // ROI image export function
+    void SaveROIImage();
    
 private:
     // Private methods

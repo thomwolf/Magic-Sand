@@ -180,8 +180,9 @@ public:
 	void SaveFilteredDepthImage();
 	void SaveKinectColorImage();
 
-    // ROI image export function
-    void SaveROIImage();
+    //STH moved to SandSurfaceRendered.h
+    // // ROI image export function
+    // void SaveROIImage();
 
 private:
 
